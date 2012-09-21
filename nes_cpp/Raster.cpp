@@ -17,7 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-     Raster::Raster(int[] data, int w, int h) {
+     Raster::Raster(int* data, int w, int h) {
         this.data = data;
         width = w;
         height = h;

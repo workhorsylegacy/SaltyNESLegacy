@@ -21,7 +21,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void Mapper001::init(NES* nes) {
 
         super.init(nes);
-
+    	this.prgSwitchingArea = 1;
+    	this.prgSwitchingSize = 1;
     }
 
      void Mapper001::mapperInternalStateLoad(ByteBuffer* buf) {

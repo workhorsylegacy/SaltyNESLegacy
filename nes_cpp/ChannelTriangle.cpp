@@ -56,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      int ChannelTriangle::getLengthStatus() {
-        return ((lengthCounter == 0 || !isEnabled) ? 0 : 1);
+        return ((lengthCounter == 0 || !_isEnabled) ? 0 : 1);
     }
 
      int ChannelTriangle::readReg(int address) {
@@ -100,7 +100,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             progTimerCount += nCycles;
             while (progTimerMax > 0 && progTimerCount >= progTimerMax) {
                 progTimerCount -= progTimerMax;
-                if (isEnabled && lengthCounter > 0 && linearCounter > 0) {
+                if (_isEnabled && lengthCounter > 0 && linearCounter > 0) {
                     clockTriangleGenerator();
                 }
             }
@@ -114,7 +114,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void ChannelTriangle::setEnabled(bool value) {
-        isEnabled = value;
+        _isEnabled = value;
         if (!value) {
             lengthCounter = 0;
         }
@@ -122,12 +122,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      bool ChannelTriangle::isEnabled() {
-        return isEnabled;
+        return _isEnabled;
     }
 
      void ChannelTriangle::updateSampleCondition() {
         sampleCondition =
-                isEnabled &&
+                _isEnabled &&
                 progTimerMax > 7 &&
                 linearCounter > 0 &&
                 lengthCounter > 0;
@@ -138,7 +138,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         progTimerCount = 0;
         progTimerMax = 0;
         triangleCounter = 0;
-        isEnabled = false;
+        _isEnabled = false;
         sampleCondition = false;
         lengthCounter = 0;
         lengthCounterEnable = false;

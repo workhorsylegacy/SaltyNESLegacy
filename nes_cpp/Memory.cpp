@@ -64,14 +64,14 @@
 		
 	}
 	
-	 void Memory::write(int address, short[] array, int length){
+	 void Memory::write(int address, short* array, int length){
 	
 		if(address+length > mem.length)return;
 		System.arraycopy(array,0,mem,address,length);
 		
 	}
 	
-	 void Memory::write(int address, short[] array, int arrayoffset, int length){
+	 void Memory::write(int address, short* array, int arrayoffset, int length){
 		
 		if(address+length > mem.length)return;
 		System.arraycopy(array,arrayoffset,mem,address,length);

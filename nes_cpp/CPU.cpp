@@ -124,7 +124,7 @@ instructions and invokes emulation of the PPU and pAPU.
 
 	}
 
-	 synchronized void CPU::beginExecution(){
+	 /*synchronized*/ void CPU::beginExecution(){
 
 		if(myThread!=NULL && myThread.isAlive()){
 			endExecution();
@@ -136,7 +136,7 @@ instructions and invokes emulation of the PPU and pAPU.
 
 	}
 
-	 synchronized void CPU::endExecution(){
+	 /*synchronized*/ void CPU::endExecution(){
 		//System.out.println("* Attempting to stop CPU thread.");
 		if(myThread!=NULL && myThread.isAlive()){
 			try{
@@ -161,7 +161,7 @@ instructions and invokes emulation of the PPU and pAPU.
 		emulate();
 	}
 
-	 synchronized void CPU::initRun(){
+	 /*synchronized*/ void CPU::initRun(){
 		stopRunning = false;
 	}
 

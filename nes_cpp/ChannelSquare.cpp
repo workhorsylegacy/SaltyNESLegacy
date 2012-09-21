@@ -17,6 +17,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+    static const int ChannelSquare::dutyLookup[32] = {
+                    0, 1, 0, 0, 0, 0, 0, 0,
+                    0, 1, 1, 0, 0, 0, 0, 0,
+                    0, 1, 1, 1, 1, 0, 0, 0,
+                    1, 0, 0, 1, 1, 1, 1, 1};
+
+    static const int ChannelSquare::impLookup[32] = {
+                    1, -1, 0, 0, 0, 0, 0, 0,
+                    1, 0, -1, 0, 0, 0, 0, 0,
+                    1, 0, 0, 0, -1, 0, 0, 0,
+                    -1, 0, 1, 0, 0, 0, 0, 0};
+
      ChannelSquare::ChannelSquare(PAPU* papu, bool square1) {
 
         this.papu = papu;
@@ -93,7 +105,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void ChannelSquare::updateSampleValue() {
 
-        if (isEnabled && lengthCounter > 0 && progTimerMax > 7) {
+        if (_isEnabled && lengthCounter > 0 && progTimerMax > 7) {
 
             if (sweepMode == 0 && (progTimerMax + (progTimerMax >> sweepShiftAmount)) > 4095) {
                 //if(sweepCarry){
@@ -149,7 +161,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             progTimerMax &= 0xFF;
             progTimerMax |= ((value & 0x7) << 8);
 
-            if (isEnabled) {
+            if (_isEnabled) {
                 lengthCounter = papu.getLengthMax(value & 0xF8);
             }
 
@@ -160,7 +172,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void ChannelSquare::setEnabled(bool value) {
-        isEnabled = value;
+        _isEnabled = value;
         if (!value) {
             lengthCounter = 0;
         }
@@ -168,11 +180,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      bool ChannelSquare::isEnabled() {
-        return isEnabled;
+        return _isEnabled;
     }
 
      int ChannelSquare::getLengthStatus() {
-        return ((lengthCounter == 0 || !isEnabled) ? 0 : 1);
+        return ((lengthCounter == 0 || !_isEnabled) ? 0 : 1);
     }
 
      void ChannelSquare::reset() {
@@ -192,7 +204,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         dutyMode = 0;
         vol = 0;
 
-        isEnabled = false;
+        _isEnabled = false;
         lengthCounterEnable = false;
         sweepActive = false;
         sweepCarry = false;

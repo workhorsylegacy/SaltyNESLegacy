@@ -19,7 +19,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // Creates the NES system.
      NES::NES(AppletUI* gui) {
-
+		this._isRunning = false;
         Globals::nes = this;
         this.gui = gui;
 
@@ -103,7 +103,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void NES::stateSave(ByteBuffer* buf) {
 
-        bool continueEmulation = isRunning();
+        bool continueEmulation = _isRunning();
         stopEmulation();
 
         // Version:
@@ -126,7 +126,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      bool NES::isRunning() {
 
-        return isRunning;
+        return _isRunning;
 
     }
 
@@ -138,7 +138,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         {
             if (rom != NULL && rom.isValid() && !cpu.isRunning()) {
                 cpu.beginExecution();
-                isRunning = true;
+                _isRunning = true;
             }
         }
     }
@@ -146,7 +146,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void NES::stopEmulation() {
         if (cpu.isRunning()) {
             cpu.endExecution();
-            isRunning = false;
+            _isRunning = false;
         }
 
         if (Globals::enableSound && papu.isRunning()) {
@@ -200,17 +200,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     // Returns CPU Memory.
-     Memory NES::getCpuMemory() {
+     Memory* NES::getCpuMemory() {
         return cpuMem;
     }
 
     // Returns PPU Memory.
-     Memory NES::getPpuMemory() {
+     Memory* NES::getPpuMemory() {
         return ppuMem;
     }
 
     // Returns Sprite Memory.
-     Memory NES::getSprMemory() {
+     Memory* NES::getSprMemory() {
         return sprMem;
     }
 
@@ -234,7 +234,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      bool NES::loadRom(string file) {
 
         // Can't load ROM while still running.
-        if (isRunning) {
+        if (_isRunning) {
             stopEmulation();
         }
 

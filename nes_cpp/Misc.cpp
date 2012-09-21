@@ -17,6 +17,22 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+     static bool Misc::debug = Globals::debug;
+     static float[] Misc::_rnd = NULL;
+     static int Misc::nextRnd = 0;
+     static float Misc::rndret = 0;
+
+	static float* Misc::rnd() {
+		if(_rnd == NULL) {
+			_rnd = new float[100000]();
+			for (int i = 0; i < _rnd.length; i++) {
+	            _rnd[i] = (float) Math.random();
+	        }
+		}
+        
+        return _rnd;
+	}
+
      static string Misc::hex8(int i) {
         string s = Integer.toHexString(i);
         while (s.length() < 2) {
@@ -58,9 +74,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return ret;
     }
 
-     static int[] Misc::resizeArray(int[] array, int newSize) {
+     static int* Misc::resizeArray(int* array, int newSize) {
 
-        int[] newArr = new int[newSize];
+        int* newArr = new int[newSize];
         System.arraycopy(array, 0, newArr, 0, Math.min(newSize, array.length));
         return newArr;
 
@@ -74,10 +90,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      static float Misc::random() {
-        rndret = rnd[nextRnd];
+        rndret = rnd()[nextRnd];
         nextRnd++;
-        if (nextRnd >= rnd.length) {
-            nextRnd = (int) (Math.random() * (rnd.length - 1));
+        if (nextRnd >= rnd().length) {
+            nextRnd = (int) (Math.random() * (rnd().length - 1));
         }
         return rndret;
     }

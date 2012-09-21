@@ -18,12 +18,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-         void MyMouseAdapter::mouseClicked(MouseEvent me) {
+		MyMouseAdapter::MyMouseAdapter() {
+			this.lastClickTime = 0;
+		}
+
+         void MyMouseAdapter::mouseClicked(MouseEvent* me) {
             setFocusable(true);
             requestFocus();
         }
 
-         void MyMouseAdapter::mousePressed(MouseEvent me) {
+         void MyMouseAdapter::mousePressed(MouseEvent* me) {
             setFocusable(true);
             requestFocus();
 
@@ -35,7 +39,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         }
 
-         void MyMouseAdapter::mouseReleased(MouseEvent me) {
+         void MyMouseAdapter::mouseReleased(MouseEvent* me) {
 
             if (nes != NULL && nes.memMapper != NULL) {
                 nes.memMapper.setMouseState(false, 0, 0);

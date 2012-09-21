@@ -37,6 +37,7 @@ public:
 class Image {};
 class Graphics {};
 class File {};
+class RandomAccessFile {};
 class BufferedImage {};
 class VolatileImage {};
 class Font {
@@ -46,11 +47,23 @@ public:
 		
 	}
 };
+class KeyListener {};
+class KeyEvent {};
+class MouseAdapter {};
+class MouseEvent {};
+class Mixer {};
+class SourceDataLine {};
+class Color {
+public:
+	int getRGB() {
+		return 0;
+	}
+	
+};
 
 // Forward declarations
 class IMemoryMapper;
 class IPapuChannel;
-class IUI;
 
 class AppletUI;
 class BlipBuffer;
@@ -109,32 +122,6 @@ class IPapuChannel {
      virtual int getLengthStatus() = 0;
 };
 
-class IUI {
-public:
-    virtual NES* getNES();
-    virtual KbInputHandler* getJoy1() = 0;
-    virtual KbInputHandler* getJoy2() = 0;
-    virtual BufferView* getScreenView() = 0;
-    virtual BufferView* getPatternView() = 0;
-    virtual BufferView* getSprPalView() = 0;
-    virtual BufferView* getNameTableView() = 0;
-    virtual BufferView* getImgPalView() = 0;
-    virtual HiResTimer* getTimer() = 0;
-    virtual void imageReady(bool skipFrame) = 0;
-    virtual void init(bool showGui) = 0;
-    virtual string getWindowCaption() = 0;
-    virtual void setWindowCaption(string s) = 0;
-    virtual void setTitle(string s) = 0;
-    virtual Point* getLocation() = 0;
-    virtual int getWidth() = 0;
-    virtual int getHeight() = 0;
-    virtual int getRomFileSize() = 0;
-    virtual void destroy() = 0;
-    virtual void println(string s) = 0;
-    virtual void showLoadProgress(int percentComplete) = 0;
-    virtual void showErrorMsg(string msg) = 0;
-};
-
 // Class Prototypes
 namespace Globals {
 
@@ -167,7 +154,7 @@ namespace Globals {
     }
 };
 
-class AppletUI : public IUI {
+class AppletUI {
     vNES* applet;
     NES* nes;
     KbInputHandler* kbJoy1;
@@ -179,28 +166,28 @@ class AppletUI : public IUI {
 
 public:
     AppletUI(vNES* applet);
-    virtual void init(bool showGui);
-    virtual void imageReady(bool skipFrame);
-    virtual int getRomFileSize();
-    virtual void showLoadProgress(int percentComplete);
-    virtual void destroy();
+    void init(bool showGui);
+    void imageReady(bool skipFrame);
+    int getRomFileSize();
+    void showLoadProgress(int percentComplete);
+    void destroy();
     NES* getNES();
-    virtual KbInputHandler* getJoy1();
-    virtual KbInputHandler* getJoy2();
-    virtual BufferView* getScreenView();
-    virtual BufferView* getPatternView();
-    virtual BufferView* getSprPalView();
-    virtual BufferView* getNameTableView();
-    virtual BufferView* getImgPalView();
-    virtual HiResTimer* getTimer();
-    virtual string getWindowCaption();
-    virtual void setWindowCaption(string s);
-    virtual void setTitle(string s);
-    virtual Point* getLocation();
-    virtual int getWidth();
-    virtual int getHeight();
-    virtual void println(string s);
-    virtual void showErrorMsg(string msg);
+    KbInputHandler* getJoy1();
+    KbInputHandler* getJoy2();
+    BufferView* getScreenView();
+    BufferView* getPatternView();
+    BufferView* getSprPalView();
+    BufferView* getNameTableView();
+    BufferView* getImgPalView();
+    HiResTimer* getTimer();
+    string getWindowCaption();
+    void setWindowCaption(string s);
+    void setTitle(string s);
+    Point* getLocation();
+    int getWidth();
+    int getHeight();
+    void println(string s);
+     void showErrorMsg(string msg);
 };
 
 
@@ -372,9 +359,9 @@ class ChannelDM : public IPapuChannel {
     static const int MODE_LOOP = 1;
     static const int MODE_IRQ = 2;
     PAPU* papu;
-    bool isEnabled;
+    bool _isEnabled;
     bool hasSample;
-    bool irqGenerated = false;
+    bool irqGenerated;
     int playMode;
     int dmaFrequency;
     int dmaCounter;
@@ -406,7 +393,7 @@ public:
 
 class ChannelNoise : public IPapuChannel {
     PAPU* papu;
-     bool isEnabled;
+     bool _isEnabled;
      bool envDecayDisable;
      bool envDecayLoopEnable;
      bool lengthCounterEnable;
@@ -423,8 +410,8 @@ class ChannelNoise : public IPapuChannel {
      int randomBit;
      int randomMode;
      int sampleValue;
-     long accValue = 0;
-     long accCount = 1;
+     long accValue;
+     long accCount;
      int tmp;
 public:
      ChannelNoise(PAPU* papu);
@@ -440,10 +427,8 @@ public:
 
 class ChannelSquare : public IPapuChannel {
     PAPU* papu;
-    static int[] dutyLookup;
-    static int[] impLookup;
     bool sqr1;
-    bool isEnabled;
+    bool _isEnabled;
     bool lengthCounterEnable;
     bool sweepActive;
     bool envDecayDisable;
@@ -468,17 +453,9 @@ class ChannelSquare : public IPapuChannel {
     int sampleValue;
     int vol;
 public:
-    static int[] dutyLookup = {
-                    0, 1, 0, 0, 0, 0, 0, 0,
-                    0, 1, 1, 0, 0, 0, 0, 0,
-                    0, 1, 1, 1, 1, 0, 0, 0,
-                    1, 0, 0, 1, 1, 1, 1, 1};
+    static const int dutyLookup[32];
 
-    static int[] impLookup = {
-                    1, -1, 0, 0, 0, 0, 0, 0,
-                    1, 0, -1, 0, 0, 0, 0, 0,
-                    1, 0, 0, 0, -1, 0, 0, 0,
-                    -1, 0, 1, 0, 0, 0, 0, 0};
+    static const int impLookup[32];
 
      ChannelSquare(PAPU* papu, bool square1);
      void clockLengthCounter();
@@ -495,7 +472,7 @@ public:
 
 class ChannelTriangle : public IPapuChannel {
     PAPU* papu;
-    bool isEnabled;
+    bool _isEnabled;
     bool sampleCondition;
     bool lengthCounterEnable;
     bool lcHalt;
@@ -524,14 +501,15 @@ public:
      void destroy();
 };
 
-class CPU : public Runnable {
+class CPU {
 	// Thread:
-	Thread myThread;
+	pthread_t myThread;
+	mutable pthread_mutex_t _mutex;
 
 	// References to other parts of NES :
 	 NES* nes;
 	 IMemoryMapper* mmap;
-	 short[] mem;
+	 short* mem;
 
 	// CPU Registers:
 	 int REG_ACC_NEW;
@@ -561,7 +539,7 @@ class CPU : public Runnable {
 	 int irqType;
 
 	// Op/Inst Data:
-	 int[] opdata;
+	 int* opdata;
 
 	// Misc vars:
 	 int cyclesToHalt;
@@ -575,11 +553,11 @@ public:
 	 void stateLoad(ByteBuffer* buf);
 	 void stateSave(ByteBuffer* buf);
 	 void reset();
-	 synchronized void beginExecution();
-	 synchronized void endExecution();
+	 /*synchronized*/ void beginExecution();
+	 /*synchronized*/ void endExecution();
 	 bool isRunning();
 	 void run();
-	 synchronized void initRun();
+	 /*synchronized*/ void initRun();
 	 void emulate();
 	 int load(int addr);
 	 int load16bit(int addr);
@@ -603,12 +581,12 @@ public:
 class CpuInfo {
 public:
     // Opdata array:
-     static int[] opdata;
+     static int* opdata;
     // Instruction names:
-     static string[] instname;
+     static string* instname;
     // Address mode descriptions:
-     static string[] addrDesc;
-     static int[] cycTable;
+     static string* addrDesc;
+     static int* cycTable;
     // Instruction types:
     // -------------------------------- //
      static const int INS_ADC = 0;
@@ -684,10 +662,10 @@ public:
      static const int ADDR_POSTIDXIND = 11;
      static const int ADDR_INDABS = 12;
 
-     static int[] getOpData();
-     static string[] getInstNames();
+     static int* getOpData();
+     static string* getInstNames();
      static string getInstName(int inst);
-     static string[] getAddressModeNames();
+     static string* getAddressModeNames();
      static string getAddressModeName(int addrMode);
      static void initOpData();
      static void setOp(int inst, int op, int addr, int size, int cycles);
@@ -697,7 +675,7 @@ public:
 
 class FileLoader {
 public:
-     short[] loadFile(string fileName, UI ui);
+     short* loadFile(string fileName, AppletUI* ui);
 };
 
 class HiResTimer {
@@ -710,8 +688,8 @@ public:
 };
 
 class KbInputHandler : public KeyListener {
-    bool[] allKeysState;
-    int[] keyMapping;
+    bool* allKeysState;
+    int* keyMapping;
     int id;
     NES* nes;
 public:
@@ -726,7 +704,7 @@ public:
     static const int KEY_RIGHT = 7;
     
     // Key count:
-    static final int NUM_KEYS = 8;
+    static const int NUM_KEYS = 8;
     
      KbInputHandler(NES* nes, int id);
      short getKeyState(int padKey);
@@ -739,50 +717,33 @@ public:
      void destroy();
 };
 
-class Mapper001 : public MapperDefault {
-    // Register flags:
-
-    // Register 0:
-    int mirroring;
-    int oneScreenMirroring;
-    int prgSwitchingArea = 1;
-    int prgSwitchingSize = 1;
-    int vromSwitchingSize;
-
-    // Register 1:
-    int romSelectionReg0;
-
-    // Register 2:
-    int romSelectionReg1;
-
-    // Register 3:
-    int romBankSelect;
-
-    // 5-bit buffer:
-    int regBuffer;
-    int regBufferCounter;
+class Memory {
+	short* mem;
+	int memLength;
+	NES* nes;
 public:
-     void init(NES* nes);
-     void mapperInternalStateLoad(ByteBuffer* buf);
-     void mapperInternalStateSave(ByteBuffer* buf);
-     void write(int address, short value);
-     void setReg(int reg, int value);
-     int getRegNumber(int address);
-     void loadROM(ROM rom);
-     void reset();
-     void switchLowHighPrgRom(int oldSetting);
-     void switch16to32();
-     void switch32to16();
+	 Memory(NES* nes, int byteCount);
+	 void stateLoad(ByteBuffer* buf);
+	 void stateSave(ByteBuffer* buf);
+	 void reset();
+	 int getMemSize();
+	 void write(int address, short value);
+	 short load(int address);
+	 void dump(string file);
+	 void dump(string file, int offset, int length);
+	 void write(int address, short* array, int length);
+	 void write(int address, short* array, int arrayoffset, int length);
+	 void destroy();
 };
 
 class MapperDefault : public IMemoryMapper {
      NES* nes;
-     Memory cpuMem;
-     Memory ppuMem;
-     short[] cpuMemArray;
-     ROM rom;
+     Memory* cpuMem;
+     Memory* ppuMem;
+     short* cpuMemArray;
+     ROM* rom;
      CPU* cpu;
-     PPU ppu;
+     PPU* ppu;
      int cpuMemSize;
      int joy1StrobeState;
      int joy2StrobeState;
@@ -827,53 +788,65 @@ public:
      void destroy();
 };
 
-class Memory{
-	 short[] mem;
-	int memLength;
-	NES* nes;
+class Mapper001 : public MapperDefault {
+    // Register flags:
+
+    // Register 0:
+    int mirroring;
+    int oneScreenMirroring;
+    int prgSwitchingArea;
+    int prgSwitchingSize1;
+    int vromSwitchingSize;
+
+    // Register 1:
+    int romSelectionReg0;
+
+    // Register 2:
+    int romSelectionReg1;
+
+    // Register 3:
+    int romBankSelect;
+
+    // 5-bit buffer:
+    int regBuffer;
+    int regBufferCounter;
 public:
-	 Memory(NES* nes, int byteCount);
-	 void stateLoad(ByteBuffer* buf);
-	 void stateSave(ByteBuffer* buf);
-	 void reset();
-	 int getMemSize();
-	 void write(int address, short value);
-	 short load(int address);
-	 void dump(string file);
-	 void dump(string file, int offset, int length);
-	 void write(int address, short[] array, int length);
-	 void write(int address, short[] array, int arrayoffset, int length);
-	 void destroy();
+     void init(NES* nes);
+     void mapperInternalStateLoad(ByteBuffer* buf);
+     void mapperInternalStateSave(ByteBuffer* buf);
+     void write(int address, short value);
+     void setReg(int reg, int value);
+     int getRegNumber(int address);
+     void loadROM(ROM rom);
+     void reset();
+     void switchLowHighPrgRom(int oldSetting);
+     void switch16to32();
+     void switch32to16();
 };
 
 class Misc {
-     static bool debug = Globals::debug;
-     static float[] rnd = new float[100000];
-     static int nextRnd = 0;
+     static bool debug;
+     static float* _rnd;
+     static int nextRnd;
      static float rndret;
 
 public:
-    static {
-        for (int i = 0; i < rnd.length; i++) {
-            rnd[i] = (float) Math.random();
-        }
-    }
-
+	 static float* rnd();
      static string hex8(int i);
      static string hex16(int i);
      static string binN(int num, int N);
      static string bin8(int num);
      static string bin16(int num);
      static string binStr(long value, int bitcount);
-     static int[] resizeArray(int[] array, int newSize);
+     static int* resizeArray(int* array, int newSize);
      static string pad(string str, string padStr, int length);
      static float random();
 };
 
 class NameTable {
     string name;
-    short[] tile;
-    short[] attrib;
+    short* tile;
+    short* attrib;
     int width;
     int height;
 public:
@@ -889,17 +862,17 @@ public:
 class NES {
      AppletUI* gui;
      CPU* cpu;
-     PPU ppu;
+     PPU* ppu;
      PAPU* papu;
-     Memory cpuMem;
-     Memory ppuMem;
-     Memory sprMem;
+     Memory* cpuMem;
+     Memory* ppuMem;
+     Memory* sprMem;
      IMemoryMapper* memMapper;
-     PaletteTable palTable;
-     ROM rom;
-    int cc;
+     PaletteTable* palTable;
+     ROM* rom;
+     int cc;
      string romFile;
-    bool isRunning = false;
+    bool _isRunning;
 public:
      NES(AppletUI* gui);
      bool stateLoad(ByteBuffer* buf);
@@ -910,14 +883,14 @@ public:
      void reloadRom();
      void clearCPUMemory();
      void setGameGenieState(bool enable);
-     CPU getCpu();
-     PPU getPpu();
+     CPU* getCpu();
+     PPU* getPpu();
      PAPU* getPapu();
-     Memory getCpuMemory();
-     Memory getPpuMemory();
-     Memory getSprMemory();
-     ROM getRom();
-     UI getGui();
+     Memory* getCpuMemory();
+     Memory* getPpuMemory();
+     Memory* getSprMemory();
+     ROM* getRom();
+     AppletUI* getGui();
      IMemoryMapper* getMemoryMapper();
      bool loadRom(string file);
      void reset();
@@ -927,12 +900,13 @@ public:
 };
 
 class PaletteTable {
-     static int[] curTable = new int[64];
-     static int[] origTable = new int[64];
-     static int[][] emphTable = new int[8][64];
-    int currentEmph = -1;
+     static int curTable[64];
+     static int origTable[64];
+     static int emphTable[8][64];
+    int currentEmph;
     int currentHue, currentSaturation, currentLightness, currentContrast;
 public:
+	 PaletteTable();
      bool loadNTSCPalette();
      bool loadPALPalette();
      bool loadPalette(string file);
@@ -958,41 +932,41 @@ public:
 
  class PAPU {
     NES* nes;
-    Memory cpuMem;
-    Mixer mixer;
-    SourceDataLine line;
+    Memory* cpuMem;
+    Mixer* mixer;
+    SourceDataLine* line;
     ChannelSquare* square1;
     ChannelSquare* square2;
     ChannelTriangle* triangle;
     ChannelNoise* noise;
     ChannelDM* dmc;
-    int[] lengthLookup;
-    int[] dmcFreqLookup;
-    int[] noiseWavelengthLookup;
-    int[] square_table;
-    int[] tnd_table;
-    int[] ismpbuffer;
+    int* lengthLookup;
+    int* dmcFreqLookup;
+    int* noiseWavelengthLookup;
+    int* square_table;
+    int* tnd_table;
+    int* ismpbuffer;
     int8_t* sampleBuffer;
     int frameIrqCounter;
     int frameIrqCounterMax;
     int initCounter;
     short channelEnableValue;
     int8_t b1, b2, b3, b4;
-    int bufferSize = 2048;
+    int bufferSize;
     int bufferIndex;
-    int sampleRate = 44100;
+    int sampleRate;
     bool frameIrqEnabled;
     bool frameIrqActive;
     bool frameClockNow;
-    bool startedPlaying = false;
-    bool recordOutput = false;
-    bool stereo = true;
-    bool initingHardware = false;
-     bool userEnableSquare1 = true;
-     bool userEnableSquare2 = true;
-     bool userEnableTriangle = true;
-     bool userEnableNoise = true;
-     bool userEnableDmc = true;
+    bool startedPlaying;
+    bool recordOutput;
+    bool stereo;
+    bool initingHardware;
+     bool userEnableSquare1;
+     bool userEnableSquare2;
+     bool userEnableTriangle;
+     bool userEnableNoise;
+     bool userEnableDmc;
     int masterFrameCounter;
     int derivedFrameCounter;
     int countSequence;
@@ -1001,25 +975,25 @@ public:
     int sampleTimerMax;
     int sampleCount;
     int sampleValueL, sampleValueR;
-    int triValue = 0;
+    int triValue;
     int smpSquare1, smpSquare2, smpTriangle, smpNoise, smpDmc;
     int accCount;
     int sq_index, tnd_index;
 
     // DC removal vars:
-    int prevSampleL = 0, prevSampleR = 0;
-    int smpAccumL = 0, smpAccumR = 0;
-    int smpDiffL = 0, smpDiffR = 0;
+    int prevSampleL, prevSampleR;
+    int smpAccumL, smpAccumR;
+    int smpDiffL, smpDiffR;
 
     // DAC range:
-    int dacRange = 0;
-    int dcValue = 0;
+    int dacRange;
+    int dcValue;
 
     // Master volume:
     int masterVolume;
 
     // Panning:
-    int[] panning;
+    int* panning; 
 
     // Stereo positioning:
     int stereoPosLSquare1;
@@ -1038,7 +1012,7 @@ public:
      PAPU(NES* nes);
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
-     synchronized void start();
+     /*synchronized*/ void start();
      NES* getNes();
      short readReg(int address);
      void writeReg(int address, short value);
@@ -1055,14 +1029,14 @@ public:
      int getLengthMax(int value);
      int getDmcFrequency(int value);
      int getNoiseWaveLength(int value);
-     synchronized void setSampleRate(int rate, bool restart);
-     synchronized void setStereo(bool s, bool restart);
+     /*synchronized*/ void setSampleRate(int rate, bool restart);
+     /*synchronized*/ void setStereo(bool s, bool restart);
      int getPapuBufferSize();
      void setChannelEnabled(int channel, bool value);
-     void setPanning(int[] pos);
+     void setPanning(int* pos);
      void setMasterVolume(int value);
      void updateStereoPos();
-     SourceDataLine getLine();
+     SourceDataLine* getLine();
      bool isRunning();
      int getMillisToAvailableAbove(int target_avail);
      int getBufferPos();
@@ -1076,13 +1050,13 @@ public:
 class PPU {
      NES* nes;
      HiResTimer* timer;
-     Memory ppuMem;
-     Memory sprMem;
+     Memory* ppuMem;
+     Memory* sprMem;
     // Rendering Options:
-    bool showSpr0Hit = false;
-    bool showSoundBuffer = false;
-    bool clipTVcolumn = true;
-    bool clipTVrow = false;
+    bool showSpr0Hit;
+    bool showSoundBuffer;
+    bool clipTVcolumn;
+    bool clipTVrow;
     // Control Flags Register 1:
      int f_nmiOnVblank;    // NMI on VBlank. 0=disable, 1=enable
      int f_spriteSize;     // Sprite size. 0=8x8, 1=8x16
@@ -1098,16 +1072,16 @@ class PPU {
      int f_bgClipping;     // Background clipping. 0=BG invisible in left 8-pixel column, 1=No clipping
      int f_dispType;       // Display type. 0=color, 1=monochrome
     // Status flags:
-     int STATUS_VRAMWRITE = 4;
-     int STATUS_SLSPRITECOUNT = 5;
-     int STATUS_SPRITE0HIT = 6;
-     int STATUS_VBLANK = 7;
+     int STATUS_VRAMWRITE;
+     int STATUS_SLSPRITECOUNT;
+     int STATUS_SPRITE0HIT;
+     int STATUS_VBLANK;
     // VRAM I/O:
     int vramAddress;
     int vramTmpAddress;
     short vramBufferedReadValue;
-    bool firstWrite = true; 		// VRAM/Scroll Hi/Lo latch
-    int[] vramMirrorTable; 			// Mirroring Lookup Table.
+    bool firstWrite; 		// VRAM/Scroll Hi/Lo latch
+    int* vramMirrorTable; 			// Mirroring Lookup Table.
     int i;
 
     // SPR-RAM I/O:
@@ -1130,33 +1104,33 @@ class PPU {
     int regS;
 
     // VBlank extension for PAL emulation:
-    int vblankAdd = 0;
+    int vblankAdd;
      int curX;
      int scanline;
      int lastRenderedScanline;
      int mapperIrqCounter;
     // Sprite data:
-     int[] sprX;				// X coordinate
-     int[] sprY;				// Y coordinate
-     int[] sprTile;			// Tile Index (into pattern table)
-     int[] sprCol;			// Upper two bits of color
-     bool[] vertFlip;		// Vertical Flip
-     bool[] horiFlip;		// Horizontal Flip
-     bool[] bgPriority;	// Background priority
+     int* sprX;				// X coordinate
+     int* sprY;				// Y coordinate
+     int* sprTile;			// Tile Index (into pattern table)
+     int* sprCol;			// Upper two bits of color
+     bool* vertFlip;		// Vertical Flip
+     bool* horiFlip;		// Horizontal Flip
+     bool* bgPriority;	// Background priority
      int spr0HitX;	// Sprite #0 hit X coordinate
      int spr0HitY;	// Sprite #0 hit Y coordinate
     bool hitSpr0;
 
     // Tiles:
-     Tile[] ptTile;
+     Tile* ptTile;
     // Name table data:
-    int[] ntable1 = new int[4];
-    NameTable[] nameTable;
-    int currentMirroring = -1;
+    int ntable1[4];
+    NameTable* nameTable;
+    int currentMirroring;
 
     // Palette data:
-    int[] sprPalette = new int[16];
-    int[] imgPalette = new int[16];
+    int sprPalette[16];
+    int imgPalette[16];
     // Misc:
     bool scanlineAlreadyRendered;
     bool requestEndFrame;
@@ -1168,20 +1142,20 @@ class PPU {
     // Vars used when updating regs/address:
     int address, b1, b2;
     // Variables used when rendering:
-    int[] attrib = new int[32];
-    int[] bgbuffer = new int[256 * 240];
-    int[] pixrendered = new int[256 * 240];
-    int[] spr0dummybuffer = new int[256 * 240];
-    int[] dummyPixPriTable = new int[256 * 240];
-    int[] oldFrame = new int[256 * 240];
-    int[] buffer;
-    int[] tpix;
-    bool[] scanlineChanged = new bool[240];
-    bool requestRenderAll = false;
+    int attrib[32];
+    int bgbuffer[256 * 240];
+    int pixrendered[256 * 240];
+    int spr0dummybuffer[256 * 240];
+    int dummyPixPriTable[256 * 240];
+    int oldFrame[256 * 240];
+    int* buffer;
+    int* tpix;
+    bool scanlineChanged[240];
+    bool requestRenderAll;
     bool validTileData;
     int att;
-    Tile[] scantile = new Tile[32];
-    Tile t;
+    Tile* scantile;
+    Tile* t;
     // These are temporary variables used in rendering and sound procedures.
     // Their states outside of those procedures can be ignored.
     int curNt;
@@ -1194,7 +1168,7 @@ class PPU {
     int tscanoffset;
     int srcy1, srcy2;
     int bufferSize, available, scale;
-     int cycles = 0;
+     int cycles;
 public:
      PPU(NES* nes);
      void init();
@@ -1225,8 +1199,8 @@ public:
      short mirroredLoad(int address);
      void mirroredWrite(int address, short value);
      void triggerRendering();
-     void renderFramePartially(int[] buffer, int startScan, int scanCount);
-     void renderBgScanline(int[] buffer, int scan);
+     void renderFramePartially(int* buffer, int startScan, int scanCount);
+     void renderBgScanline(int* buffer, int scan);
      void renderSpritesPartially(int startscan, int scancount, bool bgPri);
      bool checkSprite0(int scan);
      void renderPattern();
@@ -1235,7 +1209,7 @@ public:
      void writeMem(int address, short value);
      void updatePalettes();
      void patternWrite(int address, short value);
-     void patternWrite(int address, short[] value, int offset, int length);
+     void patternWrite(int address, short* value, int offset, int length);
      void invalidateFrameCache();
      void nameTableWrite(int index, int address, short value);
      void attribTableWrite(int index, int address, short value);
@@ -1250,11 +1224,11 @@ public:
 };
 
 class Raster {
-     int[] data;
+     int* data;
      int width;
      int height;
 public:
-     Raster(int[] data, int w, int h);
+     Raster(int* data, int w, int h);
      Raster(int w, int h);
      void drawTile(Raster srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h);
 };
@@ -1269,13 +1243,13 @@ class ROM {
      static const int SINGLESCREEN_MIRRORING3 = 5;
      static const int SINGLESCREEN_MIRRORING4 = 6;
      static const int CHRROM_MIRRORING = 7;
-    bool failedSaveFile = false;
-    bool saveRamUpToDate = true;
-    short[] header;
-    short[][] rom;
-    short[][] vrom;
-    short[] saveRam;
-    Tile[][] vromTile;
+    bool failedSaveFile;
+    bool saveRamUpToDate;
+    short* header;
+    short** rom;
+    short** vrom;
+    short* saveRam;
+    Tile** vromTile;
     NES* nes;
     int romCount;
     int vromCount;
@@ -1285,142 +1259,23 @@ class ROM {
     bool fourScreen;
     int mapperType;
     string fileName;
-    RandomAccessFile raFile;
-    bool enableSave = true;
+    RandomAccessFile* raFile;
+    bool enableSave;
     bool valid;
-    static string[] mapperName;
-    static bool[] mapperSupported;
+    static string* _mapperName;
+    static bool* _mapperSupported;
 public:
-    static {
-
-        mapperName = new string[255];
-        mapperSupported = new bool[255];
-        for (int i = 0; i < 255; i++) {
-            mapperName[i] = "Unknown Mapper";
-        }
-
-        mapperName[ 0] = "NROM";
-        mapperName[ 1] = "Nintendo MMC1";
-        mapperName[ 2] = "UxROM";
-        mapperName[ 3] = "CNROM";
-        mapperName[ 4] = "Nintendo MMC3";
-        mapperName[ 5] = "Nintendo MMC5";
-        mapperName[ 6] = "FFE F4xxx";
-        mapperName[ 7] = "AxROM";
-        mapperName[ 8] = "FFE F3xxx";
-        mapperName[ 9] = "Nintendo MMC2";
-        mapperName[10] = "Nintendo MMC4";
-        mapperName[11] = "Color Dreams";
-        mapperName[12] = "FFE F6xxx";
-        mapperName[13] = "CPROM";
-        mapperName[15] = "iNES Mapper #015";
-        mapperName[16] = "Bandai";
-        mapperName[17] = "FFE F8xxx";
-        mapperName[18] = "Jaleco SS8806";
-        mapperName[19] = "Namcot 106";
-        mapperName[20] = "(Hardware) Famicom Disk System";
-        mapperName[21] = "Konami VRC4a, VRC4c";
-        mapperName[22] = "Konami VRC2a";
-        mapperName[23] = "Konami VRC2b, VRC4e, VRC4f";
-        mapperName[24] = "Konami VRC6a";
-        mapperName[25] = "Konami VRC4b, VRC4d";
-        mapperName[26] = "Konami VRC6b";
-        mapperName[32] = "Irem G-101";
-        mapperName[33] = "Taito TC0190, TC0350";
-        mapperName[34] = "BxROM, NINA-001";
-        mapperName[41] = "Caltron 6-in-1";
-        mapperName[46] = "Rumblestation 15-in-1";
-        mapperName[47] = "Nintendo MMC3 Multicart (Super Spike V'Ball + Nintendo World Cup)";
-        mapperName[48] = "iNES Mapper #048";
-        mapperName[64] = "Tengen RAMBO-1";
-        mapperName[65] = "Irem H-3001";
-        mapperName[66] = "GxROM";
-        mapperName[67] = "Sunsoft 3";
-        mapperName[68] = "Sunsoft 4";
-        mapperName[69] = "Sunsoft FME-7";
-        mapperName[70] = "iNES Mapper #070";
-        mapperName[71] = "Camerica";
-        mapperName[72] = "iNES Mapper #072";
-        mapperName[73] = "Konami VRC3";
-        mapperName[75] = "Konami VRC1";
-        mapperName[76] = "iNES Mapper #076 (Digital Devil Monogatari - Megami Tensei)";
-        mapperName[77] = "iNES Mapper #077 (Napoleon Senki)";
-        mapperName[78] = "Irem 74HC161/32";
-        mapperName[79] = "American Game Cartridges";
-        mapperName[80] = "iNES Mapper #080";
-        mapperName[82] = "iNES Mapper #082";
-        mapperName[85] = "Konami VRC7a, VRC7b";
-        mapperName[86] = "iNES Mapper #086 (Moero!! Pro Yakyuu)";
-        mapperName[87] = "iNES Mapper #087";
-        mapperName[88] = "iNES Mapper #088";
-        mapperName[89] = "iNES Mapper #087 (Mito Koumon)";
-        mapperName[92] = "iNES Mapper #092";
-        mapperName[93] = "iNES Mapper #093 (Fantasy Zone)";
-        mapperName[94] = "iNES Mapper #094 (Senjou no Ookami)";
-        mapperName[95] = "iNES Mapper #095 (Dragon Buster) [MMC3 Derived]";
-        mapperName[96] = "(Hardware) Oeka Kids Tablet";
-        mapperName[97] = "iNES Mapper #097 (Kaiketsu Yanchamaru)";
-        mapperName[105] = "NES-EVENT [MMC1 Derived]";
-        mapperName[113] = "iNES Mapper #113";
-        mapperName[115] = "iNES Mapper #115 (Yuu Yuu Hakusho Final) [MMC3 Derived]";
-        mapperName[118] = "iNES Mapper #118 [MMC3 Derived]";
-        mapperName[119] = "TQROM";
-        mapperName[140] = "iNES Mapper #140 (Bio Senshi Dan)";
-        mapperName[152] = "iNES Mapper #152";
-        mapperName[154] = "iNES Mapper #152 (Devil Man)";
-        mapperName[159] = "Bandai (Alternate of #016)";
-        mapperName[180] = "(Hardware) Crazy Climber Controller";
-        mapperName[182] = "iNES Mapper #182";
-        mapperName[184] = "iNES Mapper #184";
-        mapperName[185] = "iNES Mapper #185";
-        mapperName[207] = "iNES Mapper #185 (Fudou Myouou Den)";
-        mapperName[228] = "Active Enterprises";
-        mapperName[232] = "Camerica (Quattro series)";
-
-        // The mappers supported:
-        mapperSupported[ 0] = true; // No Mapper
-        mapperSupported[ 1] = true; // MMC1
-        mapperSupported[ 2] = true; // UNROM
-        mapperSupported[ 3] = true; // CNROM
-        mapperSupported[ 4] = true; // MMC3
-        mapperSupported[ 7] = true; // AOROM
-        mapperSupported[ 9] = true; // MMC2
-        mapperSupported[10] = true; // MMC4
-        mapperSupported[11] = true; // ColorDreams
-        mapperSupported[15] = true;
-        mapperSupported[18] = true;
-        mapperSupported[21] = true;
-        mapperSupported[22] = true;
-        mapperSupported[23] = true;
-        mapperSupported[32] = true;
-        mapperSupported[33] = true;
-        mapperSupported[34] = true; // BxROM
-        mapperSupported[48] = true;
-        mapperSupported[64] = true;
-        mapperSupported[66] = true; // GNROM
-        mapperSupported[68] = true; // SunSoft4 chip
-        mapperSupported[71] = true; // Camerica
-        mapperSupported[72] = true;
-        mapperSupported[75] = true;
-        mapperSupported[78] = true;
-        mapperSupported[79] = true;
-        mapperSupported[87] = true;
-        mapperSupported[94] = true;
-        mapperSupported[105] = true;
-        mapperSupported[140] = true;
-        mapperSupported[182] = true;
-        mapperSupported[232] = true; // Camerica /Quattro
-    }
-
      ROM(NES* nes);
+     static string* getmapperName();
+     static bool* getmapperSupported();
      void load(string fileName);
      bool isValid();
      int getRomBankCount();
      int getVromBankCount();
-     short[] getHeader();
-     short[] getRomBank(int bank);
-     short[] getVromBank(int bank);
-     Tile[] getVromBankTiles(int bank);
+     short* getHeader();
+     short* getRomBank(int bank);
+     short* getVromBank(int bank);
+     Tile* getVromBankTiles(int bank);
      int getMirroringType();
      int getMapperType();
      string getMapperName();
@@ -1430,7 +1285,7 @@ public:
      bool mapperSupported();
      IMemoryMapper* createMapper();
      void setSaveState(bool enableSave);
-     short[] getBatteryRam();
+     short* getBatteryRam();
      void loadBatteryRam();
      void writeBatteryRam(int address, short value);
      void closeRom();
@@ -1447,16 +1302,16 @@ public:
      static int si,  di,  di2,  val,  x,  y;
 
      static void setFilterParams(int darkenDepth, int brightenDepth);
-     static const void doScanlineScaling(int[] src, int[] dest, bool[] changed);
-     static const void doRasterScaling(int[] src, int[] dest, bool[] changed);
-     static const void doNormalScaling(int[] src, int[] dest, bool[] changed);
+     static const void doScanlineScaling(int* src, int* dest, bool* changed);
+     static const void doRasterScaling(int* src, int* dest, bool* changed);
+     static const void doNormalScaling(int* src, int* dest, bool* changed);
 };
 
 class MyMouseAdapter : public MouseAdapter {
-    long lastClickTime = 0;
+    long lastClickTime;
 public:
-    void mouseClicked(MouseEvent me);
-    void mousePressed(MouseEvent me);
+    void mouseClicked(MouseEvent* me);
+    void mousePressed(MouseEvent* me);
 };
 
 class ScreenView : public BufferView {
@@ -1465,14 +1320,14 @@ class ScreenView : public BufferView {
 public:
      ScreenView(NES* nes, int width, int height);
      void init();
-     void mouseReleased(MouseEvent me);
+     void mouseReleased(MouseEvent* me);
      void setNotifyImageReady(bool value);
      void imageReady(bool skipFrame);
 };
 
 class Tile {
     // Tile data:
-    int[] pix;
+    int pix[64];
     int fbIndex;
     int tIndex;
     int x, y;
@@ -1481,22 +1336,22 @@ class Tile {
     int palIndex;
     int tpri;
     int c;
-     bool initialized = false;
-     bool[] opaque = new bool[8];
+     bool initialized;
+     bool opaque[8];
 public:
      Tile();
-     void setBuffer(short[] scanline);
+     void setBuffer(short* scanline);
      void setScanline(int sline, short b1, short b2);
-     void renderSimple(int dx, int dy, int[] fBuffer, int palAdd, int[] palette);
-     void renderSmall(int dx, int dy, int[] buffer, int palAdd, int[] palette);
-     void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, int[] fBuffer, int palAdd, int[] palette, bool flipHorizontal, bool flipVertical, int pri, int[] priTable);
+     void renderSimple(int dx, int dy, int* fBuffer, int palAdd, int* palette);
+     void renderSmall(int dx, int dy, int* buffer, int palAdd, int* palette);
+     void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, int* fBuffer, int palAdd, int* palette, bool flipHorizontal, bool flipVertical, int pri, int* priTable);
      bool isTransparent(int x, int y);
      void dumpData(string file);
      void stateSave(ByteBuffer* buf);
      void stateLoad(ByteBuffer* buf);
 };
 
-class vNES : public thread {
+class vNES {
     bool scale;
     bool scanlines;
     bool sound;
@@ -1512,9 +1367,10 @@ class vNES : public thread {
     ScreenView* panelScreen;
     string rom;
     Font* progressFont;
+public:
     Color* bgColor;
     bool started;
-public:
+
     void init();
     void addScreenView();
     void start();

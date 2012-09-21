@@ -20,9 +20,145 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
      ROM::ROM(NES* nes) {
+	    this.failedSaveFile = false;
+	    this.saveRamUpToDate = true;
+	    this.enableSave = true;
+    
+    
         this.nes = nes;
         valid = false;
     }
+
+	static string* ROM::getmapperName() {
+		if(_mapperName == NULL) {
+	        _mapperName = new string[255];
+	        for (int i = 0; i < 255; i++) {
+	            _mapperName[i] = "Unknown Mapper";
+	        }
+	
+	        _mapperName[ 0] = "NROM";
+	        _mapperName[ 1] = "Nintendo MMC1";
+	        _mapperName[ 2] = "UxROM";
+	        _mapperName[ 3] = "CNROM";
+	        _mapperName[ 4] = "Nintendo MMC3";
+	        _mapperName[ 5] = "Nintendo MMC5";
+	        _mapperName[ 6] = "FFE F4xxx";
+	        _mapperName[ 7] = "AxROM";
+	        _mapperName[ 8] = "FFE F3xxx";
+	        _mapperName[ 9] = "Nintendo MMC2";
+	        _mapperName[10] = "Nintendo MMC4";
+	        _mapperName[11] = "Color Dreams";
+	        _mapperName[12] = "FFE F6xxx";
+	        _mapperName[13] = "CPROM";
+	        _mapperName[15] = "iNES Mapper #015";
+	        _mapperName[16] = "Bandai";
+	        _mapperName[17] = "FFE F8xxx";
+	        _mapperName[18] = "Jaleco SS8806";
+	        _mapperName[19] = "Namcot 106";
+	        _mapperName[20] = "(Hardware) Famicom Disk System";
+	        _mapperName[21] = "Konami VRC4a, VRC4c";
+	        _mapperName[22] = "Konami VRC2a";
+	        _mapperName[23] = "Konami VRC2b, VRC4e, VRC4f";
+	        _mapperName[24] = "Konami VRC6a";
+	        _mapperName[25] = "Konami VRC4b, VRC4d";
+	        _mapperName[26] = "Konami VRC6b";
+	        _mapperName[32] = "Irem G-101";
+	        _mapperName[33] = "Taito TC0190, TC0350";
+	        _mapperName[34] = "BxROM, NINA-001";
+	        _mapperName[41] = "Caltron 6-in-1";
+	        _mapperName[46] = "Rumblestation 15-in-1";
+	        _mapperName[47] = "Nintendo MMC3 Multicart (Super Spike V'Ball + Nintendo World Cup)";
+	        _mapperName[48] = "iNES Mapper #048";
+	        _mapperName[64] = "Tengen RAMBO-1";
+	        _mapperName[65] = "Irem H-3001";
+	        _mapperName[66] = "GxROM";
+	        _mapperName[67] = "Sunsoft 3";
+	        _mapperName[68] = "Sunsoft 4";
+	        _mapperName[69] = "Sunsoft FME-7";
+	        _mapperName[70] = "iNES Mapper #070";
+	        _mapperName[71] = "Camerica";
+	        _mapperName[72] = "iNES Mapper #072";
+	        _mapperName[73] = "Konami VRC3";
+	        _mapperName[75] = "Konami VRC1";
+	        _mapperName[76] = "iNES Mapper #076 (Digital Devil Monogatari - Megami Tensei)";
+	        _mapperName[77] = "iNES Mapper #077 (Napoleon Senki)";
+	        _mapperName[78] = "Irem 74HC161/32";
+	        _mapperName[79] = "American Game Cartridges";
+	        _mapperName[80] = "iNES Mapper #080";
+	        _mapperName[82] = "iNES Mapper #082";
+	        _mapperName[85] = "Konami VRC7a, VRC7b";
+	        _mapperName[86] = "iNES Mapper #086 (Moero!! Pro Yakyuu)";
+	        _mapperName[87] = "iNES Mapper #087";
+	        _mapperName[88] = "iNES Mapper #088";
+	        _mapperName[89] = "iNES Mapper #087 (Mito Koumon)";
+	        _mapperName[92] = "iNES Mapper #092";
+	        _mapperName[93] = "iNES Mapper #093 (Fantasy Zone)";
+	        _mapperName[94] = "iNES Mapper #094 (Senjou no Ookami)";
+	        _mapperName[95] = "iNES Mapper #095 (Dragon Buster) [MMC3 Derived]";
+	        _mapperName[96] = "(Hardware) Oeka Kids Tablet";
+	        _mapperName[97] = "iNES Mapper #097 (Kaiketsu Yanchamaru)";
+	        _mapperName[105] = "NES-EVENT [MMC1 Derived]";
+	        _mapperName[113] = "iNES Mapper #113";
+	        _mapperName[115] = "iNES Mapper #115 (Yuu Yuu Hakusho Final) [MMC3 Derived]";
+	        _mapperName[118] = "iNES Mapper #118 [MMC3 Derived]";
+	        _mapperName[119] = "TQROM";
+	        _mapperName[140] = "iNES Mapper #140 (Bio Senshi Dan)";
+	        _mapperName[152] = "iNES Mapper #152";
+	        _mapperName[154] = "iNES Mapper #152 (Devil Man)";
+	        _mapperName[159] = "Bandai (Alternate of #016)";
+	        _mapperName[180] = "(Hardware) Crazy Climber Controller";
+	        _mapperName[182] = "iNES Mapper #182";
+	        _mapperName[184] = "iNES Mapper #184";
+	        _mapperName[185] = "iNES Mapper #185";
+	        _mapperName[207] = "iNES Mapper #185 (Fudou Myouou Den)";
+	        _mapperName[228] = "Active Enterprises";
+	        _mapperName[232] = "Camerica (Quattro series)";
+		}
+				
+		return _mapperName;
+	}
+
+	static bool* ROM::getmapperSupported() {
+		if(_mapperSupported == NULL) {
+			_mapperSupported = new bool[255];
+	
+	        // The mappers supported:
+	        _mapperSupported[ 0] = true; // No Mapper
+	        _mapperSupported[ 1] = true; // MMC1
+	        _mapperSupported[ 2] = true; // UNROM
+	        _mapperSupported[ 3] = true; // CNROM
+	        _mapperSupported[ 4] = true; // MMC3
+	        _mapperSupported[ 7] = true; // AOROM
+	        _mapperSupported[ 9] = true; // MMC2
+	        _mapperSupported[10] = true; // MMC4
+	        _mapperSupported[11] = true; // ColorDreams
+	        _mapperSupported[15] = true;
+	        _mapperSupported[18] = true;
+	        _mapperSupported[21] = true;
+	        _mapperSupported[22] = true;
+	        _mapperSupported[23] = true;
+	        _mapperSupported[32] = true;
+	        _mapperSupported[33] = true;
+	        _mapperSupported[34] = true; // BxROM
+	        _mapperSupported[48] = true;
+	        _mapperSupported[64] = true;
+	        _mapperSupported[66] = true; // GNROM
+	        _mapperSupported[68] = true; // SunSoft4 chip
+	        _mapperSupported[71] = true; // Camerica
+	        _mapperSupported[72] = true;
+	        _mapperSupported[75] = true;
+	        _mapperSupported[78] = true;
+	        _mapperSupported[79] = true;
+	        _mapperSupported[87] = true;
+	        _mapperSupported[94] = true;
+	        _mapperSupported[105] = true;
+	        _mapperSupported[140] = true;
+	        _mapperSupported[182] = true;
+	        _mapperSupported[232] = true; // Camerica /Quattro
+		}     
+		
+		return _mapperSupported;
+	}
 
      void ROM::load(string fileName) {
 
@@ -202,8 +338,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      string ROM::getMapperName() {
 
-        if (mapperType >= 0 && mapperType < mapperName.length) {
-            return mapperName[mapperType];
+        if (mapperType >= 0 && mapperType < getmapperName().length) {
+            return getmapperName()[mapperType];
         }
         // else:
         return "Unknown Mapper, " + mapperType;
@@ -224,15 +360,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      bool ROM::mapperSupported() {
-        if (mapperType < mapperSupported.length && mapperType >= 0) {
-            return mapperSupported[mapperType];
+        if (mapperType < getmapperSupported().length && mapperType >= 0) {
+            return getmapperSupported()[mapperType];
         }
         return false;
     }
 
      IMemoryMapper* ROM::createMapper() {
 
-        if (mapperSupported()) {
+        if (getmapperSupported()) {
             switch (mapperType) {
 
                 case 0: {

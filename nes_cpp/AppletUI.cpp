@@ -19,17 +19,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     AppletUI::AppletUI(vNES* applet) {
 
-        timer = new HiResTimer();
-        this.applet = applet;
-        nes = new NES(this);
+        this->timer = new HiResTimer();
+        this->applet = applet;
+        this->nes = new NES(this);
     }
 
     void AppletUI::init(bool showGui) {
 
         vScreen = new ScreenView(nes, 256, 240);
-        vScreen.setBgColor(applet.bgColor.getRGB());
-        vScreen.init();
-        vScreen.setNotifyImageReady(true);
+        vScreen->setBgColor(applet->bgColor->getRGB());
+        vScreen->init();
+        vScreen->setNotifyImageReady(true);
 
         kbJoy1 = new KbInputHandler(nes, 0);
         kbJoy2 = new KbInputHandler(nes, 1);
@@ -96,7 +96,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return applet.romSize;
     }
 
-    virtual void AppletUI::showLoadProgress(int percentComplete) {
+    void AppletUI::showLoadProgress(int percentComplete) {
 
         // Show ROM load progress:
         applet.showLoadProgress(percentComplete);

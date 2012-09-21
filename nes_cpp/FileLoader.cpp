@@ -20,7 +20,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
     // Load a file.
-     short[] FileLoader::loadFile(string fileName, UI ui) {
+     short[] FileLoader::loadFile(string fileName, AppletUI* ui) {
 
         int flen;
         int8_t* tmp = new int8_t[2048];

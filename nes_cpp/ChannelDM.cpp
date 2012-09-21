@@ -20,6 +20,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     ChannelDM::ChannelDM(PAPU* papu) {
         this.papu = papu;
+        this.irqGenerated = false;
     }
 
     void ChannelDM::clockDmc() {
@@ -44,7 +45,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
 
             // Update sample value:
-            sample = isEnabled ? (deltaCounter << 1) + dacLsb : 0;
+            sample = _isEnabled ? (deltaCounter << 1) + dacLsb : 0;
 
             // Update shift register:
             data >>= 1;
@@ -175,19 +176,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     void ChannelDM::setEnabled(bool value) {
 
-        if ((!isEnabled) && value) {
+        if ((!_isEnabled) && value) {
             playLengthCounter = playLength;
         }
-        isEnabled = value;
+        _isEnabled = value;
 
     }
 
     bool ChannelDM::isEnabled() {
-        return isEnabled;
+        return _isEnabled;
     }
 
     int ChannelDM::getLengthStatus() {
-        return ((playLengthCounter == 0 || !isEnabled) ? 0 : 1);
+        return ((playLengthCounter == 0 || !_isEnabled) ? 0 : 1);
     }
 
     int ChannelDM::getIrqStatus() {
@@ -196,7 +197,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     void ChannelDM::reset() {
 
-        isEnabled = false;
+        _isEnabled = false;
         irqGenerated = false;
         playMode = MODE_NORMAL;
         dmaFrequency = 0;

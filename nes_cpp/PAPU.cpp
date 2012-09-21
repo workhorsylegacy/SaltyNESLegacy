@@ -20,6 +20,26 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
      PAPU::PAPU(NES* nes) {
+	    this.bufferSize = 2048;
+	    this.sampleRate = 44100;
+	    this.startedPlaying = false;
+	    this.recordOutput = false;
+	    this.stereo = true;
+	    this.initingHardware = false;
+	     this.userEnableSquare1 = true;
+	     this.userEnableSquare2 = true;
+	     this.userEnableTriangle = true;
+	     this.userEnableNoise = true;
+	     this.userEnableDmc = true;
+	    this.triValue = 0;
+	    this.prevSampleL = 0;
+	    this.prevSampleR = 0;
+	    this.smpAccumL = 0;
+	    this.smpAccumR = 0;
+	    this.smpDiffL = 0;
+	    this.smpDiffR = 0;
+	    this.dacRange = 0;
+	    this.dcValue = 0;
 
         this.nes = nes;
         cpuMem = nes.getCpuMemory();
@@ -66,7 +86,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // not yet.
     }
 
-     synchronized void PAPU::start() {
+     /*synchronized*/ void PAPU::start() {
 
         //System.out.println("* Starting PAPU lines.");
         if (line != NULL && line.isActive()) {
@@ -90,7 +110,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         try {
 
-            line = (SourceDataLine) AudioSystem.getLine(info);
+            line = (SourceDataLine*) AudioSystem.getLine(info);
             line.open(audioFormat);
             line.start();
 
@@ -722,7 +742,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return 0;
     }
 
-     synchronized void PAPU::setSampleRate(int rate, bool restart) {
+     /*synchronized*/ void PAPU::setSampleRate(int rate, bool restart) {
 
         bool cpuRunning = nes.isRunning();
         if (cpuRunning) {
@@ -749,7 +769,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     synchronized void PAPU::setStereo(bool s, bool restart) {
+     /*synchronized*/ void PAPU::setStereo(bool s, bool restart) {
 
         if (stereo == s) {
             return;
@@ -795,7 +815,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         updateChannelEnable(channelEnableValue);
     }
 
-     void PAPU::setPanning(int[] pos) {
+     void PAPU::setPanning(int* pos) {
 
         for (int i = 0; i < 5; i++) {
             panning[i] = pos[i];
@@ -833,7 +853,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     SourceDataLine PAPU::getLine() {
+     SourceDataLine* PAPU::getLine() {
         return line;
     }
 

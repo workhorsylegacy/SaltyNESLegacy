@@ -21,6 +21,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      ChannelNoise::ChannelNoise(PAPU* papu) {
         this.papu = papu;
         shiftReg = 1 << 14;
+        this.accValue = 0;
+        this.accCount = 1;
     }
 
      void ChannelNoise::clockLengthCounter() {
@@ -59,7 +61,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void ChannelNoise::updateSampleValue() {
-        if (isEnabled && lengthCounter > 0) {
+        if (_isEnabled && lengthCounter > 0) {
             sampleValue = randomBit * masterVolume;
         }
     }
@@ -96,7 +98,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void ChannelNoise::setEnabled(bool value) {
 
-        isEnabled = value;
+        _isEnabled = value;
         if (!value) {
             lengthCounter = 0;
         }
@@ -105,18 +107,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      bool ChannelNoise::isEnabled() {
-        return isEnabled;
+        return _isEnabled;
     }
 
      int ChannelNoise::getLengthStatus() {
-        return ((lengthCounter == 0 || !isEnabled) ? 0 : 1);
+        return ((lengthCounter == 0 || !_isEnabled) ? 0 : 1);
     }
 
      void ChannelNoise::reset() {
 
         progTimerCount = 0;
         progTimerMax = 0;
-        isEnabled = false;
+        _isEnabled = false;
         lengthCounter = 0;
         lengthCounterEnable = false;
         envDecayDisable = false;

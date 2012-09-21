@@ -19,6 +19,20 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      PPU::PPU(NES* nes) {
         this.nes = nes;
+	    this.showSpr0Hit = false;
+	    this.showSoundBuffer = false;
+	    this.clipTVcolumn = true;
+	    this.clipTVrow = false;
+	     this.STATUS_VRAMWRITE = 4;
+	     this.STATUS_SLSPRITECOUNT = 5;
+	     this.STATUS_SPRITE0HIT = 6;
+	     this.STATUS_VBLANK = 7;
+	    this.firstWrite = true;
+	    this.vblankAdd = 0;
+	    this.currentMirroring = -1;
+	    this.requestRenderAll = false;
+	    this.scantile = new Tile[32];
+	     this.cycles = 0;
     }
 
      void PPU::init() {
@@ -718,7 +732,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // into Sprite RAM.
      void PPU::sramDMA(short value) {
 
-        Memory cpuMem = nes.getCpuMemory();
+        Memory* cpuMem = nes.getCpuMemory();
         int baseAddress = value * 0x100;
         short data;
         for (int i = sramAddress; i < 256; i++) {
@@ -887,7 +901,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void PPU::renderFramePartially(int[] buffer, int startScan, int scanCount) {
+     void PPU::renderFramePartially(int* buffer, int startScan, int scanCount) {
 
         if (f_spVisibility == 1 && !Globals::disableSprites) {
             renderSpritesPartially(startScan, scanCount, true);
@@ -939,7 +953,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void PPU::renderBgScanline(int[] buffer, int scan) {
+     void PPU::renderBgScanline(int* buffer, int scan) {
 
         baseTile = (regS == 0 ? 0 : 256);
         destIndex = (scan << 8) - regFH;
@@ -1261,7 +1275,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // pattern table into an image.
      void PPU::renderPattern() {
 
-        BufferView scr = nes.getGui().getPatternView();
+        BufferView* scr = nes.getGui().getPatternView();
         int[] buffer = scr.getBuffer();
 
         int tIndex = 0;
@@ -1448,7 +1462,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     void PPU::patternWrite(int address, short[] value, int offset, int length) {
+     void PPU::patternWrite(int address, short* value, int offset, int length) {
 
         int tileIndex;
         int leftOver;
