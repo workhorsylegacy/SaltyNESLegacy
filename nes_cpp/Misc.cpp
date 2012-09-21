@@ -17,21 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class Misc {
-public:
-     static bool debug = Globals::debug;
-     static float[] rnd = new float[100000];
-     static int nextRnd = 0;
-     static float rndret;
-
-
-    static {
-        for (int i = 0; i < rnd.length; i++) {
-            rnd[i] = (float) Math.random();
-        }
-    }
-
-     static string hex8(int i) {
+     static string Misc::hex8(int i) {
         string s = Integer.toHexString(i);
         while (s.length() < 2) {
             s = "0" + s;
@@ -39,7 +25,7 @@ public:
         return s.toUpperCase();
     }
 
-     static string hex16(int i) {
+     static string Misc::hex16(int i) {
         string s = Integer.toHexString(i);
         while (s.length() < 4) {
             s = "0" + s;
@@ -47,7 +33,7 @@ public:
         return s.toUpperCase();
     }
 
-     static string binN(int num, int N) {
+     static string Misc::binN(int num, int N) {
         char[] c = new char[N];
         for (int i = 0; i < N; i++) {
             c[N - i - 1] = (num & 0x1) == 1 ? '1' : '0';
@@ -56,15 +42,15 @@ public:
         return new string(c);
     }
 
-     static string bin8(int num) {
+     static string Misc::bin8(int num) {
         return binN(num, 8);
     }
 
-     static string bin16(int num) {
+     static string Misc::bin16(int num) {
         return binN(num, 16);
     }
 
-     static string binStr(long value, int bitcount) {
+     static string Misc::binStr(long value, int bitcount) {
         string ret = "";
         for (int i = 0; i < bitcount; i++) {
             ret = ((value & (1 << i)) != 0 ? "1" : "0") + ret;
@@ -72,7 +58,7 @@ public:
         return ret;
     }
 
-     static int[] resizeArray(int[] array, int newSize) {
+     static int[] Misc::resizeArray(int[] array, int newSize) {
 
         int[] newArr = new int[newSize];
         System.arraycopy(array, 0, newArr, 0, Math.min(newSize, array.length));
@@ -80,14 +66,14 @@ public:
 
     }
 
-     static string pad(string str, string padStr, int length) {
+     static string Misc::pad(string str, string padStr, int length) {
         while (str.length() < length) {
             str += padStr;
         }
         return str;
     }
 
-     static float random() {
+     static float Misc::random() {
         rndret = rnd[nextRnd];
         nextRnd++;
         if (nextRnd >= rnd.length) {
@@ -95,4 +81,3 @@ public:
         }
         return rndret;
     }
-};

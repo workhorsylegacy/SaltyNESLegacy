@@ -17,26 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class MapperDefault : public IMemoryMapper {
-public:
-     NES* nes;
-     Memory cpuMem;
-     Memory ppuMem;
-     short[] cpuMemArray;
-     ROM rom;
-     CPU* cpu;
-     PPU ppu;
-     int cpuMemSize;
-     int joy1StrobeState;
-     int joy2StrobeState;
-     int joypadLastWrite;
-     bool mousePressed;
-     bool gameGenieActive;
-     int mouseX;
-     int mouseY;
-    int tmp;
-
-     void init(NES* nes) {
+     void MapperDefault::init(NES* nes) {
 
         this.nes = nes;
         this.cpuMem = nes.getCpuMemory();
@@ -51,7 +32,7 @@ public:
 
     }
 
-     void stateLoad(ByteBuffer* buf) {
+     void MapperDefault::stateLoad(ByteBuffer* buf) {
 
         // Check version:
         if (buf.readByte() == 1) {
@@ -68,7 +49,7 @@ public:
 
     }
 
-     void stateSave(ByteBuffer* buf) {
+     void MapperDefault::stateSave(ByteBuffer* buf) {
 
         // Version:
         buf.putByte((short) 1);
@@ -83,7 +64,7 @@ public:
 
     }
 
-     void mapperInternalStateLoad(ByteBuffer* buf) {
+     void MapperDefault::mapperInternalStateLoad(ByteBuffer* buf) {
 
         buf.putByte((short) joy1StrobeState);
         buf.putByte((short) joy2StrobeState);
@@ -91,7 +72,7 @@ public:
 
     }
 
-     void mapperInternalStateSave(ByteBuffer* buf) {
+     void MapperDefault::mapperInternalStateSave(ByteBuffer* buf) {
 
         joy1StrobeState = buf.readByte();
         joy2StrobeState = buf.readByte();
@@ -99,15 +80,15 @@ public:
 
     }
 
-     void setGameGenieState(bool enable) {
+     void MapperDefault::setGameGenieState(bool enable) {
         gameGenieActive = enable;
     }
 
-     bool getGameGenieState() {
+     bool MapperDefault::getGameGenieState() {
         return gameGenieActive;
     }
 
-     void write(int address, short value) {
+     void MapperDefault::write(int address, short value) {
 
         if (address < 0x2000) {
 
@@ -138,7 +119,7 @@ public:
 
     }
 
-     void writelow(int address, short value) {
+     void MapperDefault::writelow(int address, short value) {
 
         if (address < 0x2000) {
             // Mirroring of RAM:
@@ -156,7 +137,7 @@ public:
 
     }
 
-     short load(int address) {
+     short MapperDefault::load(int address) {
 
         // Wrap around:
         address &= 0xFFFF;
@@ -181,7 +162,7 @@ public:
 
     }
 
-     short regLoad(int address) {
+     short MapperDefault::regLoad(int address) {
 
         switch (address >> 12) { // use fourth nibble (0xF000)
 
@@ -321,7 +302,7 @@ public:
 
     }
 
-     void regWrite(int address, short value) {
+     void MapperDefault::regWrite(int address, short value) {
 
         switch (address) {
             case 0x2000: {
@@ -424,35 +405,35 @@ public:
 
     }
 
-     short joy1Read() {
+     short MapperDefault::joy1Read() {
 
-        IInputHandler* in = nes.getGui().getJoy1();
+        KbInputHandler* in = nes.getGui().getJoy1();
         short ret;
 
         switch (joy1StrobeState) {
             case 0:
-                ret = in.getKeyState(IInputHandler.KEY_A);
+                ret = in.getKeyState(KbInputHandler.KEY_A);
                 break;
             case 1:
-                ret = in.getKeyState(IInputHandler.KEY_B);
+                ret = in.getKeyState(KbInputHandler.KEY_B);
                 break;
             case 2:
-                ret = in.getKeyState(IInputHandler.KEY_SELECT);
+                ret = in.getKeyState(KbInputHandler.KEY_SELECT);
                 break;
             case 3:
-                ret = in.getKeyState(IInputHandler.KEY_START);
+                ret = in.getKeyState(KbInputHandler.KEY_START);
                 break;
             case 4:
-                ret = in.getKeyState(IInputHandler.KEY_UP);
+                ret = in.getKeyState(KbInputHandler.KEY_UP);
                 break;
             case 5:
-                ret = in.getKeyState(IInputHandler.KEY_DOWN);
+                ret = in.getKeyState(KbInputHandler.KEY_DOWN);
                 break;
             case 6:
-                ret = in.getKeyState(IInputHandler.KEY_LEFT);
+                ret = in.getKeyState(KbInputHandler.KEY_LEFT);
                 break;
             case 7:
-                ret = in.getKeyState(IInputHandler.KEY_RIGHT);
+                ret = in.getKeyState(KbInputHandler.KEY_RIGHT);
                 break;
             case 8:
             case 9:
@@ -483,8 +464,8 @@ public:
 
     }
 
-     short joy2Read() {
-        IInputHandler* in = nes.getGui().getJoy2();
+     short MapperDefault::joy2Read() {
+        KbInputHandler* in = nes.getGui().getJoy2();
         int st = joy2StrobeState;
 
         joy2StrobeState++;
@@ -493,21 +474,21 @@ public:
         }
 
         if (st == 0) {
-            return in.getKeyState(IInputHandler.KEY_A);
+            return in.getKeyState(KbInputHandler.KEY_A);
         } else if (st == 1) {
-            return in.getKeyState(IInputHandler.KEY_B);
+            return in.getKeyState(KbInputHandler.KEY_B);
         } else if (st == 2) {
-            return in.getKeyState(IInputHandler.KEY_SELECT);
+            return in.getKeyState(KbInputHandler.KEY_SELECT);
         } else if (st == 3) {
-            return in.getKeyState(IInputHandler.KEY_START);
+            return in.getKeyState(KbInputHandler.KEY_START);
         } else if (st == 4) {
-            return in.getKeyState(IInputHandler.KEY_UP);
+            return in.getKeyState(KbInputHandler.KEY_UP);
         } else if (st == 5) {
-            return in.getKeyState(IInputHandler.KEY_DOWN);
+            return in.getKeyState(KbInputHandler.KEY_DOWN);
         } else if (st == 6) {
-            return in.getKeyState(IInputHandler.KEY_LEFT);
+            return in.getKeyState(KbInputHandler.KEY_LEFT);
         } else if (st == 7) {
-            return in.getKeyState(IInputHandler.KEY_RIGHT);
+            return in.getKeyState(KbInputHandler.KEY_RIGHT);
         } else if (st == 16) {
             return (short) 0;
         } else if (st == 17) {
@@ -521,7 +502,7 @@ public:
         }
     }
 
-     void loadROM(ROM rom) {
+     void MapperDefault::loadROM(ROM rom) {
 
         if (!rom.isValid() || rom.getRomBankCount() < 1) {
             //System.out.println("NoMapper: Invalid ROM! Unable to load.");
@@ -543,7 +524,7 @@ public:
 
     }
 
-    void loadPRGROM() {
+    void MapperDefault::loadPRGROM() {
 
         if (rom.getRomBankCount() > 1) {
             // Load the two first banks into memory.
@@ -557,7 +538,7 @@ public:
 
     }
 
-    void loadCHRROM() {
+    void MapperDefault::loadCHRROM() {
 
         ////System.out.println("Loading CHR ROM..");
 
@@ -575,7 +556,7 @@ public:
 
     }
 
-     void loadBatteryRam() {
+     void MapperDefault::loadBatteryRam() {
 
         if (rom.batteryRam) {
 
@@ -591,7 +572,7 @@ public:
 
     }
 
-    void loadRomBank(int bank, int address) {
+    void MapperDefault::loadRomBank(int bank, int address) {
 
         // Loads a ROM bank into the specified address.
         bank %= rom.getRomBankCount();
@@ -601,7 +582,7 @@ public:
 
     }
 
-    void loadVromBank(int bank, int address) {
+    void MapperDefault::loadVromBank(int bank, int address) {
 
         if (rom.getVromBankCount() == 0) {
             return;
@@ -615,14 +596,14 @@ public:
 
     }
 
-    void load32kRomBank(int bank, int address) {
+    void MapperDefault::load32kRomBank(int bank, int address) {
 
         loadRomBank((bank * 2) % rom.getRomBankCount(), address);
         loadRomBank((bank * 2 + 1) % rom.getRomBankCount(), address + 16384);
 
     }
 
-    void load8kVromBank(int bank4kStart, int address) {
+    void MapperDefault::load8kVromBank(int bank4kStart, int address) {
 
         if (rom.getVromBankCount() == 0) {
             return;
@@ -634,7 +615,7 @@ public:
 
     }
 
-    void load1kVromBank(int bank1k, int address) {
+    void MapperDefault::load1kVromBank(int bank1k, int address) {
 
         if (rom.getVromBankCount() == 0) {
             return;
@@ -654,7 +635,7 @@ public:
 
     }
 
-    void load2kVromBank(int bank2k, int address) {
+    void MapperDefault::load2kVromBank(int bank2k, int address) {
 
         if (rom.getVromBankCount() == 0) {
             return;
@@ -674,7 +655,7 @@ public:
 
     }
 
-    void load8kRomBank(int bank8k, int address) {
+    void MapperDefault::load8kRomBank(int bank8k, int address) {
 
         int bank16k = (bank8k / 2) % rom.getRomBankCount();
         int offset = (bank8k % 2) * 8192;
@@ -684,23 +665,23 @@ public:
 
     }
 
-     void clockIrqCounter() {
+     void MapperDefault::clockIrqCounter() {
         // Does nothing. This is used by the MMC3 mapper.
     }
 
-     void latchAccess(int address) {
+     void MapperDefault::latchAccess(int address) {
         // Does nothing. This is used by MMC2.
     }
 
-     int syncV() {
+     int MapperDefault::syncV() {
         return 0;
     }
 
-     int syncH(int scanline) {
+     int MapperDefault::syncH(int scanline) {
         return 0;
     }
 
-     void setMouseState(bool pressed, int x, int y) {
+     void MapperDefault::setMouseState(bool pressed, int x, int y) {
 
         mousePressed = pressed;
         mouseX = x;
@@ -708,7 +689,7 @@ public:
 
     }
 
-     void reset() {
+     void MapperDefault::reset() {
 
         joy1StrobeState = 0;
         joy2StrobeState = 0;
@@ -717,7 +698,7 @@ public:
 
     }
 
-     void destroy() {
+     void MapperDefault::destroy() {
 
         nes = NULL;
         cpuMem = NULL;
@@ -727,4 +708,3 @@ public:
         ppu = NULL;
 
     }
-};

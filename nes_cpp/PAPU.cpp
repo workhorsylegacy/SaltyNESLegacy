@@ -19,87 +19,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
- class PAPU {
-public:
-    NES* nes;
-    Memory cpuMem;
-    Mixer mixer;
-    SourceDataLine line;
-    ChannelSquare* square1;
-    ChannelSquare* square2;
-    ChannelTriangle* triangle;
-    ChannelNoise* noise;
-    ChannelDM* dmc;
-    int[] lengthLookup;
-    int[] dmcFreqLookup;
-    int[] noiseWavelengthLookup;
-    int[] square_table;
-    int[] tnd_table;
-    int[] ismpbuffer;
-    int8_t* sampleBuffer;
-    int frameIrqCounter;
-    int frameIrqCounterMax;
-    int initCounter;
-    short channelEnableValue;
-    int8_t b1, b2, b3, b4;
-    int bufferSize = 2048;
-    int bufferIndex;
-    int sampleRate = 44100;
-    bool frameIrqEnabled;
-    bool frameIrqActive;
-    bool frameClockNow;
-    bool startedPlaying = false;
-    bool recordOutput = false;
-    bool stereo = true;
-    bool initingHardware = false;
-     bool userEnableSquare1 = true;
-     bool userEnableSquare2 = true;
-     bool userEnableTriangle = true;
-     bool userEnableNoise = true;
-     bool userEnableDmc = true;
-    int masterFrameCounter;
-    int derivedFrameCounter;
-    int countSequence;
-    int sampleTimer;
-    int frameTime;
-    int sampleTimerMax;
-    int sampleCount;
-    int sampleValueL, sampleValueR;
-    int triValue = 0;
-    int smpSquare1, smpSquare2, smpTriangle, smpNoise, smpDmc;
-    int accCount;
-    int sq_index, tnd_index;
-
-    // DC removal vars:
-    int prevSampleL = 0, prevSampleR = 0;
-    int smpAccumL = 0, smpAccumR = 0;
-    int smpDiffL = 0, smpDiffR = 0;
-
-    // DAC range:
-    int dacRange = 0;
-    int dcValue = 0;
-
-    // Master volume:
-    int masterVolume;
-
-    // Panning:
-    int[] panning;
-
-    // Stereo positioning:
-    int stereoPosLSquare1;
-    int stereoPosLSquare2;
-    int stereoPosLTriangle;
-    int stereoPosLNoise;
-    int stereoPosLDMC;
-    int stereoPosRSquare1;
-    int stereoPosRSquare2;
-    int stereoPosRTriangle;
-    int stereoPosRNoise;
-    int stereoPosRDMC;
-    int extraCycles;
-    int maxCycles;
-
-     PAPU(NES* nes) {
+     PAPU::PAPU(NES* nes) {
 
         this.nes = nes;
         cpuMem = nes.getCpuMemory();
@@ -138,15 +58,15 @@ public:
 
     }
 
-     void stateLoad(ByteBuffer* buf) {
+     void PAPU::stateLoad(ByteBuffer* buf) {
         // not yet.
     }
 
-     void stateSave(ByteBuffer* buf) {
+     void PAPU::stateSave(ByteBuffer* buf) {
         // not yet.
     }
 
-     synchronized void start() {
+     synchronized void PAPU::start() {
 
         //System.out.println("* Starting PAPU lines.");
         if (line != NULL && line.isActive()) {
@@ -180,11 +100,11 @@ public:
 
     }
 
-     NES* getNes() {
+     NES* PAPU::getNes() {
         return nes;
     }
 
-     short readReg(int address) {
+     short PAPU::readReg(int address) {
 
         // Read 0x4015:
         int tmp = 0;
@@ -204,7 +124,7 @@ public:
 
     }
 
-     void writeReg(int address, short value) {
+     void PAPU::writeReg(int address, short value) {
 
         if (address >= 0x4000 && address < 0x4004) {
 
@@ -294,7 +214,7 @@ public:
         }
     }
 
-     void resetCounter() {
+     void PAPU::resetCounter() {
 
         if (countSequence == 0) {
             derivedFrameCounter = 4;
@@ -310,7 +230,7 @@ public:
     // channel enable register (0x4015),
     // and when the user enables/disables channels
     // in the GUI.
-     void updateChannelEnable(int value) {
+     void PAPU::updateChannelEnable(int value) {
 
         channelEnableValue = (short) value;
         square1.setEnabled(userEnableSquare1 && (value & 1) != 0);
@@ -325,7 +245,7 @@ public:
     // twice the cpu speed, so the cycles will be
     // divided by 2 for those counters that are
     // clocked at cpu speed.
-     void clockFrameCounter(int nCycles) {
+     void PAPU::clockFrameCounter(int nCycles) {
 
         if (initCounter > 0) {
             if (initingHardware) {
@@ -496,7 +416,7 @@ public:
 
     }
 
-     void accSample(int cycles) {
+     void PAPU::accSample(int cycles) {
 
         // Special treatment for triangle channel - need to interpolate.
         if (triangle.sampleCondition) {
@@ -544,7 +464,7 @@ public:
 
     }
 
-     void frameCounterTick() {
+     void PAPU::frameCounterTick() {
 
         derivedFrameCounter++;
         if (derivedFrameCounter >= frameIrqCounterMax) {
@@ -588,7 +508,7 @@ public:
 
     // Samples the channels, mixes the output together,
     // writes to buffer and (if enabled) file.
-     void sample() {
+     void PAPU::sample() {
 
         if (accCount > 0) {
 
@@ -706,7 +626,7 @@ public:
 
 
     // Writes the sound buffer to the output line:
-     void writeBuffer() {
+     void PAPU::writeBuffer() {
 
         if (line == NULL) {
             return;
@@ -718,7 +638,7 @@ public:
 
     }
 
-     void stop() {
+     void PAPU::stop() {
 
         if (line == NULL) {
             // No line to close. Probably lack of sound card.
@@ -734,11 +654,11 @@ public:
 
     }
 
-     int getSampleRate() {
+     int PAPU::getSampleRate() {
         return sampleRate;
     }
 
-     void reset() {
+     void PAPU::reset() {
 
         setSampleRate(sampleRate, false);
         updateChannelEnable(0);
@@ -784,25 +704,25 @@ public:
 
     }
 
-     int getLengthMax(int value) {
+     int PAPU::getLengthMax(int value) {
         return lengthLookup[value >> 3];
     }
 
-     int getDmcFrequency(int value) {
+     int PAPU::getDmcFrequency(int value) {
         if (value >= 0 && value < 0x10) {
             return dmcFreqLookup[value];
         }
         return 0;
     }
 
-     int getNoiseWaveLength(int value) {
+     int PAPU::getNoiseWaveLength(int value) {
         if (value >= 0 && value < 0x10) {
             return noiseWavelengthLookup[value];
         }
         return 0;
     }
 
-     synchronized void setSampleRate(int rate, bool restart) {
+     synchronized void PAPU::setSampleRate(int rate, bool restart) {
 
         bool cpuRunning = nes.isRunning();
         if (cpuRunning) {
@@ -829,7 +749,7 @@ public:
 
     }
 
-     synchronized void setStereo(bool s, bool restart) {
+     synchronized void PAPU::setStereo(bool s, bool restart) {
 
         if (stereo == s) {
             return;
@@ -856,11 +776,11 @@ public:
 
     }
 
-     int getPapuBufferSize() {
+     int gPAPU::etPapuBufferSize() {
         return sampleBuffer.length;
     }
 
-     void setChannelEnabled(int channel, bool value) {
+     void PAPU::setChannelEnabled(int channel, bool value) {
         if (channel == 0) {
             userEnableSquare1 = value;
         } else if (channel == 1) {
@@ -875,7 +795,7 @@ public:
         updateChannelEnable(channelEnableValue);
     }
 
-     void setPanning(int[] pos) {
+     void PAPU::setPanning(int[] pos) {
 
         for (int i = 0; i < 5; i++) {
             panning[i] = pos[i];
@@ -884,7 +804,7 @@ public:
 
     }
 
-     void setMasterVolume(int value) {
+     void PAPU::setMasterVolume(int value) {
 
         if (value < 0) {
             value = 0;
@@ -897,7 +817,7 @@ public:
 
     }
 
-     void updateStereoPos() {
+     void PAPU::updateStereoPos() {
 
         stereoPosLSquare1 = (panning[0] * masterVolume) >> 8;
         stereoPosLSquare2 = (panning[1] * masterVolume) >> 8;
@@ -913,15 +833,15 @@ public:
 
     }
 
-     SourceDataLine getLine() {
+     SourceDataLine PAPU::getLine() {
         return line;
     }
 
-     bool isRunning() {
+     bool PAPU::isRunning() {
         return (line != NULL && line.isActive());
     }
 
-     int getMillisToAvailableAbove(int target_avail) {
+     int PAPU::getMillisToAvailableAbove(int target_avail) {
 
         double time;
         int cur_avail;
@@ -936,11 +856,11 @@ public:
 
     }
 
-     int getBufferPos() {
+     int PAPU::getBufferPos() {
         return bufferIndex;
     }
 
-     void initLengthLookup() {
+     void PAPU::initLengthLookup() {
 
         lengthLookup = new int[]{
                     0x0A, 0xFE,
@@ -963,7 +883,7 @@ public:
 
     }
 
-     void initDmcFrequencyLookup() {
+     void PAPU::initDmcFrequencyLookup() {
 
         dmcFreqLookup = new int[16];
 
@@ -987,7 +907,7 @@ public:
 
     }
 
-     void initNoiseWavelengthLookup() {
+     void PAPU::initNoiseWavelengthLookup() {
 
         noiseWavelengthLookup = new int[16];
 
@@ -1010,7 +930,7 @@ public:
 
     }
 
-     void initDACtables() {
+     void PAPU::initDACtables() {
 
         square_table = new int[32 * 16];
         tnd_table = new int[204 * 16];
@@ -1054,7 +974,7 @@ public:
 
     }
 
-     void destroy() {
+     void PAPU::destroy() {
 
         nes = NULL;
         cpuMem = NULL;
@@ -1086,4 +1006,3 @@ public:
         line = NULL;
 
     }
-};

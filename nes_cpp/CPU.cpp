@@ -23,60 +23,13 @@ instructions and invokes emulation of the PPU and pAPU.
 
 #include "Globals.h"
 
-class CPU : public Runnable {
-public:
-
-	// Thread:
-	Thread myThread;
-
-	// References to other parts of NES :
-	 NES* nes;
-	 IMemoryMapper* mmap;
-	 short[] mem;
-
-	// CPU Registers:
-	 int REG_ACC_NEW;
-	 int REG_X_NEW;
-	 int REG_Y_NEW;
-	 int REG_STATUS_NEW;
-	 int REG_PC_NEW;
-	 int REG_SP;
-
-	// Status flags:
-	 int F_CARRY_NEW;
-	 int F_ZERO_NEW;
-	 int F_INTERRUPT_NEW;
-	 int F_DECIMAL_NEW;
-	 int F_BRK_NEW;
-	 int F_NOTUSED_NEW;
-	 int F_OVERFLOW_NEW;
-	 int F_SIGN_NEW;
-
-	// IRQ Types:
-	 static const int IRQ_NORMAL = 0;
-	 static const int IRQ_NMI    = 1;
-	 static const int IRQ_RESET  = 2;
-
-	// Interrupt notification:
-	 bool irqRequested;
-	 int irqType;
-
-	// Op/Inst Data:
-	 int[] opdata;
-
-	// Misc vars:
-	 int cyclesToHalt;
-	 bool stopRunning;
-	 bool crash;
-
-
 	// Constructor:
-	 CPU(NES* nes){
+	 CPU::CPU(NES* nes){
 		this.nes = nes;
 	}
 
 	// Initialize:
-	 void init(){
+	 void CPU::init(){
 
 		// Get Op data:
 		opdata = CpuInfo.getOpData();
@@ -95,7 +48,7 @@ public:
 
 	}
 
-	 void stateLoad(ByteBuffer* buf){
+	 void CPU::stateLoad(ByteBuffer* buf){
 
 		if(buf.readByte()==1){
 			// Version 1
@@ -115,7 +68,7 @@ public:
 
 	}
 
-	 void stateSave(ByteBuffer* buf){
+	 void CPU::stateSave(ByteBuffer* buf){
 
 		// Save info version:
 		buf.putByte((short)1);
@@ -133,7 +86,7 @@ public:
 
 	}
 
-	 void reset(){
+	 void CPU::reset(){
 
 		REG_ACC_NEW = 0;
 		REG_X_NEW = 0;
@@ -171,7 +124,7 @@ public:
 
 	}
 
-	 synchronized void beginExecution(){
+	 synchronized void CPU::beginExecution(){
 
 		if(myThread!=NULL && myThread.isAlive()){
 			endExecution();
@@ -183,7 +136,7 @@ public:
 
 	}
 
-	 synchronized void endExecution(){
+	 synchronized void CPU::endExecution(){
 		//System.out.println("* Attempting to stop CPU thread.");
 		if(myThread!=NULL && myThread.isAlive()){
 			try{
@@ -199,21 +152,21 @@ public:
 		}
 	}
 
-	 bool isRunning(){
+	 bool CPU::isRunning(){
 		return (myThread!=NULL && myThread.isAlive());
 	}
 
-	 void run(){
+	 void CPU::run(){
 		initRun();
 		emulate();
 	}
 
-	 synchronized void initRun(){
+	 synchronized void CPU::initRun(){
 		stopRunning = false;
 	}
 
 	// Emulates cpu instructions until stopped.
-	 void emulate(){
+	 void CPU::emulate(){
 
 
 		// NES Memory
@@ -225,7 +178,7 @@ public:
 		// References to other parts of NES:
 		IMemoryMapper* mmap = nes.memMapper;
 		PPU 		 ppu  = nes.ppu;
-		PAPU 		 papu = nes.papu;
+		PAPU* 		 papu = nes.papu;
 
 
 		// Registers:
@@ -1310,11 +1263,11 @@ public:
 
 	}
 
-	 int load(int addr){
+	 int CPU::load(int addr){
 		return addr<0x2000 ? mem[addr&0x7FF] : mmap.load(addr);
 	}
 	
-	 int load16bit(int addr){
+	 int CPU::load16bit(int addr){
 		return addr<0x1FFF ?
 			mem[addr&0x7FF] | (mem[(addr+1)&0x7FF]<<8)
 			:
@@ -1322,7 +1275,7 @@ public:
 			;
 	}
 	
-	 void write(int addr, short val){
+	 void CPU::write(int addr, short val){
 		if(addr < 0x2000){
 			mem[addr&0x7FF] = val;
 		}else{
@@ -1330,7 +1283,7 @@ public:
 		}
 	}
 
-	 void requestIrq(int type){
+	 void CPU::requestIrq(int type){
 		if(irqRequested){
 			if(type == IRQ_NORMAL){
 				return;
@@ -1341,31 +1294,31 @@ public:
 		irqType = type;
 	}
 
-	 void push(int value){
+	 void CPU::push(int value){
 		mmap.write(REG_SP,(short)value);
 		REG_SP--;
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 	}
 
-	 void stackWrap(){
+	 void CPU::stackWrap(){
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 	}
 
-	 short pull(){
+	 short CPU::pull(){
 		REG_SP++;
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 		return mmap.load(REG_SP);
 	}
 
-	 bool pageCrossed(int addr1, int addr2){
+	 bool CPU::pageCrossed(int addr1, int addr2){
 		return ((addr1&0xFF00)!=(addr2&0xFF00));
 	}
 
-	 void haltCycles(int cycles){
+	 void CPU::haltCycles(int cycles){
 		cyclesToHalt += cycles;
 	}
 
-	 void doNonMaskableInterrupt(int status){
+	 void CPU::doNonMaskableInterrupt(int status){
 
 		int temp = mmap.load(0x2000); // Read PPU status.
 		if((temp&128)!=0){ // Check whether VBlank Interrupts are enabled
@@ -1384,14 +1337,14 @@ public:
 
 	}
 
-	 void doResetInterrupt(){
+	 void CPU::doResetInterrupt(){
 
 		REG_PC_NEW = mmap.load(0xFFFC) | (mmap.load(0xFFFD) << 8);
 		REG_PC_NEW--;
 
 	}
 
-	 void doIrq(int status){
+	 void CPU::doIrq(int status){
 
 		REG_PC_NEW++;
 		push((REG_PC_NEW>>8)&0xFF);
@@ -1405,11 +1358,11 @@ public:
 
 	}
 
-	 int getStatus(){
+	 int CPU::getStatus(){
 		return (F_CARRY_NEW)|(F_ZERO_NEW<<1)|(F_INTERRUPT_NEW<<2)|(F_DECIMAL_NEW<<3)|(F_BRK_NEW<<4)|(F_NOTUSED_NEW<<5)|(F_OVERFLOW_NEW<<6)|(F_SIGN_NEW<<7);
 	}
 
-	 void setStatus(int st){
+	 void CPU::setStatus(int st){
 		F_CARRY_NEW     = (st   )&1;
 		F_ZERO_NEW      = (st>>1)&1;
 		F_INTERRUPT_NEW = (st>>2)&1;
@@ -1420,17 +1373,17 @@ public:
 		F_SIGN_NEW      = (st>>7)&1;
 	}
 
-	 void setCrashed(bool value){
+	 void CPU::setCrashed(bool value){
 		this.crash = value;
 	}
 
-	 void setMapper(IMemoryMapper* mapper){
+	 void CPU::setMapper(IMemoryMapper* mapper){
 		mmap = mapper;
 	}
 
-	 void destroy(){
+	 void CPU::destroy(){
 		nes 	= NULL;
 		mmap 	= NULL;
     }
 
-};
+

@@ -19,29 +19,22 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
-class KbInputHandler : public KeyListener,  IInputHandler {
-public:
-    bool[] allKeysState;
-    int[] keyMapping;
-    int id;
-    NES* nes;
-
-     KbInputHandler(NES* nes, int id) {
+     KbInputHandler::KbInputHandler(NES* nes, int id) {
         this.nes = nes;
         this.id = id;
         allKeysState = new bool[255];
-        keyMapping = new int[IInputHandler.NUM_KEYS];
+        keyMapping = new int[KbInputHandler.NUM_KEYS];
     }
 
-     short getKeyState(int padKey) {
+     short KbInputHandler::getKeyState(int padKey) {
         return (short) (allKeysState[keyMapping[padKey]] ? 0x41 : 0x40);
     }
 
-     void mapKey(int padKey, int kbKeycode) {
+     void KbInputHandler::mapKey(int padKey, int kbKeycode) {
         keyMapping[padKey] = kbKeycode;
     }
 
-     void keyPressed(KeyEvent ke) {
+     void KbInputHandler::keyPressed(KeyEvent ke) {
 
         int kc = ke.getKeyCode();
         if (kc >= allKeysState.length) {
@@ -51,18 +44,18 @@ public:
         allKeysState[kc] = true;
 
         // Can't hold both left & right or up & down at same time:
-        if (kc == keyMapping[IInputHandler.KEY_LEFT]) {
-            allKeysState[keyMapping[IInputHandler.KEY_RIGHT]] = false;
-        } else if (kc == keyMapping[IInputHandler.KEY_RIGHT]) {
-            allKeysState[keyMapping[IInputHandler.KEY_LEFT]] = false;
-        } else if (kc == keyMapping[IInputHandler.KEY_UP]) {
-            allKeysState[keyMapping[IInputHandler.KEY_DOWN]] = false;
-        } else if (kc == keyMapping[IInputHandler.KEY_DOWN]) {
-            allKeysState[keyMapping[IInputHandler.KEY_UP]] = false;
+        if (kc == keyMapping[KbInputHandler.KEY_LEFT]) {
+            allKeysState[keyMapping[KbInputHandler.KEY_RIGHT]] = false;
+        } else if (kc == keyMapping[KbInputHandler.KEY_RIGHT]) {
+            allKeysState[keyMapping[KbInputHandler.KEY_LEFT]] = false;
+        } else if (kc == keyMapping[KbInputHandler.KEY_UP]) {
+            allKeysState[keyMapping[KbInputHandler.KEY_DOWN]] = false;
+        } else if (kc == keyMapping[KbInputHandler.KEY_DOWN]) {
+            allKeysState[keyMapping[KbInputHandler.KEY_UP]] = false;
         }
     }
 
-     void keyReleased(KeyEvent ke) {
+     void KbInputHandler::keyReleased(KeyEvent ke) {
 
         int kc = ke.getKeyCode();
         if (kc >= allKeysState.length) {
@@ -99,20 +92,18 @@ public:
 
     }
 
-     void keyTyped(KeyEvent ke) {
+     void KbInputHandler::keyTyped(KeyEvent ke) {
         // Ignore.
     }
 
-     void reset() {
+     void KbInputHandler::reset() {
         allKeysState = new bool[255];
     }
 
-     void update() {
+     void KbInputHandler::update() {
         // doesn't do anything.
     }
 
-     void destroy() {
+     void KbInputHandler::destroy() {
         nes = NULL;
     }
-
-};

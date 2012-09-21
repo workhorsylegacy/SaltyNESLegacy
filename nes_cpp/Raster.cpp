@@ -17,25 +17,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class Raster {
-public:
-     int[] data;
-     int width;
-     int height;
-
-     Raster(int[] data, int w, int h) {
+     Raster::Raster(int[] data, int w, int h) {
         this.data = data;
         width = w;
         height = h;
     }
 
-     Raster(int w, int h) {
+     Raster::Raster(int w, int h) {
         data = new int[w * h];
         width = w;
         height = h;
     }
 
-     void drawTile(Raster srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h) {
+     void Raster::drawTile(Raster srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h) {
 
         int[] src = srcRaster.data;
         int src_index;
@@ -60,4 +54,3 @@ public:
         }
 
     }
-};

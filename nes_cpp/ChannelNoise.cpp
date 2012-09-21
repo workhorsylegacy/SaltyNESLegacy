@@ -17,36 +17,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class ChannelNoise : public IPapuChannel {
-public:
-    PAPU papu;
-     bool isEnabled;
-     bool envDecayDisable;
-     bool envDecayLoopEnable;
-     bool lengthCounterEnable;
-     bool envReset;
-     bool shiftNow;
-     int lengthCounter;
-     int progTimerCount;
-     int progTimerMax;
-     int envDecayRate;
-     int envDecayCounter;
-     int envVolume;
-     int masterVolume;
-     int shiftReg;
-     int randomBit;
-     int randomMode;
-     int sampleValue;
-     long accValue = 0;
-     long accCount = 1;
-     int tmp;
 
-     ChannelNoise(PAPU papu) {
+     ChannelNoise::ChannelNoise(PAPU* papu) {
         this.papu = papu;
         shiftReg = 1 << 14;
     }
 
-     void clockLengthCounter() {
+     void ChannelNoise::clockLengthCounter() {
         if (lengthCounterEnable && lengthCounter > 0) {
             lengthCounter--;
             if (lengthCounter == 0) {
@@ -55,7 +32,7 @@ public:
         }
     }
 
-     void clockEnvDecay() {
+     void ChannelNoise::clockEnvDecay() {
 
         if (envReset) {
 
@@ -81,13 +58,13 @@ public:
 
     }
 
-     void updateSampleValue() {
+     void ChannelNoise::updateSampleValue() {
         if (isEnabled && lengthCounter > 0) {
             sampleValue = randomBit * masterVolume;
         }
     }
 
-     void writeReg(int address, int value) {
+     void ChannelNoise::writeReg(int address, int value) {
 
         if (address == 0x400C) {
 
@@ -117,7 +94,7 @@ public:
 
     }
 
-     void setEnabled(bool value) {
+     void ChannelNoise::setEnabled(bool value) {
 
         isEnabled = value;
         if (!value) {
@@ -127,15 +104,15 @@ public:
 
     }
 
-     bool isEnabled() {
+     bool ChannelNoise::isEnabled() {
         return isEnabled;
     }
 
-     int getLengthStatus() {
+     int ChannelNoise::getLengthStatus() {
         return ((lengthCounter == 0 || !isEnabled) ? 0 : 1);
     }
 
-     void reset() {
+     void ChannelNoise::reset() {
 
         progTimerCount = 0;
         progTimerMax = 0;
@@ -157,7 +134,6 @@ public:
 
     }
 
-     void destroy() {
+     void ChannelNoise::destroy() {
         papu = NULL;
     }
-};

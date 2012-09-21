@@ -17,24 +17,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class NES {
-public:
-     AppletUI* gui;
-     CPU* cpu;
-     PPU ppu;
-     PAPU papu;
-     Memory cpuMem;
-     Memory ppuMem;
-     Memory sprMem;
-     IMemoryMapper* memMapper;
-     PaletteTable palTable;
-     ROM rom;
-    int cc;
-     string romFile;
-    bool isRunning = false;
-
     // Creates the NES system.
-     NES(AppletUI* gui) {
+     NES::NES(AppletUI* gui) {
 
         Globals::nes = this;
         this.gui = gui;
@@ -78,7 +62,7 @@ public:
 
     }
 
-     bool stateLoad(ByteBuffer* buf) {
+     bool NES::stateLoad(ByteBuffer* buf) {
 
         bool continueEmulation = false;
         bool success;
@@ -117,7 +101,7 @@ public:
 
     }
 
-     void stateSave(ByteBuffer* buf) {
+     void NES::stateSave(ByteBuffer* buf) {
 
         bool continueEmulation = isRunning();
         stopEmulation();
@@ -140,13 +124,13 @@ public:
 
     }
 
-     bool isRunning() {
+     bool NES::isRunning() {
 
         return isRunning;
 
     }
 
-     void startEmulation() {
+     void NES::startEmulation() {
 
         if (Globals::enableSound && !papu.isRunning()) {
             papu.start();
@@ -159,7 +143,7 @@ public:
         }
     }
 
-     void stopEmulation() {
+     void NES::stopEmulation() {
         if (cpu.isRunning()) {
             cpu.endExecution();
             isRunning = false;
@@ -170,7 +154,7 @@ public:
         }
     }
 
-     void reloadRom() {
+     void NES::reloadRom() {
 
         if (romFile != NULL) {
             loadRom(romFile);
@@ -178,7 +162,7 @@ public:
 
     }
 
-     void clearCPUMemory() {
+     void NES::clearCPUMemory() {
 
         short flushval = Globals::memoryFlushValue;
         for (int i = 0; i < 0x2000; i++) {
@@ -194,60 +178,60 @@ public:
 
     }
 
-     void setGameGenieState(bool enable) {
+     void NES::setGameGenieState(bool enable) {
         if (memMapper != NULL) {
             memMapper.setGameGenieState(enable);
         }
     }
 
     // Returns CPU object.
-     CPU getCpu() {
+     CPU NES::getCpu() {
         return cpu;
     }
 
     // Returns PPU object.
-     PPU getPpu() {
+     PPU NES::getPpu() {
         return ppu;
     }
 
     // Returns pAPU object.
-     PAPU getPapu() {
+     PAPU* NES::getPapu() {
         return papu;
     }
 
     // Returns CPU Memory.
-     Memory getCpuMemory() {
+     Memory NES::getCpuMemory() {
         return cpuMem;
     }
 
     // Returns PPU Memory.
-     Memory getPpuMemory() {
+     Memory NES::getPpuMemory() {
         return ppuMem;
     }
 
     // Returns Sprite Memory.
-     Memory getSprMemory() {
+     Memory NES::getSprMemory() {
         return sprMem;
     }
 
     // Returns the currently loaded ROM.
-     ROM getRom() {
+     ROM NES::getRom() {
         return rom;
     }
 
     // Returns the GUI.
-     UI getGui() {
+     UI NES::getGui() {
         return gui;
     }
 
     // Returns the memory mapper.
-     IMemoryMapper* getMemoryMapper() {
+     IMemoryMapper* NES::getMemoryMapper() {
         return memMapper;
     }
 
     // Loads a ROM file into the CPU and PPU.
     // The ROM file is validated first.
-     bool loadRom(string file) {
+     bool NES::loadRom(string file) {
 
         // Can't load ROM while still running.
         if (isRunning) {
@@ -282,7 +266,7 @@ public:
     }
 
     // Resets the system.
-     void reset() {
+     void NES::reset() {
 
         if (rom != NULL) {
             rom.closeRom();
@@ -303,7 +287,7 @@ public:
         palTable.reset();
         papu.reset();
 
-        IInputHandler* joy1 = gui.getJoy1();
+        KbInputHandler* joy1 = gui.getJoy1();
         if (joy1 != NULL) {
             joy1.reset();
         }
@@ -311,7 +295,7 @@ public:
     }
 
     // Enable or disable sound playback.
-     void enableSound(bool enable) {
+     void NES::enableSound(bool enable) {
 
         bool wasRunning = isRunning();
         if (wasRunning) {
@@ -333,7 +317,7 @@ public:
 
     }
 
-     void setFramerate(int rate) {
+     void NES::setFramerate(int rate) {
 
         Globals::preferredFrameRate = rate;
         Globals::frameTime = 1000000 / rate;
@@ -341,7 +325,7 @@ public:
 
     }
 
-     void destroy() {
+     void NES::destroy() {
 
         if (cpu != NULL) {
             cpu.destroy();
@@ -380,4 +364,3 @@ public:
         palTable = NULL;
 
     }
-};

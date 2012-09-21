@@ -17,28 +17,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class ChannelTriangle : public IPapuChannel {
-public:
-    PAPU papu;
-    bool isEnabled;
-    bool sampleCondition;
-    bool lengthCounterEnable;
-    bool lcHalt;
-    bool lcControl;
-    int progTimerCount;
-    int progTimerMax;
-    int triangleCounter;
-    int lengthCounter;
-    int linearCounter;
-    int lcLoadValue;
-    int sampleValue;
-    int tmp;
-
-     ChannelTriangle(PAPU papu) {
+     ChannelTriangle::ChannelTriangle(PAPU* papu) {
         this.papu = papu;
     }
 
-     void clockLengthCounter() {
+     void ChannelTriangle::clockLengthCounter() {
         if (lengthCounterEnable && lengthCounter > 0) {
             lengthCounter--;
             if (lengthCounter == 0) {
@@ -47,7 +30,7 @@ public:
         }
     }
 
-     void clockLinearCounter() {
+     void ChannelTriangle::clockLinearCounter() {
 
         if (lcHalt) {
 
@@ -72,15 +55,15 @@ public:
 
     }
 
-     int getLengthStatus() {
+     int ChannelTriangle::getLengthStatus() {
         return ((lengthCounter == 0 || !isEnabled) ? 0 : 1);
     }
 
-     int readReg(int address) {
+     int ChannelTriangle::readReg(int address) {
         return 0;
     }
 
-     void writeReg(int address, int value) {
+     void ChannelTriangle::writeReg(int address, int value) {
 
         if (address == 0x4008) {
 
@@ -111,7 +94,7 @@ public:
 
     }
 
-     void clockProgrammableTimer(int nCycles) {
+     void ChannelTriangle::clockProgrammableTimer(int nCycles) {
 
         if (progTimerMax > 0) {
             progTimerCount += nCycles;
@@ -125,12 +108,12 @@ public:
 
     }
 
-     void clockTriangleGenerator() {
+     void ChannelTriangle::clockTriangleGenerator() {
         triangleCounter++;
         triangleCounter &= 0x1F;
     }
 
-     void setEnabled(bool value) {
+     void ChannelTriangle::setEnabled(bool value) {
         isEnabled = value;
         if (!value) {
             lengthCounter = 0;
@@ -138,11 +121,11 @@ public:
         updateSampleCondition();
     }
 
-     bool isEnabled() {
+     bool ChannelTriangle::isEnabled() {
         return isEnabled;
     }
 
-     void updateSampleCondition() {
+     void ChannelTriangle::updateSampleCondition() {
         sampleCondition =
                 isEnabled &&
                 progTimerMax > 7 &&
@@ -150,7 +133,7 @@ public:
                 lengthCounter > 0;
     }
 
-     void reset() {
+     void ChannelTriangle::reset() {
 
         progTimerCount = 0;
         progTimerMax = 0;
@@ -168,7 +151,6 @@ public:
 
     }
 
-     void destroy() {
+     void ChannelTriangle::destroy() {
         papu = NULL;
     }
-};

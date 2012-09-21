@@ -17,135 +17,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class PPU {
-public:
-     NES* nes;
-     HiResTimer* timer;
-     Memory ppuMem;
-     Memory sprMem;
-    // Rendering Options:
-    bool showSpr0Hit = false;
-    bool showSoundBuffer = false;
-    bool clipTVcolumn = true;
-    bool clipTVrow = false;
-    // Control Flags Register 1:
-     int f_nmiOnVblank;    // NMI on VBlank. 0=disable, 1=enable
-     int f_spriteSize;     // Sprite size. 0=8x8, 1=8x16
-     int f_bgPatternTable; // Background Pattern Table address. 0=0x0000,1=0x1000
-     int f_spPatternTable; // Sprite Pattern Table address. 0=0x0000,1=0x1000
-     int f_addrInc;        // PPU Address Increment. 0=1,1=32
-     int f_nTblAddress;    // Name Table Address. 0=0x2000,1=0x2400,2=0x2800,3=0x2C00
-    // Control Flags Register 2:
-     int f_color;	   	 	 // Background color. 0=black, 1=blue, 2=green, 4=red
-     int f_spVisibility;   // Sprite visibility. 0=not displayed,1=displayed
-     int f_bgVisibility;   // Background visibility. 0=Not Displayed,1=displayed
-     int f_spClipping;     // Sprite clipping. 0=Sprites invisible in left 8-pixel column,1=No clipping
-     int f_bgClipping;     // Background clipping. 0=BG invisible in left 8-pixel column, 1=No clipping
-     int f_dispType;       // Display type. 0=color, 1=monochrome
-    // Status flags:
-     int STATUS_VRAMWRITE = 4;
-     int STATUS_SLSPRITECOUNT = 5;
-     int STATUS_SPRITE0HIT = 6;
-     int STATUS_VBLANK = 7;
-    // VRAM I/O:
-    int vramAddress;
-    int vramTmpAddress;
-    short vramBufferedReadValue;
-    bool firstWrite = true; 		// VRAM/Scroll Hi/Lo latch
-    int[] vramMirrorTable; 			// Mirroring Lookup Table.
-    int i;
-
-    // SPR-RAM I/O:
-    short sramAddress; // 8-bit only.
-
-    // Counters:
-    int cntFV;
-    int cntV;
-    int cntH;
-    int cntVT;
-    int cntHT;
-
-    // Registers:
-    int regFV;
-    int regV;
-    int regH;
-    int regVT;
-    int regHT;
-    int regFH;
-    int regS;
-
-    // VBlank extension for PAL emulation:
-    int vblankAdd = 0;
-     int curX;
-     int scanline;
-     int lastRenderedScanline;
-     int mapperIrqCounter;
-    // Sprite data:
-     int[] sprX;				// X coordinate
-     int[] sprY;				// Y coordinate
-     int[] sprTile;			// Tile Index (into pattern table)
-     int[] sprCol;			// Upper two bits of color
-     bool[] vertFlip;		// Vertical Flip
-     bool[] horiFlip;		// Horizontal Flip
-     bool[] bgPriority;	// Background priority
-     int spr0HitX;	// Sprite #0 hit X coordinate
-     int spr0HitY;	// Sprite #0 hit Y coordinate
-    bool hitSpr0;
-
-    // Tiles:
-     Tile[] ptTile;
-    // Name table data:
-    int[] ntable1 = new int[4];
-    NameTable[] nameTable;
-    int currentMirroring = -1;
-
-    // Palette data:
-    int[] sprPalette = new int[16];
-    int[] imgPalette = new int[16];
-    // Misc:
-    bool scanlineAlreadyRendered;
-    bool requestEndFrame;
-    bool nmiOk;
-    int nmiCounter;
-    short tmp;
-    bool dummyCycleToggle;
-
-    // Vars used when updating regs/address:
-    int address, b1, b2;
-    // Variables used when rendering:
-    int[] attrib = new int[32];
-    int[] bgbuffer = new int[256 * 240];
-    int[] pixrendered = new int[256 * 240];
-    int[] spr0dummybuffer = new int[256 * 240];
-    int[] dummyPixPriTable = new int[256 * 240];
-    int[] oldFrame = new int[256 * 240];
-    int[] buffer;
-    int[] tpix;
-    bool[] scanlineChanged = new bool[240];
-    bool requestRenderAll = false;
-    bool validTileData;
-    int att;
-    Tile[] scantile = new Tile[32];
-    Tile t;
-    // These are temporary variables used in rendering and sound procedures.
-    // Their states outside of those procedures can be ignored.
-    int curNt;
-    int destIndex;
-    int x, y, sx;
-    int si, ei;
-    int tile;
-    int col;
-    int baseTile;
-    int tscanoffset;
-    int srcy1, srcy2;
-    int bufferSize, available, scale;
-     int cycles = 0;
-
-     PPU(NES* nes) {
+     PPU::PPU(NES* nes) {
         this.nes = nes;
     }
 
-     void init() {
+     void PPU::init() {
 
         // Get the memory:
         ppuMem = nes.getPpuMemory();
@@ -199,7 +75,7 @@ public:
 
 
     // Sets Nametable mirroring.
-     void setMirroring(int mirroring) {
+     void PPU::setMirroring(int mirroring) {
 
         if (mirroring == currentMirroring) {
             return;
@@ -293,7 +169,7 @@ public:
     // Define a mirrored area in the address lookup table.
     // Assumes the regions don't overlap.
     // The 'to' region is the region that is physically in memory.
-     void defineMirrorRegion(int fromStart, int toStart, int size) {
+     void PPU::defineMirrorRegion(int fromStart, int toStart, int size) {
 
         for (int i = 0; i < size; i++) {
             vramMirrorTable[fromStart + i] = toStart + i;
@@ -302,7 +178,7 @@ public:
     }
 
     // Emulates PPU cycles
-     void emulateCycles() {
+     void PPU::emulateCycles() {
 
         //int n = (!requestEndFrame && curX+cycles<341 && (scanline-20 < spr0HitY || scanline-22 > spr0HitY))?cycles:1;
         for (; cycles > 0; cycles--) {
@@ -336,7 +212,7 @@ public:
 
     }
 
-     void startVBlank() {
+     void PPU::startVBlank() {
 
         // Start VBlank period:
         // Do VBlank.
@@ -364,7 +240,7 @@ public:
 
     }
 
-     void endScanline() {
+     void PPU::endScanline() {
 
         if (scanline < 19 + vblankAdd) {
 
@@ -472,7 +348,7 @@ public:
 
     }
 
-     void startFrame() {
+     void PPU::startFrame() {
 
         int[] buffer = nes.getGui().getScreenView().getBuffer();
 
@@ -530,7 +406,7 @@ public:
 
     }
 
-     void endFrame() {
+     void PPU::endFrame() {
 
         int[] buffer = nes.getGui().getScreenView().getBuffer();
 
@@ -608,7 +484,7 @@ public:
 
     }
 
-     void updateControlReg1(int value) {
+     void PPU::updateControlReg1(int value) {
 
         triggerRendering();
 
@@ -625,7 +501,7 @@ public:
 
     }
 
-     void updateControlReg2(int value) {
+     void PPU::updateControlReg2(int value) {
 
         triggerRendering();
 
@@ -643,7 +519,7 @@ public:
 
     }
 
-     void setStatusFlag(int flag, bool value) {
+     void PPU::setStatusFlag(int flag, bool value) {
 
         int n = 1 << flag;
         int memValue = nes.getCpuMemory().load(0x2002);
@@ -655,7 +531,7 @@ public:
 
     // CPU Register $2002:
     // Read the Status Register.
-     short readStatusRegister() {
+     short PPU::readStatusRegister() {
 
         tmp = nes.getCpuMemory().load(0x2002);
 
@@ -673,7 +549,7 @@ public:
 
     // CPU Register $2003:
     // Write the SPR-RAM address that is used for sramWrite (Register 0x2004 in CPU memory map)
-     void writeSRAMAddress(short address) {
+     void PPU::writeSRAMAddress(short address) {
         sramAddress = address;
     }
 
@@ -681,7 +557,7 @@ public:
     // CPU Register $2004 (R):
     // Read from SPR-RAM (Sprite RAM).
     // The address should be set first.
-     short sramLoad() {
+     short PPU::sramLoad() {
         short tmp = sprMem.load(sramAddress);
         /*sramAddress++; // Increment address
         sramAddress%=0x100;*/
@@ -692,7 +568,7 @@ public:
     // CPU Register $2004 (W):
     // Write to SPR-RAM (Sprite RAM).
     // The address should be set first.
-     void sramWrite(short value) {
+     void PPU::sramWrite(short value) {
         sprMem.write(sramAddress, value);
         spriteRamWriteUpdate(sramAddress, value);
         sramAddress++; // Increment address
@@ -704,7 +580,7 @@ public:
     // Write to scroll registers.
     // The first write is the vertical offset, the second is the
     // horizontal offset:
-     void scrollWrite(short value) {
+     void PPU::scrollWrite(short value) {
 
         triggerRendering();
         if (firstWrite) {
@@ -727,7 +603,7 @@ public:
     // CPU Register $2006:
     // Sets the adress used when reading/writing from/to VRAM.
     // The first write sets the high byte, the second the low byte.
-     void writeVRAMAddress(int address) {
+     void PPU::writeVRAMAddress(int address) {
 
         if (firstWrite) {
 
@@ -765,7 +641,7 @@ public:
 
     // CPU Register $2007(R):
     // Read from PPU memory. The address should be set first.
-     short vramLoad() {
+     short PPU::vramLoad() {
 
         cntsToAddress();
         regsToAddress();
@@ -811,7 +687,7 @@ public:
 
     // CPU Register $2007(W):
     // Write to PPU memory. The address should be set first.
-     void vramWrite(short value) {
+     void PPU::vramWrite(short value) {
 
         triggerRendering();
         cntsToAddress();
@@ -840,7 +716,7 @@ public:
     // CPU Register $4014:
     // Write 256 bytes of main memory
     // into Sprite RAM.
-     void sramDMA(short value) {
+     void PPU::sramDMA(short value) {
 
         Memory cpuMem = nes.getCpuMemory();
         int baseAddress = value * 0x100;
@@ -856,7 +732,7 @@ public:
     }
 
     // Updates the scroll registers from a new VRAM address.
-     void regsFromAddress() {
+     void PPU::regsFromAddress() {
 
         address = (vramTmpAddress >> 8) & 0xFF;
         regFV = (address >> 4) & 7;
@@ -873,7 +749,7 @@ public:
     }
 
     // Updates the scroll registers from a new VRAM address.
-     void cntsFromAddress() {
+     void PPU::cntsFromAddress() {
 
         address = (vramAddress >> 8) & 0xFF;
         cntFV = (address >> 4) & 3;
@@ -887,7 +763,7 @@ public:
 
     }
 
-     void regsToAddress() {
+     void PPU::regsToAddress() {
 
         b1 = (regFV & 7) << 4;
         b1 |= (regV & 1) << 3;
@@ -901,7 +777,7 @@ public:
 
     }
 
-     void cntsToAddress() {
+     void PPU::cntsToAddress() {
 
         b1 = (cntFV & 7) << 4;
         b1 |= (cntV & 1) << 3;
@@ -915,7 +791,7 @@ public:
 
     }
 
-     void incTileCounter(int count) {
+     void PPU::incTileCounter(int count) {
 
         for (i = count; i != 0; i--) {
             cntHT++;
@@ -941,7 +817,7 @@ public:
 
     // Reads from memory, taking into account
     // mirroring/mapping of address ranges.
-     short mirroredLoad(int address) {
+     short PPU::mirroredLoad(int address) {
 
         return ppuMem.load(vramMirrorTable[address]);
 
@@ -949,7 +825,7 @@ public:
 
     // Writes to memory, taking into account
     // mirroring/mapping of address ranges.
-     void mirroredWrite(int address, short value) {
+     void PPU::mirroredWrite(int address, short value) {
 
         if (address >= 0x3f00 && address < 0x3f20) {
 
@@ -997,7 +873,7 @@ public:
 
     }
 
-     void triggerRendering() {
+     void PPU::triggerRendering() {
 
         if (scanline - vblankAdd >= 21 && scanline - vblankAdd <= 260) {
 
@@ -1011,7 +887,7 @@ public:
 
     }
 
-     void renderFramePartially(int[] buffer, int startScan, int scanCount) {
+     void PPU::renderFramePartially(int[] buffer, int startScan, int scanCount) {
 
         if (f_spVisibility == 1 && !Globals::disableSprites) {
             renderSpritesPartially(startScan, scanCount, true);
@@ -1063,7 +939,7 @@ public:
 
     }
 
-     void renderBgScanline(int[] buffer, int scan) {
+     void PPU::renderBgScanline(int[] buffer, int scan) {
 
         baseTile = (regS == 0 ? 0 : 256);
         destIndex = (scan << 8) - regFH;
@@ -1163,7 +1039,7 @@ public:
 
     }
 
-     void renderSpritesPartially(int startscan, int scancount, bool bgPri) {
+     void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 
         buffer = nes.getGui().getScreenView().getBuffer();
         if (f_spVisibility == 1) {
@@ -1232,7 +1108,7 @@ public:
 
     }
 
-     bool checkSprite0(int scan) {
+     bool PPU::checkSprite0(int scan) {
 
         spr0HitX = -1;
         spr0HitY = -1;
@@ -1383,7 +1259,7 @@ public:
 
     // Renders the contents of the
     // pattern table into an image.
-     void renderPattern() {
+     void PPU::renderPattern() {
 
         BufferView scr = nes.getGui().getPatternView();
         int[] buffer = scr.getBuffer();
@@ -1401,7 +1277,7 @@ public:
 
     }
 
-     void renderNameTables() {
+     void PPU::renderNameTables() {
 
         int[] buffer = nes.getGui().getNameTableView().getBuffer();
         if (f_bgPatternTable == 0) {
@@ -1457,7 +1333,7 @@ public:
 
     }
 
-     void renderPalettes() {
+     void PPU::renderPalettes() {
 
         int[] buffer = nes.getGui().getImgPalView().getBuffer();
         for (int i = 0; i < 16; i++) {
@@ -1486,7 +1362,7 @@ public:
     // This will write to PPU memory, and
     // update internally buffered data
     // appropriately.
-     void writeMem(int address, short value) {
+     void PPU::writeMem(int address, short value) {
 
         ppuMem.write(address, value);
 
@@ -1538,7 +1414,7 @@ public:
 
     // Reads data from $3f00 to $f20
     // into the two buffered palettes.
-     void updatePalettes() {
+     void PPU::updatePalettes() {
 
         for (int i = 0; i < 16; i++) {
             if (f_dispType == 0) {
@@ -1562,7 +1438,7 @@ public:
 
     // Updates the internal pattern
     // table buffers with this new byte.
-     void patternWrite(int address, short value) {
+     void PPU::patternWrite(int address, short value) {
         int tileIndex = address / 16;
         int leftOver = address % 16;
         if (leftOver < 8) {
@@ -1572,7 +1448,7 @@ public:
         }
     }
 
-     void patternWrite(int address, short[] value, int offset, int length) {
+     void PPU::patternWrite(int address, short[] value, int offset, int length) {
 
         int tileIndex;
         int leftOver;
@@ -1592,7 +1468,7 @@ public:
 
     }
 
-     void invalidateFrameCache() {
+     void PPU::invalidateFrameCache() {
 
         // Clear the no-update scanline buffer:
         for (int i = 0; i < 240; i++) {
@@ -1605,7 +1481,7 @@ public:
 
     // Updates the internal name table buffers
     // with this new byte.
-     void nameTableWrite(int index, int address, short value) {
+     void PPU::nameTableWrite(int index, int address, short value) {
         nameTable[index].writeTileIndex(address, value);
 
         // Update Sprite #0 hit:
@@ -1617,13 +1493,13 @@ public:
     // Updates the internal pattern
     // table buffers with this new attribute
     // table byte.
-     void attribTableWrite(int index, int address, short value) {
+     void PPU::attribTableWrite(int index, int address, short value) {
         nameTable[index].writeAttrib(address, value);
     }
 
     // Updates the internally buffered sprite
     // data with this new byte of info.
-     void spriteRamWriteUpdate(int address, short value) {
+     void PPU::spriteRamWriteUpdate(int address, short value) {
 
         int tIndex = address / 4;
 
@@ -1659,7 +1535,7 @@ public:
 
     }
 
-     void doNMI() {
+     void PPU::doNMI() {
 
         // Set VBlank flag:
         setStatusFlag(STATUS_VBLANK, true);
@@ -1668,7 +1544,7 @@ public:
 
     }
 
-     int statusRegsToInt() {
+     int PPU::statusRegsToInt() {
 
         int ret = 0;
         ret = (f_nmiOnVblank) |
@@ -1688,7 +1564,7 @@ public:
 
     }
 
-     void statusRegsFromInt(int n) {
+     void PPU::statusRegsFromInt(int n) {
 
         f_nmiOnVblank = (n) & 0x1;
         f_spriteSize = (n >> 1) & 0x1;
@@ -1706,7 +1582,7 @@ public:
 
     }
 
-     void stateLoad(ByteBuffer* buf) {
+     void PPU::stateLoad(ByteBuffer* buf) {
 
         // Check version:
         if (buf.readByte() == 1) {
@@ -1806,7 +1682,7 @@ public:
 
     }
 
-     void stateSave(ByteBuffer* buf) {
+     void PPU::stateSave(ByteBuffer* buf) {
 
 
         // Version:
@@ -1892,7 +1768,7 @@ public:
     }
 
     // Reset PPU:
-     void reset() {
+     void PPU::reset() {
 
         ppuMem.reset();
         sprMem.reset();
@@ -1960,7 +1836,7 @@ public:
 
     }
 
-     void destroy() {
+     void PPU::destroy() {
 
         nes = NULL;
         ppuMem = NULL;
@@ -1968,4 +1844,3 @@ public:
         scantile = NULL;
 
     }
-};

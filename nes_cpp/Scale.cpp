@@ -17,16 +17,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class Scale {
-public:
-     static int brightenShift;
-     static int brightenShiftMask;
-     static int brightenCutoffMask;
-     static int darkenShift;
-     static int darkenShiftMask;
-     static int si,  di,  di2,  val,  x,  y;
 
-     static void setFilterParams(int darkenDepth, int brightenDepth) {
+     static void Scale::setFilterParams(int darkenDepth, int brightenDepth) {
 
         switch (darkenDepth) {
             case 0: {
@@ -91,7 +83,7 @@ public:
 
     }
 
-     static const void doScanlineScaling(int[] src, int[] dest, bool[] changed) {
+     static const void Scale::doScanlineScaling(int[] src, int[] dest, bool[] changed) {
 
         int di = 0;
         int di2 = 512;
@@ -134,7 +126,7 @@ public:
 
     }
 
-     static const void doRasterScaling(int[] src, int[] dest, bool[] changed) {
+     static const void Scale::doRasterScaling(int[] src, int[] dest, bool[] changed) {
 
         int di = 0;
         int di2 = 512;
@@ -189,7 +181,7 @@ public:
 
     }
 
-     static const void doNormalScaling(int[] src, int[] dest, bool[] changed) {
+     static const void Scale::doNormalScaling(int[] src, int[] dest, bool[] changed) {
 
         int di = 0;
         int di2 = 512;
@@ -224,4 +216,3 @@ public:
         }
 
     }
-};

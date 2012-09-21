@@ -19,10 +19,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
-class FileLoader {
-public:
     // Load a file.
-     short[] loadFile(string fileName, UI ui) {
+     short[] FileLoader::loadFile(string fileName, UI ui) {
 
         int flen;
         int8_t* tmp = new int8_t[2048];
@@ -126,4 +124,3 @@ public:
         return ret;
 
     }
-};

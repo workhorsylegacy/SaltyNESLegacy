@@ -19,32 +19,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
-class Tile {
-public:
-    // Tile data:
-    int[] pix;
-    int fbIndex;
-    int tIndex;
-    int x, y;
-    int w, h;
-    int incX, incY;
-    int palIndex;
-    int tpri;
-    int c;
-     bool initialized = false;
-     bool[] opaque = new bool[8];
-
-     Tile() {
+     Tile::Tile() {
         pix = new int[64];
     }
 
-     void setBuffer(short[] scanline) {
+     void Tile::setBuffer(short[] scanline) {
         for (y = 0; y < 8; y++) {
             setScanline(y, scanline[y], scanline[y + 8]);
         }
     }
 
-     void setScanline(int sline, short b1, short b2) {
+     void Tile::setScanline(int sline, short b1, short b2) {
         initialized = true;
         tIndex = sline << 3;
         for (x = 0; x < 8; x++) {
@@ -55,7 +40,7 @@ public:
         }
     }
 
-     void renderSimple(int dx, int dy, int[] fBuffer, int palAdd, int[] palette) {
+     void Tile::renderSimple(int dx, int dy, int[] fBuffer, int palAdd, int[] palette) {
 
         tIndex = 0;
         fbIndex = (dy << 8) + dx;
@@ -74,7 +59,7 @@ public:
 
     }
 
-     void renderSmall(int dx, int dy, int[] buffer, int palAdd, int[] palette) {
+     void Tile::renderSmall(int dx, int dy, int[] buffer, int palAdd, int[] palette) {
 
         tIndex = 0;
         fbIndex = (dy << 8) + dx;
@@ -95,7 +80,7 @@ public:
 
     }
 
-     void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, int[] fBuffer, int palAdd, int[] palette, bool flipHorizontal, bool flipVertical, int pri, int[] priTable) {
+     void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, int[] fBuffer, int palAdd, int[] palette, bool flipHorizontal, bool flipVertical, int pri, int[] priTable) {
 
         if (dx < -7 || dx >= 256 || dy < -7 || dy >= 240) {
             return;
@@ -212,11 +197,11 @@ public:
 
     }
 
-     bool isTransparent(int x, int y) {
+     bool Tile::isTransparent(int x, int y) {
         return (pix[(y << 3) + x] == 0);
     }
 
-     void dumpData(string file) {
+     void Tile::dumpData(string file) {
 
         try {
 
@@ -239,7 +224,7 @@ public:
         }
     }
 
-     void stateSave(ByteBuffer* buf) {
+     void Tile::stateSave(ByteBuffer* buf) {
 
         buf.putBoolean(initialized);
         for (int i = 0; i < 8; i++) {
@@ -251,7 +236,7 @@ public:
 
     }
 
-     void stateLoad(ByteBuffer* buf) {
+     void Tile::stateLoad(ByteBuffer* buf) {
 
         initialized = buf.readBoolean();
         for (int i = 0; i < 8; i++) {
@@ -262,4 +247,3 @@ public:
         }
 
     }
-};

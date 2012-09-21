@@ -35,25 +35,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         kbJoy2 = new KbInputHandler(nes, 1);
 
         // Grab Controller Setting for Player 1:
-        kbJoy1.mapKey(IInputHandler.KEY_A, (Integer) Globals::keycodes.get(Globals::controls.get("p1_a")));
-        kbJoy1.mapKey(IInputHandler.KEY_B, (Integer) Globals::keycodes.get(Globals::controls.get("p1_b")));
-        kbJoy1.mapKey(IInputHandler.KEY_START, (Integer) Globals::keycodes.get(Globals::controls.get("p1_start")));
-        kbJoy1.mapKey(IInputHandler.KEY_SELECT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_select")));
-        kbJoy1.mapKey(IInputHandler.KEY_UP, (Integer) Globals::keycodes.get(Globals::controls.get("p1_up")));
-        kbJoy1.mapKey(IInputHandler.KEY_DOWN, (Integer) Globals::keycodes.get(Globals::controls.get("p1_down")));
-        kbJoy1.mapKey(IInputHandler.KEY_LEFT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_left")));
-        kbJoy1.mapKey(IInputHandler.KEY_RIGHT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_right")));
+        kbJoy1.mapKey(KbInputHandler.KEY_A, (Integer) Globals::keycodes.get(Globals::controls.get("p1_a")));
+        kbJoy1.mapKey(KbInputHandler.KEY_B, (Integer) Globals::keycodes.get(Globals::controls.get("p1_b")));
+        kbJoy1.mapKey(KbInputHandler.KEY_START, (Integer) Globals::keycodes.get(Globals::controls.get("p1_start")));
+        kbJoy1.mapKey(KbInputHandler.KEY_SELECT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_select")));
+        kbJoy1.mapKey(KbInputHandler.KEY_UP, (Integer) Globals::keycodes.get(Globals::controls.get("p1_up")));
+        kbJoy1.mapKey(KbInputHandler.KEY_DOWN, (Integer) Globals::keycodes.get(Globals::controls.get("p1_down")));
+        kbJoy1.mapKey(KbInputHandler.KEY_LEFT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_left")));
+        kbJoy1.mapKey(KbInputHandler.KEY_RIGHT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_right")));
         vScreen.addKeyListener(kbJoy1);
 
         // Grab Controller Setting for Player 2:
-        kbJoy2.mapKey(IInputHandler.KEY_A, (Integer) Globals::keycodes.get(Globals::controls.get("p2_a")));
-        kbJoy2.mapKey(IInputHandler.KEY_B, (Integer) Globals::keycodes.get(Globals::controls.get("p2_b")));
-        kbJoy2.mapKey(IInputHandler.KEY_START, (Integer) Globals::keycodes.get(Globals::controls.get("p2_start")));
-        kbJoy2.mapKey(IInputHandler.KEY_SELECT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_select")));
-        kbJoy2.mapKey(IInputHandler.KEY_UP, (Integer) Globals::keycodes.get(Globals::controls.get("p2_up")));
-        kbJoy2.mapKey(IInputHandler.KEY_DOWN, (Integer) Globals::keycodes.get(Globals::controls.get("p2_down")));
-        kbJoy2.mapKey(IInputHandler.KEY_LEFT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_left")));
-        kbJoy2.mapKey(IInputHandler.KEY_RIGHT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_right")));
+        kbJoy2.mapKey(KbInputHandler.KEY_A, (Integer) Globals::keycodes.get(Globals::controls.get("p2_a")));
+        kbJoy2.mapKey(KbInputHandler.KEY_B, (Integer) Globals::keycodes.get(Globals::controls.get("p2_b")));
+        kbJoy2.mapKey(KbInputHandler.KEY_START, (Integer) Globals::keycodes.get(Globals::controls.get("p2_start")));
+        kbJoy2.mapKey(KbInputHandler.KEY_SELECT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_select")));
+        kbJoy2.mapKey(KbInputHandler.KEY_UP, (Integer) Globals::keycodes.get(Globals::controls.get("p2_up")));
+        kbJoy2.mapKey(KbInputHandler.KEY_DOWN, (Integer) Globals::keycodes.get(Globals::controls.get("p2_down")));
+        kbJoy2.mapKey(KbInputHandler.KEY_LEFT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_left")));
+        kbJoy2.mapKey(KbInputHandler.KEY_RIGHT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_right")));
         vScreen.addKeyListener(kbJoy2);
     }
 
@@ -131,11 +131,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return nes;
     }
 
-    IInputHandler* AppletUI::getJoy1() {
+    KbInputHandler* AppletUI::getJoy1() {
         return kbJoy1;
     }
 
-    IInputHandler* AppletUI::getJoy2() {
+    KbInputHandler* AppletUI::getJoy2() {
         return kbJoy2;
     }
 

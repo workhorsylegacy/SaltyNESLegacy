@@ -17,45 +17,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class ChannelSquare : public IPapuChannel {
-public:
-    PAPU papu;
-    static int[] dutyLookup;
-    static int[] impLookup;
-    bool sqr1;
-    bool isEnabled;
-    bool lengthCounterEnable;
-    bool sweepActive;
-    bool envDecayDisable;
-    bool envDecayLoopEnable;
-    bool envReset;
-    bool sweepCarry;
-    bool updateSweepPeriod;
-    int progTimerCount;
-    int progTimerMax;
-    int lengthCounter;
-    int squareCounter;
-    int sweepCounter;
-    int sweepCounterMax;
-    int sweepMode;
-    int sweepShiftAmount;
-    int envDecayRate;
-    int envDecayCounter;
-    int envVolume;
-    int masterVolume;
-    int dutyMode;
-    int sweepResult;
-    int sampleValue;
-    int vol;
-
-     ChannelSquare(PAPU papu, bool square1) {
+     ChannelSquare::ChannelSquare(PAPU* papu, bool square1) {
 
         this.papu = papu;
         sqr1 = square1;
 
     }
 
-     void clockLengthCounter() {
+     void ChannelSquare::clockLengthCounter() {
 
         if (lengthCounterEnable && lengthCounter > 0) {
             lengthCounter--;
@@ -66,7 +35,7 @@ public:
 
     }
 
-     void clockEnvDecay() {
+     void ChannelSquare::clockEnvDecay() {
 
         if (envReset) {
 
@@ -92,7 +61,7 @@ public:
 
     }
 
-     void clockSweep() {
+     void ChannelSquare::clockSweep() {
 
         if (--sweepCounter <= 0) {
 
@@ -122,7 +91,7 @@ public:
 
     }
 
-     void updateSampleValue() {
+     void ChannelSquare::updateSampleValue() {
 
         if (isEnabled && lengthCounter > 0 && progTimerMax > 7) {
 
@@ -145,7 +114,7 @@ public:
 
     }
 
-     void writeReg(int address, int value) {
+     void ChannelSquare::writeReg(int address, int value) {
 
         int addrAdd = (sqr1 ? 0 : 4);
         if (address == 0x4000 + addrAdd) {
@@ -190,7 +159,7 @@ public:
 
     }
 
-     void setEnabled(bool value) {
+     void ChannelSquare::setEnabled(bool value) {
         isEnabled = value;
         if (!value) {
             lengthCounter = 0;
@@ -198,15 +167,15 @@ public:
         updateSampleValue();
     }
 
-     bool isEnabled() {
+     bool ChannelSquare::isEnabled() {
         return isEnabled;
     }
 
-     int getLengthStatus() {
+     int ChannelSquare::getLengthStatus() {
         return ((lengthCounter == 0 || !isEnabled) ? 0 : 1);
     }
 
-     void reset() {
+     void ChannelSquare::reset() {
 
         progTimerCount = 0;
         progTimerMax = 0;
@@ -232,24 +201,6 @@ public:
 
     }
 
-     void destroy() {
+     void ChannelSquare::destroy() {
         papu = NULL;
     }
-
-
-    static {
-
-        dutyLookup = new int[]{
-                    0, 1, 0, 0, 0, 0, 0, 0,
-                    0, 1, 1, 0, 0, 0, 0, 0,
-                    0, 1, 1, 1, 1, 0, 0, 0,
-                    1, 0, 0, 1, 1, 1, 1, 1,};
-
-        impLookup = new int[]{
-                    1, -1, 0, 0, 0, 0, 0, 0,
-                    1, 0, -1, 0, 0, 0, 0, 0,
-                    1, 0, 0, 0, -1, 0, 0, 0,
-                    -1, 0, 1, 0, 0, 0, 0, 0,};
-
-    }
-};

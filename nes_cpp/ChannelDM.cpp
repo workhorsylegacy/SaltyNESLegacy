@@ -17,35 +17,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class ChannelDM : public IPapuChannel {
-public:
-    static const int MODE_NORMAL = 0;
-    static const int MODE_LOOP = 1;
-    static const int MODE_IRQ = 2;
-    PAPU papu;
-    bool isEnabled;
-    bool hasSample;
-    bool irqGenerated = false;
-    int playMode;
-    int dmaFrequency;
-    int dmaCounter;
-    int deltaCounter;
-    int playStartAddress;
-    int playAddress;
-    int playLength;
-    int playLengthCounter;
-    int shiftCounter;
-    int reg4012, reg4013;
-    int status;
-    int sample;
-    int dacLsb;
-    int data;
 
-    ChannelDM(PAPU papu) {
+    ChannelDM::ChannelDM(PAPU* papu) {
         this.papu = papu;
     }
 
-    void clockDmc() {
+    void ChannelDM::clockDmc() {
 
         // Only alter DAC value if the sample buffer has data:
         if (hasSample) {
@@ -90,7 +67,7 @@ public:
 
     }
 
-     void endOfSample() {
+     void ChannelDM::endOfSample() {
 
 
         if (playLengthCounter == 0 && playMode == MODE_LOOP) {
@@ -122,7 +99,7 @@ public:
 
     }
 
-     void nextSample() {
+     void ChannelDM::nextSample() {
 
         // Fetch byte:
         data = papu.getNes().getMemoryMapper().load(playAddress);
@@ -138,7 +115,7 @@ public:
 
     }
 
-    void writeReg(int address, int value) {
+    void ChannelDM::writeReg(int address, int value) {
 
         if (address == 0x4010) {
 
@@ -196,7 +173,7 @@ public:
 
     }
 
-    void setEnabled(bool value) {
+    void ChannelDM::setEnabled(bool value) {
 
         if ((!isEnabled) && value) {
             playLengthCounter = playLength;
@@ -205,19 +182,19 @@ public:
 
     }
 
-    bool isEnabled() {
+    bool ChannelDM::isEnabled() {
         return isEnabled;
     }
 
-    int getLengthStatus() {
+    int ChannelDM::getLengthStatus() {
         return ((playLengthCounter == 0 || !isEnabled) ? 0 : 1);
     }
 
-    int getIrqStatus() {
+    int ChannelDM::getIrqStatus() {
         return (irqGenerated ? 1 : 0);
     }
 
-    void reset() {
+    void ChannelDM::reset() {
 
         isEnabled = false;
         irqGenerated = false;
@@ -239,7 +216,7 @@ public:
 
     }
 
-    void destroy() {
+    void ChannelDM::destroy() {
         papu = NULL;
     }
-};
+    

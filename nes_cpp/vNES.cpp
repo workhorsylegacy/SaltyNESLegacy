@@ -19,31 +19,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
-using namespace std;
 
-
-class vNES : public thread {
-public:
-    bool scale;
-    bool scanlines;
-    bool sound;
-    bool fps;
-    bool stereo;
-    bool timeemulation;
-    bool showsoundbuffer;
-    int samplerate;
-    int romSize;
-    int progress;
-    AppletUI* gui;
-    NES* nes;
-    ScreenView* panelScreen;
-    string rom;
-    Font* progressFont;
-    Color* bgColor;
-    bool started;
-
-:
-    void init() {
+    void vNES::init() {
         started = false;
         rom = "";
 //        bgColor = Color.black.darker().darker();
@@ -62,7 +39,7 @@ public:
 
     }
 
-    void addScreenView() {
+    void vNES::addScreenView() {
 
         panelScreen = (ScreenView) gui.getScreenView();
         panelScreen.setFPSEnabled(fps);
@@ -92,14 +69,14 @@ public:
 
     }
 
-    void start() {
+    void vNES::start() {
 
         Thread t = new Thread(this);
         t.start();
 
     }
 
-    void run() {
+    void vNES::run() {
 
         // Set font to be used for progress display of loading:
         progressFont = new Font("Tahoma", Font.TRUETYPE_FONT | Font.BOLD, 12);
@@ -136,7 +113,7 @@ public:
 
     }
 
-    void stop() {
+    void vNES::stop() {
         nes.stopEmulation();
         //System.out.println("vNES has stopped the processor.");
         nes.getPapu().stop();
@@ -144,7 +121,7 @@ public:
 
     }
 
-    void destroy() {
+    void vNES::destroy() {
 
         if (nes != NULL && nes.getCpu().isRunning()) {
             stop();
@@ -167,7 +144,7 @@ public:
 
     }
 
-    void showLoadProgress(int percentComplete) {
+    void vNES::showLoadProgress(int percentComplete) {
 
         progress = percentComplete;
         paint(getGraphics());
@@ -175,7 +152,7 @@ public:
     }
 
     // Show the progress graphically.
-    void paint(Graphics* g) {
+    void vNES::paint(Graphics* g) {
 
         string pad;
         string disp;
@@ -223,11 +200,11 @@ public:
         g.drawString("For updates, visit www.thatsanderskid.com", 12, 464);
     }
 
-    void update(Graphics* g) {
+    void vNES::update(Graphics* g) {
         // do nothing.
     }
 
-    void readParams() {
+    void vNES::readParams() {
 
         string tmp;
 
@@ -401,7 +378,7 @@ public:
         }
     }
 
-    void initKeyCodes() {
+    void vNES::initKeyCodes() {
         Globals::keycodes.put("VK_SPACE", 32);
         Globals::keycodes.put("VK_PAGE_UP", 33);
         Globals::keycodes.put("VK_PAGE_DOWN", 34);
@@ -482,6 +459,5 @@ public:
         Globals::keycodes.put("VK_PERIOD", 46);
         Globals::keycodes.put("VK_SLASH", 47);
     }
-};
 
 

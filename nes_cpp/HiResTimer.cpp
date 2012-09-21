@@ -17,17 +17,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class HiResTimer {
-public:
-     long currentMicros() {
+
+     long HiResTimer::currentMicros() {
         return System.nanoTime() / 1000;
     }
 
-     long currentTick() {
+     long HiResTimer::currentTick() {
         return System.nanoTime();
     }
 
-     void sleepMicros(long time) {
+     void HiResTimer::sleepMicros(long time) {
 
         try {
 
@@ -46,7 +45,7 @@ public:
 
     }
 
-     void sleepMillisIdle(int millis) {
+     void HiResTimer::sleepMillisIdle(int millis) {
 
         millis /= 10;
         millis *= 10;
@@ -58,7 +57,6 @@ public:
 
     }
 
-     void yield() {
+     void HiResTimer::yield() {
         Thread.yield();
     }
-};

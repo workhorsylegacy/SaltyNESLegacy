@@ -17,15 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class NameTable {
-public:
-    string name;
-    short[] tile;
-    short[] attrib;
-    int width;
-    int height;
-
-     NameTable(int width, int height, string name) {
+     NameTable::NameTable(int width, int height, string name) {
 
         this.name = name;
 
@@ -37,25 +29,25 @@ public:
 
     }
 
-     short getTileIndex(int x, int y) {
+     short NameTable::getTileIndex(int x, int y) {
 
         return tile[y * width + x];
 
     }
 
-     short getAttrib(int x, int y) {
+     short NameTable::getAttrib(int x, int y) {
 
         return attrib[y * width + x];
 
     }
 
-     void writeTileIndex(int index, int value) {
+     void NameTable::writeTileIndex(int index, int value) {
 
         tile[index] = (short) value;
 
     }
 
-     void writeAttrib(int index, int value) {
+     void NameTable::writeAttrib(int index, int value) {
 
         int basex, basey;
         int add;
@@ -83,7 +75,7 @@ public:
 
     }
 
-     void stateSave(ByteBuffer* buf) {
+     void NameTable::stateSave(ByteBuffer* buf) {
 
         for (int i = 0; i < width * height; i++) {
             if (tile[i] > 255)//System.out.println(">255!!");
@@ -97,7 +89,7 @@ public:
 
     }
 
-     void stateLoad(ByteBuffer* buf) {
+     void NameTable::stateLoad(ByteBuffer* buf) {
 
         for (int i = 0; i < width * height; i++) {
             tile[i] = buf.readByte();
@@ -107,4 +99,3 @@ public:
         }
 
     }
-};

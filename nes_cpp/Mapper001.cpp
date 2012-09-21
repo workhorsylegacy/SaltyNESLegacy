@@ -17,37 +17,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class Mapper001 : public MapperDefault {
-public:
-    // Register flags:
 
-    // Register 0:
-    int mirroring;
-    int oneScreenMirroring;
-    int prgSwitchingArea = 1;
-    int prgSwitchingSize = 1;
-    int vromSwitchingSize;
-
-    // Register 1:
-    int romSelectionReg0;
-
-    // Register 2:
-    int romSelectionReg1;
-
-    // Register 3:
-    int romBankSelect;
-
-    // 5-bit buffer:
-    int regBuffer;
-    int regBufferCounter;
-
-     void init(NES* nes) {
+     void Mapper001::init(NES* nes) {
 
         super.init(nes);
 
     }
 
-     void mapperInternalStateLoad(ByteBuffer* buf) {
+     void Mapper001::mapperInternalStateLoad(ByteBuffer* buf) {
 
         // Check version:
         if (buf.readByte() == 1) {
@@ -76,7 +53,7 @@ public:
 
     }
 
-     void mapperInternalStateSave(ByteBuffer* buf) {
+     void Mapper001::mapperInternalStateSave(ByteBuffer* buf) {
 
         // Version:
         buf.putByte((short) 1);
@@ -103,7 +80,7 @@ public:
 
     }
 
-     void write(int address, short value) {
+     void Mapper001::write(int address, short value) {
 
         // Writes to addresses other than MMC registers are handled by NoMapper.
         if (address < 0x8000) {
@@ -149,7 +126,7 @@ public:
 
     }
 
-     void setReg(int reg, int value) {
+     void Mapper001::setReg(int reg, int value) {
 
         int tmp, tmp2;
 
@@ -293,7 +270,7 @@ public:
     }
 
     // Returns the register number from the address written to:
-     int getRegNumber(int address) {
+     int Mapper001::getRegNumber(int address) {
 
         if (address >= 0x8000 && address <= 0x9FFF) {
             return 0;
@@ -307,7 +284,7 @@ public:
 
     }
 
-     void loadROM(ROM rom) {
+     void Mapper001::loadROM(ROM rom) {
 
         //System.out.println("Loading ROM.");
 
@@ -332,7 +309,7 @@ public:
 
     }
 
-     void reset() {
+     void Mapper001::reset() {
 
         regBuffer = 0;
         regBufferCounter = 0;
@@ -355,17 +332,17 @@ public:
 
     }
 
-     void switchLowHighPrgRom(int oldSetting) {
+     void Mapper001::switchLowHighPrgRom(int oldSetting) {
 
         // not yet.
     }
 
-     void switch16to32() {
+     void Mapper001::switch16to32() {
 
         // not yet.
     }
 
-     void switch32to16() {
+     void Mapper001::switch32to16() {
 
         // not yet.
     }

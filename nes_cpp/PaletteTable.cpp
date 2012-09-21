@@ -19,27 +19,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
-class PaletteTable {
-public:
-     static int[] curTable = new int[64];
-     static int[] origTable = new int[64];
-     static int[][] emphTable = new int[8][64];
-    int currentEmph = -1;
-    int currentHue, currentSaturation, currentLightness, currentContrast;
-
-
     // Load the NTSC palette:
-     bool loadNTSCPalette() {
+     bool PaletteTable::loadNTSCPalette() {
         return loadPalette("palettes/ntsc.txt");
     }
 
     // Load the PAL palette:
-     bool loadPALPalette() {
+     bool PaletteTable::loadPALPalette() {
         return loadPalette("palettes/pal.txt");
     }
 
     // Load a palette file:
-     bool loadPalette(string file) {
+     bool PaletteTable::loadPalette(string file) {
 
         int r, g, b;
 
@@ -115,7 +106,7 @@ public:
 
     }
 
-     void makeTables() {
+     void PaletteTable::makeTables() {
 
         int r, g, b, col;
 
@@ -152,7 +143,7 @@ public:
 
     }
 
-     void setEmphasis(int emph) {
+     void PaletteTable::setEmphasis(int emph) {
 
         if (emph != currentEmph) {
             currentEmph = emph;
@@ -164,11 +155,11 @@ public:
 
     }
 
-     int getEntry(int yiq) {
+     int PaletteTable::getEntry(int yiq) {
         return curTable[yiq];
     }
 
-     int RGBtoHSL(int r, int g, int b) {
+     int PaletteTable::RGBtoHSL(int r, int g, int b) {
 
         float[] hsbvals = new float[3];
         hsbvals = Color.RGBtoHSB(b, g, r, hsbvals);
@@ -183,17 +174,17 @@ public:
 
     }
 
-     int RGBtoHSL(int rgb) {
+     int PaletteTable::RGBtoHSL(int rgb) {
 
         return RGBtoHSL((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, (rgb) & 0xFF);
 
     }
 
-     int HSLtoRGB(int h, int s, int l) {
+     int PaletteTable::HSLtoRGB(int h, int s, int l) {
         return Color.HSBtoRGB(h / 255.0f, s / 255.0f, l / 255.0f);
     }
 
-     int HSLtoRGB(int hsl) {
+     int PaletteTable::HSLtoRGB(int hsl) {
 
         float h, s, l;
         h = (float) (((hsl >> 16) & 0xFF) / 255d);
@@ -203,41 +194,41 @@ public:
 
     }
 
-     int getHue(int hsl) {
+     int PaletteTable::getHue(int hsl) {
         return (hsl >> 16) & 0xFF;
     }
 
-     int getSaturation(int hsl) {
+     int PaletteTable::getSaturation(int hsl) {
         return (hsl >> 8) & 0xFF;
     }
 
-     int getLightness(int hsl) {
+     int PaletteTable::getLightness(int hsl) {
         return hsl & 0xFF;
     }
 
-     int getRed(int rgb) {
+     int PaletteTable::getRed(int rgb) {
         return (rgb >> 16) & 0xFF;
     }
 
-     int getGreen(int rgb) {
+     int PaletteTable::getGreen(int rgb) {
         return (rgb >> 8) & 0xFF;
     }
 
-     int getBlue(int rgb) {
+     int PaletteTable::getBlue(int rgb) {
         return rgb & 0xFF;
     }
 
-     int getRgb(int r, int g, int b) {
+     int PaletteTable::getRgb(int r, int g, int b) {
         return ((r << 16) | (g << 8) | (b));
     }
 
-     void updatePalette() {
+     void PaletteTable::updatePalette() {
         updatePalette(currentHue, currentSaturation, currentLightness, currentContrast);
     }
 
     // Change palette colors.
     // Arguments should be set to 0 to keep the original value.
-     void updatePalette(int hueAdd, int saturationAdd, int lightnessAdd, int contrastAdd) {
+     void PaletteTable::updatePalette(int hueAdd, int saturationAdd, int lightnessAdd, int contrastAdd) {
 
         int hsl, rgb;
         int h, s, l;
@@ -315,7 +306,7 @@ public:
 
     }
 
-     void loadDefaultPalette() {
+     void PaletteTable::loadDefaultPalette() {
 
         if (origTable == NULL) {
             origTable = new int[64];
@@ -391,7 +382,7 @@ public:
 
     }
 
-     void reset() {
+     void PaletteTable::reset() {
 
         currentEmph = 0;
         currentHue = 0;
@@ -401,4 +392,3 @@ public:
         updatePalette();
 
     }
-};

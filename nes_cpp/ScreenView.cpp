@@ -18,36 +18,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-
-class ScreenView : public BufferView {
-public:
-     MyMouseAdapter mouse;
-     bool notifyImageReady;
-
-     ScreenView(NES* nes, int width, int height) {
-        super(nes, width, height);
-    }
-
-     void init() {
-
-        if (mouse == NULL) {
-            mouse = new MyMouseAdapter();
-            this.addMouseListener(mouse);
-        }
-        super.init();
-
-    }
-
-     class MyMouseAdapter : public MouseAdapter {
-     public:
-        long lastClickTime = 0;
-
-         void mouseClicked(MouseEvent me) {
+         void MyMouseAdapter::mouseClicked(MouseEvent me) {
             setFocusable(true);
             requestFocus();
         }
 
-         void mousePressed(MouseEvent me) {
+         void MyMouseAdapter::mousePressed(MouseEvent me) {
             setFocusable(true);
             requestFocus();
 
@@ -59,20 +35,33 @@ public:
 
         }
 
-         void mouseReleased(MouseEvent me) {
+         void MyMouseAdapter::mouseReleased(MouseEvent me) {
 
             if (nes != NULL && nes.memMapper != NULL) {
                 nes.memMapper.setMouseState(false, 0, 0);
             }
 
         }
+
+     ScreenView::ScreenView(NES* nes, int width, int height) {
+        super(nes, width, height);
     }
 
-     void setNotifyImageReady(bool value) {
+     void ScreenView::init() {
+
+        if (mouse == NULL) {
+            mouse = new MyMouseAdapter();
+            this.addMouseListener(mouse);
+        }
+        super.init();
+
+    }
+
+     void ScreenView::setNotifyImageReady(bool value) {
         this.notifyImageReady = value;
     }
 
-     void imageReady(bool skipFrame) {
+     void ScreenView::imageReady(bool skipFrame) {
 
         if (!Globals::focused) {
             setFocusable(true);
@@ -89,4 +78,4 @@ public:
         }
 
     }
-};
+
