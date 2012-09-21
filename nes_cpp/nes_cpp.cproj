@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{361BF6B2-534B-4E22-BCF9-367136CE5D3A}</ProjectGuid>
+    <Target>Bin</Target>
+    <Language>CPP</Language>
+    <Compiler>
+      <Compiler ctype="GppCompiler" />
+    </Compiler>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
+    <SourceDirectory>.</SourceDirectory>
+    <CompileTarget>Bin</CompileTarget>
+    <Externalconsole>true</Externalconsole>
+    <OutputName>derp</OutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release</OutputPath>
+    <OptimizationLevel>3</OptimizationLevel>
+    <DefineSymbols>MONODEVELOP</DefineSymbols>
+    <SourceDirectory>.</SourceDirectory>
+    <Externalconsole>true</Externalconsole>
+    <OutputName>derp</OutputName>
+    <CompileTarget>Bin</CompileTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="main.cpp" />
+    <Compile Include="AppletUI.cpp" />
+    <Compile Include="BlipBuffer.cpp" />
+    <Compile Include="BufferView.cpp" />
+    <Compile Include="ByteBuffer.cpp" />
+    <Compile Include="ChannelDM.cpp" />
+    <Compile Include="ChannelNoise.cpp" />
+    <Compile Include="ChannelSquare.cpp" />
+    <Compile Include="ChannelTriangle.cpp" />
+    <Compile Include="CPU.cpp" />
+    <Compile Include="CpuInfo.cpp" />
+    <Compile Include="FileLoader.cpp" />
+    <Compile Include="HiResTimer.cpp" />
+    <Compile Include="InputHandler.cpp" />
+    <Compile Include="KbInputHandler.cpp" />
+    <Compile Include="Mapper001.cpp" />
+    <Compile Include="MapperDefault.cpp" />
+    <Compile Include="Memory.cpp" />
+    <Compile Include="MemoryMapper.cpp" />
+    <Compile Include="Misc.cpp" />
+    <Compile Include="NameTable.cpp" />
+    <Compile Include="NES.cpp" />
+    <Compile Include="PaletteTable.cpp" />
+    <Compile Include="PAPU.cpp" />
+    <Compile Include="PapuChannel.cpp" />
+    <Compile Include="PPU.cpp" />
+    <Compile Include="Raster.cpp" />
+    <Compile Include="ROM.cpp" />
+    <Compile Include="Scale.cpp" />
+    <Compile Include="ScreenView.cpp" />
+    <Compile Include="Tile.cpp" />
+    <Compile Include="vNES.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Globals.h" />
+    <None Include="Makefile" />
+  </ItemGroup>
+</Project>
