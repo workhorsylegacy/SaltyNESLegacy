@@ -23,6 +23,7 @@ using namespace std;
 
 
 class vNES : public thread {
+public:
     bool scale;
     bool scanlines;
     bool sound;
@@ -41,7 +42,7 @@ class vNES : public thread {
     Color* bgColor;
     bool started;
 
-public:
+:
     void init() {
         started = false;
         rom = "";
@@ -66,7 +67,7 @@ public:
         panelScreen = (ScreenView) gui.getScreenView();
         panelScreen.setFPSEnabled(fps);
 
-        this.setLayout(null);
+        this.setLayout(NULL);
 
         if (scale) {
 
@@ -145,21 +146,21 @@ public:
 
     void destroy() {
 
-        if (nes != null && nes.getCpu().isRunning()) {
+        if (nes != NULL && nes.getCpu().isRunning()) {
             stop();
         }
         
-        if (nes != null) {
+        if (nes != NULL) {
             nes.destroy();
         }
-        if (gui != null) {
+        if (gui != NULL) {
             gui.destroy();
         }
 
-        gui = null;
-        nes = null;
-        panelScreen = null;
-        rom = null;
+        gui = NULL;
+        nes = NULL;
+        panelScreen = NULL;
+        rom = NULL;
 
         System.runFinalization();
         System.gc();
@@ -174,7 +175,7 @@ public:
     }
 
     // Show the progress graphically.
-    void paint(Graphics g) {
+    void paint(Graphics* g) {
 
         string pad;
         string disp;
@@ -222,7 +223,7 @@ public:
         g.drawString("For updates, visit www.thatsanderskid.com", 12, 464);
     }
 
-    void update(Graphics g) {
+    void update(Graphics* g) {
         // do nothing.
     }
 
@@ -231,56 +232,56 @@ public:
         string tmp;
 
         tmp = getParameter("rom");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             rom = "vnes.nes";
         } else {
             rom = tmp;
         }
 
         tmp = getParameter("scale");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             scale = false;
         } else {
             scale = tmp.equals("on");
         }
 
         tmp = getParameter("sound");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             sound = true;
         } else {
             sound = tmp.equals("on");
         }
 
         tmp = getParameter("stereo");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             stereo = true; // on by default
         } else {
             stereo = tmp.equals("on");
         }
 
         tmp = getParameter("scanlines");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             scanlines = false;
         } else {
             scanlines = tmp.equals("on");
         }
 
         tmp = getParameter("fps");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             fps = false;
         } else {
             fps = tmp.equals("on");
         }
 
         tmp = getParameter("timeemulation");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             timeemulation = true;
         } else {
             timeemulation = tmp.equals("on");
         }
 
         tmp = getParameter("showsoundbuffer");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             showsoundbuffer = false;
         } else {
             showsoundbuffer = tmp.equals("on");
@@ -289,49 +290,49 @@ public:
         /* Controller Setup for Player 1 */
 
         tmp = getParameter("p1_up");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p1_up", "VK_UP");
         } else {
             Globals::controls.put("p1_up", "VK_" + tmp);
         }
         tmp = getParameter("p1_down");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p1_down", "VK_DOWN");
         } else {
             Globals::controls.put("p1_down", "VK_" + tmp);
         }
         tmp = getParameter("p1_left");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p1_left", "VK_LEFT");
         } else {
             Globals::controls.put("p1_left", "VK_" + tmp);
         }
         tmp = getParameter("p1_right");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p1_right", "VK_RIGHT");
         } else {
             Globals::controls.put("p1_right", "VK_" + tmp);
         }
         tmp = getParameter("p1_a");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p1_a", "VK_X");
         } else {
             Globals::controls.put("p1_a", "VK_" + tmp);
         }
         tmp = getParameter("p1_b");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p1_b", "VK_Z");
         } else {
             Globals::controls.put("p1_b", "VK_" + tmp);
         }
         tmp = getParameter("p1_start");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p1_start", "VK_ENTER");
         } else {
             Globals::controls.put("p1_start", "VK_" + tmp);
         }
         tmp = getParameter("p1_select");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p1_select", "VK_CONTROL");
         } else {
             Globals::controls.put("p1_select", "VK_" + tmp);
@@ -340,56 +341,56 @@ public:
         /* Controller Setup for Player 2 */
 
         tmp = getParameter("p2_up");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p2_up", "VK_NUMPAD8");
         } else {
             Globals::controls.put("p2_up", "VK_" + tmp);
         }
         tmp = getParameter("p2_down");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p2_down", "VK_NUMPAD2");
         } else {
             Globals::controls.put("p2_down", "VK_" + tmp);
         }
         tmp = getParameter("p2_left");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p2_left", "VK_NUMPAD4");
         } else {
             Globals::controls.put("p2_left", "VK_" + tmp);
         }
         tmp = getParameter("p2_right");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p2_right", "VK_NUMPAD6");
         } else {
             Globals::controls.put("p2_right", "VK_" + tmp);
         }
         tmp = getParameter("p2_a");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p2_a", "VK_NUMPAD7");
         } else {
             Globals::controls.put("p2_a", "VK_" + tmp);
         }
         tmp = getParameter("p2_b");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p2_b", "VK_NUMPAD9");
         } else {
             Globals::controls.put("p2_b", "VK_" + tmp);
         }
         tmp = getParameter("p2_start");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p2_start", "VK_NUMPAD1");
         } else {
             Globals::controls.put("p2_start", "VK_" + tmp);
         }
         tmp = getParameter("p2_select");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             Globals::controls.put("p2_select", "VK_NUMPAD3");
         } else {
             Globals::controls.put("p2_select", "VK_" + tmp);
         }
 
         tmp = getParameter("romsize");
-        if (tmp == null || tmp.equals("")) {
+        if (tmp == NULL || tmp.equals("")) {
             romSize = -1;
         } else {
             try {

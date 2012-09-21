@@ -23,60 +23,60 @@ instructions and invokes emulation of the PPU and pAPU.
 
 #include "Globals.h"
 
-class CPU : Runnable {
-
+class CPU : public Runnable {
+public:
 
 	// Thread:
 	Thread myThread;
 
 	// References to other parts of NES :
-	private NES nes;
-	private MemoryMapper mmap;
-	private short[] mem;
+	 NES* nes;
+	 IMemoryMapper* mmap;
+	 short[] mem;
 
 	// CPU Registers:
-	public int REG_ACC_NEW;
-	public int REG_X_NEW;
-	public int REG_Y_NEW;
-	public int REG_STATUS_NEW;
-	public int REG_PC_NEW;
-	public int REG_SP;
+	 int REG_ACC_NEW;
+	 int REG_X_NEW;
+	 int REG_Y_NEW;
+	 int REG_STATUS_NEW;
+	 int REG_PC_NEW;
+	 int REG_SP;
 
 	// Status flags:
-	private int F_CARRY_NEW;
-	private int F_ZERO_NEW;
-	private int F_INTERRUPT_NEW;
-	private int F_DECIMAL_NEW;
-	private int F_BRK_NEW;
-	private int F_NOTUSED_NEW;
-	private int F_OVERFLOW_NEW;
-	private int F_SIGN_NEW;
+	 int F_CARRY_NEW;
+	 int F_ZERO_NEW;
+	 int F_INTERRUPT_NEW;
+	 int F_DECIMAL_NEW;
+	 int F_BRK_NEW;
+	 int F_NOTUSED_NEW;
+	 int F_OVERFLOW_NEW;
+	 int F_SIGN_NEW;
 
 	// IRQ Types:
-	public static final int IRQ_NORMAL = 0;
-	public static final int IRQ_NMI    = 1;
-	public static final int IRQ_RESET  = 2;
+	 static const int IRQ_NORMAL = 0;
+	 static const int IRQ_NMI    = 1;
+	 static const int IRQ_RESET  = 2;
 
 	// Interrupt notification:
-	public bool irqRequested;
-	private int irqType;
+	 bool irqRequested;
+	 int irqType;
 
 	// Op/Inst Data:
-	private int[] opdata;
+	 int[] opdata;
 
 	// Misc vars:
-	public int cyclesToHalt;
-	public bool stopRunning;
-	public bool crash;
+	 int cyclesToHalt;
+	 bool stopRunning;
+	 bool crash;
 
 
 	// Constructor:
-	public CPU(NES nes){
+	 CPU(NES* nes){
 		this.nes = nes;
 	}
 
 	// Initialize:
-	public void init(){
+	 void init(){
 
 		// Get Op data:
 		opdata = CpuInfo.getOpData();
@@ -95,7 +95,7 @@ class CPU : Runnable {
 
 	}
 
-	public void stateLoad(ByteBuffer buf){
+	 void stateLoad(ByteBuffer* buf){
 
 		if(buf.readByte()==1){
 			// Version 1
@@ -115,7 +115,7 @@ class CPU : Runnable {
 
 	}
 
-	public void stateSave(ByteBuffer buf){
+	 void stateSave(ByteBuffer* buf){
 
 		// Save info version:
 		buf.putByte((short)1);
@@ -133,7 +133,7 @@ class CPU : Runnable {
 
 	}
 
-	public void reset(){
+	 void reset(){
 
 		REG_ACC_NEW = 0;
 		REG_X_NEW = 0;
@@ -171,9 +171,9 @@ class CPU : Runnable {
 
 	}
 
-	public synchronized void beginExecution(){
+	 synchronized void beginExecution(){
 
-		if(myThread!=null && myThread.isAlive()){
+		if(myThread!=NULL && myThread.isAlive()){
 			endExecution();
 		}
 
@@ -183,9 +183,9 @@ class CPU : Runnable {
 
 	}
 
-	public synchronized void endExecution(){
+	 synchronized void endExecution(){
 		//System.out.println("* Attempting to stop CPU thread.");
-		if(myThread!=null && myThread.isAlive()){
+		if(myThread!=NULL && myThread.isAlive()){
 			try{
 				stopRunning = true;
 				myThread.join();
@@ -199,21 +199,21 @@ class CPU : Runnable {
 		}
 	}
 
-	public bool isRunning(){
-		return (myThread!=null && myThread.isAlive());
+	 bool isRunning(){
+		return (myThread!=NULL && myThread.isAlive());
 	}
 
-	public void run(){
+	 void run(){
 		initRun();
 		emulate();
 	}
 
-	public synchronized void initRun(){
+	 synchronized void initRun(){
 		stopRunning = false;
 	}
 
 	// Emulates cpu instructions until stopped.
-	public void emulate(){
+	 void emulate(){
 
 
 		// NES Memory
@@ -223,7 +223,7 @@ class CPU : Runnable {
 		mem = nes.cpuMem.mem;
 
 		// References to other parts of NES:
-		MemoryMapper mmap = nes.memMapper;
+		IMemoryMapper* mmap = nes.memMapper;
 		PPU 		 ppu  = nes.ppu;
 		PAPU 		 papu = nes.papu;
 
@@ -1310,11 +1310,11 @@ class CPU : Runnable {
 
 	}
 
-	private int load(int addr){
+	 int load(int addr){
 		return addr<0x2000 ? mem[addr&0x7FF] : mmap.load(addr);
 	}
 	
-	private int load16bit(int addr){
+	 int load16bit(int addr){
 		return addr<0x1FFF ?
 			mem[addr&0x7FF] | (mem[(addr+1)&0x7FF]<<8)
 			:
@@ -1322,7 +1322,7 @@ class CPU : Runnable {
 			;
 	}
 	
-	private void write(int addr, short val){
+	 void write(int addr, short val){
 		if(addr < 0x2000){
 			mem[addr&0x7FF] = val;
 		}else{
@@ -1330,7 +1330,7 @@ class CPU : Runnable {
 		}
 	}
 
-	public void requestIrq(int type){
+	 void requestIrq(int type){
 		if(irqRequested){
 			if(type == IRQ_NORMAL){
 				return;
@@ -1341,31 +1341,31 @@ class CPU : Runnable {
 		irqType = type;
 	}
 
-	public void push(int value){
+	 void push(int value){
 		mmap.write(REG_SP,(short)value);
 		REG_SP--;
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 	}
 
-	public void stackWrap(){
+	 void stackWrap(){
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 	}
 
-	public short pull(){
+	 short pull(){
 		REG_SP++;
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 		return mmap.load(REG_SP);
 	}
 
-	public bool pageCrossed(int addr1, int addr2){
+	 bool pageCrossed(int addr1, int addr2){
 		return ((addr1&0xFF00)!=(addr2&0xFF00));
 	}
 
-	public void haltCycles(int cycles){
+	 void haltCycles(int cycles){
 		cyclesToHalt += cycles;
 	}
 
-	private void doNonMaskableInterrupt(int status){
+	 void doNonMaskableInterrupt(int status){
 
 		int temp = mmap.load(0x2000); // Read PPU status.
 		if((temp&128)!=0){ // Check whether VBlank Interrupts are enabled
@@ -1384,14 +1384,14 @@ class CPU : Runnable {
 
 	}
 
-	private void doResetInterrupt(){
+	 void doResetInterrupt(){
 
 		REG_PC_NEW = mmap.load(0xFFFC) | (mmap.load(0xFFFD) << 8);
 		REG_PC_NEW--;
 
 	}
 
-	private void doIrq(int status){
+	 void doIrq(int status){
 
 		REG_PC_NEW++;
 		push((REG_PC_NEW>>8)&0xFF);
@@ -1405,11 +1405,11 @@ class CPU : Runnable {
 
 	}
 
-	private int getStatus(){
+	 int getStatus(){
 		return (F_CARRY_NEW)|(F_ZERO_NEW<<1)|(F_INTERRUPT_NEW<<2)|(F_DECIMAL_NEW<<3)|(F_BRK_NEW<<4)|(F_NOTUSED_NEW<<5)|(F_OVERFLOW_NEW<<6)|(F_SIGN_NEW<<7);
 	}
 
-	private void setStatus(int st){
+	 void setStatus(int st){
 		F_CARRY_NEW     = (st   )&1;
 		F_ZERO_NEW      = (st>>1)&1;
 		F_INTERRUPT_NEW = (st>>2)&1;
@@ -1420,17 +1420,17 @@ class CPU : Runnable {
 		F_SIGN_NEW      = (st>>7)&1;
 	}
 
-	public void setCrashed(bool value){
+	 void setCrashed(bool value){
 		this.crash = value;
 	}
 
-	public void setMapper(MemoryMapper mapper){
+	 void setMapper(IMemoryMapper* mapper){
 		mmap = mapper;
 	}
 
-	public void destroy(){
-		nes 	= null;
-		mmap 	= null;
+	 void destroy(){
+		nes 	= NULL;
+		mmap 	= NULL;
     }
 
-}
+};

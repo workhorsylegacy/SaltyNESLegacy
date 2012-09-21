@@ -4,105 +4,105 @@
 // Holds info on the cpu. Mostly constants that are placed here
 // to keep the CPU code clean.
 class CpuInfo {
-
+public:
     // Opdata array:
-    private static int[] opdata;
+     static int[] opdata;
     // Instruction names:
-    private static string[] instname;
+     static string[] instname;
     // Address mode descriptions:
-    private static string[] addrDesc;
-    public static int[] cycTable;
+     static string[] addrDesc;
+     static int[] cycTable;
     // Instruction types:
     // -------------------------------- //
-    public static final int INS_ADC = 0;
-    public static final int INS_AND = 1;
-    public static final int INS_ASL = 2;
-    public static final int INS_BCC = 3;
-    public static final int INS_BCS = 4;
-    public static final int INS_BEQ = 5;
-    public static final int INS_BIT = 6;
-    public static final int INS_BMI = 7;
-    public static final int INS_BNE = 8;
-    public static final int INS_BPL = 9;
-    public static final int INS_BRK = 10;
-    public static final int INS_BVC = 11;
-    public static final int INS_BVS = 12;
-    public static final int INS_CLC = 13;
-    public static final int INS_CLD = 14;
-    public static final int INS_CLI = 15;
-    public static final int INS_CLV = 16;
-    public static final int INS_CMP = 17;
-    public static final int INS_CPX = 18;
-    public static final int INS_CPY = 19;
-    public static final int INS_DEC = 20;
-    public static final int INS_DEX = 21;
-    public static final int INS_DEY = 22;
-    public static final int INS_EOR = 23;
-    public static final int INS_INC = 24;
-    public static final int INS_INX = 25;
-    public static final int INS_INY = 26;
-    public static final int INS_JMP = 27;
-    public static final int INS_JSR = 28;
-    public static final int INS_LDA = 29;
-    public static final int INS_LDX = 30;
-    public static final int INS_LDY = 31;
-    public static final int INS_LSR = 32;
-    public static final int INS_NOP = 33;
-    public static final int INS_ORA = 34;
-    public static final int INS_PHA = 35;
-    public static final int INS_PHP = 36;
-    public static final int INS_PLA = 37;
-    public static final int INS_PLP = 38;
-    public static final int INS_ROL = 39;
-    public static final int INS_ROR = 40;
-    public static final int INS_RTI = 41;
-    public static final int INS_RTS = 42;
-    public static final int INS_SBC = 43;
-    public static final int INS_SEC = 44;
-    public static final int INS_SED = 45;
-    public static final int INS_SEI = 46;
-    public static final int INS_STA = 47;
-    public static final int INS_STX = 48;
-    public static final int INS_STY = 49;
-    public static final int INS_TAX = 50;
-    public static final int INS_TAY = 51;
-    public static final int INS_TSX = 52;
-    public static final int INS_TXA = 53;
-    public static final int INS_TXS = 54;
-    public static final int INS_TYA = 55;
-    public static final int INS_DUMMY = 56; // dummy instruction used for 'halting' the processor some cycles
+     static const int INS_ADC = 0;
+     static const int INS_AND = 1;
+     static const int INS_ASL = 2;
+     static const int INS_BCC = 3;
+     static const int INS_BCS = 4;
+     static const int INS_BEQ = 5;
+     static const int INS_BIT = 6;
+     static const int INS_BMI = 7;
+     static const int INS_BNE = 8;
+     static const int INS_BPL = 9;
+     static const int INS_BRK = 10;
+     static const int INS_BVC = 11;
+     static const int INS_BVS = 12;
+     static const int INS_CLC = 13;
+     static const int INS_CLD = 14;
+     static const int INS_CLI = 15;
+     static const int INS_CLV = 16;
+     static const int INS_CMP = 17;
+     static const int INS_CPX = 18;
+     static const int INS_CPY = 19;
+     static const int INS_DEC = 20;
+     static const int INS_DEX = 21;
+     static const int INS_DEY = 22;
+     static const int INS_EOR = 23;
+     static const int INS_INC = 24;
+     static const int INS_INX = 25;
+     static const int INS_INY = 26;
+     static const int INS_JMP = 27;
+     static const int INS_JSR = 28;
+     static const int INS_LDA = 29;
+     static const int INS_LDX = 30;
+     static const int INS_LDY = 31;
+     static const int INS_LSR = 32;
+     static const int INS_NOP = 33;
+     static const int INS_ORA = 34;
+     static const int INS_PHA = 35;
+     static const int INS_PHP = 36;
+     static const int INS_PLA = 37;
+     static const int INS_PLP = 38;
+     static const int INS_ROL = 39;
+     static const int INS_ROR = 40;
+     static const int INS_RTI = 41;
+     static const int INS_RTS = 42;
+     static const int INS_SBC = 43;
+     static const int INS_SEC = 44;
+     static const int INS_SED = 45;
+     static const int INS_SEI = 46;
+     static const int INS_STA = 47;
+     static const int INS_STX = 48;
+     static const int INS_STY = 49;
+     static const int INS_TAX = 50;
+     static const int INS_TAY = 51;
+     static const int INS_TSX = 52;
+     static const int INS_TXA = 53;
+     static const int INS_TXS = 54;
+     static const int INS_TYA = 55;
+     static const int INS_DUMMY = 56; // dummy instruction used for 'halting' the processor some cycles
     // -------------------------------- //
     // Addressing modes:
-    public static final int ADDR_ZP = 0;
-    public static final int ADDR_REL = 1;
-    public static final int ADDR_IMP = 2;
-    public static final int ADDR_ABS = 3;
-    public static final int ADDR_ACC = 4;
-    public static final int ADDR_IMM = 5;
-    public static final int ADDR_ZPX = 6;
-    public static final int ADDR_ZPY = 7;
-    public static final int ADDR_ABSX = 8;
-    public static final int ADDR_ABSY = 9;
-    public static final int ADDR_PREIDXIND = 10;
-    public static final int ADDR_POSTIDXIND = 11;
-    public static final int ADDR_INDABS = 12;
+     static const int ADDR_ZP = 0;
+     static const int ADDR_REL = 1;
+     static const int ADDR_IMP = 2;
+     static const int ADDR_ABS = 3;
+     static const int ADDR_ACC = 4;
+     static const int ADDR_IMM = 5;
+     static const int ADDR_ZPX = 6;
+     static const int ADDR_ZPY = 7;
+     static const int ADDR_ABSX = 8;
+     static const int ADDR_ABSY = 9;
+     static const int ADDR_PREIDXIND = 10;
+     static const int ADDR_POSTIDXIND = 11;
+     static const int ADDR_INDABS = 12;
 
-    public static int[] getOpData() {
-        if (opdata == null) {
+     static int[] getOpData() {
+        if (opdata == NULL) {
             initOpData();
         }
         return opdata;
     }
 
-    public static string[] getInstNames() {
-        if (instname == null) {
+     static string[] getInstNames() {
+        if (instname == NULL) {
             initInstNames();
         }
         return instname;
     }
 
-    public static string getInstName(int inst) {
-        if (instname == null) {
+     static string getInstName(int inst) {
+        if (instname == NULL) {
             initInstNames();
         }
         if (inst < instname.length) {
@@ -112,15 +112,15 @@ class CpuInfo {
         }
     }
 
-    public static string[] getAddressModeNames() {
-        if (addrDesc == null) {
+     static string[] getAddressModeNames() {
+        if (addrDesc == NULL) {
             initAddrDesc();
         }
         return addrDesc;
     }
 
-    public static string getAddressModeName(int addrMode) {
-        if (addrDesc == null) {
+     static string getAddressModeName(int addrMode) {
+        if (addrDesc == NULL) {
             initAddrDesc();
         }
         if (addrMode >= 0 && addrMode < addrDesc.length) {
@@ -129,7 +129,7 @@ class CpuInfo {
         return "???";
     }
 
-    private static void initOpData() {
+     static void initOpData() {
 
         // Create array:
         opdata = new int[256];
@@ -428,7 +428,7 @@ class CpuInfo {
 
     }
 
-    private static void setOp(int inst, int op, int addr, int size, int cycles) {
+     static void setOp(int inst, int op, int addr, int size, int cycles) {
 
         opdata[op] =
                 ((inst & 0xFF)) |
@@ -438,7 +438,7 @@ class CpuInfo {
 
     }
 
-    private static void initInstNames() {
+     static void initInstNames() {
 
         instname = new string[56];
 
@@ -502,7 +502,7 @@ class CpuInfo {
 
     }
 
-    private static void initAddrDesc() {
+     static void initAddrDesc() {
 
         addrDesc = new string[]{
                     "Zero Page           ",
@@ -521,4 +521,4 @@ class CpuInfo {
                 };
 
     }
-}
+};

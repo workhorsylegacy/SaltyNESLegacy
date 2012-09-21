@@ -17,36 +17,36 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class ChannelNoise : PapuChannel {
-
+class ChannelNoise : public IPapuChannel {
+public:
     PAPU papu;
-    public bool isEnabled;
-    public bool envDecayDisable;
-    public bool envDecayLoopEnable;
-    public bool lengthCounterEnable;
-    public bool envReset;
-    public bool shiftNow;
-    public int lengthCounter;
-    public int progTimerCount;
-    public int progTimerMax;
-    public int envDecayRate;
-    public int envDecayCounter;
-    public int envVolume;
-    public int masterVolume;
-    public int shiftReg;
-    public int randomBit;
-    public int randomMode;
-    public int sampleValue;
-    public long accValue = 0;
-    public long accCount = 1;
-    public int tmp;
+     bool isEnabled;
+     bool envDecayDisable;
+     bool envDecayLoopEnable;
+     bool lengthCounterEnable;
+     bool envReset;
+     bool shiftNow;
+     int lengthCounter;
+     int progTimerCount;
+     int progTimerMax;
+     int envDecayRate;
+     int envDecayCounter;
+     int envVolume;
+     int masterVolume;
+     int shiftReg;
+     int randomBit;
+     int randomMode;
+     int sampleValue;
+     long accValue = 0;
+     long accCount = 1;
+     int tmp;
 
-    public ChannelNoise(PAPU papu) {
+     ChannelNoise(PAPU papu) {
         this.papu = papu;
         shiftReg = 1 << 14;
     }
 
-    public void clockLengthCounter() {
+     void clockLengthCounter() {
         if (lengthCounterEnable && lengthCounter > 0) {
             lengthCounter--;
             if (lengthCounter == 0) {
@@ -55,7 +55,7 @@ class ChannelNoise : PapuChannel {
         }
     }
 
-    public void clockEnvDecay() {
+     void clockEnvDecay() {
 
         if (envReset) {
 
@@ -81,13 +81,13 @@ class ChannelNoise : PapuChannel {
 
     }
 
-    public void updateSampleValue() {
+     void updateSampleValue() {
         if (isEnabled && lengthCounter > 0) {
             sampleValue = randomBit * masterVolume;
         }
     }
 
-    public void writeReg(int address, int value) {
+     void writeReg(int address, int value) {
 
         if (address == 0x400C) {
 
@@ -117,7 +117,7 @@ class ChannelNoise : PapuChannel {
 
     }
 
-    public void setEnabled(bool value) {
+     void setEnabled(bool value) {
 
         isEnabled = value;
         if (!value) {
@@ -127,15 +127,15 @@ class ChannelNoise : PapuChannel {
 
     }
 
-    public bool isEnabled() {
+     bool isEnabled() {
         return isEnabled;
     }
 
-    public int getLengthStatus() {
+     int getLengthStatus() {
         return ((lengthCounter == 0 || !isEnabled) ? 0 : 1);
     }
 
-    public void reset() {
+     void reset() {
 
         progTimerCount = 0;
         progTimerMax = 0;
@@ -157,7 +157,7 @@ class ChannelNoise : PapuChannel {
 
     }
 
-    public void destroy() {
-        papu = null;
+     void destroy() {
+        papu = NULL;
     }
-}
+};

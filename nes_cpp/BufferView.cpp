@@ -18,50 +18,24 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-
-class BufferView extends JPanel {
-
-    // Scale modes:
-    public static final int SCALE_NONE = 0;
-    public static final int SCALE_HW2X = 1;
-    public static final int SCALE_HW3X = 2;
-    public static final int SCALE_NORMAL = 3;
-    public static final int SCALE_SCANLINE = 4;
-    public static final int SCALE_RASTER = 5;
-    protected NES nes;
-    private BufferedImage img;
-    private VolatileImage vimg;
-    private bool usingMenu = false;
-    private Graphics gfx;
-    private int width;
-    private int height;
-    private int[] pix;
-    private int[] pix_scaled;
-    private int scaleMode;
-    // FPS counter variables:
-    private bool showFPS = false;
-    private long prevFrameTime;
-    private string fps;
-    private int fpsCounter;
-    private Font fpsFont = new Font("Verdana", Font.BOLD, 10);
-    private int bgColor = Color.white.darker().getRGB();
-
     // Constructor
-    public BufferView(NES nes, int width, int height) {
-
+    BufferView::BufferView(NES* nes, int width, int height) {
         super(false);
+        this.usingMenu = false;
+        this.showFPS = false;
         this.nes = nes;
         this.width = width;
         this.height = height;
         this.scaleMode = -1;
-
+        this.fpsFont = new Font("Verdana", Font::BOLD, 10);
+        this.bgColor = Color.white.darker().getRGB();
     }
 
-    public void setBgColor(int color) {
+    void BufferView::setBgColor(int color) {
         bgColor = color;
     }
 
-    public void setScaleMode(int newMode) {
+    void BufferView::setScaleMode(int newMode) {
 
         if (newMode != scaleMode) {
 
@@ -83,13 +57,13 @@ class BufferView extends JPanel {
 
     }
 
-    public void init() {
+    void BufferView::init() {
 
         setScaleMode(SCALE_NONE);
 
     }
 
-    private void createView() {
+     void BufferView::createView() {
 
         int scale = getScaleModeScale(scaleMode);
 
@@ -109,7 +83,7 @@ class BufferView extends JPanel {
 
 
             // Set rendering hints:
-            Graphics2D g2d = (Graphics2D) gfx;
+            Graphics2D* g2d = (Graphics2D*) gfx;
             g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
@@ -136,14 +110,14 @@ class BufferView extends JPanel {
 
 
         // Set rendering hints:
-        Graphics2D g2d = (Graphics2D) gfx;
+        Graphics2D* g2d = (Graphics2D*) gfx;
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
 
         // Retrieve raster from image:
         DataBufferInt dbi = (DataBufferInt) img.getRaster().getDataBuffer();
-        int[] raster = dbi.getData();
+        int* raster = dbi.getData();
 
 
         // Replace current rasters with the one used by the image:
@@ -177,7 +151,7 @@ class BufferView extends JPanel {
 
     }
 
-    public void imageReady(bool skipFrame) {
+    void BufferView::imageReady(bool skipFrame) {
 
         // Skip image drawing if minimized or frameskipping:
         if (!skipFrame) {
@@ -206,30 +180,30 @@ class BufferView extends JPanel {
 
     }
 
-    public Image getImage() {
+    Image* BufferView::getImage() {
         return img;
     }
 
-    public int[] getBuffer() {
+    int* BufferView::getBuffer() {
         return pix;
     }
 
-    public void update(Graphics g) {
+    void BufferView::update(Graphics* g) {
     }
 
-    public bool scalingEnabled() {
+    bool BufferView::scalingEnabled() {
         return scaleMode != SCALE_NONE;
     }
 
-    public int getScaleMode() {
+    int BufferView::getScaleMode() {
         return scaleMode;
     }
 
-    public bool useNormalScaling() {
+    bool BufferView::useNormalScaling() {
         return (scaleMode == SCALE_NORMAL);
     }
 
-    public void paint(Graphics g) {
+    void BufferView::paint(Graphics* g) {
 
         // Skip if not needed:
         if (usingMenu) {
@@ -242,17 +216,17 @@ class BufferView extends JPanel {
             paintFPS(0, 14, g);
             paint_scaled(g);
 
-        } else if (img != null && g != null) {
+        } else if (img != NULL && g != NULL) {
 
             // Normal draw:
             paintFPS(0, 14, g);
-            g.drawImage(img, 0, 0, null);
+            g.drawImage(img, 0, 0, NULL);
 
         }
 
     }
 
-    public void paint_scaled(Graphics g) {
+    void BufferView::paint_scaled(Graphics* g) {
 
         // Skip if not needed:
         if (usingMenu) {
@@ -262,36 +236,36 @@ class BufferView extends JPanel {
         if (scaleMode == SCALE_HW2X) {
 
             // 2X Hardware accellerated scaling.
-            if (g != null && img != null && vimg != null) {
+            if (g != NULL && img != NULL && vimg != NULL) {
 
                 // Draw BufferedImage into accellerated image:
-                vimg.getGraphics().drawImage(img, 0, 0, null);
+                vimg.getGraphics().drawImage(img, 0, 0, NULL);
 
                 // Draw accellerated image scaled:
-                g.drawImage(vimg, 0, 0, width * 2, height * 2, null);
+                g.drawImage(vimg, 0, 0, width * 2, height * 2, NULL);
 
             }
 
         } else if (scaleMode == SCALE_HW3X) {
 
             // 3X Hardware accellerated scaling.
-            if (g != null && img != null && vimg != null) {
+            if (g != NULL && img != NULL && vimg != NULL) {
 
                 // Draw BufferedImage into accellerated image:
-                vimg.getGraphics().drawImage(img, 0, 0, null);
+                vimg.getGraphics().drawImage(img, 0, 0, NULL);
 
                 // Draw accellerated image scaled:
-                g.drawImage(vimg, 0, 0, width * 3, height * 3, null);
+                g.drawImage(vimg, 0, 0, width * 3, height * 3, NULL);
 
             }
 
         } else {
 
             // 2X Software scaling.
-            if (g != null && img != null) {
+            if (g != NULL && img != NULL) {
 
                 // Draw big BufferedImage directly:
-                g.drawImage(img, 0, 0, width * 2, height * 2, null);
+                g.drawImage(img, 0, 0, width * 2, height * 2, NULL);
 
             }
 
@@ -299,14 +273,14 @@ class BufferView extends JPanel {
 
     }
 
-    public void setFPSEnabled(bool val) {
+    void BufferView::setFPSEnabled(bool val) {
 
         // Whether to show FPS count.
         showFPS = val;
 
     }
 
-    public void paintFPS(int x, int y, Graphics g) {
+    void BufferView::paintFPS(int x, int y, Graphics* g) {
 
         // Skip if not needed:
         if (usingMenu) {
@@ -340,27 +314,27 @@ class BufferView extends JPanel {
 
     }
 
-    public int getBufferWidth() {
+    int BufferView::getBufferWidth() {
         return width;
     }
 
-    public int getBufferHeight() {
+    int BufferView::getBufferHeight() {
         return height;
     }
 
-    public void setUsingMenu(bool val) {
+    void BufferView::setUsingMenu(bool val) {
         usingMenu = val;
     }
 
-    public bool useHWScaling() {
+    bool BufferView::useHWScaling() {
         return useHWScaling(scaleMode);
     }
 
-    public bool useHWScaling(int mode) {
+    bool BufferView::useHWScaling(int mode) {
         return mode == SCALE_HW2X || mode == SCALE_HW3X;
     }
 
-    public int getScaleModeScale(int mode) {
+    int BufferView::getScaleModeScale(int mode) {
         if (mode == -1) {
             return -1;
         } else if (mode == SCALE_NONE) {
@@ -372,10 +346,9 @@ class BufferView extends JPanel {
         }
     }
 
-    public void destroy() {
+    void BufferView::destroy() {
 
-        nes = null;
-        img = null;
+        nes = NULL;
+        img = NULL;
 
     }
-}

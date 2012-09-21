@@ -17,26 +17,26 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-public interface InputHandler {
-
+class IInputHandler {
+public:
     // Joypad keys:
-    public static final int KEY_A = 0;
-    public static final int KEY_B = 1;
-    public static final int KEY_START = 2;
-    public static final int KEY_SELECT = 3;
-    public static final int KEY_UP = 4;
-    public static final int KEY_DOWN = 5;
-    public static final int KEY_LEFT = 6;
-    public static final int KEY_RIGHT = 7;
+    static const int KEY_A = 0;
+    static const int KEY_B = 1;
+    static const int KEY_START = 2;
+    static const int KEY_SELECT = 3;
+    static const int KEY_UP = 4;
+    static const int KEY_DOWN = 5;
+    static const int KEY_LEFT = 6;
+    static const int KEY_RIGHT = 7;
     
     // Key count:
-    public static final int NUM_KEYS = 8;
+    static const int NUM_KEYS = 8;
 
-    public short getKeyState(int padKey);
+    static virtual short getKeyState(int padKey) = 0;
 
-    public void mapKey(int padKey, int deviceKey);
+    static virtual void mapKey(int padKey, int deviceKey) = 0;
 
-    public void reset();
+    static virtual void reset() = 0;
 
-    public void update();
-}
+    static virtual void update() = 0;
+};

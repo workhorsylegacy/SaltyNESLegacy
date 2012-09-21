@@ -17,15 +17,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-public interface PapuChannel {
+ class IPapuChannel {
 
-    public void writeReg(int address, int value);
+     virtual void writeReg(int address, int value) = 0;
 
-    public void setEnabled(bool value);
+     virtual void setEnabled(bool value) = 0;
 
-    public bool isEnabled();
+     virtual bool isEnabled() = 0;
 
-    public void reset();
+     virtual void reset() = 0;
 
-    public int getLengthStatus();
-}
+     virtual int getLengthStatus() = 0;
+};

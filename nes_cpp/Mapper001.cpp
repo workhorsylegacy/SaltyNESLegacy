@@ -17,8 +17,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class Mapper001 extends MapperDefault {
-
+class Mapper001 : public MapperDefault {
+public:
     // Register flags:
 
     // Register 0:
@@ -41,13 +41,13 @@ class Mapper001 extends MapperDefault {
     int regBuffer;
     int regBufferCounter;
 
-    public void init(NES nes) {
+     void init(NES* nes) {
 
         super.init(nes);
 
     }
 
-    public void mapperInternalStateLoad(ByteBuffer buf) {
+     void mapperInternalStateLoad(ByteBuffer* buf) {
 
         // Check version:
         if (buf.readByte() == 1) {
@@ -76,7 +76,7 @@ class Mapper001 extends MapperDefault {
 
     }
 
-    public void mapperInternalStateSave(ByteBuffer buf) {
+     void mapperInternalStateSave(ByteBuffer* buf) {
 
         // Version:
         buf.putByte((short) 1);
@@ -103,7 +103,7 @@ class Mapper001 extends MapperDefault {
 
     }
 
-    public void write(int address, short value) {
+     void write(int address, short value) {
 
         // Writes to addresses other than MMC registers are handled by NoMapper.
         if (address < 0x8000) {
@@ -149,7 +149,7 @@ class Mapper001 extends MapperDefault {
 
     }
 
-    private void setReg(int reg, int value) {
+     void setReg(int reg, int value) {
 
         int tmp, tmp2;
 
@@ -293,7 +293,7 @@ class Mapper001 extends MapperDefault {
     }
 
     // Returns the register number from the address written to:
-    private int getRegNumber(int address) {
+     int getRegNumber(int address) {
 
         if (address >= 0x8000 && address <= 0x9FFF) {
             return 0;
@@ -307,7 +307,7 @@ class Mapper001 extends MapperDefault {
 
     }
 
-    public void loadROM(ROM rom) {
+     void loadROM(ROM rom) {
 
         //System.out.println("Loading ROM.");
 
@@ -332,7 +332,7 @@ class Mapper001 extends MapperDefault {
 
     }
 
-    public void reset() {
+     void reset() {
 
         regBuffer = 0;
         regBufferCounter = 0;
@@ -355,18 +355,18 @@ class Mapper001 extends MapperDefault {
 
     }
 
-    private void switchLowHighPrgRom(int oldSetting) {
+     void switchLowHighPrgRom(int oldSetting) {
 
         // not yet.
     }
 
-    private void switch16to32() {
+     void switch16to32() {
 
         // not yet.
     }
 
-    private void switch32to16() {
+     void switch32to16() {
 
         // not yet.
     }
-}
+};

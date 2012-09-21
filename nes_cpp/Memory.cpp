@@ -4,51 +4,51 @@
 
 
 class Memory{
-	
-	public short[] mem;
+public:
+	 short[] mem;
 	int memLength;
-	NES nes;
+	NES* nes;
 	
-	public Memory(NES nes, int byteCount){
+	 Memory(NES* nes, int byteCount){
 		this.nes = nes;
 		mem = new short[byteCount];
 		memLength = byteCount;
 	}
 	
-	public void stateLoad(ByteBuffer buf){
+	 void stateLoad(ByteBuffer* buf){
 		
-		if(mem==null)mem=new short[memLength];
+		if(mem==NULL)mem=new short[memLength];
 		buf.readByteArray(mem);
 		
 	}
 	
-	public void stateSave(ByteBuffer buf){
+	 void stateSave(ByteBuffer* buf){
 		
 		buf.putByteArray(mem);
 		
 	}
 	
-	public void reset(){
+	 void reset(){
 		for(int i=0;i<mem.length;i++)mem[i] = 0;
 	}
 	
-	public int getMemSize(){
+	 int getMemSize(){
 		return memLength;
 	}
 	
-	public void write(int address, short value){
+	 void write(int address, short value){
 		mem[address] = value;
 	}
 	
-	public short load(int address){
+	 short load(int address){
 		return mem[address];
 	}
 	
-	public void dump(string file){
+	 void dump(string file){
 		dump(file,0,mem.length);
 	}
 	
-	public void dump(string file, int offset, int length){
+	 void dump(string file, int offset, int length){
 		
 		char[] ch = new char[length];
 		for(int i=0;i<length;i++){
@@ -70,25 +70,25 @@ class Memory{
 		
 	}
 	
-	public void write(int address, short[] array, int length){
+	 void write(int address, short[] array, int length){
 	
 		if(address+length > mem.length)return;
 		System.arraycopy(array,0,mem,address,length);
 		
 	}
 	
-	public void write(int address, short[] array, int arrayoffset, int length){
+	 void write(int address, short[] array, int arrayoffset, int length){
 		
 		if(address+length > mem.length)return;
 		System.arraycopy(array,arrayoffset,mem,address,length);
 		
 	}
 	
-	public void destroy(){
+	 void destroy(){
 	
-		nes = null;
-		mem = null;
+		nes = NULL;
+		mem = NULL;
 		
 	}
 	
-}
+};

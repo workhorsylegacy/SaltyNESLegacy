@@ -17,35 +17,35 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-public interface MemoryMapper {
+class IMemoryMapper {
+public:
+     virtual void init(NES* nes) = 0;
 
-    public void init(NES nes);
+     virtual void loadROM(ROM rom) = 0;
 
-    public void loadROM(ROM rom);
+     virtual void write(int address, short value) = 0;
 
-    public void write(int address, short value);
+     virtual short load(int address) = 0;
 
-    public short load(int address);
+     virtual short joy1Read() = 0;
 
-    public short joy1Read();
+     virtual short joy2Read() = 0;
 
-    public short joy2Read();
+     virtual void reset() = 0;
 
-    public void reset();
+     virtual void setGameGenieState(bool value) = 0;
 
-    public void setGameGenieState(bool value);
+     virtual void clockIrqCounter() = 0;
 
-    public void clockIrqCounter();
+     virtual void loadBatteryRam() = 0;
 
-    public void loadBatteryRam();
+     virtual void destroy() = 0;
 
-    public void destroy();
+     virtual void stateLoad(ByteBuffer* buf) = 0;
 
-    public void stateLoad(ByteBuffer buf);
+     virtual void stateSave(ByteBuffer* buf) = 0;
 
-    public void stateSave(ByteBuffer buf);
+     virtual void setMouseState(bool pressed, int x, int y) = 0;
 
-    public void setMouseState(bool pressed, int x, int y);
-
-    public void latchAccess(int address);
-}
+     virtual void latchAccess(int address) = 0;
+};

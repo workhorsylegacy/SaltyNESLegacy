@@ -19,18 +19,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
-class ScreenView extends BufferView {
+class ScreenView : public BufferView {
+public:
+     MyMouseAdapter mouse;
+     bool notifyImageReady;
 
-    private MyMouseAdapter mouse;
-    private bool notifyImageReady;
-
-    public ScreenView(NES nes, int width, int height) {
+     ScreenView(NES* nes, int width, int height) {
         super(nes, width, height);
     }
 
-    public void init() {
+     void init() {
 
-        if (mouse == null) {
+        if (mouse == NULL) {
             mouse = new MyMouseAdapter();
             this.addMouseListener(mouse);
         }
@@ -38,41 +38,41 @@ class ScreenView extends BufferView {
 
     }
 
-    private class MyMouseAdapter extends MouseAdapter {
-
+     class MyMouseAdapter : public MouseAdapter {
+     public:
         long lastClickTime = 0;
 
-        public void mouseClicked(MouseEvent me) {
+         void mouseClicked(MouseEvent me) {
             setFocusable(true);
             requestFocus();
         }
 
-        public void mousePressed(MouseEvent me) {
+         void mousePressed(MouseEvent me) {
             setFocusable(true);
             requestFocus();
 
             if (me.getX() >= 0 && me.getY() >= 0 && me.getX() < 256 && me.getY() < 240) {
-                if (nes != null && nes.memMapper != null) {
+                if (nes != NULL && nes.memMapper != NULL) {
                     nes.memMapper.setMouseState(true, me.getX(), me.getY());
                 }
             }
 
         }
 
-        public void mouseReleased(MouseEvent me) {
+         void mouseReleased(MouseEvent me) {
 
-            if (nes != null && nes.memMapper != null) {
+            if (nes != NULL && nes.memMapper != NULL) {
                 nes.memMapper.setMouseState(false, 0, 0);
             }
 
         }
     }
 
-    public void setNotifyImageReady(bool value) {
+     void setNotifyImageReady(bool value) {
         this.notifyImageReady = value;
     }
 
-    public void imageReady(bool skipFrame) {
+     void imageReady(bool skipFrame) {
 
         if (!Globals::focused) {
             setFocusable(true);
@@ -89,4 +89,4 @@ class ScreenView extends BufferView {
         }
 
     }
-}
+};

@@ -18,15 +18,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 class Scale {
+public:
+     static int brightenShift;
+     static int brightenShiftMask;
+     static int brightenCutoffMask;
+     static int darkenShift;
+     static int darkenShiftMask;
+     static int si,  di,  di2,  val,  x,  y;
 
-    private static int brightenShift;
-    private static int brightenShiftMask;
-    private static int brightenCutoffMask;
-    private static int darkenShift;
-    private static int darkenShiftMask;
-    private static int si,  di,  di2,  val,  x,  y;
-
-    public static void setFilterParams(int darkenDepth, int brightenDepth) {
+     static void setFilterParams(int darkenDepth, int brightenDepth) {
 
         switch (darkenDepth) {
             case 0: {
@@ -91,7 +91,7 @@ class Scale {
 
     }
 
-    public static final void doScanlineScaling(int[] src, int[] dest, bool[] changed) {
+     static const void doScanlineScaling(int[] src, int[] dest, bool[] changed) {
 
         int di = 0;
         int di2 = 512;
@@ -134,7 +134,7 @@ class Scale {
 
     }
 
-    public static final void doRasterScaling(int[] src, int[] dest, bool[] changed) {
+     static const void doRasterScaling(int[] src, int[] dest, bool[] changed) {
 
         int di = 0;
         int di2 = 512;
@@ -189,7 +189,7 @@ class Scale {
 
     }
 
-    public static final void doNormalScaling(int[] src, int[] dest, bool[] changed) {
+     static const void doNormalScaling(int[] src, int[] dest, bool[] changed) {
 
         int di = 0;
         int di2 = 512;
@@ -224,4 +224,4 @@ class Scale {
         }
 
     }
-}
+};

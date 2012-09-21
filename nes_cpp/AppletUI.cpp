@@ -17,25 +17,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class AppletUI : public IUI {
-
-    vNES* applet;
-    NES nes;
-    KbInputHandler kbJoy1;
-    KbInputHandler kbJoy2;
-    ScreenView vScreen;
-    HiResTimer timer;
-    long t1, t2;
-    int sleepTime;
-
-    public AppletUI(vNES* applet) {
+    AppletUI::AppletUI(vNES* applet) {
 
         timer = new HiResTimer();
         this.applet = applet;
         nes = new NES(this);
     }
 
-    public void init(bool showGui) {
+    void AppletUI::init(bool showGui) {
 
         vScreen = new ScreenView(nes, 256, 240);
         vScreen.setBgColor(applet.bgColor.getRGB());
@@ -46,29 +35,29 @@ class AppletUI : public IUI {
         kbJoy2 = new KbInputHandler(nes, 1);
 
         // Grab Controller Setting for Player 1:
-        kbJoy1.mapKey(InputHandler.KEY_A, (Integer) Globals::keycodes.get(Globals::controls.get("p1_a")));
-        kbJoy1.mapKey(InputHandler.KEY_B, (Integer) Globals::keycodes.get(Globals::controls.get("p1_b")));
-        kbJoy1.mapKey(InputHandler.KEY_START, (Integer) Globals::keycodes.get(Globals::controls.get("p1_start")));
-        kbJoy1.mapKey(InputHandler.KEY_SELECT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_select")));
-        kbJoy1.mapKey(InputHandler.KEY_UP, (Integer) Globals::keycodes.get(Globals::controls.get("p1_up")));
-        kbJoy1.mapKey(InputHandler.KEY_DOWN, (Integer) Globals::keycodes.get(Globals::controls.get("p1_down")));
-        kbJoy1.mapKey(InputHandler.KEY_LEFT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_left")));
-        kbJoy1.mapKey(InputHandler.KEY_RIGHT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_right")));
+        kbJoy1.mapKey(IInputHandler.KEY_A, (Integer) Globals::keycodes.get(Globals::controls.get("p1_a")));
+        kbJoy1.mapKey(IInputHandler.KEY_B, (Integer) Globals::keycodes.get(Globals::controls.get("p1_b")));
+        kbJoy1.mapKey(IInputHandler.KEY_START, (Integer) Globals::keycodes.get(Globals::controls.get("p1_start")));
+        kbJoy1.mapKey(IInputHandler.KEY_SELECT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_select")));
+        kbJoy1.mapKey(IInputHandler.KEY_UP, (Integer) Globals::keycodes.get(Globals::controls.get("p1_up")));
+        kbJoy1.mapKey(IInputHandler.KEY_DOWN, (Integer) Globals::keycodes.get(Globals::controls.get("p1_down")));
+        kbJoy1.mapKey(IInputHandler.KEY_LEFT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_left")));
+        kbJoy1.mapKey(IInputHandler.KEY_RIGHT, (Integer) Globals::keycodes.get(Globals::controls.get("p1_right")));
         vScreen.addKeyListener(kbJoy1);
 
         // Grab Controller Setting for Player 2:
-        kbJoy2.mapKey(InputHandler.KEY_A, (Integer) Globals::keycodes.get(Globals::controls.get("p2_a")));
-        kbJoy2.mapKey(InputHandler.KEY_B, (Integer) Globals::keycodes.get(Globals::controls.get("p2_b")));
-        kbJoy2.mapKey(InputHandler.KEY_START, (Integer) Globals::keycodes.get(Globals::controls.get("p2_start")));
-        kbJoy2.mapKey(InputHandler.KEY_SELECT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_select")));
-        kbJoy2.mapKey(InputHandler.KEY_UP, (Integer) Globals::keycodes.get(Globals::controls.get("p2_up")));
-        kbJoy2.mapKey(InputHandler.KEY_DOWN, (Integer) Globals::keycodes.get(Globals::controls.get("p2_down")));
-        kbJoy2.mapKey(InputHandler.KEY_LEFT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_left")));
-        kbJoy2.mapKey(InputHandler.KEY_RIGHT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_right")));
+        kbJoy2.mapKey(IInputHandler.KEY_A, (Integer) Globals::keycodes.get(Globals::controls.get("p2_a")));
+        kbJoy2.mapKey(IInputHandler.KEY_B, (Integer) Globals::keycodes.get(Globals::controls.get("p2_b")));
+        kbJoy2.mapKey(IInputHandler.KEY_START, (Integer) Globals::keycodes.get(Globals::controls.get("p2_start")));
+        kbJoy2.mapKey(IInputHandler.KEY_SELECT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_select")));
+        kbJoy2.mapKey(IInputHandler.KEY_UP, (Integer) Globals::keycodes.get(Globals::controls.get("p2_up")));
+        kbJoy2.mapKey(IInputHandler.KEY_DOWN, (Integer) Globals::keycodes.get(Globals::controls.get("p2_down")));
+        kbJoy2.mapKey(IInputHandler.KEY_LEFT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_left")));
+        kbJoy2.mapKey(IInputHandler.KEY_RIGHT, (Integer) Globals::keycodes.get(Globals::controls.get("p2_right")));
         vScreen.addKeyListener(kbJoy2);
     }
 
-    public void imageReady(bool skipFrame) {
+    void AppletUI::imageReady(bool skipFrame) {
 
         // Sound stuff:
         int tmp = nes.getPapu().bufferIndex;
@@ -103,11 +92,11 @@ class AppletUI : public IUI {
 
     }
 
-    public int getRomFileSize() {
+    int AppletUI::getRomFileSize() {
         return applet.romSize;
     }
 
-    public void showLoadProgress(int percentComplete) {
+    virtual void AppletUI::showLoadProgress(int percentComplete) {
 
         // Show ROM load progress:
         applet.showLoadProgress(percentComplete);
@@ -117,89 +106,88 @@ class AppletUI : public IUI {
 
     }
 
-    public void destroy() {
+    void AppletUI::destroy() {
 
-        if (vScreen != null) {
+        if (vScreen != NULL) {
             vScreen.destroy();
         }
-        if (kbJoy1 != null) {
+        if (kbJoy1 != NULL) {
             kbJoy1.destroy();
         }
-        if (kbJoy2 != null) {
+        if (kbJoy2 != NULL) {
             kbJoy2.destroy();
         }
 
-        nes = null;
-        applet = null;
-        kbJoy1 = null;
-        kbJoy2 = null;
-        vScreen = null;
-        timer = null;
+        nes = NULL;
+        applet = NULL;
+        kbJoy1 = NULL;
+        kbJoy2 = NULL;
+        vScreen = NULL;
+        timer = NULL;
 
     }
 
-    public NES getNES() {
+    NES* AppletUI::getNES() {
         return nes;
     }
 
-    public InputHandler getJoy1() {
+    IInputHandler* AppletUI::getJoy1() {
         return kbJoy1;
     }
 
-    public InputHandler getJoy2() {
+    IInputHandler* AppletUI::getJoy2() {
         return kbJoy2;
     }
 
-    public BufferView getScreenView() {
+    BufferView* AppletUI::getScreenView() {
         return vScreen;
     }
 
-    public BufferView getPatternView() {
-        return null;
+    BufferView* AppletUI::getPatternView() {
+        return NULL;
     }
 
-    public BufferView getSprPalView() {
-        return null;
+    BufferView* AppletUI::getSprPalView() {
+        return NULL;
     }
 
-    public BufferView getNameTableView() {
-        return null;
+    BufferView* AppletUI::getNameTableView() {
+        return NULL;
     }
 
-    public BufferView getImgPalView() {
-        return null;
+    BufferView* AppletUI::getImgPalView() {
+        return NULL;
     }
 
-    public HiResTimer getTimer() {
+    HiResTimer* AppletUI::getTimer() {
         return timer;
     }
 
-    public string getWindowCaption() {
+    string AppletUI::getWindowCaption() {
         return "";
     }
 
-    public void setWindowCaption(string s) {
+    void AppletUI::setWindowCaption(string s) {
     }
 
-    public void setTitle(string s) {
+    void AppletUI::setTitle(string s) {
     }
 
-    public java.awt.Point getLocation() {
-        return new java.awt.Point(0, 0);
+    Point* AppletUI::getLocation() {
+        return new Point(0, 0);
     }
 
-    public int getWidth() {
+    int AppletUI::getWidth() {
         return applet.getWidth();
     }
 
-    public int getHeight() {
+    int AppletUI::getHeight() {
         return applet.getHeight();
     }
 
-    public void println(string s) {
+    void AppletUI::println(string s) {
     }
 
-    public void showErrorMsg(string msg) {
+    void AppletUI::showErrorMsg(string msg) {
         System.out.println(msg);
     }
-}

@@ -19,29 +19,29 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
-public final class PAPU {
-
-    NES nes;
+ class PAPU {
+public:
+    NES* nes;
     Memory cpuMem;
     Mixer mixer;
     SourceDataLine line;
-    ChannelSquare square1;
-    ChannelSquare square2;
-    ChannelTriangle triangle;
-    ChannelNoise noise;
-    ChannelDM dmc;
+    ChannelSquare* square1;
+    ChannelSquare* square2;
+    ChannelTriangle* triangle;
+    ChannelNoise* noise;
+    ChannelDM* dmc;
     int[] lengthLookup;
     int[] dmcFreqLookup;
     int[] noiseWavelengthLookup;
     int[] square_table;
     int[] tnd_table;
     int[] ismpbuffer;
-    byte[] sampleBuffer;
+    int8_t* sampleBuffer;
     int frameIrqCounter;
     int frameIrqCounterMax;
     int initCounter;
     short channelEnableValue;
-    byte b1, b2, b3, b4;
+    int8_t b1, b2, b3, b4;
     int bufferSize = 2048;
     int bufferIndex;
     int sampleRate = 44100;
@@ -52,11 +52,11 @@ public final class PAPU {
     bool recordOutput = false;
     bool stereo = true;
     bool initingHardware = false;
-    private bool userEnableSquare1 = true;
-    private bool userEnableSquare2 = true;
-    private bool userEnableTriangle = true;
-    private bool userEnableNoise = true;
-    public bool userEnableDmc = true;
+     bool userEnableSquare1 = true;
+     bool userEnableSquare2 = true;
+     bool userEnableTriangle = true;
+     bool userEnableNoise = true;
+     bool userEnableDmc = true;
     int masterFrameCounter;
     int derivedFrameCounter;
     int countSequence;
@@ -99,13 +99,13 @@ public final class PAPU {
     int extraCycles;
     int maxCycles;
 
-    public PAPU(NES nes) {
+     PAPU(NES* nes) {
 
         this.nes = nes;
         cpuMem = nes.getCpuMemory();
 
         setSampleRate(sampleRate, false);
-        sampleBuffer = new byte[bufferSize * (stereo ? 4 : 2)];
+        sampleBuffer = new int8_t[bufferSize * (stereo ? 4 : 2)];
         ismpbuffer = new int[bufferSize * (stereo ? 2 : 1)];
         bufferIndex = 0;
         frameIrqEnabled = false;
@@ -138,18 +138,18 @@ public final class PAPU {
 
     }
 
-    public void stateLoad(ByteBuffer buf) {
+     void stateLoad(ByteBuffer* buf) {
         // not yet.
     }
 
-    public void stateSave(ByteBuffer buf) {
+     void stateSave(ByteBuffer* buf) {
         // not yet.
     }
 
-    public synchronized void start() {
+     synchronized void start() {
 
         //System.out.println("* Starting PAPU lines.");
-        if (line != null && line.isActive()) {
+        if (line != NULL && line.isActive()) {
             //System.out.println("* Already running.");
             return;
         }
@@ -157,7 +157,7 @@ public final class PAPU {
         bufferIndex = 0;
         Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
 
-        if (mixerInfo == null || mixerInfo.length == 0) {
+        if (mixerInfo == NULL || mixerInfo.length == 0) {
             //System.out.println("No audio mixer available, sound disabled.");
             Globals::enableSound = false;
             return;
@@ -180,11 +180,11 @@ public final class PAPU {
 
     }
 
-    public NES getNes() {
+     NES* getNes() {
         return nes;
     }
 
-    public short readReg(int address) {
+     short readReg(int address) {
 
         // Read 0x4015:
         int tmp = 0;
@@ -204,7 +204,7 @@ public final class PAPU {
 
     }
 
-    public void writeReg(int address, short value) {
+     void writeReg(int address, short value) {
 
         if (address >= 0x4000 && address < 0x4004) {
 
@@ -294,7 +294,7 @@ public final class PAPU {
         }
     }
 
-    public void resetCounter() {
+     void resetCounter() {
 
         if (countSequence == 0) {
             derivedFrameCounter = 4;
@@ -310,7 +310,7 @@ public final class PAPU {
     // channel enable register (0x4015),
     // and when the user enables/disables channels
     // in the GUI.
-    public void updateChannelEnable(int value) {
+     void updateChannelEnable(int value) {
 
         channelEnableValue = (short) value;
         square1.setEnabled(userEnableSquare1 && (value & 1) != 0);
@@ -325,7 +325,7 @@ public final class PAPU {
     // twice the cpu speed, so the cycles will be
     // divided by 2 for those counters that are
     // clocked at cpu speed.
-    public void clockFrameCounter(int nCycles) {
+     void clockFrameCounter(int nCycles) {
 
         if (initCounter > 0) {
             if (initingHardware) {
@@ -496,7 +496,7 @@ public final class PAPU {
 
     }
 
-    private void accSample(int cycles) {
+     void accSample(int cycles) {
 
         // Special treatment for triangle channel - need to interpolate.
         if (triangle.sampleCondition) {
@@ -544,7 +544,7 @@ public final class PAPU {
 
     }
 
-    public void frameCounterTick() {
+     void frameCounterTick() {
 
         derivedFrameCounter++;
         if (derivedFrameCounter >= frameIrqCounterMax) {
@@ -588,7 +588,7 @@ public final class PAPU {
 
     // Samples the channels, mixes the output together,
     // writes to buffer and (if enabled) file.
-    public void sample() {
+     void sample() {
 
         if (accCount > 0) {
 
@@ -677,10 +677,10 @@ public final class PAPU {
             // Write:
             if (bufferIndex + 4 < sampleBuffer.length) {
 
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueL) & 0xFF);
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueL >> 8) & 0xFF);
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueR) & 0xFF);
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueR >> 8) & 0xFF);
+                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
+                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
+                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueR) & 0xFF);
+                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueR >> 8) & 0xFF);
 
             }
 
@@ -690,8 +690,8 @@ public final class PAPU {
             // Write:
             if (bufferIndex + 2 < sampleBuffer.length) {
 
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueL) & 0xFF);
-                sampleBuffer[bufferIndex++] = (byte) ((sampleValueL >> 8) & 0xFF);
+                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
+                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
 
             }
 
@@ -706,9 +706,9 @@ public final class PAPU {
 
 
     // Writes the sound buffer to the output line:
-    public void writeBuffer() {
+     void writeBuffer() {
 
-        if (line == null) {
+        if (line == NULL) {
             return;
         }
         bufferIndex -= (bufferIndex % (stereo ? 4 : 2));
@@ -718,27 +718,27 @@ public final class PAPU {
 
     }
 
-    public void stop() {
+     void stop() {
 
-        if (line == null) {
+        if (line == NULL) {
             // No line to close. Probably lack of sound card.
             return;
         }
 
-        if (line != null && line.isOpen() && line.isActive()) {
+        if (line != NULL && line.isOpen() && line.isActive()) {
             line.close();
         }
 
         // Lose line:
-        line = null;
+        line = NULL;
 
     }
 
-    public int getSampleRate() {
+     int getSampleRate() {
         return sampleRate;
     }
 
-    public void reset() {
+     void reset() {
 
         setSampleRate(sampleRate, false);
         updateChannelEnable(0);
@@ -784,25 +784,25 @@ public final class PAPU {
 
     }
 
-    public int getLengthMax(int value) {
+     int getLengthMax(int value) {
         return lengthLookup[value >> 3];
     }
 
-    public int getDmcFrequency(int value) {
+     int getDmcFrequency(int value) {
         if (value >= 0 && value < 0x10) {
             return dmcFreqLookup[value];
         }
         return 0;
     }
 
-    public int getNoiseWaveLength(int value) {
+     int getNoiseWaveLength(int value) {
         if (value >= 0 && value < 0x10) {
             return noiseWavelengthLookup[value];
         }
         return 0;
     }
 
-    public synchronized void setSampleRate(int rate, bool restart) {
+     synchronized void setSampleRate(int rate, bool restart) {
 
         bool cpuRunning = nes.isRunning();
         if (cpuRunning) {
@@ -829,7 +829,7 @@ public final class PAPU {
 
     }
 
-    public synchronized void setStereo(bool s, bool restart) {
+     synchronized void setStereo(bool s, bool restart) {
 
         if (stereo == s) {
             return;
@@ -840,9 +840,9 @@ public final class PAPU {
 
         stereo = s;
         if (stereo) {
-            sampleBuffer = new byte[bufferSize * 4];
+            sampleBuffer = new int8_t[bufferSize * 4];
         } else {
-            sampleBuffer = new byte[bufferSize * 2];
+            sampleBuffer = new int8_t[bufferSize * 2];
         }
 
         if (restart) {
@@ -856,11 +856,11 @@ public final class PAPU {
 
     }
 
-    public int getPapuBufferSize() {
+     int getPapuBufferSize() {
         return sampleBuffer.length;
     }
 
-    public void setChannelEnabled(int channel, bool value) {
+     void setChannelEnabled(int channel, bool value) {
         if (channel == 0) {
             userEnableSquare1 = value;
         } else if (channel == 1) {
@@ -875,7 +875,7 @@ public final class PAPU {
         updateChannelEnable(channelEnableValue);
     }
 
-    public void setPanning(int[] pos) {
+     void setPanning(int[] pos) {
 
         for (int i = 0; i < 5; i++) {
             panning[i] = pos[i];
@@ -884,7 +884,7 @@ public final class PAPU {
 
     }
 
-    public void setMasterVolume(int value) {
+     void setMasterVolume(int value) {
 
         if (value < 0) {
             value = 0;
@@ -897,7 +897,7 @@ public final class PAPU {
 
     }
 
-    public void updateStereoPos() {
+     void updateStereoPos() {
 
         stereoPosLSquare1 = (panning[0] * masterVolume) >> 8;
         stereoPosLSquare2 = (panning[1] * masterVolume) >> 8;
@@ -913,15 +913,15 @@ public final class PAPU {
 
     }
 
-    public SourceDataLine getLine() {
+     SourceDataLine getLine() {
         return line;
     }
 
-    public bool isRunning() {
-        return (line != null && line.isActive());
+     bool isRunning() {
+        return (line != NULL && line.isActive());
     }
 
-    public int getMillisToAvailableAbove(int target_avail) {
+     int getMillisToAvailableAbove(int target_avail) {
 
         double time;
         int cur_avail;
@@ -936,11 +936,11 @@ public final class PAPU {
 
     }
 
-    public int getBufferPos() {
+     int getBufferPos() {
         return bufferIndex;
     }
 
-    public void initLengthLookup() {
+     void initLengthLookup() {
 
         lengthLookup = new int[]{
                     0x0A, 0xFE,
@@ -963,7 +963,7 @@ public final class PAPU {
 
     }
 
-    public void initDmcFrequencyLookup() {
+     void initDmcFrequencyLookup() {
 
         dmcFreqLookup = new int[16];
 
@@ -987,7 +987,7 @@ public final class PAPU {
 
     }
 
-    public void initNoiseWavelengthLookup() {
+     void initNoiseWavelengthLookup() {
 
         noiseWavelengthLookup = new int[16];
 
@@ -1010,7 +1010,7 @@ public final class PAPU {
 
     }
 
-    public void initDACtables() {
+     void initDACtables() {
 
         square_table = new int[32 * 16];
         tnd_table = new int[204 * 16];
@@ -1054,36 +1054,36 @@ public final class PAPU {
 
     }
 
-    public void destroy() {
+     void destroy() {
 
-        nes = null;
-        cpuMem = null;
+        nes = NULL;
+        cpuMem = NULL;
 
-        if (square1 != null) {
+        if (square1 != NULL) {
             square1.destroy();
         }
-        if (square2 != null) {
+        if (square2 != NULL) {
             square2.destroy();
         }
-        if (triangle != null) {
+        if (triangle != NULL) {
             triangle.destroy();
         }
-        if (noise != null) {
+        if (noise != NULL) {
             noise.destroy();
         }
-        if (dmc != null) {
+        if (dmc != NULL) {
             dmc.destroy();
         }
 
-        square1 = null;
-        square2 = null;
-        triangle = null;
+        square1 = NULL;
+        square2 = NULL;
+        triangle = NULL;
         ;
-        noise = null;
-        dmc = null;
+        noise = NULL;
+        dmc = NULL;
 
-        mixer = null;
-        line = null;
+        mixer = NULL;
+        line = NULL;
 
     }
-}
+};

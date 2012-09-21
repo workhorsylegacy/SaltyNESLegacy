@@ -17,8 +17,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class ChannelSquare : PapuChannel {
-
+class ChannelSquare : public IPapuChannel {
+public:
     PAPU papu;
     static int[] dutyLookup;
     static int[] impLookup;
@@ -48,14 +48,14 @@ class ChannelSquare : PapuChannel {
     int sampleValue;
     int vol;
 
-    public ChannelSquare(PAPU papu, bool square1) {
+     ChannelSquare(PAPU papu, bool square1) {
 
         this.papu = papu;
         sqr1 = square1;
 
     }
 
-    public void clockLengthCounter() {
+     void clockLengthCounter() {
 
         if (lengthCounterEnable && lengthCounter > 0) {
             lengthCounter--;
@@ -66,7 +66,7 @@ class ChannelSquare : PapuChannel {
 
     }
 
-    public void clockEnvDecay() {
+     void clockEnvDecay() {
 
         if (envReset) {
 
@@ -92,7 +92,7 @@ class ChannelSquare : PapuChannel {
 
     }
 
-    public void clockSweep() {
+     void clockSweep() {
 
         if (--sweepCounter <= 0) {
 
@@ -122,7 +122,7 @@ class ChannelSquare : PapuChannel {
 
     }
 
-    public void updateSampleValue() {
+     void updateSampleValue() {
 
         if (isEnabled && lengthCounter > 0 && progTimerMax > 7) {
 
@@ -145,7 +145,7 @@ class ChannelSquare : PapuChannel {
 
     }
 
-    public void writeReg(int address, int value) {
+     void writeReg(int address, int value) {
 
         int addrAdd = (sqr1 ? 0 : 4);
         if (address == 0x4000 + addrAdd) {
@@ -190,7 +190,7 @@ class ChannelSquare : PapuChannel {
 
     }
 
-    public void setEnabled(bool value) {
+     void setEnabled(bool value) {
         isEnabled = value;
         if (!value) {
             lengthCounter = 0;
@@ -198,15 +198,15 @@ class ChannelSquare : PapuChannel {
         updateSampleValue();
     }
 
-    public bool isEnabled() {
+     bool isEnabled() {
         return isEnabled;
     }
 
-    public int getLengthStatus() {
+     int getLengthStatus() {
         return ((lengthCounter == 0 || !isEnabled) ? 0 : 1);
     }
 
-    public void reset() {
+     void reset() {
 
         progTimerCount = 0;
         progTimerMax = 0;
@@ -232,8 +232,8 @@ class ChannelSquare : PapuChannel {
 
     }
 
-    public void destroy() {
-        papu = null;
+     void destroy() {
+        papu = NULL;
     }
 
 
@@ -252,4 +252,4 @@ class ChannelSquare : PapuChannel {
                     -1, 0, 1, 0, 0, 0, 0, 0,};
 
     }
-}
+};

@@ -18,23 +18,23 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 class NES {
-
-    public AppletUI gui;
-    public CPU cpu;
-    public PPU ppu;
-    public PAPU papu;
-    public Memory cpuMem;
-    public Memory ppuMem;
-    public Memory sprMem;
-    public MemoryMapper memMapper;
-    public PaletteTable palTable;
-    public ROM rom;
+public:
+     AppletUI* gui;
+     CPU* cpu;
+     PPU ppu;
+     PAPU papu;
+     Memory cpuMem;
+     Memory ppuMem;
+     Memory sprMem;
+     IMemoryMapper* memMapper;
+     PaletteTable palTable;
+     ROM rom;
     int cc;
-    public string romFile;
+     string romFile;
     bool isRunning = false;
 
     // Creates the NES system.
-    public NES(AppletUI* gui) {
+     NES(AppletUI* gui) {
 
         Globals::nes = this;
         this.gui = gui;
@@ -78,7 +78,7 @@ class NES {
 
     }
 
-    public bool stateLoad(ByteBuffer buf) {
+     bool stateLoad(ByteBuffer* buf) {
 
         bool continueEmulation = false;
         bool success;
@@ -117,7 +117,7 @@ class NES {
 
     }
 
-    public void stateSave(ByteBuffer buf) {
+     void stateSave(ByteBuffer* buf) {
 
         bool continueEmulation = isRunning();
         stopEmulation();
@@ -140,26 +140,26 @@ class NES {
 
     }
 
-    public bool isRunning() {
+     bool isRunning() {
 
         return isRunning;
 
     }
 
-    public void startEmulation() {
+     void startEmulation() {
 
         if (Globals::enableSound && !papu.isRunning()) {
             papu.start();
         }
         {
-            if (rom != null && rom.isValid() && !cpu.isRunning()) {
+            if (rom != NULL && rom.isValid() && !cpu.isRunning()) {
                 cpu.beginExecution();
                 isRunning = true;
             }
         }
     }
 
-    public void stopEmulation() {
+     void stopEmulation() {
         if (cpu.isRunning()) {
             cpu.endExecution();
             isRunning = false;
@@ -170,15 +170,15 @@ class NES {
         }
     }
 
-    public void reloadRom() {
+     void reloadRom() {
 
-        if (romFile != null) {
+        if (romFile != NULL) {
             loadRom(romFile);
         }
 
     }
 
-    public void clearCPUMemory() {
+     void clearCPUMemory() {
 
         short flushval = Globals::memoryFlushValue;
         for (int i = 0; i < 0x2000; i++) {
@@ -194,60 +194,60 @@ class NES {
 
     }
 
-    public void setGameGenieState(bool enable) {
-        if (memMapper != null) {
+     void setGameGenieState(bool enable) {
+        if (memMapper != NULL) {
             memMapper.setGameGenieState(enable);
         }
     }
 
     // Returns CPU object.
-    public CPU getCpu() {
+     CPU getCpu() {
         return cpu;
     }
 
     // Returns PPU object.
-    public PPU getPpu() {
+     PPU getPpu() {
         return ppu;
     }
 
     // Returns pAPU object.
-    public PAPU getPapu() {
+     PAPU getPapu() {
         return papu;
     }
 
     // Returns CPU Memory.
-    public Memory getCpuMemory() {
+     Memory getCpuMemory() {
         return cpuMem;
     }
 
     // Returns PPU Memory.
-    public Memory getPpuMemory() {
+     Memory getPpuMemory() {
         return ppuMem;
     }
 
     // Returns Sprite Memory.
-    public Memory getSprMemory() {
+     Memory getSprMemory() {
         return sprMem;
     }
 
     // Returns the currently loaded ROM.
-    public ROM getRom() {
+     ROM getRom() {
         return rom;
     }
 
     // Returns the GUI.
-    public UI getGui() {
+     UI getGui() {
         return gui;
     }
 
     // Returns the memory mapper.
-    public MemoryMapper getMemoryMapper() {
+     IMemoryMapper* getMemoryMapper() {
         return memMapper;
     }
 
     // Loads a ROM file into the CPU and PPU.
     // The ROM file is validated first.
-    public bool loadRom(string file) {
+     bool loadRom(string file) {
 
         // Can't load ROM while still running.
         if (isRunning) {
@@ -282,12 +282,12 @@ class NES {
     }
 
     // Resets the system.
-    public void reset() {
+     void reset() {
 
-        if (rom != null) {
+        if (rom != NULL) {
             rom.closeRom();
         }
-        if (memMapper != null) {
+        if (memMapper != NULL) {
             memMapper.reset();
         }
 
@@ -303,15 +303,15 @@ class NES {
         palTable.reset();
         papu.reset();
 
-        InputHandler joy1 = gui.getJoy1();
-        if (joy1 != null) {
+        IInputHandler* joy1 = gui.getJoy1();
+        if (joy1 != NULL) {
             joy1.reset();
         }
 
     }
 
     // Enable or disable sound playback.
-    public void enableSound(bool enable) {
+     void enableSound(bool enable) {
 
         bool wasRunning = isRunning();
         if (wasRunning) {
@@ -333,7 +333,7 @@ class NES {
 
     }
 
-    public void setFramerate(int rate) {
+     void setFramerate(int rate) {
 
         Globals::preferredFrameRate = rate;
         Globals::frameTime = 1000000 / rate;
@@ -341,43 +341,43 @@ class NES {
 
     }
 
-    public void destroy() {
+     void destroy() {
 
-        if (cpu != null) {
+        if (cpu != NULL) {
             cpu.destroy();
         }
-        if (ppu != null) {
+        if (ppu != NULL) {
             ppu.destroy();
         }
-        if (papu != null) {
+        if (papu != NULL) {
             papu.destroy();
         }
-        if (cpuMem != null) {
+        if (cpuMem != NULL) {
             cpuMem.destroy();
         }
-        if (ppuMem != null) {
+        if (ppuMem != NULL) {
             ppuMem.destroy();
         }
-        if (sprMem != null) {
+        if (sprMem != NULL) {
             sprMem.destroy();
         }
-        if (memMapper != null) {
+        if (memMapper != NULL) {
             memMapper.destroy();
         }
-        if (rom != null) {
+        if (rom != NULL) {
             rom.destroy();
         }
 
-        gui = null;
-        cpu = null;
-        ppu = null;
-        papu = null;
-        cpuMem = null;
-        ppuMem = null;
-        sprMem = null;
-        memMapper = null;
-        rom = null;
-        palTable = null;
+        gui = NULL;
+        cpu = NULL;
+        ppu = NULL;
+        papu = NULL;
+        cpuMem = NULL;
+        ppuMem = NULL;
+        sprMem = NULL;
+        memMapper = NULL;
+        rom = NULL;
+        palTable = NULL;
 
     }
-}
+};

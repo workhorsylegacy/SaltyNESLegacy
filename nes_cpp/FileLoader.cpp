@@ -20,12 +20,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 class FileLoader {
-
+public:
     // Load a file.
-    public short[] loadFile(string fileName, UI ui) {
+     short[] loadFile(string fileName, UI ui) {
 
         int flen;
-        byte[] tmp = new byte[2048];
+        int8_t* tmp = new int8_t[2048];
 
         // Read file:
         try {
@@ -33,16 +33,16 @@ class FileLoader {
             InputStream in;
             in = getClass().getResourceAsStream(fileName);
 
-            if (in == null) {
+            if (in == NULL) {
 
                 // Try another approach.
                 in = new FileInputStream(fileName);
-                if (in == null) {
+                if (in == NULL) {
                     throw new IOException("Unable to load " + fileName);
                 }
 
             }
-            ZipInputStream zis = null;
+            ZipInputStream zis = NULL;
             bool zip = false;
 
             int pos = 0;
@@ -58,7 +58,7 @@ class FileLoader {
                     ZipEntry entry = zis.getNextEntry();
                     total = entry.getSize();
                     zip = true;
-                } else if (Globals::appletMode && ui != null) {
+                } else if (Globals::appletMode && ui != NULL) {
                     // Can't get the file size, so use the applet parameter
                     total = ui.getRomFileSize();
                 }
@@ -68,7 +68,7 @@ class FileLoader {
                     readbyte = zip ? zis.read(tmp, pos, tmp.length - pos) : in.read(tmp, pos, tmp.length - pos);
                     if (readbyte != -1) {
                         if (pos >= tmp.length) {
-                            byte[] newtmp = new byte[tmp.length + 32768];
+                            int8_t* newtmp = new int8_t[tmp.length + 32768];
                             for (int i = 0; i < tmp.length; i++) {
                                 newtmp[i] = tmp[i];
                             }
@@ -79,7 +79,7 @@ class FileLoader {
 
                     if (total > 0 && ((pos * 100) / total) > progress) {
                         progress = (pos * 100) / total;
-                        if (ui != null) {
+                        if (ui != NULL) {
                             ui.showLoadProgress((int) progress);
                         }
                     }
@@ -93,7 +93,7 @@ class FileLoader {
                 File f = new File(fileName);
                 int count = 0;
                 int total = (int) (f.length());
-                tmp = new byte[total];
+                tmp = new int8_t[total];
                 while (count < total) {
                     count += in.read(tmp, count, total - count);
                 }
@@ -102,7 +102,7 @@ class FileLoader {
             }
 
             // Put into array without any padding:
-            byte[] newtmp = new byte[pos];
+            int8_t* newtmp = new int8_t[pos];
             for (int i = 0; i < pos; i++) {
                 newtmp[i] = tmp[i];
             }
@@ -115,7 +115,7 @@ class FileLoader {
 
             // Something went wrong.
             ioe.printStackTrace();
-            return null;
+            return NULL;
 
         }
 
@@ -126,4 +126,4 @@ class FileLoader {
         return ret;
 
     }
-}
+};

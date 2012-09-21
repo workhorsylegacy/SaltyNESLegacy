@@ -20,16 +20,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 class ROM {
-
+public:
     // Mirroring types:
-    public static final int VERTICAL_MIRRORING = 0;
-    public static final int HORIZONTAL_MIRRORING = 1;
-    public static final int FOURSCREEN_MIRRORING = 2;
-    public static final int SINGLESCREEN_MIRRORING = 3;
-    public static final int SINGLESCREEN_MIRRORING2 = 4;
-    public static final int SINGLESCREEN_MIRRORING3 = 5;
-    public static final int SINGLESCREEN_MIRRORING4 = 6;
-    public static final int CHRROM_MIRRORING = 7;
+     static const int VERTICAL_MIRRORING = 0;
+     static const int HORIZONTAL_MIRRORING = 1;
+     static const int FOURSCREEN_MIRRORING = 2;
+     static const int SINGLESCREEN_MIRRORING = 3;
+     static const int SINGLESCREEN_MIRRORING2 = 4;
+     static const int SINGLESCREEN_MIRRORING3 = 5;
+     static const int SINGLESCREEN_MIRRORING4 = 6;
+     static const int CHRROM_MIRRORING = 7;
     bool failedSaveFile = false;
     bool saveRamUpToDate = true;
     short[] header;
@@ -37,7 +37,7 @@ class ROM {
     short[][] vrom;
     short[] saveRam;
     Tile[][] vromTile;
-    NES nes;
+    NES* nes;
     int romCount;
     int vromCount;
     int mirroring;
@@ -173,18 +173,18 @@ class ROM {
         mapperSupported[232] = true; // Camerica /Quattro
     }
 
-    public ROM(NES nes) {
+     ROM(NES* nes) {
         this.nes = nes;
         valid = false;
     }
 
-    public void load(string fileName) {
+     void load(string fileName) {
 
         this.fileName = fileName;
-        FileLoader loader = new FileLoader();
+        FileLoader* loader = new FileLoader();
         short[] b = loader.loadFile(fileName, nes.getGui());
 
-        if (b == null || b.length == 0) {
+        if (b == NULL || b.length == 0) {
 
             // Unable to load file.
             nes.gui.showErrorMsg("Unable to load ROM file.");
@@ -199,8 +199,8 @@ class ROM {
         }
 
         // Check first four bytes:
-        string fcode = new string(new byte[]{(byte) b[0], (byte) b[1], (byte) b[2], (byte) b[3]});
-        if (!fcode.equals("NES" + new string(new byte[]{0x1A}))) {
+        string fcode = new string(new int8_t[]{(int8_t) b[0], (int8_t) b[1], (int8_t) b[2], (int8_t) b[3]});
+        if (!fcode.equals("NES" + new string(new int8_t[]{0x1A}))) {
             //System.out.println("Header is incorrect.");
             valid = false;
             return;
@@ -306,36 +306,36 @@ class ROM {
 
     }
 
-    public bool isValid() {
+     bool isValid() {
         return valid;
     }
 
-    public int getRomBankCount() {
+     int getRomBankCount() {
         return romCount;
     }
 
     // Returns number of 4kB VROM banks.
-    public int getVromBankCount() {
+     int getVromBankCount() {
         return vromCount;
     }
 
-    public short[] getHeader() {
+     short[] getHeader() {
         return header;
     }
 
-    public short[] getRomBank(int bank) {
+     short[] getRomBank(int bank) {
         return rom[bank];
     }
 
-    public short[] getVromBank(int bank) {
+     short[] getVromBank(int bank) {
         return vrom[bank];
     }
 
-    public Tile[] getVromBankTiles(int bank) {
+     Tile[] getVromBankTiles(int bank) {
         return vromTile[bank];
     }
 
-    public int getMirroringType() {
+     int getMirroringType() {
 
         if (fourScreen) {
             return FOURSCREEN_MIRRORING;
@@ -350,11 +350,11 @@ class ROM {
 
     }
 
-    public int getMapperType() {
+     int getMapperType() {
         return mapperType;
     }
 
-    public string getMapperName() {
+     string getMapperName() {
 
         if (mapperType >= 0 && mapperType < mapperName.length) {
             return mapperName[mapperType];
@@ -364,27 +364,27 @@ class ROM {
 
     }
 
-    public bool hasBatteryRam() {
+     bool hasBatteryRam() {
         return batteryRam;
     }
 
-    public bool hasTrainer() {
+     bool hasTrainer() {
         return trainer;
     }
 
-    public string getFileName() {
+     string getFileName() {
         File f = new File(fileName);
         return f.getName();
     }
 
-    public bool mapperSupported() {
+     bool mapperSupported() {
         if (mapperType < mapperSupported.length && mapperType >= 0) {
             return mapperSupported[mapperType];
         }
         return false;
     }
 
-    public MemoryMapper createMapper() {
+     IMemoryMapper* createMapper() {
 
         if (mapperSupported()) {
             switch (mapperType) {
@@ -492,20 +492,20 @@ class ROM {
 
     }
 
-    public void setSaveState(bool enableSave) {
+     void setSaveState(bool enableSave) {
         //this.enableSave = enableSave;
         if (enableSave && !batteryRam) {
             loadBatteryRam();
         }
     }
 
-    public short[] getBatteryRam() {
+     short[] getBatteryRam() {
 
         return saveRam;
 
     }
 
-    private void loadBatteryRam() {
+     void loadBatteryRam() {
         if (batteryRam) {
             try {
                 saveRam = new short[0x2000];
@@ -513,7 +513,7 @@ class ROM {
 
                 // Get hex-encoded memory string from user:
                 string encodedData = JOptionPane.showInputDialog("Returning players insert Save Code here.");
-                if (encodedData == null) {
+                if (encodedData == NULL) {
                     // User cancelled the dialog.
                     return;
                 }
@@ -532,7 +532,7 @@ class ROM {
                 }
 
                 //System.out.println("Battery RAM loaded.");
-                if (nes.getMemoryMapper() != null) {
+                if (nes.getMemoryMapper() != NULL) {
                     nes.getMemoryMapper().loadBatteryRam();
                 }
 
@@ -543,7 +543,7 @@ class ROM {
         }
     }
 
-    public void writeBatteryRam(int address, short value) {
+     void writeBatteryRam(int address, short value) {
 
         if (!failedSaveFile && !batteryRam && enableSave) {
             loadBatteryRam();
@@ -557,7 +557,7 @@ class ROM {
 
     }
 
-    public void closeRom() {
+     void closeRom() {
 
         if (batteryRam && !saveRamUpToDate) {
             try {
@@ -590,10 +590,10 @@ class ROM {
 
     }
 
-    public void destroy() {
+     void destroy() {
 
         closeRom();
-        nes = null;
+        nes = NULL;
 
     }
-}
+};

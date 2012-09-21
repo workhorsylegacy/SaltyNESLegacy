@@ -20,26 +20,26 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 class PaletteTable {
-
-    public static int[] curTable = new int[64];
-    public static int[] origTable = new int[64];
-    public static int[][] emphTable = new int[8][64];
+public:
+     static int[] curTable = new int[64];
+     static int[] origTable = new int[64];
+     static int[][] emphTable = new int[8][64];
     int currentEmph = -1;
     int currentHue, currentSaturation, currentLightness, currentContrast;
 
 
     // Load the NTSC palette:
-    public bool loadNTSCPalette() {
+     bool loadNTSCPalette() {
         return loadPalette("palettes/ntsc.txt");
     }
 
     // Load the PAL palette:
-    public bool loadPALPalette() {
+     bool loadPALPalette() {
         return loadPalette("palettes/pal.txt");
     }
 
     // Load a palette file:
-    public bool loadPalette(string file) {
+     bool loadPalette(string file) {
 
         int r, g, b;
 
@@ -49,7 +49,7 @@ class PaletteTable {
 
                 // Read binary palette file.
                 InputStream fStr = getClass().getResourceAsStream(file);
-                byte[] tmp = new byte[64 * 3];
+                int8_t* tmp = new int8_t[64 * 3];
 
                 int n = 0;
                 while (n < 64) {
@@ -78,7 +78,7 @@ class PaletteTable {
                 string line = br.readLine();
                 string hexR, hexG, hexB;
                 int palIndex = 0;
-                while (line != null) {
+                while (line != NULL) {
 
                     if (line.startsWith("#")) {
 
@@ -115,7 +115,7 @@ class PaletteTable {
 
     }
 
-    public void makeTables() {
+     void makeTables() {
 
         int r, g, b, col;
 
@@ -152,7 +152,7 @@ class PaletteTable {
 
     }
 
-    public void setEmphasis(int emph) {
+     void setEmphasis(int emph) {
 
         if (emph != currentEmph) {
             currentEmph = emph;
@@ -164,11 +164,11 @@ class PaletteTable {
 
     }
 
-    public int getEntry(int yiq) {
+     int getEntry(int yiq) {
         return curTable[yiq];
     }
 
-    public int RGBtoHSL(int r, int g, int b) {
+     int RGBtoHSL(int r, int g, int b) {
 
         float[] hsbvals = new float[3];
         hsbvals = Color.RGBtoHSB(b, g, r, hsbvals);
@@ -183,17 +183,17 @@ class PaletteTable {
 
     }
 
-    public int RGBtoHSL(int rgb) {
+     int RGBtoHSL(int rgb) {
 
         return RGBtoHSL((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, (rgb) & 0xFF);
 
     }
 
-    public int HSLtoRGB(int h, int s, int l) {
+     int HSLtoRGB(int h, int s, int l) {
         return Color.HSBtoRGB(h / 255.0f, s / 255.0f, l / 255.0f);
     }
 
-    public int HSLtoRGB(int hsl) {
+     int HSLtoRGB(int hsl) {
 
         float h, s, l;
         h = (float) (((hsl >> 16) & 0xFF) / 255d);
@@ -203,41 +203,41 @@ class PaletteTable {
 
     }
 
-    public int getHue(int hsl) {
+     int getHue(int hsl) {
         return (hsl >> 16) & 0xFF;
     }
 
-    public int getSaturation(int hsl) {
+     int getSaturation(int hsl) {
         return (hsl >> 8) & 0xFF;
     }
 
-    public int getLightness(int hsl) {
+     int getLightness(int hsl) {
         return hsl & 0xFF;
     }
 
-    public int getRed(int rgb) {
+     int getRed(int rgb) {
         return (rgb >> 16) & 0xFF;
     }
 
-    public int getGreen(int rgb) {
+     int getGreen(int rgb) {
         return (rgb >> 8) & 0xFF;
     }
 
-    public int getBlue(int rgb) {
+     int getBlue(int rgb) {
         return rgb & 0xFF;
     }
 
-    public int getRgb(int r, int g, int b) {
+     int getRgb(int r, int g, int b) {
         return ((r << 16) | (g << 8) | (b));
     }
 
-    public void updatePalette() {
+     void updatePalette() {
         updatePalette(currentHue, currentSaturation, currentLightness, currentContrast);
     }
 
     // Change palette colors.
     // Arguments should be set to 0 to keep the original value.
-    public void updatePalette(int hueAdd, int saturationAdd, int lightnessAdd, int contrastAdd) {
+     void updatePalette(int hueAdd, int saturationAdd, int lightnessAdd, int contrastAdd) {
 
         int hsl, rgb;
         int h, s, l;
@@ -315,9 +315,9 @@ class PaletteTable {
 
     }
 
-    public void loadDefaultPalette() {
+     void loadDefaultPalette() {
 
-        if (origTable == null) {
+        if (origTable == NULL) {
             origTable = new int[64];
         }
 
@@ -391,7 +391,7 @@ class PaletteTable {
 
     }
 
-    public void reset() {
+     void reset() {
 
         currentEmph = 0;
         currentHue = 0;
@@ -401,4 +401,4 @@ class PaletteTable {
         updatePalette();
 
     }
-}
+};

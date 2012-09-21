@@ -18,14 +18,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 class NameTable {
-
+public:
     string name;
     short[] tile;
     short[] attrib;
     int width;
     int height;
 
-    public NameTable(int width, int height, string name) {
+     NameTable(int width, int height, string name) {
 
         this.name = name;
 
@@ -37,25 +37,25 @@ class NameTable {
 
     }
 
-    public short getTileIndex(int x, int y) {
+     short getTileIndex(int x, int y) {
 
         return tile[y * width + x];
 
     }
 
-    public short getAttrib(int x, int y) {
+     short getAttrib(int x, int y) {
 
         return attrib[y * width + x];
 
     }
 
-    public void writeTileIndex(int index, int value) {
+     void writeTileIndex(int index, int value) {
 
         tile[index] = (short) value;
 
     }
 
-    public void writeAttrib(int index, int value) {
+     void writeAttrib(int index, int value) {
 
         int basex, basey;
         int add;
@@ -83,21 +83,21 @@ class NameTable {
 
     }
 
-    public void stateSave(ByteBuffer buf) {
+     void stateSave(ByteBuffer* buf) {
 
         for (int i = 0; i < width * height; i++) {
             if (tile[i] > 255)//System.out.println(">255!!");
             {
-                buf.putByte((byte) tile[i]);
+                buf.putByte((int8_t) tile[i]);
             }
         }
         for (int i = 0; i < width * height; i++) {
-            buf.putByte((byte) attrib[i]);
+            buf.putByte((int8_t) attrib[i]);
         }
 
     }
 
-    public void stateLoad(ByteBuffer buf) {
+     void stateLoad(ByteBuffer* buf) {
 
         for (int i = 0; i < width * height; i++) {
             tile[i] = buf.readByte();
@@ -107,4 +107,4 @@ class NameTable {
         }
 
     }
-}
+};

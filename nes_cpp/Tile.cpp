@@ -20,7 +20,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 class Tile {
-
+public:
     // Tile data:
     int[] pix;
     int fbIndex;
@@ -31,20 +31,20 @@ class Tile {
     int palIndex;
     int tpri;
     int c;
-    public bool initialized = false;
-    public bool[] opaque = new bool[8];
+     bool initialized = false;
+     bool[] opaque = new bool[8];
 
-    public Tile() {
+     Tile() {
         pix = new int[64];
     }
 
-    public void setBuffer(short[] scanline) {
+     void setBuffer(short[] scanline) {
         for (y = 0; y < 8; y++) {
             setScanline(y, scanline[y], scanline[y + 8]);
         }
     }
 
-    public void setScanline(int sline, short b1, short b2) {
+     void setScanline(int sline, short b1, short b2) {
         initialized = true;
         tIndex = sline << 3;
         for (x = 0; x < 8; x++) {
@@ -55,7 +55,7 @@ class Tile {
         }
     }
 
-    public void renderSimple(int dx, int dy, int[] fBuffer, int palAdd, int[] palette) {
+     void renderSimple(int dx, int dy, int[] fBuffer, int palAdd, int[] palette) {
 
         tIndex = 0;
         fbIndex = (dy << 8) + dx;
@@ -74,7 +74,7 @@ class Tile {
 
     }
 
-    public void renderSmall(int dx, int dy, int[] buffer, int palAdd, int[] palette) {
+     void renderSmall(int dx, int dy, int[] buffer, int palAdd, int[] palette) {
 
         tIndex = 0;
         fbIndex = (dy << 8) + dx;
@@ -95,7 +95,7 @@ class Tile {
 
     }
 
-    public void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, int[] fBuffer, int palAdd, int[] palette, bool flipHorizontal, bool flipVertical, int pri, int[] priTable) {
+     void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, int[] fBuffer, int palAdd, int[] palette, bool flipHorizontal, bool flipVertical, int pri, int[] priTable) {
 
         if (dx < -7 || dx >= 256 || dy < -7 || dy >= 240) {
             return;
@@ -212,11 +212,11 @@ class Tile {
 
     }
 
-    public bool isTransparent(int x, int y) {
+     bool isTransparent(int x, int y) {
         return (pix[(y << 3) + x] == 0);
     }
 
-    public void dumpData(string file) {
+     void dumpData(string file) {
 
         try {
 
@@ -239,19 +239,19 @@ class Tile {
         }
     }
 
-    public void stateSave(ByteBuffer buf) {
+     void stateSave(ByteBuffer* buf) {
 
         buf.putBoolean(initialized);
         for (int i = 0; i < 8; i++) {
             buf.putBoolean(opaque[i]);
         }
         for (int i = 0; i < 64; i++) {
-            buf.putByte((byte) pix[i]);
+            buf.putByte((int8_t) pix[i]);
         }
 
     }
 
-    public void stateLoad(ByteBuffer buf) {
+     void stateLoad(ByteBuffer* buf) {
 
         initialized = buf.readBoolean();
         for (int i = 0; i < 8; i++) {
@@ -262,4 +262,4 @@ class Tile {
         }
 
     }
-}
+};

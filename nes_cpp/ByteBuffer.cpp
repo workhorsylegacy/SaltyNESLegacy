@@ -17,22 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "Globals.h"
-
-
-class ByteBuffer {
-
-    public static final bool DEBUG = false;
-    public static final int BO_BIG_ENDIAN = 0;
-    public static final int BO_LITTLE_ENDIAN = 1;
-    private int byteOrder = BO_BIG_ENDIAN;
-    private short[] buf;
-    private int size;
-    private int curPos;
-    private bool hasBeenErrors;
-    private bool expandable = true;
-    private int expandBy = 4096;
-
-    public ByteBuffer(int size, int byteOrdering) {
+	ByteBuffer::ByteBuffer(int size, int byteOrdering) {
         if (size < 1) {
             size = 1;
         }
@@ -41,9 +26,12 @@ class ByteBuffer {
         this.byteOrder = byteOrdering;
         curPos = 0;
         hasBeenErrors = false;
+        this.byteOrder = BO_BIG_ENDIAN;
+        this.expandable = true;
+        this.expandBy = 4096;
     }
 
-    public ByteBuffer(byte[] content, int byteOrdering) {
+    ByteBuffer::ByteBuffer(int8_t* content, int byteOrdering) {
         try {
             buf = new short[content.length];
             for (int i = 0; i < content.length; i++) {
@@ -58,11 +46,11 @@ class ByteBuffer {
         }
     }
 
-    public void setExpandable(bool exp) {
+    void ByteBuffer::setExpandable(bool exp) {
         expandable = exp;
     }
 
-    public void setExpandBy(int expBy) {
+    void ByteBuffer::setExpandBy(int expBy) {
 
         if (expBy > 1024) {
             this.expandBy = expBy;
@@ -70,7 +58,7 @@ class ByteBuffer {
 
     }
 
-    public void setByteOrder(int byteOrder) {
+    void ByteBuffer::setByteOrder(int byteOrder) {
 
         if (byteOrder >= 0 && byteOrder < 2) {
             this.byteOrder = byteOrder;
@@ -78,45 +66,45 @@ class ByteBuffer {
 
     }
 
-    public byte[] getBytes() {
-        byte[] ret = new byte[buf.length];
+    int8_t* ByteBuffer::getBytes() {
+        int8_t* ret = new int8_t[buf.length];
         for (int i = 0; i < buf.length; i++) {
-            ret[i] = (byte) buf[i];
+            ret[i] = (int8_t) buf[i];
         }
         return ret;
     }
 
-    public int getSize() {
+    int ByteBuffer::getSize() {
         return this.size;
     }
 
-    public int getPos() {
+    int ByteBuffer::getPos() {
         return curPos;
     }
 
-    private void error() {
+     void ByteBuffer::error() {
         hasBeenErrors = true;
     //System.out.println("Not in range!");
     }
 
-    public bool hasHadErrors() {
+    bool ByteBuffer::hasHadErrors() {
         return hasBeenErrors;
     }
 
-    public void clear() {
+    void ByteBuffer::clear() {
         for (int i = 0; i < buf.length; i++) {
             buf[i] = 0;
         }
         curPos = 0;
     }
 
-    public void fill(byte value) {
+    void ByteBuffer::fill(int8_t value) {
         for (int i = 0; i < size; i++) {
             buf[i] = value;
         }
     }
 
-    public bool fillRange(int start, int length, byte value) {
+    bool ByteBuffer::fillRange(int start, int length, int8_t value) {
         if (inRange(start, length)) {
             for (int i = start; i < (start + length); i++) {
                 buf[i] = value;
@@ -128,7 +116,7 @@ class ByteBuffer {
         }
     }
 
-    public void resize(int length) {
+    void ByteBuffer::resize(int length) {
 
         short[] newbuf = new short[length];
         System.arraycopy(buf, 0, newbuf, 0, Math.min(length, size));
@@ -137,19 +125,19 @@ class ByteBuffer {
 
     }
 
-    public void resizeToCurrentPos() {
+    void ByteBuffer::resizeToCurrentPos() {
         resize(curPos);
     }
 
-    public void expand() {
+    void ByteBuffer::expand() {
         expand(expandBy);
     }
 
-    public void expand(int byHowMuch) {
+    void ByteBuffer::expand(int byHowMuch) {
         resize(size + byHowMuch);
     }
 
-    public void goTo(int position) {
+    void ByteBuffer::goTo(int position) {
         if (inRange(position)) {
             curPos = position;
         } else {
@@ -157,14 +145,14 @@ class ByteBuffer {
         }
     }
 
-    public void move(int howFar) {
+    void ByteBuffer::move(int howFar) {
         curPos += howFar;
         if (!inRange(curPos)) {
             curPos = size - 1;
         }
     }
 
-    public bool inRange(int pos) {
+    bool ByteBuffer::inRange(int pos) {
         if (pos >= 0 && pos < size) {
             return true;
         } else {
@@ -177,7 +165,7 @@ class ByteBuffer {
         }
     }
 
-    public bool inRange(int pos, int length) {
+    bool ByteBuffer::inRange(int pos, int length) {
         if (pos >= 0 && pos + (length - 1) < size) {
             return true;
         } else {
@@ -190,13 +178,13 @@ class ByteBuffer {
         }
     }
 
-    public bool putBoolean(bool b) {
+    bool ByteBuffer::putBoolean(bool b) {
         bool ret = putBoolean(b, curPos);
         move(1);
         return ret;
     }
 
-    public bool putBoolean(bool b, int pos) {
+    bool ByteBuffer::putBoolean(bool b, int pos) {
         if (b) {
             return putByte((short) 1, pos);
         } else {
@@ -204,7 +192,7 @@ class ByteBuffer {
         }
     }
 
-    public bool putByte(short var) {
+    bool ByteBuffer::putByte(short var) {
         if (inRange(curPos, 1)) {
             buf[curPos] = var;
             move(1);
@@ -215,7 +203,7 @@ class ByteBuffer {
         }
     }
 
-    public bool putByte(short var, int pos) {
+    bool ByteBuffer::putByte(short var, int pos) {
         if (inRange(pos, 1)) {
             buf[pos] = var;
             return true;
@@ -225,7 +213,7 @@ class ByteBuffer {
         }
     }
 
-    public bool putShort(short var) {
+    bool ByteBuffer::putShort(short var) {
         bool ret = putShort(var, curPos);
         if (ret) {
             move(2);
@@ -233,7 +221,7 @@ class ByteBuffer {
         return ret;
     }
 
-    public bool putShort(short var, int pos) {
+    bool ByteBuffer::putShort(short var, int pos) {
         if (inRange(pos, 2)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
                 buf[pos + 0] = (short) ((var >> 8) & 255);
@@ -249,7 +237,7 @@ class ByteBuffer {
         }
     }
 
-    public bool putInt(int var) {
+    bool ByteBuffer::putInt(int var) {
         bool ret = putInt(var, curPos);
         if (ret) {
             move(4);
@@ -257,7 +245,7 @@ class ByteBuffer {
         return ret;
     }
 
-    public bool putInt(int var, int pos) {
+    bool ByteBuffer::putInt(int var, int pos) {
         if (inRange(pos, 4)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
                 buf[pos + 0] = (short) ((var >> 24) & 255);
@@ -277,15 +265,15 @@ class ByteBuffer {
         }
     }
 
-    public bool putString(string var) {
+    bool ByteBuffer::putString(string var) {
         bool ret = putString(var, curPos);
         if (ret) {
             move(2 * var.length());
         }
         return ret;
     }
-
-    public bool putString(string var, int pos) {
+    
+    bool ByteBuffer::putString(string var, int pos) {
         char[] charArr = var.toCharArray();
         short theChar;
         if (inRange(pos, var.length() * 2)) {
@@ -302,7 +290,7 @@ class ByteBuffer {
         }
     }
 
-    public bool putChar(char var) {
+    bool ByteBuffer::putChar(char var) {
         bool ret = putChar(var, curPos);
         if (ret) {
             move(2);
@@ -310,7 +298,7 @@ class ByteBuffer {
         return ret;
     }
 
-    public bool putChar(char var, int pos) {
+    bool ByteBuffer::putChar(char var, int pos) {
         int tmp = var;
         if (inRange(pos, 2)) {
             if (byteOrder == BO_BIG_ENDIAN) {
@@ -327,7 +315,7 @@ class ByteBuffer {
         }
     }
 
-    public bool putCharAscii(char var) {
+    bool ByteBuffer::putCharAscii(char var) {
         bool ret = putCharAscii(var, curPos);
         if (ret) {
             move(1);
@@ -335,7 +323,7 @@ class ByteBuffer {
         return ret;
     }
 
-    public bool putCharAscii(char var, int pos) {
+    bool ByteBuffer::putCharAscii(char var, int pos) {
         if (inRange(pos)) {
             buf[pos] = (short) var;
             return true;
@@ -345,7 +333,7 @@ class ByteBuffer {
         }
     }
 
-    public bool putStringAscii(string var) {
+    bool ByteBuffer::putStringAscii(string var) {
         bool ret = putStringAscii(var, curPos);
         if (ret) {
             move(var.length());
@@ -353,7 +341,7 @@ class ByteBuffer {
         return ret;
     }
 
-    public bool putStringAscii(string var, int pos) {
+    bool ByteBuffer::putStringAscii(string var, int pos) {
         char[] charArr = var.toCharArray();
         if (inRange(pos, var.length())) {
             for (int i = 0; i < var.length(); i++) {
@@ -367,22 +355,22 @@ class ByteBuffer {
         }
     }
 
-    public bool putByteArray(short[] arr) {
-        if (arr == null) {
+    bool ByteBuffer::putByteArray(short* arr) {
+        if (arr == NULL) {
             return false;
         }
         if (buf.length - curPos < arr.length) {
             resize(curPos + arr.length);
         }
         for (int i = 0; i < arr.length; i++) {
-            buf[curPos + i] = (byte) arr[i];
+            buf[curPos + i] = (int8_t) arr[i];
         }
         curPos += arr.length;
         return true;
     }
 
-    public bool readByteArray(short[] arr) {
-        if (arr == null) {
+    bool ByteBuffer::readByteArray(short* arr) {
+        if (arr == NULL) {
             return false;
         }
         if (buf.length - curPos < arr.length) {
@@ -395,8 +383,8 @@ class ByteBuffer {
         return true;
     }
 
-    public bool putShortArray(short[] arr) {
-        if (arr == null) {
+    bool ByteBuffer::putShortArray(short* arr) {
+        if (arr == NULL) {
             return false;
         }
         if (buf.length - curPos < arr.length * 2) {
@@ -418,7 +406,7 @@ class ByteBuffer {
         return true;
     }
 
-    public string toString() {
+    string ByteBuffer::toString() {
         StringBuffer strBuf = new StringBuffer();
         short tmp;
         for (int i = 0; i < (size - 1); i += 2) {
@@ -428,7 +416,7 @@ class ByteBuffer {
         return strBuf.toString();
     }
 
-    public string toStringAscii() {
+    string ByteBuffer::toStringAscii() {
         StringBuffer strBuf = new StringBuffer();
         for (int i = 0; i < size; i++) {
             strBuf.append((char) (buf[i]));
@@ -436,23 +424,23 @@ class ByteBuffer {
         return strBuf.toString();
     }
 
-    public bool readBoolean() {
+    bool ByteBuffer::readBoolean() {
         bool ret = readBoolean(curPos);
         move(1);
         return ret;
     }
 
-    public bool readBoolean(int pos) {
+    bool ByteBuffer::readBoolean(int pos) {
         return readByte(pos) == 1;
     }
 
-    public short readByte() throws ArrayIndexOutOfBoundsException {
+    short ByteBuffer::readByte() {
         short ret = readByte(curPos);
         move(1);
         return ret;
     }
 
-    public short readByte(int pos) throws ArrayIndexOutOfBoundsException {
+    short ByteBuffer::readByte(int pos) {
         if (inRange(pos)) {
             return buf[pos];
         } else {
@@ -461,13 +449,13 @@ class ByteBuffer {
         }
     }
 
-    public short readShort() throws ArrayIndexOutOfBoundsException {
+    short ByteBuffer::readShort() {
         short ret = readShort(curPos);
         move(2);
         return ret;
     }
 
-    public short readShort(int pos) throws ArrayIndexOutOfBoundsException {
+    short ByteBuffer::readShort(int pos) {
         if (inRange(pos, 2)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
                 return (short) ((buf[pos] << 8) | (buf[pos + 1]));
@@ -480,13 +468,13 @@ class ByteBuffer {
         }
     }
 
-    public int readInt() throws ArrayIndexOutOfBoundsException {
+    int ByteBuffer::readInt() {
         int ret = readInt(curPos);
         move(4);
         return ret;
     }
 
-    public int readInt(int pos) throws ArrayIndexOutOfBoundsException {
+    int ByteBuffer::readInt(int pos) {
         int ret = 0;
         if (inRange(pos, 4)) {
             if (this.byteOrder == BO_BIG_ENDIAN) {
@@ -507,13 +495,13 @@ class ByteBuffer {
         }
     }
 
-    public char readChar() throws ArrayIndexOutOfBoundsException {
+    char ByteBuffer::readChar() {
         char ret = readChar(curPos);
         move(2);
         return ret;
     }
 
-    public char readChar(int pos) throws ArrayIndexOutOfBoundsException {
+    char ByteBuffer::readChar(int pos) {
         if (inRange(pos, 2)) {
             return (char) (readShort(pos));
         } else {
@@ -522,13 +510,13 @@ class ByteBuffer {
         }
     }
 
-    public char readCharAscii() throws ArrayIndexOutOfBoundsException {
+    char ByteBuffer::readCharAscii() {
         char ret = readCharAscii(curPos);
         move(1);
         return ret;
     }
 
-    public char readCharAscii(int pos) throws ArrayIndexOutOfBoundsException {
+    char ByteBuffer::readCharAscii(int pos) {
         if (inRange(pos, 1)) {
             return (char) (readByte(pos) & 255);
         } else {
@@ -537,7 +525,7 @@ class ByteBuffer {
         }
     }
 
-    public string readString(int length) throws ArrayIndexOutOfBoundsException {
+    string ByteBuffer::readString(int length) {
         if (length > 0) {
             string ret = readString(curPos, length);
             move(ret.length() * 2);
@@ -547,7 +535,7 @@ class ByteBuffer {
         }
     }
 
-    public string readString(int pos, int length) throws ArrayIndexOutOfBoundsException {
+    string ByteBuffer::readString(int pos, int length) {
         char[] tmp;
         if (inRange(pos, length * 2) && length > 0) {
             tmp = new char[length];
@@ -560,13 +548,13 @@ class ByteBuffer {
         }
     }
 
-    public string readStringWithShortLength() throws ArrayIndexOutOfBoundsException {
+    string ByteBuffer::readStringWithShortLength() {
         string ret = readStringWithShortLength(curPos);
         move(ret.length() * 2 + 2);
         return ret;
     }
 
-    public string readStringWithShortLength(int pos) throws ArrayIndexOutOfBoundsException {
+    string ByteBuffer::readStringWithShortLength(int pos) {
         short len;
         if (inRange(pos, 2)) {
             len = readShort(pos);
@@ -580,13 +568,13 @@ class ByteBuffer {
         }
     }
 
-    public string readStringAscii(int length) throws ArrayIndexOutOfBoundsException {
+    string ByteBuffer::readStringAscii(int length) {
         string ret = readStringAscii(curPos, length);
         move(ret.length());
         return ret;
     }
 
-    public string readStringAscii(int pos, int length) throws ArrayIndexOutOfBoundsException {
+    string ByteBuffer::readStringAscii(int pos, int length) {
         char[] tmp;
         if (inRange(pos, length) && length > 0) {
             tmp = new char[length];
@@ -599,13 +587,13 @@ class ByteBuffer {
         }
     }
 
-    public string readStringAsciiWithShortLength() throws ArrayIndexOutOfBoundsException {
+    string ByteBuffer::readStringAsciiWithShortLength() {
         string ret = readStringAsciiWithShortLength(curPos);
         move(ret.length() + 2);
         return ret;
     }
 
-    public string readStringAsciiWithShortLength(int pos) throws ArrayIndexOutOfBoundsException {
+    string ByteBuffer::readStringAsciiWithShortLength(int pos) {
         short len;
         if (inRange(pos, 2)) {
             len = readShort(pos);
@@ -619,7 +607,7 @@ class ByteBuffer {
         }
     }
 
-    private short[] expandShortArray(short[] array, int size) {
+    short* ByteBuffer::expandShortArray(short* array, int size) {
         short[] newArr = new short[array.length + size];
         if (size > 0) {
             System.arraycopy(array, 0, newArr, 0, array.length);
@@ -629,7 +617,7 @@ class ByteBuffer {
         return newArr;
     }
 
-    public void crop() {
+    void ByteBuffer::crop() {
         if (curPos > 0) {
             if (curPos < buf.length) {
                 short[] newBuf = new short[curPos];
@@ -641,18 +629,18 @@ class ByteBuffer {
         }
     }
 
-    public static ByteBuffer asciiEncode(ByteBuffer buf) {
+    static ByteBuffer* ByteBuffer::asciiEncode(ByteBuffer* buf) {
 
         short[] data = buf.buf;
-        byte[] enc = new byte[buf.getSize() * 2];
+        int8_t* enc = new int8_t[buf.getSize() * 2];
 
         int encpos = 0;
         int tmp;
         for (int i = 0; i < data.length; i++) {
 
             tmp = data[i];
-            enc[encpos] = (byte) (65 + (tmp) & 0xF);
-            enc[encpos + 1] = (byte) (65 + (tmp >> 4) & 0xF);
+            enc[encpos] = (int8_t) (65 + (tmp) & 0xF);
+            enc[encpos + 1] = (int8_t) (65 + (tmp >> 4) & 0xF);
             encpos += 2;
 
         }
@@ -660,11 +648,11 @@ class ByteBuffer {
 
     }
 
-    public static ByteBuffer asciiDecode(ByteBuffer buf) {
-        return null;
+    static ByteBuffer* ByteBuffer::asciiDecode(ByteBuffer* buf) {
+        return NULL;
     }
 
-    public static void saveToZipFile(File f, ByteBuffer buf) {
+    static void ByteBuffer::saveToZipFile(File f, ByteBuffer* buf) {
 
         try {
 
@@ -686,7 +674,7 @@ class ByteBuffer {
 
     }
 
-    public static ByteBuffer readFromZipFile(File f) {
+    static ByteBuffer* ByteBuffer::readFromZipFile(File f) {
 
         try {
 
@@ -700,7 +688,7 @@ class ByteBuffer {
             //System.out.println("Len = "+len);
 
             curlen = 0;
-            byte[] buf = new byte[len];
+            int8_t* buf = new int8_t[len];
             zipIn.getNextEntry();
             while (curlen < len) {
                 read = zipIn.read(buf, curlen, len - curlen);
@@ -723,7 +711,6 @@ class ByteBuffer {
         }
 
         // fail:
-        return null;
+        return NULL;
 
     }
-}

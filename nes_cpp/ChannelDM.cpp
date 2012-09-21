@@ -17,11 +17,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class ChannelDM : PapuChannel {
-
-    public static final int MODE_NORMAL = 0;
-    public static final int MODE_LOOP = 1;
-    public static final int MODE_IRQ = 2;
+class ChannelDM : public IPapuChannel {
+public:
+    static const int MODE_NORMAL = 0;
+    static const int MODE_LOOP = 1;
+    static const int MODE_IRQ = 2;
     PAPU papu;
     bool isEnabled;
     bool hasSample;
@@ -41,11 +41,11 @@ class ChannelDM : PapuChannel {
     int dacLsb;
     int data;
 
-    public ChannelDM(PAPU papu) {
+    ChannelDM(PAPU papu) {
         this.papu = papu;
     }
 
-    public void clockDmc() {
+    void clockDmc() {
 
         // Only alter DAC value if the sample buffer has data:
         if (hasSample) {
@@ -90,7 +90,7 @@ class ChannelDM : PapuChannel {
 
     }
 
-    private void endOfSample() {
+     void endOfSample() {
 
 
         if (playLengthCounter == 0 && playMode == MODE_LOOP) {
@@ -122,7 +122,7 @@ class ChannelDM : PapuChannel {
 
     }
 
-    private void nextSample() {
+     void nextSample() {
 
         // Fetch byte:
         data = papu.getNes().getMemoryMapper().load(playAddress);
@@ -138,7 +138,7 @@ class ChannelDM : PapuChannel {
 
     }
 
-    public void writeReg(int address, int value) {
+    void writeReg(int address, int value) {
 
         if (address == 0x4010) {
 
@@ -196,7 +196,7 @@ class ChannelDM : PapuChannel {
 
     }
 
-    public void setEnabled(bool value) {
+    void setEnabled(bool value) {
 
         if ((!isEnabled) && value) {
             playLengthCounter = playLength;
@@ -205,19 +205,19 @@ class ChannelDM : PapuChannel {
 
     }
 
-    public bool isEnabled() {
+    bool isEnabled() {
         return isEnabled;
     }
 
-    public int getLengthStatus() {
+    int getLengthStatus() {
         return ((playLengthCounter == 0 || !isEnabled) ? 0 : 1);
     }
 
-    public int getIrqStatus() {
+    int getIrqStatus() {
         return (irqGenerated ? 1 : 0);
     }
 
-    public void reset() {
+    void reset() {
 
         isEnabled = false;
         irqGenerated = false;
@@ -239,7 +239,7 @@ class ChannelDM : PapuChannel {
 
     }
 
-    public void destroy() {
-        papu = null;
+    void destroy() {
+        papu = NULL;
     }
-}
+};

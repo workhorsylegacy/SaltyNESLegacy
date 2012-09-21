@@ -17,31 +17,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class BlipBuffer {
-
-    // These values must be set:
-    public int win_size;
-    public int smp_period;
-    public int sinc_periods;
-    // Different samplings of bandlimited impulse:
-    public int[][] imp;
-    // Difference buffer:
-    public int[] diff;
-    // Last position changed in buffer:
-    int lastChanged;
-    // Previous end absolute value:
-    int prevSum;
-    // DC removal:
-    int dc_prev;
-    int dc_diff;
-    int dc_acc;
-
-    public void init(int bufferSize, int windowSize, int samplePeriod, int sincPeriods) {
+    void BlipBuffer::init(int bufferSize, int windowSize, int samplePeriod, int sincPeriods) {
 
         win_size = windowSize;
         smp_period = samplePeriod;
         sinc_periods = sincPeriods;
-        double[] buf = new double[smp_period * win_size];
+        double* buf = new double[smp_period * win_size];
 
 
         // Sample sinc:
@@ -70,7 +51,7 @@ class BlipBuffer {
 
     }
 
-    public void impulse(int smpPos, int smpOffset, int magnitude) {
+    void BlipBuffer::impulse(int smpPos, int smpOffset, int magnitude) {
 
         // Add into difference buffer:
         //if(smpPos+win_size < diff.length){
@@ -86,7 +67,7 @@ class BlipBuffer {
 
     }
 
-    public int integrate() {
+    int BlipBuffer::integrate() {
 
         int sum = prevSum;
         for (int i = 0; i < diff.length; i++) {
@@ -105,7 +86,7 @@ class BlipBuffer {
 
     }
 
-    public void clear() {
+    void BlipBuffer::clear() {
 
         for (int i = 0; i < diff.length; i++) {
             diff[i] = 0;
@@ -114,10 +95,9 @@ class BlipBuffer {
 
     }
 
-    public static double sinc(double x) {
+    static double BlipBuffer::sinc(double x) {
         if (x == 0.0) {
             return 1.0;
         }
         return Math.sin(x) / x;
     }
-}

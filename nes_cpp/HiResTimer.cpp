@@ -18,16 +18,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 class HiResTimer {
-
-    public long currentMicros() {
+public:
+     long currentMicros() {
         return System.nanoTime() / 1000;
     }
 
-    public long currentTick() {
+     long currentTick() {
         return System.nanoTime();
     }
 
-    public void sleepMicros(long time) {
+     void sleepMicros(long time) {
 
         try {
 
@@ -46,7 +46,7 @@ class HiResTimer {
 
     }
 
-    public void sleepMillisIdle(int millis) {
+     void sleepMillisIdle(int millis) {
 
         millis /= 10;
         millis *= 10;
@@ -58,7 +58,7 @@ class HiResTimer {
 
     }
 
-    public void yield() {
+     void yield() {
         Thread.yield();
     }
-}
+};

@@ -17,8 +17,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-class ChannelTriangle : PapuChannel {
-
+class ChannelTriangle : public IPapuChannel {
+public:
     PAPU papu;
     bool isEnabled;
     bool sampleCondition;
@@ -34,11 +34,11 @@ class ChannelTriangle : PapuChannel {
     int sampleValue;
     int tmp;
 
-    public ChannelTriangle(PAPU papu) {
+     ChannelTriangle(PAPU papu) {
         this.papu = papu;
     }
 
-    public void clockLengthCounter() {
+     void clockLengthCounter() {
         if (lengthCounterEnable && lengthCounter > 0) {
             lengthCounter--;
             if (lengthCounter == 0) {
@@ -47,7 +47,7 @@ class ChannelTriangle : PapuChannel {
         }
     }
 
-    public void clockLinearCounter() {
+     void clockLinearCounter() {
 
         if (lcHalt) {
 
@@ -72,15 +72,15 @@ class ChannelTriangle : PapuChannel {
 
     }
 
-    public int getLengthStatus() {
+     int getLengthStatus() {
         return ((lengthCounter == 0 || !isEnabled) ? 0 : 1);
     }
 
-    public int readReg(int address) {
+     int readReg(int address) {
         return 0;
     }
 
-    public void writeReg(int address, int value) {
+     void writeReg(int address, int value) {
 
         if (address == 0x4008) {
 
@@ -111,7 +111,7 @@ class ChannelTriangle : PapuChannel {
 
     }
 
-    public void clockProgrammableTimer(int nCycles) {
+     void clockProgrammableTimer(int nCycles) {
 
         if (progTimerMax > 0) {
             progTimerCount += nCycles;
@@ -125,12 +125,12 @@ class ChannelTriangle : PapuChannel {
 
     }
 
-    public void clockTriangleGenerator() {
+     void clockTriangleGenerator() {
         triangleCounter++;
         triangleCounter &= 0x1F;
     }
 
-    public void setEnabled(bool value) {
+     void setEnabled(bool value) {
         isEnabled = value;
         if (!value) {
             lengthCounter = 0;
@@ -138,11 +138,11 @@ class ChannelTriangle : PapuChannel {
         updateSampleCondition();
     }
 
-    public bool isEnabled() {
+     bool isEnabled() {
         return isEnabled;
     }
 
-    public void updateSampleCondition() {
+     void updateSampleCondition() {
         sampleCondition =
                 isEnabled &&
                 progTimerMax > 7 &&
@@ -150,7 +150,7 @@ class ChannelTriangle : PapuChannel {
                 lengthCounter > 0;
     }
 
-    public void reset() {
+     void reset() {
 
         progTimerCount = 0;
         progTimerMax = 0;
@@ -168,7 +168,7 @@ class ChannelTriangle : PapuChannel {
 
     }
 
-    public void destroy() {
-        papu = null;
+     void destroy() {
+        papu = NULL;
     }
-}
+};
