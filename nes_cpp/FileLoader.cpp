@@ -20,8 +20,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
     // Load a file.
-     short[] FileLoader::loadFile(string fileName, AppletUI* ui) {
-
+     uint8_t* FileLoader::loadFile(string fileName, size_t& length) {
+		ifstream reader(fileName.c_str(), ios::in|ios::binary);
+		length = reader.tellg();
+		uint8_t* data = new uint8_t[length];
+		reader.read((char*)data, length);
+		return data;
+/*
         int flen;
         int8_t* tmp = new int8_t[2048];
 
@@ -122,5 +127,5 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             ret[i] = (short) (tmp[i] & 255);
         }
         return ret;
-
+*/
     }

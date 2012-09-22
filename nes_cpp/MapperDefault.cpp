@@ -17,17 +17,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-     void MapperDefault::init(NES* nes) {
+     void MapperDefault::base_init(NES* nes) {
 
         this->nes = nes;
         this->cpuMem = nes->getCpuMemory();
-        this->cpuMemArray = cpuMem.mem;
+        this->cpuMemArray = cpuMem->mem;
         this->ppuMem = nes->getPpuMemory();
         this->rom = nes->getRom();
         this->cpu = nes->getCpu();
         this->ppu = nes->getPpu();
 
-        cpuMemSize = cpuMem.getMemSize();
+        cpuMemSize = cpuMem->getMemSize();
         joypadLastWrite = -1;
 
     }
@@ -35,12 +35,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void MapperDefault::stateLoad(ByteBuffer* buf) {
 
         // Check version:
-        if (buf.readByte() == 1) {
+        if (buf->readByte() == 1) {
 
             // Joypad stuff:
-            joy1StrobeState = buf.readInt();
-            joy2StrobeState = buf.readInt();
-            joypadLastWrite = buf.readInt();
+            joy1StrobeState = buf->readInt();
+            joy2StrobeState = buf->readInt();
+            joypadLastWrite = buf->readInt();
 
             // Mapper specific stuff:
             mapperInternalStateLoad(buf);
@@ -52,12 +52,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void MapperDefault::stateSave(ByteBuffer* buf) {
 
         // Version:
-        buf.putByte((short) 1);
+        buf->putByte((short) 1);
 
         // Joypad stuff:
-        buf.putInt(joy1StrobeState);
-        buf.putInt(joy2StrobeState);
-        buf.putInt(joypadLastWrite);
+        buf->putInt(joy1StrobeState);
+        buf->putInt(joy2StrobeState);
+        buf->putInt(joypadLastWrite);
 
         // Mapper specific stuff:
         mapperInternalStateSave(buf);
@@ -66,17 +66,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void MapperDefault::mapperInternalStateLoad(ByteBuffer* buf) {
 
-        buf.putByte((short) joy1StrobeState);
-        buf.putByte((short) joy2StrobeState);
-        buf.putByte((short) joypadLastWrite);
+        buf->putByte((short) joy1StrobeState);
+        buf->putByte((short) joy2StrobeState);
+        buf->putByte((short) joypadLastWrite);
 
     }
 
      void MapperDefault::mapperInternalStateSave(ByteBuffer* buf) {
 
-        joy1StrobeState = buf.readByte();
-        joy2StrobeState = buf.readByte();
-        joypadLastWrite = buf.readByte();
+        joy1StrobeState = buf->readByte();
+        joy2StrobeState = buf->readByte();
+        joypadLastWrite = buf->readByte();
 
     }
 
@@ -88,21 +88,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return gameGenieActive;
     }
 
-     void MapperDefault::write(int address, short value) {
+     void MapperDefault::base_write(int address, short value) {
 
         if (address < 0x2000) {
 
             // Mirroring of RAM:
-            cpuMem.mem[address & 0x7FF] = value;
+            cpuMem->mem[address & 0x7FF] = value;
 
         } else if (address > 0x4017) {
 
-            cpuMem.mem[address] = value;
+            cpuMem->mem[address] = value;
             if (address >= 0x6000 && address < 0x8000) {
 
                 // Write to SaveRAM. Store in file:
                 if (rom != NULL) {
-                    rom.writeBatteryRam(address, value);
+                    rom->writeBatteryRam(address, value);
                 }
 
             }
@@ -123,10 +123,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (address < 0x2000) {
             // Mirroring of RAM:
-            cpuMem.mem[address & 0x7FF] = value;
+            cpuMem->mem[address & 0x7FF] = value;
 
         } else if (address > 0x4017) {
-            cpuMem.mem[address] = value;
+            cpuMem->mem[address] = value;
 
         } else if (address > 0x2007 && address < 0x4000) {
             regWrite(0x2000 + (address & 0x7), value);
@@ -187,7 +187,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                         // in main memory and in the
                         // PPU as flags):
                         // (not in the real NES)
-                        return cpuMem.mem[0x2000];
+                        return cpuMem->mem[0x2000];
 
                     }
                     case 0x1: {
@@ -198,7 +198,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                         // in main memory and in the
                         // PPU as flags):
                         // (not in the real NES)
-                        return cpuMem.mem[0x2001];
+                        return cpuMem->mem[0x2001];
 
                     }
                     case 0x2: {
@@ -209,7 +209,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                         // main memory in addition
                         // to as flags in the PPU.
                         // (not in the real NES)
-                        return ppu.readStatusRegister();
+                        return ppu->readStatusRegister();
 
                     }
                     case 0x3: {
@@ -219,7 +219,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         // 0x2004:
                         // Sprite Memory read.
-                        return ppu.sramLoad();
+                        return ppu->sramLoad();
 
                     }
                     case 0x5: {
@@ -232,7 +232,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         // 0x2007:
                         // VRAM read:
-                        return ppu.vramLoad();
+                        return ppu->vramLoad();
 
                     }
                 }
@@ -263,20 +263,20 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         // 0x4017:
                         // Joystick 2 + Strobe
-                        if (mousePressed && nes->ppu != NULL && nes->ppu.buffer != NULL) {
+                        if (mousePressed && nes->ppu != NULL && nes->ppu->buffer != NULL) {
 
                             // Check for white pixel nearby:
 
                             int sx, sy, ex, ey, w;
-                            sx = Math.max(0, mouseX - 4);
-                            ex = Math.min(256, mouseX + 4);
-                            sy = Math.max(0, mouseY - 4);
-                            ey = Math.min(240, mouseY + 4);
+                            sx = max(0, mouseX - 4);
+                            ex = min(256, mouseX + 4);
+                            sy = max(0, mouseY - 4);
+                            ey = min(240, mouseY + 4);
                             w = 0;
 
                             for (int y = sy; y < ey; y++) {
                                 for (int x = sx; x < ex; x++) {
-                                    if ((nes->ppu.buffer[(y << 8) + x] & 0xFFFFFF) == 0xFFFFFF) {
+                                    if ((nes->ppu->buffer[(y << 8) + x] & 0xFFFFFF) == 0xFFFFFF) {
                                         w = 0x1 << 3;
                                         break;
                                     }
@@ -308,58 +308,58 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             case 0x2000: {
 
                 // PPU Control register 1
-                cpuMem.write(address, value);
-                ppu.updateControlReg1(value);
+                cpuMem->write(address, value);
+                ppu->updateControlReg1(value);
                 break;
 
             }
             case 0x2001: {
 
                 // PPU Control register 2
-                cpuMem.write(address, value);
-                ppu.updateControlReg2(value);
+                cpuMem->write(address, value);
+                ppu->updateControlReg2(value);
                 break;
 
             }
             case 0x2003: {
 
                 // Set Sprite RAM address:
-                ppu.writeSRAMAddress(value);
+                ppu->writeSRAMAddress(value);
                 break;
 
             }
             case 0x2004: {
 
                 // Write to Sprite RAM:
-                ppu.sramWrite(value);
+                ppu->sramWrite(value);
                 break;
 
             }
             case 0x2005: {
 
                 // Screen Scroll offsets:
-                ppu.scrollWrite(value);
+                ppu->scrollWrite(value);
                 break;
 
             }
             case 0x2006: {
 
                 // Set VRAM address:
-                ppu.writeVRAMAddress(value);
+                ppu->writeVRAMAddress(value);
                 break;
 
             }
             case 0x2007: {
 
                 // Write to VRAM:
-                ppu.vramWrite(value);
+                ppu->vramWrite(value);
                 break;
 
             }
             case 0x4014: {
 
                 // Sprite Memory DMA Access
-                ppu.sramDMA(value);
+                ppu->sramDMA(value);
                 break;
 
             }
@@ -387,7 +387,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             case 0x4017: {
 
                 // Sound channel frame sequencer:
-                nes->papu.writeReg(address, value);
+                nes->papu->writeReg(address, value);
                 break;
 
             }
@@ -407,33 +407,33 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      short MapperDefault::joy1Read() {
 
-        KbInputHandler* in = nes->getGui().getJoy1();
+        KbInputHandler* in = nes->getGui()->getJoy1();
         short ret;
 
         switch (joy1StrobeState) {
             case 0:
-                ret = in.getKeyState(KbInputHandler.KEY_A);
+                ret = in->getKeyState(KbInputHandler::KEY_A);
                 break;
             case 1:
-                ret = in.getKeyState(KbInputHandler.KEY_B);
+                ret = in->getKeyState(KbInputHandler::KEY_B);
                 break;
             case 2:
-                ret = in.getKeyState(KbInputHandler.KEY_SELECT);
+                ret = in->getKeyState(KbInputHandler::KEY_SELECT);
                 break;
             case 3:
-                ret = in.getKeyState(KbInputHandler.KEY_START);
+                ret = in->getKeyState(KbInputHandler::KEY_START);
                 break;
             case 4:
-                ret = in.getKeyState(KbInputHandler.KEY_UP);
+                ret = in->getKeyState(KbInputHandler::KEY_UP);
                 break;
             case 5:
-                ret = in.getKeyState(KbInputHandler.KEY_DOWN);
+                ret = in->getKeyState(KbInputHandler::KEY_DOWN);
                 break;
             case 6:
-                ret = in.getKeyState(KbInputHandler.KEY_LEFT);
+                ret = in->getKeyState(KbInputHandler::KEY_LEFT);
                 break;
             case 7:
-                ret = in.getKeyState(KbInputHandler.KEY_RIGHT);
+                ret = in->getKeyState(KbInputHandler::KEY_RIGHT);
                 break;
             case 8:
             case 9:
@@ -465,7 +465,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      short MapperDefault::joy2Read() {
-        KbInputHandler* in = nes->getGui().getJoy2();
+        KbInputHandler* in = nes->getGui()->getJoy2();
         int st = joy2StrobeState;
 
         joy2StrobeState++;
@@ -474,21 +474,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (st == 0) {
-            return in.getKeyState(KbInputHandler.KEY_A);
+            return in->getKeyState(KbInputHandler::KEY_A);
         } else if (st == 1) {
-            return in.getKeyState(KbInputHandler.KEY_B);
+            return in->getKeyState(KbInputHandler::KEY_B);
         } else if (st == 2) {
-            return in.getKeyState(KbInputHandler.KEY_SELECT);
+            return in->getKeyState(KbInputHandler::KEY_SELECT);
         } else if (st == 3) {
-            return in.getKeyState(KbInputHandler.KEY_START);
+            return in->getKeyState(KbInputHandler::KEY_START);
         } else if (st == 4) {
-            return in.getKeyState(KbInputHandler.KEY_UP);
+            return in->getKeyState(KbInputHandler::KEY_UP);
         } else if (st == 5) {
-            return in.getKeyState(KbInputHandler.KEY_DOWN);
+            return in->getKeyState(KbInputHandler::KEY_DOWN);
         } else if (st == 6) {
-            return in.getKeyState(KbInputHandler.KEY_LEFT);
+            return in->getKeyState(KbInputHandler::KEY_LEFT);
         } else if (st == 7) {
-            return in.getKeyState(KbInputHandler.KEY_RIGHT);
+            return in->getKeyState(KbInputHandler::KEY_RIGHT);
         } else if (st == 16) {
             return (short) 0;
         } else if (st == 17) {
@@ -502,9 +502,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     void MapperDefault::loadROM(ROM rom) {
+     void MapperDefault::loadROM(ROM* rom) {
 
-        if (!rom.isValid() || rom.getRomBankCount() < 1) {
+        if (!rom->isValid() || rom->getRomBankCount() < 1) {
             //System.out.println("NoMapper: Invalid ROM! Unable to load.");
             return;
         }
@@ -520,13 +520,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Reset IRQ:
         //nes->getCpu().doResetInterrupt();
-        nes->getCpu().requestIrq(CPU.IRQ_RESET);
+        nes->getCpu()->requestIrq(CPU::IRQ_RESET);
 
     }
 
     void MapperDefault::loadPRGROM() {
 
-        if (rom.getRomBankCount() > 1) {
+        if (rom->getRomBankCount() > 1) {
             // Load the two first banks into memory.
             loadRomBank(0, 0x8000);
             loadRomBank(1, 0xC000);
@@ -542,8 +542,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         ////System.out.println("Loading CHR ROM..");
 
-        if (rom.getVromBankCount() > 0) {
-            if (rom.getVromBankCount() == 1) {
+        if (rom->getVromBankCount() > 0) {
+            if (rom->getVromBankCount() == 1) {
                 loadVromBank(0, 0x0000);
                 loadVromBank(0, 0x1000);
             } else {
@@ -558,13 +558,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void MapperDefault::loadBatteryRam() {
 
-        if (rom.batteryRam) {
+        if (rom->batteryRam) {
 
-            short[] ram = rom.getBatteryRam();
-            if (ram != NULL && ram.length == 0x2000) {
+            short* ram = rom->getBatteryRam();
+            if (ram != NULL && ram->length == 0x2000) {
 
                 // Load Battery RAM into memory:
-                System.arraycopy(ram, 0, nes->cpuMem.mem, 0x6000, 0x2000);
+                System.arraycopy(ram, 0, nes->cpuMem->mem, 0x6000, 0x2000);
 
             }
 
@@ -575,93 +575,93 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     void MapperDefault::loadRomBank(int bank, int address) {
 
         // Loads a ROM bank into the specified address.
-        bank %= rom.getRomBankCount();
-        short[] data = rom.getRomBank(bank);
-        //cpuMem.write(address,data,data.length);
-        System.arraycopy(rom.getRomBank(bank), 0, cpuMem.mem, address, 16384);
+        bank %= rom->getRomBankCount();
+        short[] data = rom->getRomBank(bank);
+        //cpuMem->write(address,data,data.length);
+        System.arraycopy(rom->getRomBank(bank), 0, cpuMem->mem, address, 16384);
 
     }
 
     void MapperDefault::loadVromBank(int bank, int address) {
 
-        if (rom.getVromBankCount() == 0) {
+        if (rom->getVromBankCount() == 0) {
             return;
         }
-        ppu.triggerRendering();
+        ppu->triggerRendering();
 
-        System.arraycopy(rom.getVromBank(bank % rom.getVromBankCount()), 0, nes->ppuMem.mem, address, 4096);
+        System.arraycopy(rom->getVromBank(bank % rom->getVromBankCount()), 0, nes->ppuMem.mem, address, 4096);
 
-        Tile[] vromTile = rom.getVromBankTiles(bank % rom.getVromBankCount());
-        System.arraycopy(vromTile, 0, ppu.ptTile, address >> 4, 256);
+        Tile[] vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
+        System.arraycopy(vromTile, 0, ppu->ptTile, address >> 4, 256);
 
     }
 
     void MapperDefault::load32kRomBank(int bank, int address) {
 
-        loadRomBank((bank * 2) % rom.getRomBankCount(), address);
-        loadRomBank((bank * 2 + 1) % rom.getRomBankCount(), address + 16384);
+        loadRomBank((bank * 2) % rom->getRomBankCount(), address);
+        loadRomBank((bank * 2 + 1) % rom->getRomBankCount(), address + 16384);
 
     }
 
     void MapperDefault::load8kVromBank(int bank4kStart, int address) {
 
-        if (rom.getVromBankCount() == 0) {
+        if (rom->getVromBankCount() == 0) {
             return;
         }
-        ppu.triggerRendering();
+        ppu->triggerRendering();
 
-        loadVromBank((bank4kStart) % rom.getVromBankCount(), address);
-        loadVromBank((bank4kStart + 1) % rom.getVromBankCount(), address + 4096);
+        loadVromBank((bank4kStart) % rom->getVromBankCount(), address);
+        loadVromBank((bank4kStart + 1) % rom->getVromBankCount(), address + 4096);
 
     }
 
     void MapperDefault::load1kVromBank(int bank1k, int address) {
 
-        if (rom.getVromBankCount() == 0) {
+        if (rom->getVromBankCount() == 0) {
             return;
         }
-        ppu.triggerRendering();
+        ppu->triggerRendering();
 
-        int bank4k = (bank1k / 4) % rom.getVromBankCount();
+        int bank4k = (bank1k / 4) % rom->getVromBankCount();
         int bankoffset = (bank1k % 4) * 1024;
-        System.arraycopy(rom.getVromBank(bank4k), 0, nes->ppuMem.mem, bankoffset, 1024);
+        System.arraycopy(rom->getVromBank(bank4k), 0, nes->ppuMem.mem, bankoffset, 1024);
 
         // Update tiles:
-        Tile[] vromTile = rom.getVromBankTiles(bank4k);
+        Tile[] vromTile = rom->getVromBankTiles(bank4k);
         int baseIndex = address >> 4;
         for (int i = 0; i < 64; i++) {
-            ppu.ptTile[baseIndex + i] = vromTile[((bank1k % 4) << 6) + i];
+            ppu->ptTile[baseIndex + i] = vromTile[((bank1k % 4) << 6) + i];
         }
 
     }
 
     void MapperDefault::load2kVromBank(int bank2k, int address) {
 
-        if (rom.getVromBankCount() == 0) {
+        if (rom->getVromBankCount() == 0) {
             return;
         }
-        ppu.triggerRendering();
+        ppu->triggerRendering();
 
-        int bank4k = (bank2k / 2) % rom.getVromBankCount();
+        int bank4k = (bank2k / 2) % rom->getVromBankCount();
         int bankoffset = (bank2k % 2) * 2048;
-        System.arraycopy(rom.getVromBank(bank4k), bankoffset, nes->ppuMem.mem, address, 2048);
+        System.arraycopy(rom->getVromBank(bank4k), bankoffset, nes->ppuMem.mem, address, 2048);
 
         // Update tiles:
-        Tile[] vromTile = rom.getVromBankTiles(bank4k);
+        Tile[] vromTile = rom->getVromBankTiles(bank4k);
         int baseIndex = address >> 4;
         for (int i = 0; i < 128; i++) {
-            ppu.ptTile[baseIndex + i] = vromTile[((bank2k % 2) << 7) + i];
+            ppu->ptTile[baseIndex + i] = vromTile[((bank2k % 2) << 7) + i];
         }
 
     }
 
     void MapperDefault::load8kRomBank(int bank8k, int address) {
 
-        int bank16k = (bank8k / 2) % rom.getRomBankCount();
+        int bank16k = (bank8k / 2) % rom->getRomBankCount();
         int offset = (bank8k % 2) * 8192;
 
-        short[] bank = rom.getRomBank(bank16k);
-        cpuMem.write(address, bank, offset, 8192);
+        short[] bank = rom->getRomBank(bank16k);
+        cpuMem->write(address, bank, offset, 8192);
 
     }
 

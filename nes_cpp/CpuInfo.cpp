@@ -4,49 +4,67 @@
 // Holds info on the cpu. Mostly constants that are placed here
 // to keep the CPU code clean.
 
-     static int[] CpuInfo::getOpData() {
+        const int CpuInfo::cycTable[256] = {
+                    /*0x00*/7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
+                    /*0x10*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+                    /*0x20*/ 6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
+                    /*0x30*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+                    /*0x40*/ 6, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 3, 4, 6, 6,
+                    /*0x50*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+                    /*0x60*/ 6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 5, 4, 6, 6,
+                    /*0x70*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+                    /*0x80*/ 2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
+                    /*0x90*/ 2, 6, 2, 6, 4, 4, 4, 4, 2, 5, 2, 5, 5, 5, 5, 5,
+                    /*0xA0*/ 2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
+                    /*0xB0*/ 2, 5, 2, 5, 4, 4, 4, 4, 2, 4, 2, 4, 4, 4, 4, 4,
+                    /*0xC0*/ 2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
+                    /*0xD0*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+                    /*0xE0*/ 2, 6, 3, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
+                    /*0xF0*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7};
+
+     int* CpuInfo::getOpData() {
         if (opdata == NULL) {
             initOpData();
         }
         return opdata;
     }
 
-     static string[] CpuInfo::getInstNames() {
+     vector<string>* CpuInfo::getInstNames() {
         if (instname == NULL) {
             initInstNames();
         }
         return instname;
     }
 
-     static string CpuInfo::getInstName(int inst) {
+     string CpuInfo::getInstName(int inst) {
         if (instname == NULL) {
             initInstNames();
         }
-        if (inst < instname.length) {
-            return instname[inst];
+        if (inst < instname->size()) {
+            return (*instname)[inst];
         } else {
             return "???";
         }
     }
 
-     static string[] CpuInfo::getAddressModeNames() {
+     vector<string>* CpuInfo::getAddressModeNames() {
         if (addrDesc == NULL) {
             initAddrDesc();
         }
         return addrDesc;
     }
 
-     static string CpuInfo::getAddressModeName(int addrMode) {
+     string CpuInfo::getAddressModeName(int addrMode) {
         if (addrDesc == NULL) {
             initAddrDesc();
         }
-        if (addrMode >= 0 && addrMode < addrDesc.length) {
-            return addrDesc[addrMode];
+        if (addrMode >= 0 && addrMode < addrDesc->size()) {
+            return (*addrDesc)[addrMode];
         }
         return "???";
     }
 
-     static void CpuInfo::initOpData() {
+     void CpuInfo::initOpData() {
 
         // Create array:
         opdata = new int[256];
@@ -322,30 +340,9 @@
 
         // TYA:
         setOp(INS_TYA, 0x98, ADDR_IMP, 1, 2);
-
-
-        cycTable = new int[]{
-                    /*0x00*/7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
-                    /*0x10*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
-                    /*0x20*/ 6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
-                    /*0x30*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
-                    /*0x40*/ 6, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 3, 4, 6, 6,
-                    /*0x50*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
-                    /*0x60*/ 6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 5, 4, 6, 6,
-                    /*0x70*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
-                    /*0x80*/ 2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
-                    /*0x90*/ 2, 6, 2, 6, 4, 4, 4, 4, 2, 5, 2, 5, 5, 5, 5, 5,
-                    /*0xA0*/ 2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
-                    /*0xB0*/ 2, 5, 2, 5, 4, 4, 4, 4, 2, 4, 2, 4, 4, 4, 4, 4,
-                    /*0xC0*/ 2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
-                    /*0xD0*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
-                    /*0xE0*/ 2, 6, 3, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
-                    /*0xF0*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,};
-
-
     }
 
-     static void CpuInfo::setOp(int inst, int op, int addr, int size, int cycles) {
+     void CpuInfo::setOp(int inst, int op, int addr, int size, int cycles) {
 
         opdata[op] =
                 ((inst & 0xFF)) |
@@ -355,87 +352,86 @@
 
     }
 
-     static void CpuInfo::initInstNames() {
+     void CpuInfo::initInstNames() {
 
-        instname = new string[56];
+        instname = new vector<string>(56);
 
         // Instruction Names:
-        instname[ 0] = "ADC";
-        instname[ 1] = "AND";
-        instname[ 2] = "ASL";
-        instname[ 3] = "BCC";
-        instname[ 4] = "BCS";
-        instname[ 5] = "BEQ";
-        instname[ 6] = "BIT";
-        instname[ 7] = "BMI";
-        instname[ 8] = "BNE";
-        instname[ 9] = "BPL";
-        instname[10] = "BRK";
-        instname[11] = "BVC";
-        instname[12] = "BVS";
-        instname[13] = "CLC";
-        instname[14] = "CLD";
-        instname[15] = "CLI";
-        instname[16] = "CLV";
-        instname[17] = "CMP";
-        instname[18] = "CPX";
-        instname[19] = "CPY";
-        instname[20] = "DEC";
-        instname[21] = "DEX";
-        instname[22] = "DEY";
-        instname[23] = "EOR";
-        instname[24] = "INC";
-        instname[25] = "INX";
-        instname[26] = "INY";
-        instname[27] = "JMP";
-        instname[28] = "JSR";
-        instname[29] = "LDA";
-        instname[30] = "LDX";
-        instname[31] = "LDY";
-        instname[32] = "LSR";
-        instname[33] = "NOP";
-        instname[34] = "ORA";
-        instname[35] = "PHA";
-        instname[36] = "PHP";
-        instname[37] = "PLA";
-        instname[38] = "PLP";
-        instname[39] = "ROL";
-        instname[40] = "ROR";
-        instname[41] = "RTI";
-        instname[42] = "RTS";
-        instname[43] = "SBC";
-        instname[44] = "SEC";
-        instname[45] = "SED";
-        instname[46] = "SEI";
-        instname[47] = "STA";
-        instname[48] = "STX";
-        instname[49] = "STY";
-        instname[50] = "TAX";
-        instname[51] = "TAY";
-        instname[52] = "TSX";
-        instname[53] = "TXA";
-        instname[54] = "TXS";
-        instname[55] = "TYA";
+        (*instname)[ 0] = "ADC";
+        (*instname)[ 1] = "AND";
+        (*instname)[ 2] = "ASL";
+        (*instname)[ 3] = "BCC";
+        (*instname)[ 4] = "BCS";
+        (*instname)[ 5] = "BEQ";
+        (*instname)[ 6] = "BIT";
+        (*instname)[ 7] = "BMI";
+        (*instname)[ 8] = "BNE";
+        (*instname)[ 9] = "BPL";
+        (*instname)[10] = "BRK";
+        (*instname)[11] = "BVC";
+        (*instname)[12] = "BVS";
+        (*instname)[13] = "CLC";
+        (*instname)[14] = "CLD";
+        (*instname)[15] = "CLI";
+        (*instname)[16] = "CLV";
+        (*instname)[17] = "CMP";
+        (*instname)[18] = "CPX";
+        (*instname)[19] = "CPY";
+        (*instname)[20] = "DEC";
+        (*instname)[21] = "DEX";
+        (*instname)[22] = "DEY";
+        (*instname)[23] = "EOR";
+        (*instname)[24] = "INC";
+        (*instname)[25] = "INX";
+        (*instname)[26] = "INY";
+        (*instname)[27] = "JMP";
+        (*instname)[28] = "JSR";
+        (*instname)[29] = "LDA";
+        (*instname)[30] = "LDX";
+        (*instname)[31] = "LDY";
+        (*instname)[32] = "LSR";
+        (*instname)[33] = "NOP";
+        (*instname)[34] = "ORA";
+        (*instname)[35] = "PHA";
+        (*instname)[36] = "PHP";
+        (*instname)[37] = "PLA";
+        (*instname)[38] = "PLP";
+        (*instname)[39] = "ROL";
+        (*instname)[40] = "ROR";
+        (*instname)[41] = "RTI";
+        (*instname)[42] = "RTS";
+        (*instname)[43] = "SBC";
+        (*instname)[44] = "SEC";
+        (*instname)[45] = "SED";
+        (*instname)[46] = "SEI";
+        (*instname)[47] = "STA";
+        (*instname)[48] = "STX";
+        (*instname)[49] = "STY";
+        (*instname)[50] = "TAX";
+        (*instname)[51] = "TAY";
+        (*instname)[52] = "TSX";
+        (*instname)[53] = "TXA";
+        (*instname)[54] = "TXS";
+        (*instname)[55] = "TYA";
 
     }
 
-     static void CpuInfo::initAddrDesc() {
+     void CpuInfo::initAddrDesc() {
 
-        addrDesc = new string[]{
-                    "Zero Page           ",
-                    "Relative            ",
-                    "Implied             ",
-                    "Absolute            ",
-                    "Accumulator         ",
-                    "Immediate           ",
-                    "Zero Page,X         ",
-                    "Zero Page,Y         ",
-                    "Absolute,X          ",
-                    "Absolute,Y          ",
-                    "Preindexed Indirect ",
-                    "Postindexed Indirect",
-                    "Indirect Absolute   "
-                };
+        addrDesc = new vector<string>(13);
+                    (*addrDesc)[0] = "Zero Page           ";
+                    (*addrDesc)[1] = "Relative            ";
+                    (*addrDesc)[2] = "Implied             ";
+                    (*addrDesc)[3] = "Absolute            ";
+                    (*addrDesc)[4] = "Accumulator         ";
+                    (*addrDesc)[5] = "Immediate           ";
+                    (*addrDesc)[6] = "Zero Page,X         ";
+                    (*addrDesc)[7] = "Zero Page,Y         ";
+                    (*addrDesc)[8] = "Absolute,X          ";
+                    (*addrDesc)[9] = "Absolute,Y          ";
+                    (*addrDesc)[10] = "Preindexed Indirect ";
+                    (*addrDesc)[11] = "Postindexed Indirect";
+                    (*addrDesc)[13] = "Indirect Absolute   ";
 
     }
 

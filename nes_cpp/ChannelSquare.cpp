@@ -17,13 +17,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-    static const int ChannelSquare::dutyLookup[32] = {
+    const int ChannelSquare::dutyLookup[32] = {
                     0, 1, 0, 0, 0, 0, 0, 0,
                     0, 1, 1, 0, 0, 0, 0, 0,
                     0, 1, 1, 1, 1, 0, 0, 0,
                     1, 0, 0, 1, 1, 1, 1, 1};
 
-    static const int ChannelSquare::impLookup[32] = {
+    const int ChannelSquare::impLookup[32] = {
                     1, -1, 0, 0, 0, 0, 0, 0,
                     1, 0, -1, 0, 0, 0, 0, 0,
                     1, 0, 0, 0, -1, 0, 0, 0,
@@ -162,7 +162,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             progTimerMax |= ((value & 0x7) << 8);
 
             if (_isEnabled) {
-                lengthCounter = papu.getLengthMax(value & 0xF8);
+                lengthCounter = papu->getLengthMax(value & 0xF8);
             }
 
             envReset = true;

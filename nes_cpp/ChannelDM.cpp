@@ -63,7 +63,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (irqGenerated) {
-            papu.nes->cpu.requestIrq(CPU.IRQ_NORMAL);
+            papu->nes->cpu->requestIrq(CPU::IRQ_NORMAL);
         }
 
     }
@@ -103,8 +103,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void ChannelDM::nextSample() {
 
         // Fetch byte:
-        data = papu.getNes().getMemoryMapper().load(playAddress);
-        papu.getNes().cpu.haltCycles(4);
+        data = papu->getNes()->getMemoryMapper()->load(playAddress);
+        papu->getNes()->cpu->haltCycles(4);
 
         playLengthCounter--;
         playAddress++;
@@ -133,14 +133,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 irqGenerated = false;
             }
 
-            dmaFrequency = papu.getDmcFrequency(value & 0xF);
+            dmaFrequency = papu->getDmcFrequency(value & 0xF);
 
         } else if (address == 0x4011) {
 
             // Delta counter load register:
             deltaCounter = (value >> 1) & 63;
             dacLsb = value & 1;
-            if (papu.userEnableDmc) {
+            if (papu->userEnableDmc) {
                 sample = ((deltaCounter << 1) + dacLsb); // update sample value
             }
 

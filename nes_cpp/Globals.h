@@ -20,6 +20,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <map>
 #include <vector>
+#include <sstream>
+#include <fstream>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -57,7 +59,15 @@ public:
 	}
 };
 class KeyListener {};
-class KeyEvent {};
+class KeyEvent {
+public:
+	static const int VK_F5 = 0; // FIXME
+	static const int VK_F10 = 1; // FIXME
+	static const int VK_F12 = 2; // FIXME
+	int getKeyCode() {
+		return 0;
+	}
+};
 class MouseAdapter {};
 class MouseEvent {};
 class Mixer {};
@@ -441,6 +451,7 @@ public:
      bool isEnabled();
      int getLengthStatus();
      void reset();
+     void destroy();
 };
 
 class ChannelSquare : public IPapuChannel {
@@ -525,6 +536,7 @@ class CPU {
 public:
 	// Thread:
 	pthread_t myThread;
+	bool isAlive;
 	mutable pthread_mutex_t _mutex;
 
 	// References to other parts of NES :
@@ -602,10 +614,10 @@ public:
     // Opdata array:
      static int* opdata;
     // Instruction names:
-     static string* instname;
+     static vector<string>* instname;
     // Address mode descriptions:
-     static string* addrDesc;
-     static int* cycTable;
+     static vector<string>* addrDesc;
+     static const int cycTable[256];
     // Instruction types:
     // -------------------------------- //
      static const int INS_ADC = 0;
@@ -682,9 +694,9 @@ public:
      static const int ADDR_INDABS = 12;
 
      static int* getOpData();
-     static string* getInstNames();
+     static vector<string>* getInstNames();
      static string getInstName(int inst);
-     static string* getAddressModeNames();
+     static vector<string>* getAddressModeNames();
      static string getAddressModeName(int addrMode);
      static void initOpData();
      static void setOp(int inst, int op, int addr, int size, int cycles);
@@ -694,7 +706,7 @@ public:
 
 class FileLoader {
 public:
-     short* loadFile(string fileName, AppletUI* ui);
+     uint8_t* loadFile(string fileName, size_t& length);
 };
 
 class HiResTimer {
@@ -708,7 +720,7 @@ public:
 
 class KbInputHandler : public KeyListener {
 public:
-    bool* allKeysState;
+    vector<bool>* allKeysState;
     int* keyMapping;
     int id;
     NES* nes;
@@ -729,9 +741,9 @@ public:
      KbInputHandler(NES* nes, int id);
      short getKeyState(int padKey);
      void mapKey(int padKey, int kbKeycode);
-     void keyPressed(KeyEvent ke);
-     void keyReleased(KeyEvent ke);
-     void keyTyped(KeyEvent ke);
+     void keyPressed(KeyEvent* ke);
+     void keyReleased(KeyEvent* ke);
+     void keyTyped(KeyEvent* ke);
      void reset();
      void update();
      void destroy();
@@ -776,21 +788,21 @@ public:
      int mouseY;
     int tmp;
 
-     void init(NES* nes);
+     void base_init(NES* nes);
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
      void mapperInternalStateLoad(ByteBuffer* buf);
      void mapperInternalStateSave(ByteBuffer* buf);
      void setGameGenieState(bool enable);
      bool getGameGenieState();
-     void write(int address, short value);
+     void base_write(int address, short value);
      void writelow(int address, short value);
      short load(int address);
      short regLoad(int address);
      void regWrite(int address, short value);
      short joy1Read();
      short joy2Read();
-     void loadROM(ROM rom);
+     void loadROM(ROM* rom);
     void loadPRGROM();
     void loadCHRROM();
      void loadBatteryRam();
@@ -818,7 +830,7 @@ public:
     int mirroring;
     int oneScreenMirroring;
     int prgSwitchingArea;
-    int prgSwitchingSize1;
+    int prgSwitchingSize;
     int vromSwitchingSize;
 
     // Register 1:

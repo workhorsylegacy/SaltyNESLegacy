@@ -23,6 +23,14 @@ instructions and invokes emulation of the PPU and pAPU.
 
 #include "Globals.h"
 
+extern "C" {
+    void* runCPU(void* arg) {
+        CPU* cpu = static_cast<CPU*>(arg);
+        cpu->run();
+        return 0;
+    }
+}
+
 	// Constructor:
 	 CPU::CPU(NES* nes){
 		this->nes = nes;
@@ -32,7 +40,7 @@ instructions and invokes emulation of the PPU and pAPU.
 	 void CPU::init(){
 
 		// Get Op data:
-		opdata = CpuInfo.getOpData();
+		opdata = CpuInfo::getOpData();
 
 		// Get Memory Mapper:
 		this->mmap = nes->getMemoryMapper();
@@ -50,19 +58,19 @@ instructions and invokes emulation of the PPU and pAPU.
 
 	 void CPU::stateLoad(ByteBuffer* buf){
 
-		if(buf.readByte()==1){
+		if(buf->readByte()==1){
 			// Version 1
 
 			// Registers:
-			setStatus(buf.readInt());
-			REG_ACC_NEW = buf.readInt();
-			REG_PC_NEW  = buf.readInt();
-			REG_SP      = buf.readInt();
-			REG_X_NEW   = buf.readInt();
-			REG_Y_NEW   = buf.readInt();
+			setStatus(buf->readInt());
+			REG_ACC_NEW = buf->readInt();
+			REG_PC_NEW  = buf->readInt();
+			REG_SP      = buf->readInt();
+			REG_X_NEW   = buf->readInt();
+			REG_Y_NEW   = buf->readInt();
 
 			// Cycles to halt:
-			cyclesToHalt = buf.readInt();
+			cyclesToHalt = buf->readInt();
 
 		}
 
@@ -71,18 +79,18 @@ instructions and invokes emulation of the PPU and pAPU.
 	 void CPU::stateSave(ByteBuffer* buf){
 
 		// Save info version:
-		buf.putByte((short)1);
+		buf->putByte((short)1);
 
 		// Save registers:
-		buf.putInt(getStatus());
-		buf.putInt(REG_ACC_NEW);
-		buf.putInt(REG_PC_NEW );
-		buf.putInt(REG_SP     );
-		buf.putInt(REG_X_NEW  );
-		buf.putInt(REG_Y_NEW  );
+		buf->putInt(getStatus());
+		buf->putInt(REG_ACC_NEW);
+		buf->putInt(REG_PC_NEW );
+		buf->putInt(REG_SP     );
+		buf->putInt(REG_X_NEW  );
+		buf->putInt(REG_Y_NEW  );
 
 		// Cycles to halt:
-		buf.putInt(cyclesToHalt);
+		buf->putInt(cyclesToHalt);
 
 	}
 
@@ -126,26 +134,26 @@ instructions and invokes emulation of the PPU and pAPU.
 
 	 /*synchronized*/ void CPU::beginExecution(){
 
-		if(myThread!=NULL && myThread.isAlive()){
+		if(myThread!=NULL && isAlive){
 			endExecution();
 		}
 
-		myThread = new Thread(this);
-		myThread.start();
-		myThread.setPriority(Thread.MIN_PRIORITY);
+		pthread_create(&myThread, NULL, runCPU, this);
+//		myThread.setPriority(Thread.MIN_PRIORITY);
 
 	}
 
 	 /*synchronized*/ void CPU::endExecution(){
 		//System.out.println("* Attempting to stop CPU thread.");
-		if(myThread!=NULL && myThread.isAlive()){
+		if(myThread!=NULL && isAlive){
 			try{
 				stopRunning = true;
-				myThread.join();
+				pthread_join(myThread, NULL);
 
-			}catch(InterruptedException ie){
+			}catch(exception& ie){
 				//System.out.println("** Unable to stop CPU thread!");
-				ie.printStackTrace();
+//				ie.printStackTrace();
+				throw;
 			}
 		}else{
 			//System.out.println("* CPU Thread was not alive.");
@@ -153,12 +161,14 @@ instructions and invokes emulation of the PPU and pAPU.
 	}
 
 	 bool CPU::isRunning(){
-		return (myThread!=NULL && myThread.isAlive());
+		return (myThread!=NULL && isAlive);
 	}
 
 	 void CPU::run(){
+		 isAlive = true;
 		initRun();
 		emulate();
+	    isAlive = false;
 	}
 
 	 /*synchronized*/ void CPU::initRun(){
@@ -173,11 +183,11 @@ instructions and invokes emulation of the PPU and pAPU.
 		// (when memory mappers switch ROM banks
 		// this will be written to, no need to
 		// update reference):
-		mem = nes->cpuMem.mem;
+		mem = nes->cpuMem->mem;
 
 		// References to other parts of NES:
 		IMemoryMapper* mmap = nes->memMapper;
-		PPU 		 ppu  = nes->ppu;
+		PPU* 		 ppu  = nes->ppu;
 		PAPU* 		 papu = nes->papu;
 
 
@@ -269,7 +279,7 @@ instructions and invokes emulation of the PPU and pAPU.
 
 			}
 
-			opinf = opdata[mmap.load(REG_PC+1)];
+			opinf = opdata[mmap->load(REG_PC+1)];
 			cycleCount = (opinf>>24);
 			cycleAdd = 0;
 
@@ -400,7 +410,7 @@ instructions and invokes emulation of the PPU and pAPU.
 					if(addr < 0x1FFF){
 						addr = mem[addr] + (mem[(addr&0xFF00)|(((addr&0xFF)+1)&0xFF)]<<8);// Read from address given in op
 					}else{
-						addr = mmap.load(addr)+(mmap.load((addr&0xFF00)|(((addr&0xFF)+1)&0xFF))<<8);
+						addr = mmap->load(addr)+(mmap->load((addr&0xFF00)|(((addr&0xFF)+1)&0xFF))<<8);
 					}
 					break;
 
@@ -1215,7 +1225,11 @@ instructions and invokes emulation of the PPU and pAPU.
 					if(!crash){
 						crash = true;
 						stopRunning = true;
-						nes->gui.showErrorMsg("Game crashed, invalid opcode at address $"+Misc.hex16(opaddr));
+						
+						stringstream out;
+						out << "Game crashed, invalid opcode at address $";
+						out << std::hex << (int) opaddr;
+						printf("%s\n", out.str().c_str());
 					}
 					break;
 
@@ -1234,12 +1248,12 @@ instructions and invokes emulation of the PPU and pAPU.
 			}
 
 			if(asApplet){			
-				ppu.cycles = cycleCount*3;
-				ppu.emulateCycles();			
+				ppu->cycles = cycleCount*3;
+				ppu->emulateCycles();			
 			}
 			
 			if(emulateSound){
-				papu.clockFrameCounter(cycleCount);
+				papu->clockFrameCounter(cycleCount);
 			}
 			
 		} // End of run loop.
@@ -1264,14 +1278,14 @@ instructions and invokes emulation of the PPU and pAPU.
 	}
 
 	 int CPU::load(int addr){
-		return addr<0x2000 ? mem[addr&0x7FF] : mmap.load(addr);
+		return addr<0x2000 ? mem[addr&0x7FF] : mmap->load(addr);
 	}
 	
 	 int CPU::load16bit(int addr){
 		return addr<0x1FFF ?
 			mem[addr&0x7FF] | (mem[(addr+1)&0x7FF]<<8)
 			:
-			mmap.load(addr) | (mmap.load(addr+1)<<8)
+			mmap->load(addr) | (mmap->load(addr+1)<<8)
 			;
 	}
 	
@@ -1279,7 +1293,7 @@ instructions and invokes emulation of the PPU and pAPU.
 		if(addr < 0x2000){
 			mem[addr&0x7FF] = val;
 		}else{
-			mmap.write(addr,val);
+			mmap->write(addr,val);
 		}
 	}
 
@@ -1295,7 +1309,7 @@ instructions and invokes emulation of the PPU and pAPU.
 	}
 
 	 void CPU::push(int value){
-		mmap.write(REG_SP,(short)value);
+		mmap->write(REG_SP,(short)value);
 		REG_SP--;
 		REG_SP = 0x0100 | (REG_SP&0xFF);
 	}
@@ -1307,7 +1321,7 @@ instructions and invokes emulation of the PPU and pAPU.
 	 short CPU::pull(){
 		REG_SP++;
 		REG_SP = 0x0100 | (REG_SP&0xFF);
-		return mmap.load(REG_SP);
+		return mmap->load(REG_SP);
 	}
 
 	 bool CPU::pageCrossed(int addr1, int addr2){
@@ -1320,7 +1334,7 @@ instructions and invokes emulation of the PPU and pAPU.
 
 	 void CPU::doNonMaskableInterrupt(int status){
 
-		int temp = mmap.load(0x2000); // Read PPU status.
+		int temp = mmap->load(0x2000); // Read PPU status.
 		if((temp&128)!=0){ // Check whether VBlank Interrupts are enabled
 
 			REG_PC_NEW++;
@@ -1329,7 +1343,7 @@ instructions and invokes emulation of the PPU and pAPU.
 			//F_INTERRUPT_NEW = 1;
 			push(status);
 
-			REG_PC_NEW = mmap.load(0xFFFA) | (mmap.load(0xFFFB) << 8);
+			REG_PC_NEW = mmap->load(0xFFFA) | (mmap->load(0xFFFB) << 8);
 			REG_PC_NEW--;
 
 		}
@@ -1339,7 +1353,7 @@ instructions and invokes emulation of the PPU and pAPU.
 
 	 void CPU::doResetInterrupt(){
 
-		REG_PC_NEW = mmap.load(0xFFFC) | (mmap.load(0xFFFD) << 8);
+		REG_PC_NEW = mmap->load(0xFFFC) | (mmap->load(0xFFFD) << 8);
 		REG_PC_NEW--;
 
 	}
@@ -1353,7 +1367,7 @@ instructions and invokes emulation of the PPU and pAPU.
 		F_INTERRUPT_NEW = 1;
 		F_BRK_NEW = 0;
 
-		REG_PC_NEW = mmap.load(0xFFFE) | (mmap.load(0xFFFF) << 8);
+		REG_PC_NEW = mmap->load(0xFFFE) | (mmap->load(0xFFFF) << 8);
 		REG_PC_NEW--;
 
 	}

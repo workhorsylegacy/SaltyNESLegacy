@@ -80,13 +80,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else if (address == 0x400E) {
 
             // Programmable timer:
-            progTimerMax = papu.getNoiseWaveLength(value & 0xF);
+            progTimerMax = papu->getNoiseWaveLength(value & 0xF);
             randomMode = value >> 7;
 
         } else if (address == 0x400F) {
 
             // Length counter
-            lengthCounter = papu.getLengthMax(value & 248);
+            lengthCounter = papu->getLengthMax(value & 248);
             envReset = true;
 
         }

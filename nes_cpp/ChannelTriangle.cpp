@@ -85,7 +85,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Programmable timer, length counter
             progTimerMax &= 0xFF;
             progTimerMax |= ((value & 0x07) << 8);
-            lengthCounter = papu.getLengthMax(value & 0xF8);
+            lengthCounter = papu->getLengthMax(value & 0xF8);
             lcHalt = true;
 
         }

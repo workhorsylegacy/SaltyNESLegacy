@@ -22,51 +22,51 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      KbInputHandler::KbInputHandler(NES* nes, int id) {
         this->nes = nes;
         this->id = id;
-        allKeysState = new bool[255];
-        keyMapping = new int[KbInputHandler.NUM_KEYS];
+        allKeysState = new vector<bool>(255);
+        keyMapping = new int[KbInputHandler::NUM_KEYS];
     }
 
      short KbInputHandler::getKeyState(int padKey) {
-        return (short) (allKeysState[keyMapping[padKey]] ? 0x41 : 0x40);
+        return (short) ((*allKeysState)[keyMapping[padKey]] ? 0x41 : 0x40);
     }
 
      void KbInputHandler::mapKey(int padKey, int kbKeycode) {
         keyMapping[padKey] = kbKeycode;
     }
 
-     void KbInputHandler::keyPressed(KeyEvent ke) {
+     void KbInputHandler::keyPressed(KeyEvent* ke) {
 
-        int kc = ke.getKeyCode();
-        if (kc >= allKeysState.length) {
+        int kc = ke->getKeyCode();
+        if (kc >= allKeysState->size()) {
             return;
         }
 
-        allKeysState[kc] = true;
+        (*allKeysState)[kc] = true;
 
         // Can't hold both left & right or up & down at same time:
-        if (kc == keyMapping[KbInputHandler.KEY_LEFT]) {
-            allKeysState[keyMapping[KbInputHandler.KEY_RIGHT]] = false;
-        } else if (kc == keyMapping[KbInputHandler.KEY_RIGHT]) {
-            allKeysState[keyMapping[KbInputHandler.KEY_LEFT]] = false;
-        } else if (kc == keyMapping[KbInputHandler.KEY_UP]) {
-            allKeysState[keyMapping[KbInputHandler.KEY_DOWN]] = false;
-        } else if (kc == keyMapping[KbInputHandler.KEY_DOWN]) {
-            allKeysState[keyMapping[KbInputHandler.KEY_UP]] = false;
+        if (kc == keyMapping[KbInputHandler::KEY_LEFT]) {
+            (*allKeysState)[keyMapping[KbInputHandler::KEY_RIGHT]] = false;
+        } else if (kc == keyMapping[KbInputHandler::KEY_RIGHT]) {
+            (*allKeysState)[keyMapping[KbInputHandler::KEY_LEFT]] = false;
+        } else if (kc == keyMapping[KbInputHandler::KEY_UP]) {
+            (*allKeysState)[keyMapping[KbInputHandler::KEY_DOWN]] = false;
+        } else if (kc == keyMapping[KbInputHandler::KEY_DOWN]) {
+            (*allKeysState)[keyMapping[KbInputHandler::KEY_UP]] = false;
         }
     }
 
-     void KbInputHandler::keyReleased(KeyEvent ke) {
+     void KbInputHandler::keyReleased(KeyEvent* ke) {
 
-        int kc = ke.getKeyCode();
-        if (kc >= allKeysState.length) {
+        int kc = ke->getKeyCode();
+        if (kc >= allKeysState->size()) {
             return;
         }
 
-        allKeysState[kc] = false;
+        (*allKeysState)[kc] = false;
 
         if (id == 0) {
             switch (kc) {
-                case KeyEvent.VK_F5: {
+                case KeyEvent::VK_F5: {
                     // Reset game:
                     if (nes->isRunning()) {
                         nes->stopEmulation();
@@ -76,15 +76,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     }
                     break;
                 }
-                case KeyEvent.VK_F10: {
+                case KeyEvent::VK_F10: {
                     // Just using this to display the battery RAM contents to user.
                     if (nes->rom != NULL) {
-                        nes->rom.closeRom();
+                        nes->rom->closeRom();
                     }
                     break;
                 }
-                case KeyEvent.VK_F12: {
-                    JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
+                case KeyEvent::VK_F12: {
+//                    JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
                     break;
                 }
             }
@@ -92,12 +92,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void KbInputHandler::keyTyped(KeyEvent ke) {
+     void KbInputHandler::keyTyped(KeyEvent* ke) {
         // Ignore.
     }
 
      void KbInputHandler::reset() {
-        allKeysState = new bool[255];
+        size_t size = allKeysState->size();
+        allKeysState->clear();
+        allKeysState->resize(size);
     }
 
      void KbInputHandler::update() {

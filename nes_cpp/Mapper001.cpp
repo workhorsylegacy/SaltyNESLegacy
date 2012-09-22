@@ -20,7 +20,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void Mapper001::init(NES* nes) {
 
-        super.init(nes);
+        this->base_init(nes);
     	this->prgSwitchingArea = 1;
     	this->prgSwitchingSize = 1;
     }
@@ -28,27 +28,27 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void Mapper001::mapperInternalStateLoad(ByteBuffer* buf) {
 
         // Check version:
-        if (buf.readByte() == 1) {
+        if (buf->readByte() == 1) {
 
             // Reg 0:
-            mirroring = buf.readInt();
-            oneScreenMirroring = buf.readInt();
-            prgSwitchingArea = buf.readInt();
-            prgSwitchingSize = buf.readInt();
-            vromSwitchingSize = buf.readInt();
+            mirroring = buf->readInt();
+            oneScreenMirroring = buf->readInt();
+            prgSwitchingArea = buf->readInt();
+            prgSwitchingSize = buf->readInt();
+            vromSwitchingSize = buf->readInt();
 
             // Reg 1:
-            romSelectionReg0 = buf.readInt();
+            romSelectionReg0 = buf->readInt();
 
             // Reg 2:
-            romSelectionReg1 = buf.readInt();
+            romSelectionReg1 = buf->readInt();
 
             // Reg 3:
-            romBankSelect = buf.readInt();
+            romBankSelect = buf->readInt();
 
             // 5-bit buffer:
-            regBuffer = buf.readInt();
-            regBufferCounter = buf.readInt();
+            regBuffer = buf->readInt();
+            regBufferCounter = buf->readInt();
 
         }
 
@@ -57,27 +57,27 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void Mapper001::mapperInternalStateSave(ByteBuffer* buf) {
 
         // Version:
-        buf.putByte((short) 1);
+        buf->putByte((short) 1);
 
         // Reg 0:
-        buf.putInt(mirroring);
-        buf.putInt(oneScreenMirroring);
-        buf.putInt(prgSwitchingArea);
-        buf.putInt(prgSwitchingSize);
-        buf.putInt(vromSwitchingSize);
+        buf->putInt(mirroring);
+        buf->putInt(oneScreenMirroring);
+        buf->putInt(prgSwitchingArea);
+        buf->putInt(prgSwitchingSize);
+        buf->putInt(vromSwitchingSize);
 
         // Reg 1:
-        buf.putInt(romSelectionReg0);
+        buf->putInt(romSelectionReg0);
 
         // Reg 2:
-        buf.putInt(romSelectionReg1);
+        buf->putInt(romSelectionReg1);
 
         // Reg 3:
-        buf.putInt(romBankSelect);
+        buf->putInt(romBankSelect);
 
         // 5-bit buffer:
-        buf.putInt(regBuffer);
-        buf.putInt(regBufferCounter);
+        buf->putInt(regBuffer);
+        buf->putInt(regBufferCounter);
 
     }
 
@@ -85,7 +85,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Writes to addresses other than MMC registers are handled by NoMapper.
         if (address < 0x8000) {
-            super.write(address, value);
+            this->base_write(address, value);
             return;
         }
 
@@ -141,11 +141,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 if ((mirroring & 2) == 0) {
                     // SingleScreen mirroring overrides the other setting:
                     ////System.out.println("MMC1: Setting Singlescreen Mirroring.");
-                    nes->getPpu().setMirroring(ROM.SINGLESCREEN_MIRRORING);
+                    nes->getPpu()->setMirroring(ROM::SINGLESCREEN_MIRRORING);
                 } else {
                     // Not overridden by SingleScreen mirroring.
                     ////System.out.println("MMC1: Setting Normal Mirroring. value="+mirroring);
-                    nes->getPpu().setMirroring((mirroring & 1) != 0 ? ROM.HORIZONTAL_MIRRORING : ROM.VERTICAL_MIRRORING);
+                    nes->getPpu()->setMirroring((mirroring & 1) != 0 ? ROM::HORIZONTAL_MIRRORING : ROM::VERTICAL_MIRRORING);
                 }
             }
 
@@ -164,7 +164,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             romSelectionReg0 = (value >> 4) & 1;
 
             // Check whether the cart has VROM:
-            if (nes->getRom().getVromBankCount() > 0) {
+            if (nes->getRom()->getVromBankCount() > 0) {
 
                 // Select VROM bank at 0x0000:
                 if (vromSwitchingSize == 0) {
@@ -174,7 +174,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     if (romSelectionReg0 == 0) {
                         load8kVromBank((value & 0xF), 0x0000);
                     } else {
-                        load8kVromBank(nes->getRom().getVromBankCount() / 2 + (value & 0xF), 0x0000);
+                        load8kVromBank(nes->getRom()->getVromBankCount() / 2 + (value & 0xF), 0x0000);
                     }
 
                 } else {
@@ -186,7 +186,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     if (romSelectionReg0 == 0) {
                         loadVromBank((value & 0xF), 0x0000);
                     } else {
-                        loadVromBank(nes->getRom().getVromBankCount() / 2 + (value & 0xF), 0x0000);
+                        loadVromBank(nes->getRom()->getVromBankCount() / 2 + (value & 0xF), 0x0000);
                     }
 
                 }
@@ -199,7 +199,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             romSelectionReg1 = (value >> 4) & 1;
 
             // Check whether the cart has VROM:
-            if (nes->getRom().getVromBankCount() > 0) {
+            if (nes->getRom()->getVromBankCount() > 0) {
 
                 // Select VROM bank at 0x1000:
                 if (vromSwitchingSize == 1) {
@@ -210,7 +210,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     if (romSelectionReg1 == 0) {
                         loadVromBank((value & 0xF), 0x1000);
                     } else {
-                        loadVromBank(nes->getRom().getVromBankCount() / 2 + (value & 0xF), 0x1000);
+                        loadVromBank(nes->getRom()->getVromBankCount() / 2 + (value & 0xF), 0x1000);
                     }
 
                 }
@@ -224,7 +224,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             tmp = value & 0xF;
             int bank;
             int baseBank = 0;
-            int bankCount = nes->getRom().getRomBankCount();
+            int bankCount = nes->getRom()->getRomBankCount();
 
             if (bankCount >= 32) {
 
@@ -306,7 +306,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Do Reset-Interrupt:
         //nes->getCpu().doResetInterrupt();
-        nes->getCpu().requestIrq(CPU.IRQ_RESET);
+        nes->getCpu()->requestIrq(CPU::IRQ_RESET);
 
     }
 
@@ -347,4 +347,3 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // not yet.
     }
-};

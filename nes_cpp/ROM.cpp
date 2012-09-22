@@ -164,7 +164,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         this->fileName = fileName;
         FileLoader* loader = new FileLoader();
-        short[] b = loader.loadFile(fileName, nes->getGui());
+        size_t length = 0;
+        uint8_t* b = loader.loadFile(fileName, &length);
+        assert(length == 40976);
 
         if (b == NULL || b.length == 0) {
 
@@ -481,7 +483,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     short[] ROM::getBatteryRam() {
+     short* ROM::getBatteryRam() {
 
         return saveRam;
 

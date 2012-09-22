@@ -38,9 +38,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // Init sound registers:
         for (int i = 0; i < 0x14; i++) {
             if (i == 0x10) {
-                papu.writeReg(0x4010, (short) 0x10);
+                papu->writeReg(0x4010, (short) 0x10);
             } else {
-                papu.writeReg(0x4000 + i, (short) 0);
+                papu->writeReg(0x4000 + i, (short) 0);
             }
         }
 
@@ -132,8 +132,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void NES::startEmulation() {
 
-        if (Globals::enableSound && !papu.isRunning()) {
-            papu.start();
+        if (Globals::enableSound && !papu->isRunning()) {
+            papu->start();
         }
         {
             if (rom != NULL && rom.isValid() && !cpu.isRunning()) {
@@ -149,8 +149,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             _isRunning = false;
         }
 
-        if (Globals::enableSound && papu.isRunning()) {
-            papu.stop();
+        if (Globals::enableSound && papu->isRunning()) {
+            papu->stop();
         }
     }
 
@@ -285,7 +285,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         cpu.init();
         ppu.reset();
         palTable.reset();
-        papu.reset();
+        papu->reset();
 
         KbInputHandler* joy1 = gui.getJoy1();
         if (joy1 != NULL) {
@@ -303,9 +303,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (enable) {
-            papu.start();
+            papu->start();
         } else {
-            papu.stop();
+            papu->stop();
         }
 
         //System.out.println("** SOUND ENABLE = "+enable+" **");
@@ -321,7 +321,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         Globals::preferredFrameRate = rate;
         Globals::frameTime = 1000000 / rate;
-        papu.setSampleRate(papu.getSampleRate(), false);
+        papu->setSampleRate(papu->getSampleRate(), false);
 
     }
 
@@ -334,7 +334,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             ppu.destroy();
         }
         if (papu != NULL) {
-            papu.destroy();
+            papu->destroy();
         }
         if (cpuMem != NULL) {
             cpuMem.destroy();

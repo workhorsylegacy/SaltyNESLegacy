@@ -19,11 +19,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
      long HiResTimer::currentMicros() {
-        return System.nanoTime() / 1000;
+	    timespec ts;
+		clock_gettime(CLOCK_REALTIME, &ts);
+        return ts.tv_nsec / 1000;
     }
 
      long HiResTimer::currentTick() {
-        return System.nanoTime();
+	    timespec ts;
+		clock_gettime(CLOCK_REALTIME, &ts);
+        return ts.tv_nsec;
     }
 
      void HiResTimer::sleepMicros(long time) {
@@ -34,12 +38,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             if (nanos > 999999) {
                 nanos = 999999;
             }
-            Thread.sleep(time / 1000, (int) nanos);
+            
+			struct timespec req={0};
+			req.tv_sec = 0;
+			req.tv_nsec = (long)nanos;
+			nanosleep(&req, NULL);
+            sleep(time / 1000);
 
-        } catch (Exception e) {
+        } catch (exception& e) {
 
             //System.out.println("Sleep interrupted..");
-            e.printStackTrace();
+//            e.printStackTrace();
 
         }
 
@@ -51,12 +60,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         millis *= 10;
 
         try {
-            Thread.sleep(millis);
-        } catch (InterruptedException ie) {
+            sleep(millis);
+        } catch (exception& ie) {
         }
 
     }
 
      void HiResTimer::yield() {
-        Thread.yield();
+        pthread_yield();
     }
