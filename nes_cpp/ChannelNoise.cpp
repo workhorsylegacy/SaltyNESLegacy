@@ -19,10 +19,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
      ChannelNoise::ChannelNoise(PAPU* papu) {
-        this.papu = papu;
+        this->papu = papu;
         shiftReg = 1 << 14;
-        this.accValue = 0;
-        this.accCount = 1;
+        this->accValue = 0;
+        this->accCount = 1;
     }
 
      void ChannelNoise::clockLengthCounter() {

@@ -19,8 +19,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
     ChannelDM::ChannelDM(PAPU* papu) {
-        this.papu = papu;
-        this.irqGenerated = false;
+        this->papu = papu;
+        this->irqGenerated = false;
     }
 
     void ChannelDM::clockDmc() {
@@ -63,7 +63,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (irqGenerated) {
-            papu.nes.cpu.requestIrq(CPU.IRQ_NORMAL);
+            papu.nes->cpu.requestIrq(CPU.IRQ_NORMAL);
         }
 
     }

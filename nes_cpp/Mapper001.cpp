@@ -21,8 +21,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void Mapper001::init(NES* nes) {
 
         super.init(nes);
-    	this.prgSwitchingArea = 1;
-    	this.prgSwitchingSize = 1;
+    	this->prgSwitchingArea = 1;
+    	this->prgSwitchingSize = 1;
     }
 
      void Mapper001::mapperInternalStateLoad(ByteBuffer* buf) {
@@ -141,11 +141,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 if ((mirroring & 2) == 0) {
                     // SingleScreen mirroring overrides the other setting:
                     ////System.out.println("MMC1: Setting Singlescreen Mirroring.");
-                    nes.getPpu().setMirroring(ROM.SINGLESCREEN_MIRRORING);
+                    nes->getPpu().setMirroring(ROM.SINGLESCREEN_MIRRORING);
                 } else {
                     // Not overridden by SingleScreen mirroring.
                     ////System.out.println("MMC1: Setting Normal Mirroring. value="+mirroring);
-                    nes.getPpu().setMirroring((mirroring & 1) != 0 ? ROM.HORIZONTAL_MIRRORING : ROM.VERTICAL_MIRRORING);
+                    nes->getPpu().setMirroring((mirroring & 1) != 0 ? ROM.HORIZONTAL_MIRRORING : ROM.VERTICAL_MIRRORING);
                 }
             }
 
@@ -164,7 +164,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             romSelectionReg0 = (value >> 4) & 1;
 
             // Check whether the cart has VROM:
-            if (nes.getRom().getVromBankCount() > 0) {
+            if (nes->getRom().getVromBankCount() > 0) {
 
                 // Select VROM bank at 0x0000:
                 if (vromSwitchingSize == 0) {
@@ -174,7 +174,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     if (romSelectionReg0 == 0) {
                         load8kVromBank((value & 0xF), 0x0000);
                     } else {
-                        load8kVromBank(nes.getRom().getVromBankCount() / 2 + (value & 0xF), 0x0000);
+                        load8kVromBank(nes->getRom().getVromBankCount() / 2 + (value & 0xF), 0x0000);
                     }
 
                 } else {
@@ -186,7 +186,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     if (romSelectionReg0 == 0) {
                         loadVromBank((value & 0xF), 0x0000);
                     } else {
-                        loadVromBank(nes.getRom().getVromBankCount() / 2 + (value & 0xF), 0x0000);
+                        loadVromBank(nes->getRom().getVromBankCount() / 2 + (value & 0xF), 0x0000);
                     }
 
                 }
@@ -199,7 +199,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             romSelectionReg1 = (value >> 4) & 1;
 
             // Check whether the cart has VROM:
-            if (nes.getRom().getVromBankCount() > 0) {
+            if (nes->getRom().getVromBankCount() > 0) {
 
                 // Select VROM bank at 0x1000:
                 if (vromSwitchingSize == 1) {
@@ -210,7 +210,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     if (romSelectionReg1 == 0) {
                         loadVromBank((value & 0xF), 0x1000);
                     } else {
-                        loadVromBank(nes.getRom().getVromBankCount() / 2 + (value & 0xF), 0x1000);
+                        loadVromBank(nes->getRom().getVromBankCount() / 2 + (value & 0xF), 0x1000);
                     }
 
                 }
@@ -224,7 +224,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             tmp = value & 0xF;
             int bank;
             int baseBank = 0;
-            int bankCount = nes.getRom().getRomBankCount();
+            int bankCount = nes->getRom().getRomBankCount();
 
             if (bankCount >= 32) {
 
@@ -305,8 +305,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         loadBatteryRam();
 
         // Do Reset-Interrupt:
-        //nes.getCpu().doResetInterrupt();
-        nes.getCpu().requestIrq(CPU.IRQ_RESET);
+        //nes->getCpu().doResetInterrupt();
+        nes->getCpu().requestIrq(CPU.IRQ_RESET);
 
     }
 

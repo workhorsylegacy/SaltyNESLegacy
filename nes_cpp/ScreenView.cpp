@@ -19,7 +19,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 		MyMouseAdapter::MyMouseAdapter() {
-			this.lastClickTime = 0;
+			this->lastClickTime = 0;
 		}
 
          void MyMouseAdapter::mouseClicked(MouseEvent* me) {
@@ -32,8 +32,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             requestFocus();
 
             if (me.getX() >= 0 && me.getY() >= 0 && me.getX() < 256 && me.getY() < 240) {
-                if (nes != NULL && nes.memMapper != NULL) {
-                    nes.memMapper.setMouseState(true, me.getX(), me.getY());
+                if (nes != NULL && nes->memMapper != NULL) {
+                    nes->memMapper.setMouseState(true, me.getX(), me.getY());
                 }
             }
 
@@ -41,8 +41,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
          void MyMouseAdapter::mouseReleased(MouseEvent* me) {
 
-            if (nes != NULL && nes.memMapper != NULL) {
-                nes.memMapper.setMouseState(false, 0, 0);
+            if (nes != NULL && nes->memMapper != NULL) {
+                nes->memMapper.setMouseState(false, 0, 0);
             }
 
         }
@@ -55,14 +55,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (mouse == NULL) {
             mouse = new MyMouseAdapter();
-            this.addMouseListener(mouse);
+            this->addMouseListener(mouse);
         }
         super.init();
 
     }
 
      void ScreenView::setNotifyImageReady(bool value) {
-        this.notifyImageReady = value;
+        this->notifyImageReady = value;
     }
 
      void ScreenView::imageReady(bool skipFrame) {
@@ -78,7 +78,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Notify GUI, so it can write the sound buffer:
         if (notifyImageReady) {
-            nes.getGui().imageReady(skipFrame);
+            nes->getGui().imageReady(skipFrame);
         }
 
     }

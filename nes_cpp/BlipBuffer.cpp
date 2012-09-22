@@ -22,17 +22,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         win_size = windowSize;
         smp_period = samplePeriod;
         sinc_periods = sincPeriods;
-        double* buf = new double[smp_period * win_size];
+        std::vector<double> buf = vector<double>(smp_period * win_size);
 
 
         // Sample sinc:
         double si_p = sinc_periods;
-        for (int i = 0; i < buf.length; i++) {
-            buf[i] = sinc(-si_p * Math.PI + (si_p * 2.0 * ((double) i) * Math.PI) / ((double) buf.length));
+        for (int i = 0; i < buf.size(); i++) {
+            buf[i] = sinc(-si_p * M_PI  + (si_p * 2.0 * ((double) i) * M_PI ) / ((double) buf.size()));
         }
 
         // Fill into impulse buffer:
-        imp = new int[smp_period][win_size];
+        imp = new int*[smp_period];
+        for(int i=0; i<win_size; i++)
+        	imp[i] = new int[win_size];
         for (int off = 0; off < smp_period; off++) {
             double sum = 0;
             for (int i = 0; i < win_size; i++) {
@@ -42,7 +44,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Create difference buffer:
-        diff = new int[bufferSize];
+        diff = new vector<int>(bufferSize);
         lastChanged = 0;
         prevSum = 0;
         dc_prev = 0;
@@ -56,13 +58,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // Add into difference buffer:
         //if(smpPos+win_size < diff.length){
         for (int i = lastChanged; i < smpPos + win_size; i++) {
-            diff[i] = prevSum;
+            (*diff)[i] = prevSum;
         }
         for (int i = 0; i < win_size; i++) {
-            diff[smpPos + i] += (imp[smpOffset][i] * magnitude) >> 8;
+            (*diff)[smpPos + i] += (imp[smpOffset][i] * magnitude) >> 8;
         }
         lastChanged = smpPos + win_size;
-        prevSum = diff[smpPos + win_size - 1];
+        prevSum = (*diff)[smpPos + win_size - 1];
     //}
 
     }
@@ -70,15 +72,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     int BlipBuffer::integrate() {
 
         int sum = prevSum;
-        for (int i = 0; i < diff.length; i++) {
+        for (int i = 0; i < diff->size(); i++) {
 
-            sum += diff[i];
+            sum += (*diff)[i];
 
             // Remove DC:
             dc_diff = sum - dc_prev;
             dc_prev += dc_diff;
             dc_acc += dc_diff - (dc_acc >> 10);
-            diff[i] = dc_acc;
+            (*diff)[i] = dc_acc;
 
         }
         prevSum = sum;
@@ -88,16 +90,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     void BlipBuffer::clear() {
 
-        for (int i = 0; i < diff.length; i++) {
-            diff[i] = 0;
+        for (int i = 0; i < diff->size(); i++) {
+            (*diff)[i] = 0;
         }
         lastChanged = 0;
 
     }
 
-    static double BlipBuffer::sinc(double x) {
+    double BlipBuffer::sinc(double x) {
         if (x == 0.0) {
             return 1.0;
         }
-        return Math.sin(x) / x;
+        return sin(x) / x;
     }

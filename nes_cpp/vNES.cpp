@@ -34,8 +34,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
         nes = gui.getNES();
-        nes.enableSound(sound);
-        nes.reset();
+        nes->enableSound(sound);
+        nes->reset();
 
     }
 
@@ -44,7 +44,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         panelScreen = (ScreenView) gui.getScreenView();
         panelScreen.setFPSEnabled(fps);
 
-        this.setLayout(NULL);
+        this->setLayout(NULL);
 
         if (scale) {
 
@@ -54,8 +54,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 panelScreen.setScaleMode(BufferView.SCALE_NORMAL);
             }
 
-            this.setSize(512, 480);
-            this.setBounds(0, 0, 512, 480);
+            this->setSize(512, 480);
+            this->setBounds(0, 0, 512, 480);
             panelScreen.setBounds(0, 0, 512, 480);
 
         } else {
@@ -64,8 +64,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         }
 
-        this.setIgnoreRepaint(true);
-        this.add(panelScreen);
+        this->setIgnoreRepaint(true);
+        this->add(panelScreen);
 
     }
 
@@ -89,20 +89,20 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         System.out.println("For updates, see www.thatsanderskid.com");
         System.out.println("Use of this program subject to GNU GPL, Version 3.");
 
-        nes.loadRom(rom);
+        nes->loadRom(rom);
 
-        if (nes.rom.isValid()) {
+        if (nes->rom.isValid()) {
 
             // Add the screen buffer:
             addScreenView();
 
             // Set some properties:
             Globals::timeEmulation = timeemulation;
-            nes.ppu.showSoundBuffer = showsoundbuffer;
+            nes->ppu.showSoundBuffer = showsoundbuffer;
 
             // Start emulation:
             //System.out.println("vNES is now starting the processor.");
-            nes.getCpu().beginExecution();
+            nes->getCpu().beginExecution();
 
         } else {
 
@@ -114,21 +114,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     void vNES::stop() {
-        nes.stopEmulation();
+        nes->stopEmulation();
         //System.out.println("vNES has stopped the processor.");
-        nes.getPapu().stop();
-        this.destroy();
+        nes->getPapu()->stop();
+        this->destroy();
 
     }
 
     void vNES::destroy() {
 
-        if (nes != NULL && nes.getCpu().isRunning()) {
+        if (nes != NULL && nes->getCpu().isRunning()) {
             stop();
         }
         
         if (nes != NULL) {
-            nes.destroy();
+            nes->destroy();
         }
         if (gui != NULL) {
             gui.destroy();
@@ -210,7 +210,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         tmp = getParameter("rom");
         if (tmp == NULL || tmp.equals("")) {
-            rom = "vnes.nes";
+            rom = "vnes->nes";
         } else {
             rom = tmp;
         }
@@ -461,3 +461,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
 
+    int vNES::getWidth() {
+	    return 500;
+    }
+    
+    int vNES::getHeight() {
+	    return 500;
+    }

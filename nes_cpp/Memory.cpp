@@ -4,7 +4,7 @@
 
 
 	 Memory::Memory(NES* nes, int byteCount){
-		this.nes = nes;
+		this->nes = nes;
 		mem = new short[byteCount];
 		memLength = byteCount;
 	}

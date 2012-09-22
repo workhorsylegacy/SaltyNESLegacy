@@ -25,7 +25,7 @@ instructions and invokes emulation of the PPU and pAPU.
 
 	// Constructor:
 	 CPU::CPU(NES* nes){
-		this.nes = nes;
+		this->nes = nes;
 	}
 
 	// Initialize:
@@ -35,7 +35,7 @@ instructions and invokes emulation of the PPU and pAPU.
 		opdata = CpuInfo.getOpData();
 
 		// Get Memory Mapper:
-		this.mmap = nes.getMemoryMapper();
+		this->mmap = nes->getMemoryMapper();
 
 		// Reset crash flag:
 		crash = false;
@@ -173,12 +173,12 @@ instructions and invokes emulation of the PPU and pAPU.
 		// (when memory mappers switch ROM banks
 		// this will be written to, no need to
 		// update reference):
-		mem = nes.cpuMem.mem;
+		mem = nes->cpuMem.mem;
 
 		// References to other parts of NES:
-		IMemoryMapper* mmap = nes.memMapper;
-		PPU 		 ppu  = nes.ppu;
-		PAPU* 		 papu = nes.papu;
+		IMemoryMapper* mmap = nes->memMapper;
+		PPU 		 ppu  = nes->ppu;
+		PAPU* 		 papu = nes->papu;
 
 
 		// Registers:
@@ -1215,7 +1215,7 @@ instructions and invokes emulation of the PPU and pAPU.
 					if(!crash){
 						crash = true;
 						stopRunning = true;
-						nes.gui.showErrorMsg("Game crashed, invalid opcode at address $"+Misc.hex16(opaddr));
+						nes->gui.showErrorMsg("Game crashed, invalid opcode at address $"+Misc.hex16(opaddr));
 					}
 					break;
 
@@ -1374,7 +1374,7 @@ instructions and invokes emulation of the PPU and pAPU.
 	}
 
 	 void CPU::setCrashed(bool value){
-		this.crash = value;
+		this->crash = value;
 	}
 
 	 void CPU::setMapper(IMemoryMapper* mapper){

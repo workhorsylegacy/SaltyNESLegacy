@@ -19,10 +19,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      NameTable::NameTable(int width, int height, string name) {
 
-        this.name = name;
+        this->name = name;
 
-        this.width = width;
-        this.height = height;
+        this->width = width;
+        this->height = height;
 
         tile = new short[width * height];
         attrib = new short[width * height];

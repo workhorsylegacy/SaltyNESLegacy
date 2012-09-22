@@ -20,7 +20,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
      Tile::Tile() {
-        this.initialized = false;
+        this->initialized = false;
     }
 
      void Tile::setBuffer(short* scanline) {

@@ -21,27 +21,27 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (size < 1) {
             size = 1;
         }
-        buf = new short[size];
-        this.size = size;
-        this.byteOrder = byteOrdering;
+        this->buf = new vector<short>(size);
+        this->size = size;
+        this->byteOrder = byteOrdering;
         curPos = 0;
         hasBeenErrors = false;
-        this.byteOrder = BO_BIG_ENDIAN;
-        this.expandable = true;
-        this.expandBy = 4096;
+        this->byteOrder = BO_BIG_ENDIAN;
+        this->expandable = true;
+        this->expandBy = 4096;
     }
 
-    ByteBuffer::ByteBuffer(int8_t* content, int byteOrdering) {
+    ByteBuffer::ByteBuffer(vector<int8_t>* content, int byteOrdering) {
         try {
-            buf = new short[content.length];
-            for (int i = 0; i < content.length; i++) {
-                buf[i] = (short) (content[i] & 255);
+            this->buf = new vector<short>(size);
+            for (int i = 0; i < content->size(); i++) {
+                (*buf)[i] = (short) ((*content)[i] & 255);
             }
-            size = content.length;
-            this.byteOrder = byteOrdering;
+            size = content->size();
+            this->byteOrder = byteOrdering;
             curPos = 0;
             hasBeenErrors = false;
-        } catch (Exception e) {
+        } catch (exception& e) {
             //System.out.println("ByteBuffer: Couldn't create buffer from empty array.");
         }
     }
@@ -53,7 +53,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     void ByteBuffer::setExpandBy(int expBy) {
 
         if (expBy > 1024) {
-            this.expandBy = expBy;
+            this->expandBy = expBy;
         }
 
     }
@@ -61,21 +61,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     void ByteBuffer::setByteOrder(int byteOrder) {
 
         if (byteOrder >= 0 && byteOrder < 2) {
-            this.byteOrder = byteOrder;
+            this->byteOrder = byteOrder;
         }
 
     }
 
     int8_t* ByteBuffer::getBytes() {
-        int8_t* ret = new int8_t[buf.length];
-        for (int i = 0; i < buf.length; i++) {
-            ret[i] = (int8_t) buf[i];
+        int8_t* ret = new int8_t[buf->size()];
+        for (int i = 0; i < buf->size(); i++) {
+            ret[i] = (int8_t) (*buf)[i];
         }
         return ret;
     }
 
     int ByteBuffer::getSize() {
-        return this.size;
+        return this->size;
     }
 
     int ByteBuffer::getPos() {
@@ -92,22 +92,22 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     void ByteBuffer::clear() {
-        for (int i = 0; i < buf.length; i++) {
-            buf[i] = 0;
+        for (int i = 0; i < buf->size(); i++) {
+            (*buf)[i] = 0;
         }
         curPos = 0;
     }
 
     void ByteBuffer::fill(int8_t value) {
         for (int i = 0; i < size; i++) {
-            buf[i] = value;
+            (*buf)[i] = value;
         }
     }
 
     bool ByteBuffer::fillRange(int start, int length, int8_t value) {
         if (inRange(start, length)) {
             for (int i = start; i < (start + length); i++) {
-                buf[i] = value;
+                (*buf)[i] = value;
             }
             return true;
         } else {
@@ -117,12 +117,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     void ByteBuffer::resize(int length) {
-
-        short[] newbuf = new short[length];
-        System.arraycopy(buf, 0, newbuf, 0, Math.min(length, size));
-        buf = newbuf;
+        buf->resize(size);
         size = length;
-
     }
 
     void ByteBuffer::resizeToCurrentPos() {
@@ -157,7 +153,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return true;
         } else {
             if (expandable) {
-                expand(Math.max(pos + 1 - size, expandBy));
+                expand(max(pos + 1 - size, expandBy));
                 return true;
             } else {
                 return false;
@@ -170,7 +166,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return true;
         } else {
             if (expandable) {
-                expand(Math.max(pos + length - size, expandBy));
+                expand(max(pos + length - size, expandBy));
                 return true;
             } else {
                 return false;
@@ -194,7 +190,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     bool ByteBuffer::putByte(short var) {
         if (inRange(curPos, 1)) {
-            buf[curPos] = var;
+            (*buf)[curPos] = var;
             move(1);
             return true;
         } else {
@@ -205,7 +201,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     bool ByteBuffer::putByte(short var, int pos) {
         if (inRange(pos, 1)) {
-            buf[pos] = var;
+            (*buf)[pos] = var;
             return true;
         } else {
             error();
@@ -223,12 +219,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     bool ByteBuffer::putShort(short var, int pos) {
         if (inRange(pos, 2)) {
-            if (this.byteOrder == BO_BIG_ENDIAN) {
-                buf[pos + 0] = (short) ((var >> 8) & 255);
-                buf[pos + 1] = (short) ((var) & 255);
+            if (this->byteOrder == BO_BIG_ENDIAN) {
+                (*buf)[pos + 0] = (short) ((var >> 8) & 255);
+                (*buf)[pos + 1] = (short) ((var) & 255);
             } else {
-                buf[pos + 1] = (short) ((var >> 8) & 255);
-                buf[pos + 0] = (short) ((var) & 255);
+                (*buf)[pos + 1] = (short) ((var >> 8) & 255);
+                (*buf)[pos + 0] = (short) ((var) & 255);
             }
             return true;
         } else {
@@ -247,16 +243,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     bool ByteBuffer::putInt(int var, int pos) {
         if (inRange(pos, 4)) {
-            if (this.byteOrder == BO_BIG_ENDIAN) {
-                buf[pos + 0] = (short) ((var >> 24) & 255);
-                buf[pos + 1] = (short) ((var >> 16) & 255);
-                buf[pos + 2] = (short) ((var >> 8) & 255);
-                buf[pos + 3] = (short) ((var) & 255);
+            if (this->byteOrder == BO_BIG_ENDIAN) {
+                (*buf)[pos + 0] = (short) ((var >> 24) & 255);
+                (*buf)[pos + 1] = (short) ((var >> 16) & 255);
+                (*buf)[pos + 2] = (short) ((var >> 8) & 255);
+                (*buf)[pos + 3] = (short) ((var) & 255);
             } else {
-                buf[pos + 3] = (short) ((var >> 24) & 255);
-                buf[pos + 2] = (short) ((var >> 16) & 255);
-                buf[pos + 1] = (short) ((var >> 8) & 255);
-                buf[pos + 0] = (short) ((var) & 255);
+                (*buf)[pos + 3] = (short) ((var >> 24) & 255);
+                (*buf)[pos + 2] = (short) ((var >> 16) & 255);
+                (*buf)[pos + 1] = (short) ((var >> 8) & 255);
+                (*buf)[pos + 0] = (short) ((var) & 255);
             }
             return true;
         } else {
@@ -274,13 +270,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
     
     bool ByteBuffer::putString(string var, int pos) {
-        char[] charArr = var.toCharArray();
+        char* charArr = (char*) var.c_str();
         short theChar;
         if (inRange(pos, var.length() * 2)) {
             for (int i = 0; i < var.length(); i++) {
                 theChar = (short) (charArr[i]);
-                buf[pos + 0] = (short) ((theChar >> 8) & 255);
-                buf[pos + 1] = (short) ((theChar) & 255);
+                (*buf)[pos + 0] = (short) ((theChar >> 8) & 255);
+                (*buf)[pos + 1] = (short) ((theChar) & 255);
                 pos += 2;
             }
             return true;
@@ -302,11 +298,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int tmp = var;
         if (inRange(pos, 2)) {
             if (byteOrder == BO_BIG_ENDIAN) {
-                buf[pos + 0] = (short) ((tmp >> 8) & 255);
-                buf[pos + 1] = (short) ((tmp) & 255);
+                (*buf)[pos + 0] = (short) ((tmp >> 8) & 255);
+                (*buf)[pos + 1] = (short) ((tmp) & 255);
             } else {
-                buf[pos + 1] = (short) ((tmp >> 8) & 255);
-                buf[pos + 0] = (short) ((tmp) & 255);
+                (*buf)[pos + 1] = (short) ((tmp >> 8) & 255);
+                (*buf)[pos + 0] = (short) ((tmp) & 255);
             }
             return true;
         } else {
@@ -325,7 +321,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     bool ByteBuffer::putCharAscii(char var, int pos) {
         if (inRange(pos)) {
-            buf[pos] = (short) var;
+            (*buf)[pos] = (short) var;
             return true;
         } else {
             error();
@@ -342,10 +338,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     bool ByteBuffer::putStringAscii(string var, int pos) {
-        char[] charArr = var.toCharArray();
+        char* charArr = (char*) var.c_str();
         if (inRange(pos, var.length())) {
             for (int i = 0; i < var.length(); i++) {
-                buf[pos] = (short) charArr[i];
+                (*buf)[pos] = (short) charArr[i];
                 pos++;
             }
             return true;
@@ -355,73 +351,77 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-    bool ByteBuffer::putByteArray(short* arr) {
+    bool ByteBuffer::putByteArray(vector<short>* arr) {
         if (arr == NULL) {
             return false;
         }
-        if (buf.length - curPos < arr.length) {
-            resize(curPos + arr.length);
+        if (buf->size() - curPos < arr->size()) {
+            resize(curPos + arr->size());
         }
-        for (int i = 0; i < arr.length; i++) {
-            buf[curPos + i] = (int8_t) arr[i];
+        for (int i = 0; i < arr->size(); i++) {
+            (*buf)[curPos + i] = (int8_t) (*arr)[i];
         }
-        curPos += arr.length;
+        curPos += arr->size();
         return true;
     }
 
-    bool ByteBuffer::readByteArray(short* arr) {
+    bool ByteBuffer::readByteArray(vector<short>* arr) {
         if (arr == NULL) {
             return false;
         }
-        if (buf.length - curPos < arr.length) {
+        if (buf->size() - curPos < arr->size()) {
             return false;
         }
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = (short) (buf[curPos + i] & 0xFF);
+        for (int i = 0; i < arr->size(); i++) {
+            (*arr)[i] = (short) ((*buf)[curPos + i] & 0xFF);
         }
-        curPos += arr.length;
+        curPos += arr->size();
         return true;
     }
 
-    bool ByteBuffer::putShortArray(short* arr) {
+    bool ByteBuffer::putShortArray(vector<short>* arr) {
         if (arr == NULL) {
             return false;
         }
-        if (buf.length - curPos < arr.length * 2) {
-            resize(curPos + arr.length * 2);
+        if (buf->size() - curPos < arr->size() * 2) {
+            resize(curPos + arr->size() * 2);
         }
         if (byteOrder == BO_BIG_ENDIAN) {
-            for (int i = 0; i < arr.length; i++) {
-                buf[curPos + 0] = (short) ((arr[i] >> 8) & 255);
-                buf[curPos + 1] = (short) ((arr[i]) & 255);
+            for (int i = 0; i < arr->size(); i++) {
+                (*buf)[curPos + 0] = (short) (((*arr)[i] >> 8) & 255);
+                (*buf)[curPos + 1] = (short) (((*arr)[i]) & 255);
                 curPos += 2;
             }
         } else {
-            for (int i = 0; i < arr.length; i++) {
-                buf[curPos + 1] = (short) ((arr[i] >> 8) & 255);
-                buf[curPos + 0] = (short) ((arr[i]) & 255);
+            for (int i = 0; i < arr->size(); i++) {
+                (*buf)[curPos + 1] = (short) (((*arr)[i] >> 8) & 255);
+                (*buf)[curPos + 0] = (short) (((*arr)[i]) & 255);
                 curPos += 2;
             }
         }
         return true;
     }
 
-    string ByteBuffer::toString() {
-        StringBuffer strBuf = new StringBuffer();
+    string* ByteBuffer::toString() {
+        char* strBuf = new char(size-1);
         short tmp;
         for (int i = 0; i < (size - 1); i += 2) {
-            tmp = (short) ((buf[i] << 8) | (buf[i + 1]));
-            strBuf.append((char) (tmp));
+            tmp = (short) (((*buf)[i] << 8) | ((*buf)[i + 1]));
+            strBuf[i] = (char) tmp;
         }
-        return strBuf.toString();
+        string* retval = new string(strBuf);
+        delete strBuf;
+        return retval;
     }
 
-    string ByteBuffer::toStringAscii() {
-        StringBuffer strBuf = new StringBuffer();
+    string* ByteBuffer::toStringAscii() {
+        char* strBuf = new char(size-1);
         for (int i = 0; i < size; i++) {
-            strBuf.append((char) (buf[i]));
+            strBuf[i] = (char) ((*buf)[i]);
         }
-        return strBuf.toString();
+        string* retval = new string(strBuf);
+        delete strBuf;
+        return retval;
     }
 
     bool ByteBuffer::readBoolean() {
@@ -442,10 +442,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     short ByteBuffer::readByte(int pos) {
         if (inRange(pos)) {
-            return buf[pos];
+            return (*buf)[pos];
         } else {
             error();
-            throw new ArrayIndexOutOfBoundsException();
+            throw "ArrayIndexOutOfBoundsException";
         }
     }
 
@@ -457,14 +457,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     short ByteBuffer::readShort(int pos) {
         if (inRange(pos, 2)) {
-            if (this.byteOrder == BO_BIG_ENDIAN) {
-                return (short) ((buf[pos] << 8) | (buf[pos + 1]));
+            if (this->byteOrder == BO_BIG_ENDIAN) {
+                return (short) (((*buf)[pos] << 8) | ((*buf)[pos + 1]));
             } else {
-                return (short) ((buf[pos + 1] << 8) | (buf[pos]));
+                return (short) (((*buf)[pos + 1] << 8) | ((*buf)[pos]));
             }
         } else {
             error();
-            throw new ArrayIndexOutOfBoundsException();
+            throw "ArrayIndexOutOfBoundsException";
         }
     }
 
@@ -477,21 +477,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     int ByteBuffer::readInt(int pos) {
         int ret = 0;
         if (inRange(pos, 4)) {
-            if (this.byteOrder == BO_BIG_ENDIAN) {
-                ret |= (buf[pos + 0] << 24);
-                ret |= (buf[pos + 1] << 16);
-                ret |= (buf[pos + 2] << 8);
-                ret |= (buf[pos + 3]);
+            if (this->byteOrder == BO_BIG_ENDIAN) {
+                ret |= ((*buf)[pos + 0] << 24);
+                ret |= ((*buf)[pos + 1] << 16);
+                ret |= ((*buf)[pos + 2] << 8);
+                ret |= ((*buf)[pos + 3]);
             } else {
-                ret |= (buf[pos + 3] << 24);
-                ret |= (buf[pos + 2] << 16);
-                ret |= (buf[pos + 1] << 8);
-                ret |= (buf[pos + 0]);
+                ret |= ((*buf)[pos + 3] << 24);
+                ret |= ((*buf)[pos + 2] << 16);
+                ret |= ((*buf)[pos + 1] << 8);
+                ret |= ((*buf)[pos + 0]);
             }
             return ret;
         } else {
             error();
-            throw new ArrayIndexOutOfBoundsException();
+            throw "ArrayIndexOutOfBoundsException";
         }
     }
 
@@ -506,7 +506,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return (char) (readShort(pos));
         } else {
             error();
-            throw new ArrayIndexOutOfBoundsException();
+            throw "ArrayIndexOutOfBoundsException";
         }
     }
 
@@ -521,22 +521,22 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return (char) (readByte(pos) & 255);
         } else {
             error();
-            throw new ArrayIndexOutOfBoundsException();
+            throw "ArrayIndexOutOfBoundsException";
         }
     }
 
-    string ByteBuffer::readString(int length) {
+    string* ByteBuffer::readString(int length) {
         if (length > 0) {
-            string ret = readString(curPos, length);
-            move(ret.length() * 2);
+            string* ret = readString(curPos, length);
+            move(ret->length() * 2);
             return ret;
         } else {
             return new string("");
         }
     }
 
-    string ByteBuffer::readString(int pos, int length) {
-        char[] tmp;
+    string* ByteBuffer::readString(int pos, int length) {
+        char* tmp;
         if (inRange(pos, length * 2) && length > 0) {
             tmp = new char[length];
             for (int i = 0; i < length; i++) {
@@ -544,17 +544,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
             return new string(tmp);
         } else {
-            throw new ArrayIndexOutOfBoundsException();
+            throw "ArrayIndexOutOfBoundsException";
         }
     }
 
-    string ByteBuffer::readStringWithShortLength() {
-        string ret = readStringWithShortLength(curPos);
-        move(ret.length() * 2 + 2);
+    string* ByteBuffer::readStringWithShortLength() {
+        string* ret = readStringWithShortLength(curPos);
+        move(ret->length() * 2 + 2);
         return ret;
     }
 
-    string ByteBuffer::readStringWithShortLength(int pos) {
+    string* ByteBuffer::readStringWithShortLength(int pos) {
         short len;
         if (inRange(pos, 2)) {
             len = readShort(pos);
@@ -564,18 +564,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 return new string("");
             }
         } else {
-            throw new ArrayIndexOutOfBoundsException();
+            throw "ArrayIndexOutOfBoundsException";
         }
     }
 
-    string ByteBuffer::readStringAscii(int length) {
-        string ret = readStringAscii(curPos, length);
-        move(ret.length());
+    string* ByteBuffer::readStringAscii(int length) {
+        string* ret = readStringAscii(curPos, length);
+        move(ret->length());
         return ret;
     }
 
-    string ByteBuffer::readStringAscii(int pos, int length) {
-        char[] tmp;
+    string* ByteBuffer::readStringAscii(int pos, int length) {
+        char* tmp;
         if (inRange(pos, length) && length > 0) {
             tmp = new char[length];
             for (int i = 0; i < length; i++) {
@@ -583,17 +583,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
             return new string(tmp);
         } else {
-            throw new ArrayIndexOutOfBoundsException();
+            throw "ArrayIndexOutOfBoundsException";
         }
     }
 
-    string ByteBuffer::readStringAsciiWithShortLength() {
-        string ret = readStringAsciiWithShortLength(curPos);
-        move(ret.length() + 2);
+    string* ByteBuffer::readStringAsciiWithShortLength() {
+        string* ret = readStringAsciiWithShortLength(curPos);
+        move(ret->length() + 2);
         return ret;
     }
 
-    string ByteBuffer::readStringAsciiWithShortLength(int pos) {
+    string* ByteBuffer::readStringAsciiWithShortLength(int pos) {
         short len;
         if (inRange(pos, 2)) {
             len = readShort(pos);
@@ -603,56 +603,51 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 return new string("");
             }
         } else {
-            throw new ArrayIndexOutOfBoundsException();
+            throw "ArrayIndexOutOfBoundsException";
         }
     }
 
-    short* ByteBuffer::expandShortArray(short* array, int size) {
-        short[] newArr = new short[array.length + size];
-        if (size > 0) {
-            System.arraycopy(array, 0, newArr, 0, array.length);
-        } else {
-            System.arraycopy(array, 0, newArr, 0, newArr.length);
-        }
+    vector<short>* ByteBuffer::expandShortArray(vector<short>* array, int size) {
+        vector<short>* newArr = new vector<short>(array->size() + size);
+        for(int i=0; i<array->size(); i++)
+        	(*newArr)[i] = (*array)[i];
         return newArr;
     }
 
     void ByteBuffer::crop() {
         if (curPos > 0) {
-            if (curPos < buf.length) {
-                short[] newBuf = new short[curPos];
-                System.arraycopy(buf, 0, newBuf, 0, curPos);
-                buf = newBuf;
+            if (curPos < buf->size()) {
+                buf->resize(curPos);
             }
         } else {
             //System.out.println("Could not crop buffer, as the current position is 0. The buffer may not be empty.");
         }
     }
 
-    static ByteBuffer* ByteBuffer::asciiEncode(ByteBuffer* buf) {
+    ByteBuffer* ByteBuffer::asciiEncode(ByteBuffer* buf) {
 
-        short[] data = buf.buf;
-        int8_t* enc = new int8_t[buf.getSize() * 2];
+        vector<short>* data = buf->buf;
+        vector<int8_t>* enc = new vector<int8_t>(buf->getSize() * 2);
 
         int encpos = 0;
         int tmp;
-        for (int i = 0; i < data.length; i++) {
+        for (int i = 0; i < data->size(); i++) {
 
-            tmp = data[i];
-            enc[encpos] = (int8_t) (65 + (tmp) & 0xF);
-            enc[encpos + 1] = (int8_t) (65 + (tmp >> 4) & 0xF);
+            tmp = (*data)[i];
+            (*enc)[encpos] = (int8_t) (65 + (tmp) & 0xF);
+            (*enc)[encpos + 1] = (int8_t) (65 + (tmp >> 4) & 0xF);
             encpos += 2;
 
         }
-        return new ByteBuffer(enc, ByteBuffer.BO_BIG_ENDIAN);
+        return new ByteBuffer(enc, ByteBuffer::BO_BIG_ENDIAN);
 
     }
 
-    static ByteBuffer* ByteBuffer::asciiDecode(ByteBuffer* buf) {
+    ByteBuffer* ByteBuffer::asciiDecode(ByteBuffer* buf) {
         return NULL;
     }
-
-    static void ByteBuffer::saveToZipFile(File f, ByteBuffer* buf) {
+/*
+    void ByteBuffer::saveToZipFile(File f, ByteBuffer* buf) {
 
         try {
 
@@ -714,3 +709,4 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return NULL;
 
     }
+*/

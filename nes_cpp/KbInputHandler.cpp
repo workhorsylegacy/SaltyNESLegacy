@@ -20,8 +20,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
      KbInputHandler::KbInputHandler(NES* nes, int id) {
-        this.nes = nes;
-        this.id = id;
+        this->nes = nes;
+        this->id = id;
         allKeysState = new bool[255];
         keyMapping = new int[KbInputHandler.NUM_KEYS];
     }
@@ -68,18 +68,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             switch (kc) {
                 case KeyEvent.VK_F5: {
                     // Reset game:
-                    if (nes.isRunning()) {
-                        nes.stopEmulation();
-                        nes.reset();
-                        nes.reloadRom();
-                        nes.startEmulation();
+                    if (nes->isRunning()) {
+                        nes->stopEmulation();
+                        nes->reset();
+                        nes->reloadRom();
+                        nes->startEmulation();
                     }
                     break;
                 }
                 case KeyEvent.VK_F10: {
                     // Just using this to display the battery RAM contents to user.
-                    if (nes.rom != NULL) {
-                        nes.rom.closeRom();
+                    if (nes->rom != NULL) {
+                        nes->rom.closeRom();
                     }
                     break;
                 }

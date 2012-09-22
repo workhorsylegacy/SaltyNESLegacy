@@ -20,29 +20,29 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
      PAPU::PAPU(NES* nes) {
-	    this.bufferSize = 2048;
-	    this.sampleRate = 44100;
-	    this.startedPlaying = false;
-	    this.recordOutput = false;
-	    this.stereo = true;
-	    this.initingHardware = false;
-	     this.userEnableSquare1 = true;
-	     this.userEnableSquare2 = true;
-	     this.userEnableTriangle = true;
-	     this.userEnableNoise = true;
-	     this.userEnableDmc = true;
-	    this.triValue = 0;
-	    this.prevSampleL = 0;
-	    this.prevSampleR = 0;
-	    this.smpAccumL = 0;
-	    this.smpAccumR = 0;
-	    this.smpDiffL = 0;
-	    this.smpDiffR = 0;
-	    this.dacRange = 0;
-	    this.dcValue = 0;
+	    this->bufferSize = 2048;
+	    this->sampleRate = 44100;
+	    this->startedPlaying = false;
+	    this->recordOutput = false;
+	    this->stereo = true;
+	    this->initingHardware = false;
+	     this->userEnableSquare1 = true;
+	     this->userEnableSquare2 = true;
+	     this->userEnableTriangle = true;
+	     this->userEnableNoise = true;
+	     this->userEnableDmc = true;
+	    this->triValue = 0;
+	    this->prevSampleL = 0;
+	    this->prevSampleR = 0;
+	    this->smpAccumL = 0;
+	    this->smpAccumR = 0;
+	    this->smpDiffL = 0;
+	    this->smpDiffR = 0;
+	    this->dacRange = 0;
+	    this->dcValue = 0;
 
-        this.nes = nes;
-        cpuMem = nes.getCpuMemory();
+        this->nes = nes;
+        cpuMem = nes->getCpuMemory();
 
         setSampleRate(sampleRate, false);
         sampleBuffer = new int8_t[bufferSize * (stereo ? 4 : 2)];
@@ -88,7 +88,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      /*synchronized*/ void PAPU::start() {
 
-        //System.out.println("* Starting PAPU lines.");
+        //System.out.println("* Starting PAPU lines->");
         if (line != NULL && line.isActive()) {
             //System.out.println("* Already running.");
             return;
@@ -115,7 +115,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             line.start();
 
         } catch (Exception e) {
-            //System.out.println("Couldn't get sound lines.");
+            //System.out.println("Couldn't get sound lines->");
         }
 
     }
@@ -405,7 +405,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Frame IRQ handling:
         if (frameIrqEnabled && frameIrqActive) {
-            nes.cpu.requestIrq(CPU.IRQ_NORMAL);
+            nes->cpu.requestIrq(CPU.IRQ_NORMAL);
         }
 
         // Clock frame counter at double CPU speed:
@@ -744,9 +744,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      /*synchronized*/ void PAPU::setSampleRate(int rate, bool restart) {
 
-        bool cpuRunning = nes.isRunning();
+        bool cpuRunning = nes->isRunning();
         if (cpuRunning) {
-            nes.stopEmulation();
+            nes->stopEmulation();
         }
 
         sampleRate = rate;
@@ -764,7 +764,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (cpuRunning) {
-            nes.startEmulation();
+            nes->startEmulation();
         }
 
     }
@@ -775,8 +775,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return;
         }
 
-        bool running = nes.isRunning();
-        nes.stopEmulation();
+        bool running = nes->isRunning();
+        nes->stopEmulation();
 
         stereo = s;
         if (stereo) {
@@ -791,7 +791,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (running) {
-            nes.startEmulation();
+            nes->startEmulation();
         }
 
     }
@@ -989,8 +989,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         }
 
-        this.dacRange = max_sqr + max_tnd;
-        this.dcValue = dacRange / 2;
+        this->dacRange = max_sqr + max_tnd;
+        this->dcValue = dacRange / 2;
 
     }
 

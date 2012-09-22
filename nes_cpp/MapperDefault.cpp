@@ -19,13 +19,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void MapperDefault::init(NES* nes) {
 
-        this.nes = nes;
-        this.cpuMem = nes.getCpuMemory();
-        this.cpuMemArray = cpuMem.mem;
-        this.ppuMem = nes.getPpuMemory();
-        this.rom = nes.getRom();
-        this.cpu = nes.getCpu();
-        this.ppu = nes.getPpu();
+        this->nes = nes;
+        this->cpuMem = nes->getCpuMemory();
+        this->cpuMemArray = cpuMem.mem;
+        this->ppuMem = nes->getPpuMemory();
+        this->rom = nes->getRom();
+        this->cpu = nes->getCpu();
+        this->ppu = nes->getPpu();
 
         cpuMemSize = cpuMem.getMemSize();
         joypadLastWrite = -1;
@@ -249,7 +249,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         // 0x4015:
                         // Sound channel enable, DMC Status
-                        return nes.getPapu().readReg(address);
+                        return nes->getPapu()->readReg(address);
 
                     }
                     case 1: {
@@ -263,7 +263,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         // 0x4017:
                         // Joystick 2 + Strobe
-                        if (mousePressed && nes.ppu != NULL && nes.ppu.buffer != NULL) {
+                        if (mousePressed && nes->ppu != NULL && nes->ppu.buffer != NULL) {
 
                             // Check for white pixel nearby:
 
@@ -276,7 +276,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                             for (int y = sy; y < ey; y++) {
                                 for (int x = sx; x < ex; x++) {
-                                    if ((nes.ppu.buffer[(y << 8) + x] & 0xFFFFFF) == 0xFFFFFF) {
+                                    if ((nes->ppu.buffer[(y << 8) + x] & 0xFFFFFF) == 0xFFFFFF) {
                                         w = 0x1 << 3;
                                         break;
                                     }
@@ -366,7 +366,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             case 0x4015: {
 
                 // Sound Channel Switch, DMC Status
-                nes.getPapu().writeReg(address, value);
+                nes->getPapu()->writeReg(address, value);
                 break;
 
             }
@@ -387,7 +387,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             case 0x4017: {
 
                 // Sound channel frame sequencer:
-                nes.papu.writeReg(address, value);
+                nes->papu.writeReg(address, value);
                 break;
 
             }
@@ -396,7 +396,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 // Sound registers
                 ////System.out.println("write to sound reg");
                 if (address >= 0x4000 && address <= 0x4017) {
-                    nes.getPapu().writeReg(address, value);
+                    nes->getPapu()->writeReg(address, value);
                 }
                 break;
 
@@ -407,7 +407,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      short MapperDefault::joy1Read() {
 
-        KbInputHandler* in = nes.getGui().getJoy1();
+        KbInputHandler* in = nes->getGui().getJoy1();
         short ret;
 
         switch (joy1StrobeState) {
@@ -465,7 +465,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      short MapperDefault::joy2Read() {
-        KbInputHandler* in = nes.getGui().getJoy2();
+        KbInputHandler* in = nes->getGui().getJoy2();
         int st = joy2StrobeState;
 
         joy2StrobeState++;
@@ -519,8 +519,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         loadBatteryRam();
 
         // Reset IRQ:
-        //nes.getCpu().doResetInterrupt();
-        nes.getCpu().requestIrq(CPU.IRQ_RESET);
+        //nes->getCpu().doResetInterrupt();
+        nes->getCpu().requestIrq(CPU.IRQ_RESET);
 
     }
 
@@ -564,7 +564,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             if (ram != NULL && ram.length == 0x2000) {
 
                 // Load Battery RAM into memory:
-                System.arraycopy(ram, 0, nes.cpuMem.mem, 0x6000, 0x2000);
+                System.arraycopy(ram, 0, nes->cpuMem.mem, 0x6000, 0x2000);
 
             }
 
@@ -589,7 +589,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         ppu.triggerRendering();
 
-        System.arraycopy(rom.getVromBank(bank % rom.getVromBankCount()), 0, nes.ppuMem.mem, address, 4096);
+        System.arraycopy(rom.getVromBank(bank % rom.getVromBankCount()), 0, nes->ppuMem.mem, address, 4096);
 
         Tile[] vromTile = rom.getVromBankTiles(bank % rom.getVromBankCount());
         System.arraycopy(vromTile, 0, ppu.ptTile, address >> 4, 256);
@@ -624,7 +624,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         int bank4k = (bank1k / 4) % rom.getVromBankCount();
         int bankoffset = (bank1k % 4) * 1024;
-        System.arraycopy(rom.getVromBank(bank4k), 0, nes.ppuMem.mem, bankoffset, 1024);
+        System.arraycopy(rom.getVromBank(bank4k), 0, nes->ppuMem.mem, bankoffset, 1024);
 
         // Update tiles:
         Tile[] vromTile = rom.getVromBankTiles(bank4k);
@@ -644,7 +644,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         int bank4k = (bank2k / 2) % rom.getVromBankCount();
         int bankoffset = (bank2k % 2) * 2048;
-        System.arraycopy(rom.getVromBank(bank4k), bankoffset, nes.ppuMem.mem, address, 2048);
+        System.arraycopy(rom.getVromBank(bank4k), bankoffset, nes->ppuMem.mem, address, 2048);
 
         // Update tiles:
         Tile[] vromTile = rom.getVromBankTiles(bank4k);

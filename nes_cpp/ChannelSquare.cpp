@@ -31,7 +31,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      ChannelSquare::ChannelSquare(PAPU* papu, bool square1) {
 
-        this.papu = papu;
+        this->papu = papu;
         sqr1 = square1;
 
     }

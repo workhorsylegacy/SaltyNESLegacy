@@ -19,20 +19,29 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #define CPP_NES_GLOBALS_
 
 #include <map>
+#include <vector>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string>
+#include <sys/time.h>
+#define _USE_MATH_DEFINES
+#include "math.h"
 
 using namespace std;
 
 // Temp stub classes
 class Point {
 public:
-	uint32_t x;
-	uint32_t y;
+	int x;
+	int y;
+	
+	Point(int x, int y) {
+		this->x = x;
+		this->y = y;
+	}
 };
 class Image {};
 class Graphics {};
@@ -52,7 +61,10 @@ class KeyEvent {};
 class MouseAdapter {};
 class MouseEvent {};
 class Mixer {};
-class SourceDataLine {};
+class SourceDataLine {
+public:
+	size_t getBufferSize() { return 0; };
+};
 class Color {
 public:
 	int getRGB() {
@@ -60,6 +72,7 @@ public:
 	}
 	
 };
+class Graphics2D {};
 
 // Forward declarations
 class IMemoryMapper;
@@ -155,6 +168,7 @@ namespace Globals {
 };
 
 class AppletUI {
+public:
     vNES* applet;
     NES* nes;
     KbInputHandler* kbJoy1;
@@ -164,7 +178,6 @@ class AppletUI {
     long t1, t2;
     int sleepTime;
 
-public:
     AppletUI(vNES* applet);
     void init(bool showGui);
     void imageReady(bool skipFrame);
@@ -192,6 +205,7 @@ public:
 
 
 class BlipBuffer {
+public:
 	// These values must be set:
     int win_size;
     int smp_period;
@@ -199,7 +213,7 @@ class BlipBuffer {
     // Different samplings of bandlimited impulse:
     int** imp;
     // Difference buffer:
-    int* diff;
+    vector<int>* diff;
     // Last position changed in buffer:
     int lastChanged;
     // Previous end absolute value:
@@ -209,7 +223,7 @@ class BlipBuffer {
     int dc_diff;
     int dc_acc;
     
-public:
+
     void init(int bufferSize, int windowSize, int samplePeriod, int sincPeriods);
     void impulse(int smpPos, int smpOffset, int magnitude);
     int integrate();
@@ -218,6 +232,7 @@ public:
 };
 
 class BufferView { /*: public JPanel { */
+public:
     // Scale modes:
     static const int SCALE_NONE = 0;
     static const int SCALE_HW2X = 1;
@@ -243,7 +258,7 @@ class BufferView { /*: public JPanel { */
      Font* fpsFont;
      int bgColor;
      
-public:
+
     // Constructor
     BufferView(NES* nes, int width, int height);
     void setBgColor(int color);
@@ -251,7 +266,7 @@ public:
     void init();
     void createView();
     void imageReady(bool skipFrame);
-    Image* getImage();
+    BufferedImage* getImage();
     int* getBuffer();
     void update(Graphics* g);
     bool scalingEnabled();
@@ -272,20 +287,21 @@ public:
 
 
 class ByteBuffer {
+public:
 	 static const bool debug = false;
 	 static const int BO_BIG_ENDIAN = 0;
      static const int BO_LITTLE_ENDIAN = 1;
      int byteOrder;
-     short* buf;
+     vector<short>* buf;
      int size;
      int curPos;
      bool hasBeenErrors;
      bool expandable;
      int expandBy;
 
-public:	
+	
     ByteBuffer(int size, int byteOrdering);
-    ByteBuffer(int8_t* content, int byteOrdering);
+    ByteBuffer(vector<int8_t>* content, int byteOrdering);
     void setExpandable(bool exp);
     void setExpandBy(int expBy);
     void setByteOrder(int byteOrder);
@@ -321,11 +337,11 @@ public:
     bool putCharAscii(char var, int pos);
     bool putStringAscii(string var);
     bool putStringAscii(string var, int pos);
-    bool putByteArray(short* arr);
-    bool readByteArray(short* arr);
-    bool putShortArray(short* arr);
-    string toString();
-    string toStringAscii();
+    bool putByteArray(vector<short>* arr);
+    bool readByteArray(vector<short>* arr);
+    bool putShortArray(vector<short>* arr);
+    string* toString();
+    string* toStringAscii();
     bool readBoolean();
     bool readBoolean(int pos);
     short readByte();
@@ -338,15 +354,15 @@ public:
     char readChar(int pos);
     char readCharAscii();
     char readCharAscii(int pos);
-    string readString(int length);
-    string readString(int pos, int length);
-    string readStringWithShortLength();
-    string readStringWithShortLength(int pos);
-    string readStringAscii(int length);
-    string readStringAscii(int pos, int length);
-    string readStringAsciiWithShortLength();
-    string readStringAsciiWithShortLength(int pos);
-    short* expandShortArray(short* array, int size);
+    string* readString(int length);
+    string* readString(int pos, int length);
+    string* readStringWithShortLength();
+    string* readStringWithShortLength(int pos);
+    string* readStringAscii(int length);
+    string* readStringAscii(int pos, int length);
+    string* readStringAsciiWithShortLength();
+    string* readStringAsciiWithShortLength(int pos);
+    vector<short>* expandShortArray(vector<short>* array, int size);
     void crop();
     static ByteBuffer* asciiEncode(ByteBuffer* buf);
     static ByteBuffer* asciiDecode(ByteBuffer* buf);
@@ -355,6 +371,7 @@ public:
 };
 
 class ChannelDM : public IPapuChannel {
+public:
     static const int MODE_NORMAL = 0;
     static const int MODE_LOOP = 1;
     static const int MODE_IRQ = 2;
@@ -376,7 +393,7 @@ class ChannelDM : public IPapuChannel {
     int sample;
     int dacLsb;
     int data;
-public:
+
     ChannelDM(PAPU* papu);
     void clockDmc();
      void endOfSample();
@@ -392,6 +409,7 @@ public:
 
 
 class ChannelNoise : public IPapuChannel {
+public:
     PAPU* papu;
      bool _isEnabled;
      bool envDecayDisable;
@@ -413,7 +431,7 @@ class ChannelNoise : public IPapuChannel {
      long accValue;
      long accCount;
      int tmp;
-public:
+
      ChannelNoise(PAPU* papu);
      void clockLengthCounter();
      void clockEnvDecay();
@@ -426,6 +444,7 @@ public:
 };
 
 class ChannelSquare : public IPapuChannel {
+public:
     PAPU* papu;
     bool sqr1;
     bool _isEnabled;
@@ -452,7 +471,7 @@ class ChannelSquare : public IPapuChannel {
     int sweepResult;
     int sampleValue;
     int vol;
-public:
+
     static const int dutyLookup[32];
 
     static const int impLookup[32];
@@ -471,6 +490,7 @@ public:
 };
 
 class ChannelTriangle : public IPapuChannel {
+public:
     PAPU* papu;
     bool _isEnabled;
     bool sampleCondition;
@@ -485,7 +505,7 @@ class ChannelTriangle : public IPapuChannel {
     int lcLoadValue;
     int sampleValue;
     int tmp;
-public:
+
      ChannelTriangle(PAPU* papu);
      void clockLengthCounter();
      void clockLinearCounter();
@@ -502,6 +522,7 @@ public:
 };
 
 class CPU {
+public:
 	// Thread:
 	pthread_t myThread;
 	mutable pthread_mutex_t _mutex;
@@ -546,8 +567,6 @@ class CPU {
 	 bool stopRunning;
 	 bool crash;
 
-
-public:
 	 CPU(NES* nes);
 	 void init();
 	 void stateLoad(ByteBuffer* buf);
@@ -688,11 +707,12 @@ public:
 };
 
 class KbInputHandler : public KeyListener {
+public:
     bool* allKeysState;
     int* keyMapping;
     int id;
     NES* nes;
-public:
+
     // Joypad keys:
     static const int KEY_A = 0;
     static const int KEY_B = 1;
@@ -718,10 +738,11 @@ public:
 };
 
 class Memory {
+public:
 	short* mem;
 	int memLength;
 	NES* nes;
-public:
+
 	 Memory(NES* nes, int byteCount);
 	 void stateLoad(ByteBuffer* buf);
 	 void stateSave(ByteBuffer* buf);
@@ -737,6 +758,7 @@ public:
 };
 
 class MapperDefault : public IMemoryMapper {
+public:
      NES* nes;
      Memory* cpuMem;
      Memory* ppuMem;
@@ -753,7 +775,7 @@ class MapperDefault : public IMemoryMapper {
      int mouseX;
      int mouseY;
     int tmp;
-public:
+
      void init(NES* nes);
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
@@ -789,6 +811,7 @@ public:
 };
 
 class Mapper001 : public MapperDefault {
+public:
     // Register flags:
 
     // Register 0:
@@ -810,7 +833,7 @@ class Mapper001 : public MapperDefault {
     // 5-bit buffer:
     int regBuffer;
     int regBufferCounter;
-public:
+
      void init(NES* nes);
      void mapperInternalStateLoad(ByteBuffer* buf);
      void mapperInternalStateSave(ByteBuffer* buf);
@@ -825,12 +848,12 @@ public:
 };
 
 class Misc {
+public:
      static bool debug;
      static float* _rnd;
      static int nextRnd;
      static float rndret;
 
-public:
 	 static float* rnd();
      static string hex8(int i);
      static string hex16(int i);
@@ -844,12 +867,13 @@ public:
 };
 
 class NameTable {
+public:
     string name;
     short* tile;
     short* attrib;
     int width;
     int height;
-public:
+
      NameTable(int width, int height, string name);
      short getTileIndex(int x, int y);
      short getAttrib(int x, int y);
@@ -860,6 +884,7 @@ public:
 };
 
 class NES {
+public:
      AppletUI* gui;
      CPU* cpu;
      PPU* ppu;
@@ -873,7 +898,7 @@ class NES {
      int cc;
      string romFile;
     bool _isRunning;
-public:
+
      NES(AppletUI* gui);
      bool stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
@@ -900,12 +925,13 @@ public:
 };
 
 class PaletteTable {
+public:
      static int curTable[64];
      static int origTable[64];
      static int emphTable[8][64];
     int currentEmph;
     int currentHue, currentSaturation, currentLightness, currentContrast;
-public:
+
 	 PaletteTable();
      bool loadNTSCPalette();
      bool loadPALPalette();
@@ -931,10 +957,10 @@ public:
 };
 
  class PAPU {
+ public:
     NES* nes;
     Memory* cpuMem;
     Mixer* mixer;
-    SourceDataLine* line;
     ChannelSquare* square1;
     ChannelSquare* square2;
     ChannelTriangle* triangle;
@@ -953,7 +979,6 @@ public:
     short channelEnableValue;
     int8_t b1, b2, b3, b4;
     int bufferSize;
-    int bufferIndex;
     int sampleRate;
     bool frameIrqEnabled;
     bool frameIrqActive;
@@ -1008,7 +1033,10 @@ public:
     int stereoPosRDMC;
     int extraCycles;
     int maxCycles;
-public:
+
+    SourceDataLine* line;
+    int bufferIndex;
+
      PAPU(NES* nes);
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
@@ -1048,6 +1076,7 @@ public:
 };
 
 class PPU {
+public:
      NES* nes;
      HiResTimer* timer;
      Memory* ppuMem;
@@ -1169,7 +1198,7 @@ class PPU {
     int srcy1, srcy2;
     int bufferSize, available, scale;
      int cycles;
-public:
+
      PPU(NES* nes);
      void init();
      void setMirroring(int mirroring);
@@ -1224,16 +1253,18 @@ public:
 };
 
 class Raster {
+public:
      int* data;
      int width;
      int height;
-public:
+
      Raster(int* data, int w, int h);
      Raster(int w, int h);
      void drawTile(Raster srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h);
 };
 
 class ROM {
+public:
     // Mirroring types:
      static const int VERTICAL_MIRRORING = 0;
      static const int HORIZONTAL_MIRRORING = 1;
@@ -1264,7 +1295,7 @@ class ROM {
     bool valid;
     static string* _mapperName;
     static bool* _mapperSupported;
-public:
+
      ROM(NES* nes);
      static string* getmapperName();
      static bool* getmapperSupported();
@@ -1315,9 +1346,10 @@ public:
 };
 
 class ScreenView : public BufferView {
+public:
      MyMouseAdapter mouse;
      bool notifyImageReady;
-public:
+
      ScreenView(NES* nes, int width, int height);
      void init();
      void mouseReleased(MouseEvent* me);
@@ -1326,6 +1358,7 @@ public:
 };
 
 class Tile {
+public:
     // Tile data:
     int pix[64];
     int fbIndex;
@@ -1338,7 +1371,7 @@ class Tile {
     int c;
      bool initialized;
      bool opaque[8];
-public:
+
      Tile();
      void setBuffer(short* scanline);
      void setScanline(int sline, short b1, short b2);
@@ -1352,6 +1385,7 @@ public:
 };
 
 class vNES {
+public:
     bool scale;
     bool scanlines;
     bool sound;
@@ -1367,7 +1401,7 @@ class vNES {
     ScreenView* panelScreen;
     string rom;
     Font* progressFont;
-public:
+
     Color* bgColor;
     bool started;
 
@@ -1382,6 +1416,8 @@ public:
     void update(Graphics* g);
     void readParams();
     void initKeyCodes();
+    int getWidth();
+    int getHeight();
 };
 
 #endif

@@ -18,7 +18,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
      ChannelTriangle::ChannelTriangle(PAPU* papu) {
-        this.papu = papu;
+        this->papu = papu;
     }
 
      void ChannelTriangle::clockLengthCounter() {

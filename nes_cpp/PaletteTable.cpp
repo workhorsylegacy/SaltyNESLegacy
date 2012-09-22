@@ -19,7 +19,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 	PaletteTable::PaletteTable() {
-		this.currentEmph = -1;
+		this->currentEmph = -1;
 	}
 
     // Load the NTSC palette:

@@ -19,9 +19,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // Creates the NES system.
      NES::NES(AppletUI* gui) {
-		this._isRunning = false;
+		this->_isRunning = false;
         Globals::nes = this;
-        this.gui = gui;
+        this->gui = gui;
 
         // Create memory:
         cpuMem = new Memory(this, 0x10000);	// Main memory (internal to CPU)
@@ -257,7 +257,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 memMapper.loadROM(rom);
                 ppu.setMirroring(rom.getMirroringType());
 
-                this.romFile = file;
+                this->romFile = file;
 
             }
             return rom.isValid();

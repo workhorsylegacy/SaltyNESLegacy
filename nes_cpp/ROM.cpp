@@ -20,12 +20,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
      ROM::ROM(NES* nes) {
-	    this.failedSaveFile = false;
-	    this.saveRamUpToDate = true;
-	    this.enableSave = true;
+	    this->failedSaveFile = false;
+	    this->saveRamUpToDate = true;
+	    this->enableSave = true;
     
     
-        this.nes = nes;
+        this->nes = nes;
         valid = false;
     }
 
@@ -162,14 +162,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void ROM::load(string fileName) {
 
-        this.fileName = fileName;
+        this->fileName = fileName;
         FileLoader* loader = new FileLoader();
-        short[] b = loader.loadFile(fileName, nes.getGui());
+        short[] b = loader.loadFile(fileName, nes->getGui());
 
         if (b == NULL || b.length == 0) {
 
             // Unable to load file.
-            nes.gui.showErrorMsg("Unable to load ROM file.");
+            nes->gui.showErrorMsg("Unable to load ROM file.");
             valid = false;
 
         }
@@ -469,13 +469,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // If the mapper wasn't supported, create the standard one:
-        nes.gui.showErrorMsg("Warning: Mapper not supported yet.");
+        nes->gui.showErrorMsg("Warning: Mapper not supported yet.");
         return new MapperDefault();
 
     }
 
      void ROM::setSaveState(bool enableSave) {
-        //this.enableSave = enableSave;
+        //this->enableSave = enableSave;
         if (enableSave && !batteryRam) {
             loadBatteryRam();
         }
@@ -514,8 +514,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
 
                 //System.out.println("Battery RAM loaded.");
-                if (nes.getMemoryMapper() != NULL) {
-                    nes.getMemoryMapper().loadBatteryRam();
+                if (nes->getMemoryMapper() != NULL) {
+                    nes->getMemoryMapper().loadBatteryRam();
                 }
 
             } catch (Exception e) {

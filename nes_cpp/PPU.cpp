@@ -18,35 +18,35 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
      PPU::PPU(NES* nes) {
-        this.nes = nes;
-	    this.showSpr0Hit = false;
-	    this.showSoundBuffer = false;
-	    this.clipTVcolumn = true;
-	    this.clipTVrow = false;
-	     this.STATUS_VRAMWRITE = 4;
-	     this.STATUS_SLSPRITECOUNT = 5;
-	     this.STATUS_SPRITE0HIT = 6;
-	     this.STATUS_VBLANK = 7;
-	    this.firstWrite = true;
-	    this.vblankAdd = 0;
-	    this.currentMirroring = -1;
-	    this.requestRenderAll = false;
-	    this.scantile = new Tile[32];
-	     this.cycles = 0;
+        this->nes = nes;
+	    this->showSpr0Hit = false;
+	    this->showSoundBuffer = false;
+	    this->clipTVcolumn = true;
+	    this->clipTVrow = false;
+	     this->STATUS_VRAMWRITE = 4;
+	     this->STATUS_SLSPRITECOUNT = 5;
+	     this->STATUS_SPRITE0HIT = 6;
+	     this->STATUS_VBLANK = 7;
+	    this->firstWrite = true;
+	    this->vblankAdd = 0;
+	    this->currentMirroring = -1;
+	    this->requestRenderAll = false;
+	    this->scantile = new Tile[32];
+	     this->cycles = 0;
     }
 
      void PPU::init() {
 
         // Get the memory:
-        ppuMem = nes.getPpuMemory();
-        sprMem = nes.getSprMemory();
+        ppuMem = nes->getPpuMemory();
+        sprMem = nes->getSprMemory();
 
         updateControlReg1(0);
         updateControlReg2(0);
 
         // Initialize misc vars:
         scanline = 0;
-        timer = nes.getGui().getTimer();
+        timer = nes->getGui().getTimer();
 
         // Create sprite arrays:
         sprX = new int[64];
@@ -235,17 +235,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Do NMI:
-        nes.getCpu().requestIrq(CPU.IRQ_NMI);
+        nes->getCpu().requestIrq(CPU.IRQ_NMI);
 
         // Make sure everything is rendered:
         if (lastRenderedScanline < 239) {
-            renderFramePartially(nes.gui.getScreenView().getBuffer(), lastRenderedScanline + 1, 240 - lastRenderedScanline);
+            renderFramePartially(nes->gui.getScreenView().getBuffer(), lastRenderedScanline + 1, 240 - lastRenderedScanline);
         }
 
         endFrame();
 
         // Notify image buffer:
-        nes.getGui().getScreenView().imageReady(false);
+        nes->getGui().getScreenView().imageReady(false);
 
         // Reset scanline counter:
         lastRenderedScanline = -1;
@@ -310,7 +310,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
             if (f_bgVisibility == 1 || f_spVisibility == 1) {
                 // Clock mapper IRQ Counter:
-                nes.memMapper.clockIrqCounter();
+                nes->memMapper.clockIrqCounter();
             }
 
         } else if (scanline >= 21 + vblankAdd && scanline <= 260) {
@@ -340,7 +340,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
             if (f_bgVisibility == 1 || f_spVisibility == 1) {
                 // Clock mapper IRQ Counter:
-                nes.memMapper.clockIrqCounter();
+                nes->memMapper.clockIrqCounter();
             }
 
         } else if (scanline == 261 + vblankAdd) {
@@ -364,7 +364,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::startFrame() {
 
-        int[] buffer = nes.getGui().getScreenView().getBuffer();
+        int[] buffer = nes->getGui().getScreenView().getBuffer();
 
         // Set background color:
         int bgColor = 0;
@@ -422,7 +422,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::endFrame() {
 
-        int[] buffer = nes.getGui().getScreenView().getBuffer();
+        int[] buffer = nes->getGui().getScreenView().getBuffer();
 
         // Draw spr#0 hit coordinates:
         if (showSpr0Hit) {
@@ -478,10 +478,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Show sound buffer:
-        if (showSoundBuffer && nes.getPapu().getLine() != NULL) {
+        if (showSoundBuffer && nes->getPapu()->getLine() != NULL) {
 
-            bufferSize = nes.getPapu().getLine().getBufferSize();
-            available = nes.getPapu().getLine().available();
+            bufferSize = nes->getPapu()->getLine()->getBufferSize();
+            available = nes->getPapu()->getLine().available();
             scale = bufferSize / 256;
 
             for (int y = 0; y < 4; y++) {
@@ -527,7 +527,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         f_dispType = value & 1;
 
         if (f_dispType == 0) {
-            nes.palTable.setEmphasis(f_color);
+            nes->palTable.setEmphasis(f_color);
         }
         updatePalettes();
 
@@ -536,9 +536,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void PPU::setStatusFlag(int flag, bool value) {
 
         int n = 1 << flag;
-        int memValue = nes.getCpuMemory().load(0x2002);
+        int memValue = nes->getCpuMemory().load(0x2002);
         memValue = ((memValue & (255 - n)) | (value ? n : 0));
-        nes.getCpuMemory().write(0x2002, (short) memValue);
+        nes->getCpuMemory().write(0x2002, (short) memValue);
 
     }
 
@@ -547,7 +547,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // Read the Status Register.
      short PPU::readStatusRegister() {
 
-        tmp = nes.getCpuMemory().load(0x2002);
+        tmp = nes->getCpuMemory().load(0x2002);
 
         // Reset scroll & VRAM Address toggle:
         firstWrite = true;
@@ -648,7 +648,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // Invoke mapper latch:
         cntsToAddress();
         if (vramAddress < 0x2000) {
-            nes.memMapper.latchAccess(vramAddress);
+            nes->memMapper.latchAccess(vramAddress);
         }
 
     }
@@ -674,7 +674,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
             // Mapper latch access:
             if (vramAddress < 0x2000) {
-                nes.memMapper.latchAccess(vramAddress);
+                nes->memMapper.latchAccess(vramAddress);
             }
 
             // Increment by either 1 or 32, depending on d2 of Control Register 1:
@@ -716,7 +716,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             writeMem(vramAddress, value);
 
             // Invoke mapper latch:
-            nes.memMapper.latchAccess(vramAddress);
+            nes->memMapper.latchAccess(vramAddress);
 
         }
 
@@ -732,7 +732,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // into Sprite RAM.
      void PPU::sramDMA(short value) {
 
-        Memory* cpuMem = nes.getCpuMemory();
+        Memory* cpuMem = nes->getCpuMemory();
         int baseAddress = value * 0x100;
         short data;
         for (int i = sramAddress; i < 256; i++) {
@@ -741,7 +741,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             spriteRamWriteUpdate(i, data);
         }
 
-        nes.getCpu().haltCycles(513);
+        nes->getCpu().haltCycles(513);
 
     }
 
@@ -879,7 +879,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             } else {
                 if (Globals::debug) {
                     //System.out.println("Invalid VRAM address: "+Misc.hex16(address));
-                    nes.getCpu().setCrashed(true);
+                    nes->getCpu().setCrashed(true);
                 }
             }
 
@@ -924,7 +924,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             renderSpritesPartially(startScan, scanCount, false);
         }
 
-        BufferView* screen = nes.getGui().getScreenView();
+        BufferView* screen = nes->getGui().getScreenView();
         if (screen.scalingEnabled() && !screen.useHWScaling() && !requestRenderAll) {
 
             // Check which scanlines have changed, to try to
@@ -1055,7 +1055,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 
-        buffer = nes.getGui().getScreenView().getBuffer();
+        buffer = nes->getGui().getScreenView().getBuffer();
         if (f_spVisibility == 1) {
 
             int sprT1, sprT2;
@@ -1275,7 +1275,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // pattern table into an image.
      void PPU::renderPattern() {
 
-        BufferView* scr = nes.getGui().getPatternView();
+        BufferView* scr = nes->getGui().getPatternView();
         int[] buffer = scr.getBuffer();
 
         int tIndex = 0;
@@ -1287,13 +1287,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
             }
         }
-        nes.getGui().getPatternView().imageReady(false);
+        nes->getGui().getPatternView().imageReady(false);
 
     }
 
      void PPU::renderNameTables() {
 
-        int[] buffer = nes.getGui().getNameTableView().getBuffer();
+        int[] buffer = nes->getGui().getNameTableView().getBuffer();
         if (f_bgPatternTable == 0) {
             baseTile = 0;
         } else {
@@ -1343,13 +1343,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        nes.getGui().getNameTableView().imageReady(false);
+        nes->getGui().getNameTableView().imageReady(false);
 
     }
 
      void PPU::renderPalettes() {
 
-        int[] buffer = nes.getGui().getImgPalView().getBuffer();
+        int[] buffer = nes->getGui().getImgPalView().getBuffer();
         for (int i = 0; i < 16; i++) {
             for (int y = 0; y < 16; y++) {
                 for (int x = 0; x < 16; x++) {
@@ -1358,7 +1358,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        buffer = nes.getGui().getSprPalView().getBuffer();
+        buffer = nes->getGui().getSprPalView().getBuffer();
         for (int i = 0; i < 16; i++) {
             for (int y = 0; y < 16; y++) {
                 for (int x = 0; x < 16; x++) {
@@ -1367,8 +1367,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        nes.getGui().getImgPalView().imageReady(false);
-        nes.getGui().getSprPalView().imageReady(false);
+        nes->getGui().getImgPalView().imageReady(false);
+        nes->getGui().getSprPalView().imageReady(false);
 
     }
 
@@ -1432,16 +1432,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         for (int i = 0; i < 16; i++) {
             if (f_dispType == 0) {
-                imgPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f00 + i) & 63);
+                imgPalette[i] = nes->palTable.getEntry(ppuMem.load(0x3f00 + i) & 63);
             } else {
-                imgPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f00 + i) & 32);
+                imgPalette[i] = nes->palTable.getEntry(ppuMem.load(0x3f00 + i) & 32);
             }
         }
         for (int i = 0; i < 16; i++) {
             if (f_dispType == 0) {
-                sprPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f10 + i) & 63);
+                sprPalette[i] = nes->palTable.getEntry(ppuMem.load(0x3f10 + i) & 63);
             } else {
-                sprPalette[i] = nes.palTable.getEntry(ppuMem.load(0x3f10 + i) & 32);
+                sprPalette[i] = nes->palTable.getEntry(ppuMem.load(0x3f10 + i) & 32);
             }
         }
 
@@ -1553,8 +1553,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Set VBlank flag:
         setStatusFlag(STATUS_VBLANK, true);
-        //nes.getCpu().doNonMaskableInterrupt();
-        nes.getCpu().requestIrq(CPU.IRQ_NMI);
+        //nes->getCpu().doNonMaskableInterrupt();
+        nes->getCpu().requestIrq(CPU.IRQ_NMI);
 
     }
 
@@ -1687,7 +1687,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
              */
             // Sprite data:
-            short[] sprmem = nes.getSprMemory().mem;
+            short[] sprmem = nes->getSprMemory().mem;
             for (int i = 0; i < sprmem.length; i++) {
                 spriteRamWriteUpdate(i, sprmem[i]);
             }
