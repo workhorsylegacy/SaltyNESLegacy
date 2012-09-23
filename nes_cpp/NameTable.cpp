@@ -24,26 +24,26 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         this->width = width;
         this->height = height;
 
-        tile = new short[width * height];
-        attrib = new short[width * height];
+        tile = new vector<short>(width * height);
+        attrib = new vector<short>(width * height);
 
     }
 
      short NameTable::getTileIndex(int x, int y) {
 
-        return tile[y * width + x];
+        return (*tile)[y * width + x];
 
     }
 
      short NameTable::getAttrib(int x, int y) {
 
-        return attrib[y * width + x];
+        return (*attrib)[y * width + x];
 
     }
 
      void NameTable::writeTileIndex(int index, int value) {
 
-        tile[index] = (short) value;
+        (*tile)[index] = (short) value;
 
     }
 
@@ -66,7 +66,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                         tx = basex + sqx * 2 + x;
                         ty = basey + sqy * 2 + y;
                         attindex = ty * width + tx;
-                        attrib[ty * width + tx] = (short) ((add << 2) & 12);
+                        (*attrib)[ty * width + tx] = (short) ((add << 2) & 12);
                     ////System.out.println("x="+tx+" y="+ty+" value="+attrib[ty*width+tx]+" index="+attindex);
                     }
                 }
@@ -78,13 +78,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void NameTable::stateSave(ByteBuffer* buf) {
 
         for (int i = 0; i < width * height; i++) {
-            if (tile[i] > 255)//System.out.println(">255!!");
+            if ((*tile)[i] > 255)//System.out.println(">255!!");
             {
-                buf.putByte((int8_t) tile[i]);
+                buf->putByte((int8_t) (*tile)[i]);
             }
         }
         for (int i = 0; i < width * height; i++) {
-            buf.putByte((int8_t) attrib[i]);
+            buf->putByte((int8_t) (*attrib)[i]);
         }
 
     }
@@ -92,10 +92,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void NameTable::stateLoad(ByteBuffer* buf) {
 
         for (int i = 0; i < width * height; i++) {
-            tile[i] = buf.readByte();
+            (*tile)[i] = buf->readByte();
         }
         for (int i = 0; i < width * height; i++) {
-            attrib[i] = buf.readByte();
+            (*attrib)[i] = buf->readByte();
         }
 
     }

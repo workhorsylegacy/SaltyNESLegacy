@@ -38,42 +38,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int r, g, b;
 
         try {
-
-            if (file.toLowerCase().endsWith("pal")) {
-
-                // Read binary palette file.
-                InputStream fStr = getClass().getResourceAsStream(file);
-                int8_t* tmp = new int8_t[64 * 3];
-
-                int n = 0;
-                while (n < 64) {
-                    n += fStr.read(tmp, n, tmp.length - n);
-                }
-
-                int[] tmpi = new int[64 * 3];
-                for (int i = 0; i < tmp.length; i++) {
-                    tmpi[i] = tmp[i] & 0xFF;
-                }
-
-                for (int i = 0; i < 64; i++) {
-                    r = tmpi[i * 3 + 0];
-                    g = tmpi[i * 3 + 1];
-                    b = tmpi[i * 3 + 2];
-                    origTable[i] = r | (g << 8) | (b << 16);
-                }
-
-            } else {
-
                 // Read text file with hex codes.
-                InputStream fStr = getClass().getResourceAsStream(file);
-                InputStreamReader isr = new InputStreamReader(fStr);
-                BufferedReader br = new BufferedReader(isr);
-
-                string line = br.readLine();
+                // Read binary palette file.
+                ifstream fStr;
+                fStr.open(file.c_str(), ios::in|ios::binary|ios::ate);
+				string line = "";
                 string hexR, hexG, hexB;
                 int palIndex = 0;
-                while (line != NULL) {
-
+                while (!fStr.eof()) {
+					getline(fStr, line);
                     if (line.startsWith("#")) {
 
                         hexR = line.substring(1, 3);
@@ -90,7 +63,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     }
                     line = br.readLine();
                 }
-            }
 
             setEmphasis(0);
             makeTables();
@@ -164,14 +136,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      int PaletteTable::RGBtoHSL(int r, int g, int b) {
 
-        float[] hsbvals = new float[3];
+        float* hsbvals = new float[3];
         hsbvals = Color.RGBtoHSB(b, g, r, hsbvals);
         hsbvals[0] -= Math.floor(hsbvals[0]);
 
         int ret = 0;
-        ret |= (((int) (hsbvals[0] * 255d)) << 16);
-        ret |= (((int) (hsbvals[1] * 255d)) << 8);
-        ret |= (((int) (hsbvals[2] * 255d)));
+        ret |= (((int) (hsbvals[0] * 255.0d)) << 16);
+        ret |= (((int) (hsbvals[1] * 255.0d)) << 8);
+        ret |= (((int) (hsbvals[2] * 255.0d)));
 
         return ret;
 
@@ -190,9 +162,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      int PaletteTable::HSLtoRGB(int hsl) {
 
         float h, s, l;
-        h = (float) (((hsl >> 16) & 0xFF) / 255d);
-        s = (float) (((hsl >> 8) & 0xFF) / 255d);
-        l = (float) (((hsl) & 0xFF) / 255d);
+        h = (float) (((hsl >> 16) & 0xFF) / 255.0d);
+        s = (float) (((hsl >> 8) & 0xFF) / 255.0d);
+        l = (float) (((hsl) & 0xFF) / 255.0d);
         return Color.HSBtoRGB(h, s, l);
 
     }
@@ -244,7 +216,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
             hsl = RGBtoHSL(emphTable[currentEmph][i]);
             h = getHue(hsl) + hueAdd;
-            s = (int) (getSaturation(hsl) * (1.0 + saturationAdd / 256f));
+            s = (int) (getSaturation(hsl) * (1.0 + saturationAdd / 256.0f));
             l = getLightness(hsl);
 
             if (h < 0) {
@@ -273,9 +245,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             g = getGreen(rgb);
             b = getBlue(rgb);
 
-            r = 128 + lightnessAdd + (int) ((r - 128) * (1.0 + contrastAdd / 256f));
-            g = 128 + lightnessAdd + (int) ((g - 128) * (1.0 + contrastAdd / 256f));
-            b = 128 + lightnessAdd + (int) ((b - 128) * (1.0 + contrastAdd / 256f));
+            r = 128 + lightnessAdd + (int) ((r - 128) * (1.0 + contrastAdd / 256.0f));
+            g = 128 + lightnessAdd + (int) ((g - 128) * (1.0 + contrastAdd / 256.0f));
+            b = 128 + lightnessAdd + (int) ((b - 128) * (1.0 + contrastAdd / 256.0f));
 
             if (r < 0) {
                 r = 0;

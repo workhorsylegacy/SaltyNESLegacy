@@ -116,7 +116,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         defineMirrorRegion(0x3000, 0x2000, 0xf00);
         defineMirrorRegion(0x4000, 0x0000, 0x4000);
 
-        if (mirroring == ROM.HORIZONTAL_MIRRORING) {
+        if (mirroring == ROM::HORIZONTAL_MIRRORING) {
 
 
             // Horizontal mirroring.
@@ -129,7 +129,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             defineMirrorRegion(0x2400, 0x2000, 0x400);
             defineMirrorRegion(0x2c00, 0x2800, 0x400);
 
-        } else if (mirroring == ROM.VERTICAL_MIRRORING) {
+        } else if (mirroring == ROM::VERTICAL_MIRRORING) {
 
             // Vertical mirroring.
 
@@ -141,7 +141,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             defineMirrorRegion(0x2800, 0x2000, 0x400);
             defineMirrorRegion(0x2c00, 0x2400, 0x400);
 
-        } else if (mirroring == ROM.SINGLESCREEN_MIRRORING) {
+        } else if (mirroring == ROM::SINGLESCREEN_MIRRORING) {
 
             // Single Screen mirroring
 
@@ -154,7 +154,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             defineMirrorRegion(0x2800, 0x2000, 0x400);
             defineMirrorRegion(0x2c00, 0x2000, 0x400);
 
-        } else if (mirroring == ROM.SINGLESCREEN_MIRRORING2) {
+        } else if (mirroring == ROM::SINGLESCREEN_MIRRORING2) {
 
 
             ntable1[0] = 1;
@@ -235,7 +235,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Do NMI:
-        nes->getCpu().requestIrq(CPU.IRQ_NMI);
+        nes->getCpu().requestIrq(CPU::IRQ_NMI);
 
         // Make sure everything is rendered:
         if (lastRenderedScanline < 239) {
@@ -364,7 +364,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::startFrame() {
 
-        int[] buffer = nes->getGui().getScreenView().getBuffer();
+        int* buffer = nes->getGui().getScreenView().getBuffer();
 
         // Set background color:
         int bgColor = 0;
@@ -422,7 +422,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::endFrame() {
 
-        int[] buffer = nes->getGui().getScreenView().getBuffer();
+        int* buffer = nes->getGui().getScreenView().getBuffer();
 
         // Draw spr#0 hit coordinates:
         if (showSpr0Hit) {
@@ -1276,7 +1276,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void PPU::renderPattern() {
 
         BufferView* scr = nes->getGui().getPatternView();
-        int[] buffer = scr.getBuffer();
+        int* buffer = scr.getBuffer();
 
         int tIndex = 0;
         for (int j = 0; j < 2; j++) {
@@ -1293,7 +1293,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::renderNameTables() {
 
-        int[] buffer = nes->getGui().getNameTableView().getBuffer();
+        int* buffer = nes->getGui().getNameTableView().getBuffer();
         if (f_bgPatternTable == 0) {
             baseTile = 0;
         } else {
@@ -1303,9 +1303,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int ntx_max = 2;
         int nty_max = 2;
 
-        if (currentMirroring == ROM.HORIZONTAL_MIRRORING) {
+        if (currentMirroring == ROM::HORIZONTAL_MIRRORING) {
             ntx_max = 1;
-        } else if (currentMirroring == ROM.VERTICAL_MIRRORING) {
+        } else if (currentMirroring == ROM::VERTICAL_MIRRORING) {
             nty_max = 1;
         }
 
@@ -1327,14 +1327,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        if (currentMirroring == ROM.HORIZONTAL_MIRRORING) {
+        if (currentMirroring == ROM::HORIZONTAL_MIRRORING) {
             // double horizontally:
             for (int y = 0; y < 240; y++) {
                 for (int x = 0; x < 128; x++) {
                     buffer[(y << 8) + 128 + x] = buffer[(y << 8) + x];
                 }
             }
-        } else if (currentMirroring == ROM.VERTICAL_MIRRORING) {
+        } else if (currentMirroring == ROM::VERTICAL_MIRRORING) {
             // double vertically:
             for (int y = 0; y < 120; y++) {
                 for (int x = 0; x < 256; x++) {
@@ -1349,7 +1349,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::renderPalettes() {
 
-        int[] buffer = nes->getGui().getImgPalView().getBuffer();
+        int* buffer = nes->getGui().getImgPalView().getBuffer();
         for (int i = 0; i < 16; i++) {
             for (int y = 0; y < 16; y++) {
                 for (int x = 0; x < 16; x++) {
@@ -1462,7 +1462,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     void PPU::patternWrite(int address, short* value, int offset, int length) {
+     void PPU::patternWrite(int address, vector<short>* value, int offset, int length) {
 
         int tileIndex;
         int leftOver;
@@ -1554,7 +1554,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // Set VBlank flag:
         setStatusFlag(STATUS_VBLANK, true);
         //nes->getCpu().doNonMaskableInterrupt();
-        nes->getCpu().requestIrq(CPU.IRQ_NMI);
+        nes->getCpu().requestIrq(CPU::IRQ_NMI);
 
     }
 
@@ -1679,7 +1679,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
 
             // Update internally stored stuff from VRAM memory:
-			/*short[] mem = ppuMem.mem;
+			/*vector<short>* mem = ppuMem.mem;
 
             // Palettes:
             for(int i=0x3f00;i<0x3f20;i++){
@@ -1687,7 +1687,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
              */
             // Sprite data:
-            short[] sprmem = nes->getSprMemory().mem;
+            vector<short>* sprmem = nes->getSprMemory().mem;
             for (int i = 0; i < sprmem.length; i++) {
                 spriteRamWriteUpdate(i, sprmem[i]);
             }

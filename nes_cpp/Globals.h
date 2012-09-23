@@ -28,11 +28,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <string>
+#include <algorithm>
 #include <sys/time.h>
 #define _USE_MATH_DEFINES
 #include "math.h"
 
 using namespace std;
+
 
 // Temp stub classes
 class Point {
@@ -47,7 +49,20 @@ public:
 };
 class Image {};
 class Graphics {};
-class File {};
+class File {
+public:
+	File(string file_name) {
+	}
+};
+class FileWriter {
+public:
+	FileWriter(File* file) {
+	}
+	void write(char* data) {
+	}
+	void close() {
+	}
+};
 class RandomAccessFile {};
 class BufferedImage {};
 class VolatileImage {};
@@ -121,7 +136,7 @@ class vNES;
 class IMemoryMapper {
 public:
      virtual void init(NES* nes) = 0;
-     virtual void loadROM(ROM rom) = 0;
+     virtual void loadROM(ROM* rom) = 0;
      virtual void write(int address, short value) = 0;
      virtual short load(int address) = 0;
      virtual short joy1Read() = 0;
@@ -350,8 +365,8 @@ public:
     bool putByteArray(vector<short>* arr);
     bool readByteArray(vector<short>* arr);
     bool putShortArray(vector<short>* arr);
-    string* toString();
-    string* toStringAscii();
+    string toString();
+    string toStringAscii();
     bool readBoolean();
     bool readBoolean(int pos);
     short readByte();
@@ -364,14 +379,14 @@ public:
     char readChar(int pos);
     char readCharAscii();
     char readCharAscii(int pos);
-    string* readString(int length);
-    string* readString(int pos, int length);
-    string* readStringWithShortLength();
-    string* readStringWithShortLength(int pos);
-    string* readStringAscii(int length);
-    string* readStringAscii(int pos, int length);
-    string* readStringAsciiWithShortLength();
-    string* readStringAsciiWithShortLength(int pos);
+    string readString(int length);
+    string readString(int pos, int length);
+    string readStringWithShortLength();
+    string readStringWithShortLength(int pos);
+    string readStringAscii(int length);
+    string readStringAscii(int pos, int length);
+    string readStringAsciiWithShortLength();
+    string readStringAsciiWithShortLength(int pos);
     vector<short>* expandShortArray(vector<short>* array, int size);
     void crop();
     static ByteBuffer* asciiEncode(ByteBuffer* buf);
@@ -542,7 +557,7 @@ public:
 	// References to other parts of NES :
 	 NES* nes;
 	 IMemoryMapper* mmap;
-	 short* mem;
+	 vector<short>* mem;
 
 	// CPU Registers:
 	 int REG_ACC_NEW;
@@ -751,7 +766,7 @@ public:
 
 class Memory {
 public:
-	short* mem;
+	vector<short>* mem;
 	int memLength;
 	NES* nes;
 
@@ -764,8 +779,8 @@ public:
 	 short load(int address);
 	 void dump(string file);
 	 void dump(string file, int offset, int length);
-	 void write(int address, short* array, int length);
-	 void write(int address, short* array, int arrayoffset, int length);
+	 void write(int address, vector<short>* array, int length);
+	 void write(int address, vector<short>* array, int arrayoffset, int length);
 	 void destroy();
 };
 
@@ -774,7 +789,7 @@ public:
      NES* nes;
      Memory* cpuMem;
      Memory* ppuMem;
-     short* cpuMemArray;
+     vector<short>* cpuMemArray;
      ROM* rom;
      CPU* cpu;
      PPU* ppu;
@@ -852,7 +867,7 @@ public:
      void write(int address, short value);
      void setReg(int reg, int value);
      int getRegNumber(int address);
-     void loadROM(ROM rom);
+     void loadROM(ROM* rom);
      void reset();
      void switchLowHighPrgRom(int oldSetting);
      void switch16to32();
@@ -862,18 +877,18 @@ public:
 class Misc {
 public:
      static bool debug;
-     static float* _rnd;
+     static vector<float>* _rnd;
      static int nextRnd;
      static float rndret;
 
-	 static float* rnd();
+	 static vector<float>* rnd();
      static string hex8(int i);
      static string hex16(int i);
      static string binN(int num, int N);
      static string bin8(int num);
      static string bin16(int num);
      static string binStr(long value, int bitcount);
-     static int* resizeArray(int* array, int newSize);
+     static vector<int>* resizeArray(vector<int>* array, int newSize);
      static string pad(string str, string padStr, int length);
      static float random();
 };
@@ -881,8 +896,8 @@ public:
 class NameTable {
 public:
     string name;
-    short* tile;
-    short* attrib;
+    vector<short>* tile;
+    vector<short>* attrib;
     int width;
     int height;
 
@@ -1163,7 +1178,7 @@ public:
     bool hitSpr0;
 
     // Tiles:
-     Tile* ptTile;
+     vector<Tile>* ptTile;
     // Name table data:
     int ntable1[4];
     NameTable* nameTable;
@@ -1250,7 +1265,7 @@ public:
      void writeMem(int address, short value);
      void updatePalettes();
      void patternWrite(int address, short value);
-     void patternWrite(int address, short* value, int offset, int length);
+     void patternWrite(int address, vector<short>* value, int offset, int length);
      void invalidateFrameCache();
      void nameTableWrite(int index, int address, short value);
      void attribTableWrite(int index, int address, short value);
@@ -1272,7 +1287,7 @@ public:
 
      Raster(int* data, int w, int h);
      Raster(int w, int h);
-     void drawTile(Raster srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h);
+     void drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h);
 };
 
 class ROM {
@@ -1288,11 +1303,11 @@ public:
      static const int CHRROM_MIRRORING = 7;
     bool failedSaveFile;
     bool saveRamUpToDate;
-    short* header;
-    short** rom;
-    short** vrom;
-    short* saveRam;
-    Tile** vromTile;
+    vector<short>* header;
+    vector<short>** rom;
+    vector<short>** vrom;
+    vector<short>* saveRam;
+    vector<vector<Tile>*>* vromTile;
     NES* nes;
     int romCount;
     int vromCount;
@@ -1305,20 +1320,20 @@ public:
     RandomAccessFile* raFile;
     bool enableSave;
     bool valid;
-    static string* _mapperName;
+    static string _mapperName;
     static bool* _mapperSupported;
 
      ROM(NES* nes);
-     static string* getmapperName();
+     static string getmapperName();
      static bool* getmapperSupported();
      void load(string fileName);
      bool isValid();
      int getRomBankCount();
      int getVromBankCount();
-     short* getHeader();
-     short* getRomBank(int bank);
-     short* getVromBank(int bank);
-     Tile* getVromBankTiles(int bank);
+     vector<short>* getHeader();
+     vector<short>* getRomBank(int bank);
+     vector<short>* getVromBank(int bank);
+     vector<Tile>* getVromBankTiles(int bank);
      int getMirroringType();
      int getMapperType();
      string getMapperName();
@@ -1328,7 +1343,7 @@ public:
      bool mapperSupported();
      IMemoryMapper* createMapper();
      void setSaveState(bool enableSave);
-     short* getBatteryRam();
+     vector<short>* getBatteryRam();
      void loadBatteryRam();
      void writeBatteryRam(int address, short value);
      void closeRom();
@@ -1385,7 +1400,7 @@ public:
      bool opaque[8];
 
      Tile();
-     void setBuffer(short* scanline);
+     void setBuffer(vector<short>* scanline);
      void setScanline(int sline, short b1, short b2);
      void renderSimple(int dx, int dy, int* fBuffer, int palAdd, int* palette);
      void renderSmall(int dx, int dy, int* buffer, int palAdd, int* palette);
@@ -1432,5 +1447,56 @@ public:
     int getHeight();
 };
 
+void arraycopy_short(vector<short>* src, int srcPos, vector<short>* dest, int destPos, int length) {
+	dest->resize(length);
+	for(int i=srcPos; i<length; i++) {
+		(*dest)[destPos + i] = (*src)[i];
+	}
+}
+
+void arraycopy_Tile(vector<Tile>* src, int srcPos, vector<Tile>* dest, int destPos, int length) {
+	dest->resize(length);
+	for(int i=srcPos; i<length; i++) {
+		(*dest)[destPos + i] = (*src)[i];
+	}
+}
+
+void arraycopy_int(vector<int>* src, int srcPos, vector<int>* dest, int destPos, int length) {
+	dest->resize(length);
+	for(int i=srcPos; i<length; i++) {
+		(*dest)[destPos + i] = (*src)[i];
+	}
+}
+
+string intToHexString(int i) {
+    stringstream ss;
+    ss << std::hex << std::showbase << i;
+    return ss.str();
+}
+
+
+string toUpperCase(string s) {
+	std::transform(s.begin(), s.end(), s.begin(), (int (*)(int))std::toupper);
+	return s;
+}
+
+string toLowerCase(string s) {
+	std::transform(s.begin(), s.end(), s.begin(), (int (*)(int))std::tolower);
+	return s;
+}
+
+bool endsWith(string str, string key) {
+	size_t keylen = key.length();
+	size_t strlen = str.length();
+	
+	if(keylen <= strlen)
+	    return string::npos != str.rfind(key);
+	else
+		return false;
+}
+
+float rand_float() {
+	return ((float) rand() / (RAND_MAX));
+}
 #endif
 

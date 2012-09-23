@@ -29,16 +29,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         height = h;
     }
 
-     void Raster::drawTile(Raster srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h) {
+     void Raster::drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h) {
 
-        int[] src = srcRaster.data;
+        int* src = srcRaster->data;
         int src_index;
         int dst_index;
         int tmp;
 
         for (int y = 0; y < h; y++) {
 
-            src_index = (srcy + y) * srcRaster.width + srcx;
+            src_index = (srcy + y) * srcRaster->width + srcx;
             dst_index = (dsty + y) * width + dstx;
 
             for (int x = 0; x < w; x++) {

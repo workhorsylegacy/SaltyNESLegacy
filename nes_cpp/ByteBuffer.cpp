@@ -402,26 +402,22 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return true;
     }
 
-    string* ByteBuffer::toString() {
+    string ByteBuffer::toString() {
         char* strBuf = new char(size-1);
         short tmp;
         for (int i = 0; i < (size - 1); i += 2) {
             tmp = (short) (((*buf)[i] << 8) | ((*buf)[i + 1]));
             strBuf[i] = (char) tmp;
         }
-        string* retval = new string(strBuf);
-        delete strBuf;
-        return retval;
+        return string(strBuf);
     }
 
-    string* ByteBuffer::toStringAscii() {
+    string ByteBuffer::toStringAscii() {
         char* strBuf = new char(size-1);
         for (int i = 0; i < size; i++) {
             strBuf[i] = (char) ((*buf)[i]);
         }
-        string* retval = new string(strBuf);
-        delete strBuf;
-        return retval;
+        return string(strBuf);
     }
 
     bool ByteBuffer::readBoolean() {
@@ -525,82 +521,82 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-    string* ByteBuffer::readString(int length) {
+    string ByteBuffer::readString(int length) {
         if (length > 0) {
-            string* ret = readString(curPos, length);
-            move(ret->length() * 2);
+            string ret = readString(curPos, length);
+            move(ret.length() * 2);
             return ret;
         } else {
-            return new string("");
+            return string("");
         }
     }
 
-    string* ByteBuffer::readString(int pos, int length) {
+    string ByteBuffer::readString(int pos, int length) {
         char* tmp;
         if (inRange(pos, length * 2) && length > 0) {
             tmp = new char[length];
             for (int i = 0; i < length; i++) {
                 tmp[i] = readChar(pos + i * 2);
             }
-            return new string(tmp);
+            return string(tmp);
         } else {
             throw "ArrayIndexOutOfBoundsException";
         }
     }
 
-    string* ByteBuffer::readStringWithShortLength() {
-        string* ret = readStringWithShortLength(curPos);
-        move(ret->length() * 2 + 2);
+    string ByteBuffer::readStringWithShortLength() {
+        string ret = readStringWithShortLength(curPos);
+        move(ret.length() * 2 + 2);
         return ret;
     }
 
-    string* ByteBuffer::readStringWithShortLength(int pos) {
+    string ByteBuffer::readStringWithShortLength(int pos) {
         short len;
         if (inRange(pos, 2)) {
             len = readShort(pos);
             if (len > 0) {
                 return readString(pos + 2, len);
             } else {
-                return new string("");
+                return string("");
             }
         } else {
             throw "ArrayIndexOutOfBoundsException";
         }
     }
 
-    string* ByteBuffer::readStringAscii(int length) {
-        string* ret = readStringAscii(curPos, length);
-        move(ret->length());
+    string ByteBuffer::readStringAscii(int length) {
+        string ret = readStringAscii(curPos, length);
+        move(ret.length());
         return ret;
     }
 
-    string* ByteBuffer::readStringAscii(int pos, int length) {
+    string ByteBuffer::readStringAscii(int pos, int length) {
         char* tmp;
         if (inRange(pos, length) && length > 0) {
             tmp = new char[length];
             for (int i = 0; i < length; i++) {
                 tmp[i] = readCharAscii(pos + i);
             }
-            return new string(tmp);
+            return string(tmp);
         } else {
             throw "ArrayIndexOutOfBoundsException";
         }
     }
 
-    string* ByteBuffer::readStringAsciiWithShortLength() {
-        string* ret = readStringAsciiWithShortLength(curPos);
-        move(ret->length() + 2);
+    string ByteBuffer::readStringAsciiWithShortLength() {
+        string ret = readStringAsciiWithShortLength(curPos);
+        move(ret.length() + 2);
         return ret;
     }
 
-    string* ByteBuffer::readStringAsciiWithShortLength(int pos) {
+    string ByteBuffer::readStringAsciiWithShortLength(int pos) {
         short len;
         if (inRange(pos, 2)) {
             len = readShort(pos);
             if (len > 0) {
                 return readStringAscii(pos + 2, len);
             } else {
-                return new string("");
+                return string("");
             }
         } else {
             throw "ArrayIndexOutOfBoundsException";

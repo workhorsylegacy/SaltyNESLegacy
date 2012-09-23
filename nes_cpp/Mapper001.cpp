@@ -285,18 +285,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void Mapper001::loadROM(ROM rom) {
+     void Mapper001::loadROM(ROM* rom) {
 
         //System.out.println("Loading ROM.");
 
-        if (!rom.isValid()) {
+        if (!rom->isValid()) {
             //System.out.println("MMC1: Invalid ROM! Unable to load.");
             return;
         }
 
         // Load PRG-ROM:
         loadRomBank(0, 0x8000);				//   First ROM bank..
-        loadRomBank(rom.getRomBankCount() - 1, 0xC000); 	// ..and last ROM bank.
+        loadRomBank(rom->getRomBankCount() - 1, 0xC000); 	// ..and last ROM bank.
 
         // Load CHR-ROM:
         loadCHRROM();

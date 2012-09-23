@@ -41,7 +41,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     void vNES::addScreenView() {
 
-        panelScreen = (ScreenView) gui.getScreenView();
+        panelScreen = (ScreenView*) gui->getScreenView();
         panelScreen.setFPSEnabled(fps);
 
         this->setLayout(NULL);
@@ -49,9 +49,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (scale) {
 
             if (scanlines) {
-                panelScreen.setScaleMode(BufferView.SCALE_SCANLINE);
+                panelScreen.setScaleMode(BufferView::SCALE_SCANLINE);
             } else {
-                panelScreen.setScaleMode(BufferView.SCALE_NORMAL);
+                panelScreen.setScaleMode(BufferView::SCALE_NORMAL);
             }
 
             this->setSize(512, 480);

@@ -45,14 +45,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Load NTSC palette:
-        if (!palTable.loadNTSCPalette()) {
+        if (!palTable->loadNTSCPalette()) {
             //System.out.println("Unable to load palette file. Using default.");
-            palTable.loadDefaultPalette();
+            palTable->loadDefaultPalette();
         }
 
         // Initialize units:
-        cpu.init();
-        ppu.init();
+        cpu->init();
+        ppu->init();
 
         // Enable sound:
         enableSound(true);
@@ -68,21 +68,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         bool success;
 
         // Pause emulation:
-        if (cpu.isRunning()) {
+        if (cpu->isRunning()) {
             continueEmulation = true;
             stopEmulation();
         }
 
         // Check version:
-        if (buf.readByte() == 1) {
+        if (buf->readByte() == 1) {
 
             // Let units load their state from the buffer:
-            cpuMem.stateLoad(buf);
-            ppuMem.stateLoad(buf);
-            sprMem.stateLoad(buf);
-            cpu.stateLoad(buf);
-            memMapper.stateLoad(buf);
-            ppu.stateLoad(buf);
+            cpuMem->stateLoad(buf);
+            ppuMem->stateLoad(buf);
+            sprMem->stateLoad(buf);
+            cpu->stateLoad(buf);
+            memMapper->stateLoad(buf);
+            ppu->stateLoad(buf);
             success = true;
 
         } else {
@@ -103,19 +103,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void NES::stateSave(ByteBuffer* buf) {
 
-        bool continueEmulation = _isRunning();
+        bool continueEmulation = isRunning();
         stopEmulation();
 
         // Version:
-        buf.putByte((short) 1);
+        buf->putByte((short) 1);
 
         // Let units save their state:
-        cpuMem.stateSave(buf);
-        ppuMem.stateSave(buf);
-        sprMem.stateSave(buf);
-        cpu.stateSave(buf);
-        memMapper.stateSave(buf);
-        ppu.stateSave(buf);
+        cpuMem->stateSave(buf);
+        ppuMem->stateSave(buf);
+        sprMem->stateSave(buf);
+        cpu->stateSave(buf);
+        memMapper->stateSave(buf);
+        ppu->stateSave(buf);
 
         // Continue emulation:
         if (continueEmulation) {
@@ -136,16 +136,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             papu->start();
         }
         {
-            if (rom != NULL && rom.isValid() && !cpu.isRunning()) {
-                cpu.beginExecution();
+            if (rom != NULL && rom->isValid() && !cpu->isRunning()) {
+                cpu->beginExecution();
                 _isRunning = true;
             }
         }
     }
 
      void NES::stopEmulation() {
-        if (cpu.isRunning()) {
-            cpu.endExecution();
+        if (cpu->isRunning()) {
+            cpu->endExecution();
             _isRunning = false;
         }
 
@@ -156,7 +156,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void NES::reloadRom() {
 
-        if (romFile != NULL) {
+        if (romFile.empty()) {
             loadRom(romFile);
         }
 
@@ -166,31 +166,31 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         short flushval = Globals::memoryFlushValue;
         for (int i = 0; i < 0x2000; i++) {
-            cpuMem.mem[i] = flushval;
+            (*cpuMem->mem)[i] = flushval;
         }
         for (int p = 0; p < 4; p++) {
             int i = p * 0x800;
-            cpuMem.mem[i + 0x008] = 0xF7;
-            cpuMem.mem[i + 0x009] = 0xEF;
-            cpuMem.mem[i + 0x00A] = 0xDF;
-            cpuMem.mem[i + 0x00F] = 0xBF;
+            (*cpuMem->mem)[i + 0x008] = 0xF7;
+            (*cpuMem->mem)[i + 0x009] = 0xEF;
+            (*cpuMem->mem)[i + 0x00A] = 0xDF;
+            (*cpuMem->mem)[i + 0x00F] = 0xBF;
         }
 
     }
 
      void NES::setGameGenieState(bool enable) {
         if (memMapper != NULL) {
-            memMapper.setGameGenieState(enable);
+            memMapper->setGameGenieState(enable);
         }
     }
 
     // Returns CPU object.
-     CPU NES::getCpu() {
+     CPU* NES::getCpu() {
         return cpu;
     }
 
     // Returns PPU object.
-     PPU NES::getPpu() {
+     PPU* NES::getPpu() {
         return ppu;
     }
 
@@ -215,12 +215,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     // Returns the currently loaded ROM.
-     ROM NES::getRom() {
+     ROM* NES::getRom() {
         return rom;
     }
 
     // Returns the GUI.
-     UI NES::getGui() {
+     AppletUI* NES::getGui() {
         return gui;
     }
 
@@ -242,8 +242,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Load ROM file:
 
             rom = new ROM(this);
-            rom.load(file);
-            if (rom.isValid()) {
+            rom->load(file);
+            if (rom->isValid()) {
 
                 // The CPU will load
                 // the ROM into the CPU
@@ -251,16 +251,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                 reset();
 
-                memMapper = rom.createMapper();
-                memMapper.init(this);
-                cpu.setMapper(memMapper);
-                memMapper.loadROM(rom);
-                ppu.setMirroring(rom.getMirroringType());
+                memMapper = rom->createMapper();
+                memMapper->init(this);
+                cpu->setMapper(memMapper);
+                memMapper->loadROM(rom);
+                ppu->setMirroring(rom->getMirroringType());
 
                 this->romFile = file;
 
             }
-            return rom.isValid();
+            return rom->isValid();
         }
 
     }
@@ -269,27 +269,27 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void NES::reset() {
 
         if (rom != NULL) {
-            rom.closeRom();
+            rom->closeRom();
         }
         if (memMapper != NULL) {
-            memMapper.reset();
+            memMapper->reset();
         }
 
-        cpuMem.reset();
-        ppuMem.reset();
-        sprMem.reset();
+        cpuMem->reset();
+        ppuMem->reset();
+        sprMem->reset();
 
         clearCPUMemory();
 
-        cpu.reset();
-        cpu.init();
-        ppu.reset();
-        palTable.reset();
+        cpu->reset();
+        cpu->init();
+        ppu->reset();
+        palTable->reset();
         papu->reset();
 
-        KbInputHandler* joy1 = gui.getJoy1();
+        KbInputHandler* joy1 = gui->getJoy1();
         if (joy1 != NULL) {
-            joy1.reset();
+            joy1->reset();
         }
 
     }
@@ -328,28 +328,28 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void NES::destroy() {
 
         if (cpu != NULL) {
-            cpu.destroy();
+            cpu->destroy();
         }
         if (ppu != NULL) {
-            ppu.destroy();
+            ppu->destroy();
         }
         if (papu != NULL) {
             papu->destroy();
         }
         if (cpuMem != NULL) {
-            cpuMem.destroy();
+            cpuMem->destroy();
         }
         if (ppuMem != NULL) {
-            ppuMem.destroy();
+            ppuMem->destroy();
         }
         if (sprMem != NULL) {
-            sprMem.destroy();
+            sprMem->destroy();
         }
         if (memMapper != NULL) {
-            memMapper.destroy();
+            memMapper->destroy();
         }
         if (rom != NULL) {
-            rom.destroy();
+            rom->destroy();
         }
 
         gui = NULL;

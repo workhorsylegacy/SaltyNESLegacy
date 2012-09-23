@@ -405,7 +405,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Frame IRQ handling:
         if (frameIrqEnabled && frameIrqActive) {
-            nes->cpu.requestIrq(CPU.IRQ_NORMAL);
+            nes->cpu.requestIrq(CPU::IRQ_NORMAL);
         }
 
         // Clock frame counter at double CPU speed:

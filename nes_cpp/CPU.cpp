@@ -408,7 +408,7 @@ extern "C" {
 
 					addr = load16bit(opaddr+2);// Find op
 					if(addr < 0x1FFF){
-						addr = mem[addr] + (mem[(addr&0xFF00)|(((addr&0xFF)+1)&0xFF)]<<8);// Read from address given in op
+						addr = (*mem)[addr] + ((*mem)[(addr&0xFF00)|(((addr&0xFF)+1)&0xFF)]<<8);// Read from address given in op
 					}else{
 						addr = mmap->load(addr)+(mmap->load((addr&0xFF00)|(((addr&0xFF)+1)&0xFF))<<8);
 					}
@@ -1278,12 +1278,12 @@ extern "C" {
 	}
 
 	 int CPU::load(int addr){
-		return addr<0x2000 ? mem[addr&0x7FF] : mmap->load(addr);
+		return addr<0x2000 ? (*mem)[addr&0x7FF] : mmap->load(addr);
 	}
 	
 	 int CPU::load16bit(int addr){
 		return addr<0x1FFF ?
-			mem[addr&0x7FF] | (mem[(addr+1)&0x7FF]<<8)
+			(*mem)[addr&0x7FF] | ((*mem)[(addr+1)&0x7FF]<<8)
 			:
 			mmap->load(addr) | (mmap->load(addr+1)<<8)
 			;
@@ -1291,7 +1291,7 @@ extern "C" {
 	
 	 void CPU::write(int addr, short val){
 		if(addr < 0x2000){
-			mem[addr&0x7FF] = val;
+			(*mem)[addr&0x7FF] = val;
 		}else{
 			mmap->write(addr,val);
 		}

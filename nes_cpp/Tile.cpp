@@ -23,7 +23,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         this->initialized = false;
     }
 
-     void Tile::setBuffer(short* scanline) {
+     void Tile::setBuffer(vector<short>* scanline) {
         for (y = 0; y < 8; y++) {
             setScanline(y, scanline[y], scanline[y + 8]);
         }

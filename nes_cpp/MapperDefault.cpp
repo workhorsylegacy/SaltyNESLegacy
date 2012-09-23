@@ -93,11 +93,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (address < 0x2000) {
 
             // Mirroring of RAM:
-            cpuMem->mem[address & 0x7FF] = value;
+            (*cpuMem->mem)[address & 0x7FF] = value;
 
         } else if (address > 0x4017) {
 
-            cpuMem->mem[address] = value;
+            (*cpuMem->mem)[address] = value;
             if (address >= 0x6000 && address < 0x8000) {
 
                 // Write to SaveRAM. Store in file:
@@ -123,10 +123,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (address < 0x2000) {
             // Mirroring of RAM:
-            cpuMem->mem[address & 0x7FF] = value;
+            (*cpuMem->mem)[address & 0x7FF] = value;
 
         } else if (address > 0x4017) {
-            cpuMem->mem[address] = value;
+            (*cpuMem->mem)[address] = value;
 
         } else if (address > 0x2007 && address < 0x4000) {
             regWrite(0x2000 + (address & 0x7), value);
@@ -146,7 +146,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (address > 0x4017) {
 
             // ROM:
-            return cpuMemArray[address];
+            return (*cpuMemArray)[address];
 
         } else if (address >= 0x2000) {
 
@@ -156,7 +156,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
 
             // RAM (mirrored)
-            return cpuMemArray[address & 0x7FF];
+            return (*cpuMemArray)[address & 0x7FF];
 
         }
 
@@ -187,7 +187,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                         // in main memory and in the
                         // PPU as flags):
                         // (not in the real NES)
-                        return cpuMem->mem[0x2000];
+                        return (*cpuMem->mem)[0x2000];
 
                     }
                     case 0x1: {
@@ -198,7 +198,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                         // in main memory and in the
                         // PPU as flags):
                         // (not in the real NES)
-                        return cpuMem->mem[0x2001];
+                        return (*cpuMem->mem)[0x2001];
 
                     }
                     case 0x2: {
@@ -560,12 +560,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (rom->batteryRam) {
 
-            short* ram = rom->getBatteryRam();
-            if (ram != NULL && ram->length == 0x2000) {
-
-                // Load Battery RAM into memory:
-                System.arraycopy(ram, 0, nes->cpuMem->mem, 0x6000, 0x2000);
-
+            vector<short>* ram = rom->getBatteryRam();
+            if (ram != NULL && ram->size() == 0x2000) {
+                arraycopy_short(ram, 0, nes->cpuMem->mem, 0x6000, 0x2000);
             }
 
         }
@@ -576,9 +573,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Loads a ROM bank into the specified address.
         bank %= rom->getRomBankCount();
-        short[] data = rom->getRomBank(bank);
+        vector<short>* data = rom->getRomBank(bank);
         //cpuMem->write(address,data,data.length);
-        System.arraycopy(rom->getRomBank(bank), 0, cpuMem->mem, address, 16384);
+        arraycopy_short(rom->getRomBank(bank), 0, cpuMem->mem, address, 16384);
 
     }
 
@@ -589,10 +586,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         ppu->triggerRendering();
 
-        System.arraycopy(rom->getVromBank(bank % rom->getVromBankCount()), 0, nes->ppuMem.mem, address, 4096);
+        arraycopy_short(rom->getVromBank(bank % rom->getVromBankCount()), 0, nes->ppuMem->mem, address, 4096);
 
-        Tile[] vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
-        System.arraycopy(vromTile, 0, ppu->ptTile, address >> 4, 256);
+        vector<Tile>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
+        arraycopy_Tile(vromTile, 0, ppu->ptTile, address >> 4, 256);
 
     }
 
@@ -624,10 +621,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         int bank4k = (bank1k / 4) % rom->getVromBankCount();
         int bankoffset = (bank1k % 4) * 1024;
-        System.arraycopy(rom->getVromBank(bank4k), 0, nes->ppuMem.mem, bankoffset, 1024);
+        arraycopy_short(rom->getVromBank(bank4k), 0, nes->ppuMem->mem, bankoffset, 1024);
 
         // Update tiles:
-        Tile[] vromTile = rom->getVromBankTiles(bank4k);
+        vector<Tile>* vromTile = rom->getVromBankTiles(bank4k);
         int baseIndex = address >> 4;
         for (int i = 0; i < 64; i++) {
             ppu->ptTile[baseIndex + i] = vromTile[((bank1k % 4) << 6) + i];
@@ -644,10 +641,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         int bank4k = (bank2k / 2) % rom->getVromBankCount();
         int bankoffset = (bank2k % 2) * 2048;
-        System.arraycopy(rom->getVromBank(bank4k), bankoffset, nes->ppuMem.mem, address, 2048);
+        arraycopy_short(rom->getVromBank(bank4k), bankoffset, nes->ppuMem->mem, address, 2048);
 
         // Update tiles:
-        Tile[] vromTile = rom->getVromBankTiles(bank4k);
+        vector<Tile>* vromTile = rom->getVromBankTiles(bank4k);
         int baseIndex = address >> 4;
         for (int i = 0; i < 128; i++) {
             ppu->ptTile[baseIndex + i] = vromTile[((bank2k % 2) << 7) + i];
@@ -660,7 +657,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int bank16k = (bank8k / 2) % rom->getRomBankCount();
         int offset = (bank8k % 2) * 8192;
 
-        short[] bank = rom->getRomBank(bank16k);
+        vector<short>* bank = rom->getRomBank(bank16k);
         cpuMem->write(address, bank, offset, 8192);
 
     }

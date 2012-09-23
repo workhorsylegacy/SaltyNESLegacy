@@ -5,25 +5,25 @@
 
 	 Memory::Memory(NES* nes, int byteCount){
 		this->nes = nes;
-		mem = new short[byteCount];
+		mem = new vector<short>(byteCount);
 		memLength = byteCount;
 	}
 	
 	 void Memory::stateLoad(ByteBuffer* buf){
 		
-		if(mem==NULL)mem=new short[memLength];
-		buf.readByteArray(mem);
+		if(mem==NULL)mem=new vector<short>(memLength);
+		buf->readByteArray(mem);
 		
 	}
 	
 	 void Memory::stateSave(ByteBuffer* buf){
 		
-		buf.putByteArray(mem);
+		buf->putByteArray(mem);
 		
 	}
 	
 	 void Memory::reset(){
-		for(int i=0;i<mem.length;i++)mem[i] = 0;
+		for(int i=0;i<mem->size();i++)(*mem)[i] = 0;
 	}
 	
 	 int Memory::getMemSize(){
@@ -31,50 +31,50 @@
 	}
 	
 	 void Memory::write(int address, short value){
-		mem[address] = value;
+		(*mem)[address] = value;
 	}
 	
 	 short Memory::load(int address){
-		return mem[address];
+		return (*mem)[address];
 	}
 	
 	 void Memory::dump(string file){
-		dump(file,0,mem.length);
+		dump(file, 0, mem->size());
 	}
 	
 	 void Memory::dump(string file, int offset, int length){
 		
-		char[] ch = new char[length];
-		for(int i=0;i<length;i++){
-			ch[i] = (char)mem[offset+i];
+		char* ch = new char[length];
+		for(int i=0; i<length; i++){
+			ch[i] = (char)(*mem)[offset+i];
 		}
 		
 		try{
 			
-			File f = new File(file);
-			FileWriter writer = new FileWriter(f);
-			writer.write(ch);
-			writer.close();
+			File* f = new File(file);
+			FileWriter* writer = new FileWriter(f);
+			writer->write(ch);
+			writer->close();
 			//System.out.println("Memory dumped to file "+file+".");
 			
-		}catch(IOException ioe){
+		}catch(exception& ioe){
 			//System.out.println("Memory dump to file: IO Error!");
 		}
 		
 		
 	}
 	
-	 void Memory::write(int address, short* array, int length){
+	 void Memory::write(int address, vector<short>* array, int length){
 	
-		if(address+length > mem.length)return;
-		System.arraycopy(array,0,mem,address,length);
+		if(address+length > mem->size())return;
+		arraycopy_short(array, 0, mem, address, length);
 		
 	}
 	
-	 void Memory::write(int address, short* array, int arrayoffset, int length){
+	 void Memory::write(int address, vector<short>* array, int arrayoffset, int length){
 		
-		if(address+length > mem.length)return;
-		System.arraycopy(array,arrayoffset,mem,address,length);
+		if(address+length > mem->size())return;
+		arraycopy_short(array,arrayoffset,mem,address,length);
 		
 	}
 	
@@ -85,4 +85,3 @@
 		
 	}
 	
-};

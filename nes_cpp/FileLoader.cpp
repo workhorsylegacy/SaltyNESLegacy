@@ -122,7 +122,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         }
 
-        short[] ret = new short[flen];
+        vector<short>* ret = new short[flen];
         for (int i = 0; i < flen; i++) {
             ret[i] = (short) (tmp[i] & 255);
         }

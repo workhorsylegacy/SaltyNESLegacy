@@ -17,56 +17,57 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-     static bool Misc::debug = Globals::debug;
-     static float[] Misc::_rnd = NULL;
-     static int Misc::nextRnd = 0;
-     static float Misc::rndret = 0;
+     bool Misc::debug = Globals::debug;
+     vector<float>* Misc::_rnd = NULL;
+     int Misc::nextRnd = 0;
+     float Misc::rndret = 0;
 
-	static float* Misc::rnd() {
+	vector<float>* Misc::rnd() {
 		if(_rnd == NULL) {
-			_rnd = new float[100000]();
-			for (int i = 0; i < _rnd.length; i++) {
-	            _rnd[i] = (float) Math.random();
+			_rnd = new vector<float>(100000);
+			for (int i = 0; i < _rnd->size(); i++) {
+	            (*_rnd)[i] = rand_float();
+
 	        }
 		}
         
         return _rnd;
 	}
 
-     static string Misc::hex8(int i) {
-        string s = Integer.toHexString(i);
+     string Misc::hex8(int i) {
+        string s = intToHexString(i);
         while (s.length() < 2) {
             s = "0" + s;
         }
-        return s.toUpperCase();
+        return toUpperCase(s);
     }
 
-     static string Misc::hex16(int i) {
-        string s = Integer.toHexString(i);
+     string Misc::hex16(int i) {
+        string s = intToHexString(i);
         while (s.length() < 4) {
             s = "0" + s;
         }
-        return s.toUpperCase();
+        return toUpperCase(s);
     }
 
-     static string Misc::binN(int num, int N) {
-        char[] c = new char[N];
+     string Misc::binN(int num, int N) {
+        char* c = new char[N];
         for (int i = 0; i < N; i++) {
             c[N - i - 1] = (num & 0x1) == 1 ? '1' : '0';
             num >>= 1;
         }
-        return new string(c);
+        return string(c);
     }
 
-     static string Misc::bin8(int num) {
+     string Misc::bin8(int num) {
         return binN(num, 8);
     }
 
-     static string Misc::bin16(int num) {
+     string Misc::bin16(int num) {
         return binN(num, 16);
     }
 
-     static string Misc::binStr(long value, int bitcount) {
+     string Misc::binStr(long value, int bitcount) {
         string ret = "";
         for (int i = 0; i < bitcount; i++) {
             ret = ((value & (1 << i)) != 0 ? "1" : "0") + ret;
@@ -74,26 +75,26 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return ret;
     }
 
-     static int* Misc::resizeArray(int* array, int newSize) {
+     vector<int>* Misc::resizeArray(vector<int>* array, int newSize) {
 
-        int* newArr = new int[newSize];
-        System.arraycopy(array, 0, newArr, 0, Math.min(newSize, array.length));
+        vector<int>* newArr = new vector<int>(newSize);
+        arraycopy_int(array, 0, newArr, 0, min(newSize, (int)array->size()));
         return newArr;
 
     }
 
-     static string Misc::pad(string str, string padStr, int length) {
+     string Misc::pad(string str, string padStr, int length) {
         while (str.length() < length) {
             str += padStr;
         }
         return str;
     }
 
-     static float Misc::random() {
-        rndret = rnd()[nextRnd];
+     float Misc::random() {
+        rndret = (*rnd())[nextRnd];
         nextRnd++;
-        if (nextRnd >= rnd().length) {
-            nextRnd = (int) (Math.random() * (rnd().length - 1));
+        if (nextRnd >= rnd()->size()) {
+            nextRnd = (int) (rand_float() * (rnd()->size() - 1));
         }
         return rndret;
     }

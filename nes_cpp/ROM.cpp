@@ -29,7 +29,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         valid = false;
     }
 
-	static string* ROM::getmapperName() {
+	static string ROM::getmapperName() {
 		if(_mapperName == NULL) {
 	        _mapperName = new string[255];
 	        for (int i = 0; i < 255; i++) {
@@ -303,20 +303,20 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return vromCount;
     }
 
-     short[] ROM::getHeader() {
+     vector<short>* ROM::getHeader() {
         return header;
     }
 
-     short[] ROM::getRomBank(int bank) {
+     vector<short>* ROM::getRomBank(int bank) {
         return rom[bank];
     }
 
-     short[] ROM::getVromBank(int bank) {
+     vector<short>* ROM::getVromBank(int bank) {
         return vrom[bank];
     }
 
-     Tile[] ROM::getVromBankTiles(int bank) {
-        return vromTile[bank];
+     vector<Tile>* ROM::getVromBankTiles(int bank) {
+        return (*vromTile)[bank];
     }
 
      int ROM::getMirroringType() {
@@ -483,7 +483,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     short* ROM::getBatteryRam() {
+     vector<short>* ROM::getBatteryRam() {
 
         return saveRam;
 
