@@ -22,7 +22,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         win_size = windowSize;
         smp_period = samplePeriod;
         sinc_periods = sincPeriods;
-        std::vector<double> buf = vector<double>(smp_period * win_size);
+        vector<double> buf = vector<double>(smp_period * win_size);
 
 
         // Sample sinc:

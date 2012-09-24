@@ -217,9 +217,20 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             mapperType &= 0xF;
         }
 
-        rom = new short[romCount][16384];
-        vrom = new short[vromCount][4096];
-        vromTile = new Tile[vromCount][256];
+        rom = new vector<vector<short>*>(romCount);
+        for(int i=0; i<16384; i++) {
+	        rom[i] = new vector<short>();
+        }
+        
+        vrom = new vector<vector<short>*>(vromCount);
+        for(int i=0; i<4096; i++) {
+	        vrom[i] = new vector<short>();
+        }
+        
+        vromTile = new vector<vector<Tile*>*>(vromCount);
+        for(int i=0; i<256; i++) {
+	        vromTile[i] = new vector<Tile*>();
+        }
 
         //try{
 
@@ -315,7 +326,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return vrom[bank];
     }
 
-     vector<Tile>* ROM::getVromBankTiles(int bank) {
+     vector<Tile*>* ROM::getVromBankTiles(int bank) {
         return (*vromTile)[bank];
     }
 

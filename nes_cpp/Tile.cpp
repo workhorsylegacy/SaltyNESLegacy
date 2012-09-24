@@ -226,24 +226,24 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void Tile::stateSave(ByteBuffer* buf) {
 
-        buf.putBoolean(initialized);
+        buf->putBoolean(initialized);
         for (int i = 0; i < 8; i++) {
-            buf.putBoolean(opaque[i]);
+            buf->putBoolean(opaque[i]);
         }
         for (int i = 0; i < 64; i++) {
-            buf.putByte((int8_t) pix[i]);
+            buf->putByte((int8_t) pix[i]);
         }
 
     }
 
      void Tile::stateLoad(ByteBuffer* buf) {
 
-        initialized = buf.readBoolean();
+        initialized = buf->readBoolean();
         for (int i = 0; i < 8; i++) {
-            opaque[i] = buf.readBoolean();
+            opaque[i] = buf->readBoolean();
         }
         for (int i = 0; i < 64; i++) {
-            pix[i] = buf.readByte();
+            pix[i] = buf->readByte();
         }
 
     }

@@ -89,13 +89,19 @@ class Mixer {};
 class SourceDataLine {
 public:
 	size_t getBufferSize() { return 0; };
+	bool isActive() { return false; }
 };
 class Color {
 public:
 	int getRGB() {
 		return 0;
 	}
-	
+	static float* RGBtoHSB(int b, int g, int r, float* hsbvals) {
+		return NULL;
+	}
+	static int HSBtoRGB(int b, int g, int r) {
+		return 0;
+	}
 };
 class Graphics2D {};
 
@@ -954,7 +960,7 @@ public:
 class PaletteTable {
 public:
      static int curTable[64];
-     static int origTable[64];
+     static int* origTable;
      static int emphTable[8][64];
     int currentEmph;
     int currentHue, currentSaturation, currentLightness, currentContrast;
@@ -993,13 +999,13 @@ public:
     ChannelTriangle* triangle;
     ChannelNoise* noise;
     ChannelDM* dmc;
-    int* lengthLookup;
+    static const int lengthLookup[];
     int* dmcFreqLookup;
     int* noiseWavelengthLookup;
-    int* square_table;
-    int* tnd_table;
+    vector<int>* square_table;
+    vector<int>* tnd_table;
     int* ismpbuffer;
-    int8_t* sampleBuffer;
+    vector<int8_t>* sampleBuffer;
     int frameIrqCounter;
     int frameIrqCounterMax;
     int initCounter;
@@ -1045,7 +1051,7 @@ public:
     int masterVolume;
 
     // Panning:
-    int* panning; 
+    static const int panning[];
 
     // Stereo positioning:
     int stereoPosLSquare1;
@@ -1088,7 +1094,6 @@ public:
      /*synchronized*/ void setStereo(bool s, bool restart);
      int getPapuBufferSize();
      void setChannelEnabled(int channel, bool value);
-     void setPanning(int* pos);
      void setMasterVolume(int value);
      void updateStereoPos();
      SourceDataLine* getLine();
@@ -1178,10 +1183,10 @@ public:
     bool hitSpr0;
 
     // Tiles:
-     vector<Tile>* ptTile;
+     vector<Tile*>* ptTile;
     // Name table data:
     int ntable1[4];
-    NameTable* nameTable;
+    vector<NameTable*>* nameTable;
     int currentMirroring;
 
     // Palette data:
@@ -1198,13 +1203,13 @@ public:
     // Vars used when updating regs/address:
     int address, b1, b2;
     // Variables used when rendering:
-    int attrib[32];
-    int bgbuffer[256 * 240];
-    int pixrendered[256 * 240];
-    int spr0dummybuffer[256 * 240];
-    int dummyPixPriTable[256 * 240];
-    int oldFrame[256 * 240];
-    int* buffer;
+    vector<int>* attrib;
+    vector<int>* bgbuffer;
+    vector<int>* pixrendered;
+    vector<int>* spr0dummybuffer;
+    vector<int>* dummyPixPriTable;
+    vector<int>* oldFrame;
+    vector<int>* buffer;
     int* tpix;
     bool scanlineChanged[240];
     bool requestRenderAll;
@@ -1256,7 +1261,7 @@ public:
      void mirroredWrite(int address, short value);
      void triggerRendering();
      void renderFramePartially(int* buffer, int startScan, int scanCount);
-     void renderBgScanline(int* buffer, int scan);
+     void renderBgScanline(vector<int>* buffer, int scan);
      void renderSpritesPartially(int startscan, int scancount, bool bgPri);
      bool checkSprite0(int scan);
      void renderPattern();
@@ -1304,10 +1309,10 @@ public:
     bool failedSaveFile;
     bool saveRamUpToDate;
     vector<short>* header;
-    vector<short>** rom;
-    vector<short>** vrom;
+    vector<vector<short>*>* rom;
+    vector<vector<short>*>* vrom;
     vector<short>* saveRam;
-    vector<vector<Tile>*>* vromTile;
+    vector<vector<Tile*>*>* vromTile;
     NES* nes;
     int romCount;
     int vromCount;
@@ -1333,7 +1338,7 @@ public:
      vector<short>* getHeader();
      vector<short>* getRomBank(int bank);
      vector<short>* getVromBank(int bank);
-     vector<Tile>* getVromBankTiles(int bank);
+     vector<Tile*>* getVromBankTiles(int bank);
      int getMirroringType();
      int getMapperType();
      string getMapperName();
@@ -1454,7 +1459,7 @@ void arraycopy_short(vector<short>* src, int srcPos, vector<short>* dest, int de
 	}
 }
 
-void arraycopy_Tile(vector<Tile>* src, int srcPos, vector<Tile>* dest, int destPos, int length) {
+void arraycopy_Tile(vector<Tile*>* src, int srcPos, vector<Tile*>* dest, int destPos, int length) {
 	dest->resize(length);
 	for(int i=srcPos; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[i];
@@ -1489,14 +1494,48 @@ bool endsWith(string str, string key) {
 	size_t keylen = key.length();
 	size_t strlen = str.length();
 	
-	if(keylen <= strlen)
-	    return string::npos != str.rfind(key);
-	else
+	if(keylen == 0 && strlen == 0) {
+		return true;
+	} else if(keylen == 0 || strlen == 0) {
 		return false;
+	}
+
+	if(keylen <= strlen && str.substr(strlen - keylen, keylen) == key) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool startsWith(string str, string key) {
+	size_t keylen = key.length();
+	size_t strlen = str.length();
+
+	if(keylen == 0 && strlen == 0) {
+		return true;
+	} else if(keylen == 0 || strlen == 0) {
+		return false;
+	}
+
+	if(keylen <= strlen && str.substr(0, keylen) == key) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 float rand_float() {
 	return ((float) rand() / (RAND_MAX));
 }
+
+template <typename T>
+T hexStringTo(string str) {
+	T x;   
+	std::stringstream ss;
+	ss << std::hex << str;
+	ss >> x;
+	return x;
+}
+
 #endif
 

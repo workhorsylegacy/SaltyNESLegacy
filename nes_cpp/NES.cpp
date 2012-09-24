@@ -87,7 +87,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         } else {
 
-            //System.out.println("State file has wrong format. version="+buf.readByte(0));
+            //System.out.println("State file has wrong format. version="+buf->readByte(0));
             success = false;
 
         }

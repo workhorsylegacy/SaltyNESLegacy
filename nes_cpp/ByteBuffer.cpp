@@ -650,7 +650,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             FileOutputStream fOut = new FileOutputStream(f);
             ZipOutputStream zipOut = new ZipOutputStream(fOut);
             zipOut.putNextEntry(new ZipEntry("contents"));
-            zipOut.write(buf.getBytes());
+            zipOut.write(buf->getBytes());
             zipOut.closeEntry();
             zipOut.close();
             fOut.close();

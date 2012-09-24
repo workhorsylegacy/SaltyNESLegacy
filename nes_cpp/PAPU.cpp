@@ -18,6 +18,32 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+	const int PAPU::panning[] = {
+		80,
+		170,
+		100,
+		150,
+		128
+	};
+
+	const int PAPU::lengthLookup[] = {
+		0x0A, 0xFE,
+		0x14, 0x02,
+		0x28, 0x04,
+		0x50, 0x06,
+		0xA0, 0x08,
+		0x3C, 0x0A,
+		0x0E, 0x0C,
+		0x1A, 0x0E,
+		0x0C, 0x10,
+		0x18, 0x12,
+		0x30, 0x14,
+		0x60, 0x16,
+		0xC0, 0x18,
+		0x48, 0x1A,
+		0x10, 0x1C,
+		0x20, 0x1E
+	};
 
      PAPU::PAPU(NES* nes) {
 	    this->bufferSize = 2048;
@@ -45,7 +71,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         cpuMem = nes->getCpuMemory();
 
         setSampleRate(sampleRate, false);
-        sampleBuffer = new int8_t[bufferSize * (stereo ? 4 : 2)];
+        sampleBuffer = new vector<int8_t>(bufferSize * (stereo ? 4 : 2));
         ismpbuffer = new int[bufferSize * (stereo ? 2 : 1)];
         bufferIndex = 0;
         frameIrqEnabled = false;
@@ -58,17 +84,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         dmc = new ChannelDM(this);
 
         masterVolume = 256;
-        panning = new int[]{
-                    80,
-                    170,
-                    100,
-                    150,
-                    128
-                };
-        setPanning(panning);
+        updateStereoPos();
 
         // Initialize lookup tables:
-        initLengthLookup();
         initDmcFrequencyLookup();
         initNoiseWavelengthLookup();
         initDACtables();
@@ -89,32 +107,32 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      /*synchronized*/ void PAPU::start() {
 
         //System.out.println("* Starting PAPU lines->");
-        if (line != NULL && line.isActive()) {
+        if (line != NULL && line->isActive()) {
             //System.out.println("* Already running.");
             return;
         }
 
         bufferIndex = 0;
-        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+//        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
 
-        if (mixerInfo == NULL || mixerInfo.length == 0) {
-            //System.out.println("No audio mixer available, sound disabled.");
-            Globals::enableSound = false;
-            return;
-        }
+//        if (mixerInfo == NULL || mixerInfo.length == 0) {
+//            //System.out.println("No audio mixer available, sound disabled.");
+//            Globals::enableSound = false;
+//            return;
+//        }
 
-        mixer = AudioSystem.getMixer(mixerInfo[1]);
+//        mixer = AudioSystem.getMixer(mixerInfo[1]);
 
-        AudioFormat audioFormat = new AudioFormat(sampleRate, 16, (stereo ? 2 : 1), true, false);
-        DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, sampleRate);
+//        AudioFormat audioFormat = new AudioFormat(sampleRate, 16, (stereo ? 2 : 1), true, false);
+//        DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, sampleRate);
 
         try {
 
-            line = (SourceDataLine*) AudioSystem.getLine(info);
-            line.open(audioFormat);
-            line.start();
+//            line = (SourceDataLine*) AudioSystem.getLine(info);
+//            line->open(audioFormat);
+//            line->start();
 
-        } catch (Exception e) {
+        } catch (exception& e) {
             //System.out.println("Couldn't get sound lines->");
         }
 
@@ -128,16 +146,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Read 0x4015:
         int tmp = 0;
-        tmp |= (square1.getLengthStatus());
-        tmp |= (square2.getLengthStatus() << 1);
-        tmp |= (triangle.getLengthStatus() << 2);
-        tmp |= (noise.getLengthStatus() << 3);
-        tmp |= (dmc.getLengthStatus() << 4);
+        tmp |= (square1->getLengthStatus());
+        tmp |= (square2->getLengthStatus() << 1);
+        tmp |= (triangle->getLengthStatus() << 2);
+        tmp |= (noise->getLengthStatus() << 3);
+        tmp |= (dmc->getLengthStatus() << 4);
         tmp |= (((frameIrqActive && frameIrqEnabled) ? 1 : 0) << 6);
-        tmp |= (dmc.getIrqStatus() << 7);
+        tmp |= (dmc->getIrqStatus() << 7);
 
         frameIrqActive = false;
-        dmc.irqGenerated = false;
+        dmc->irqGenerated = false;
 
         ////System.out.println("$4015 read. Value = "+Misc.bin8(tmp)+" countseq = "+countSequence);
         return (short) tmp;
@@ -149,43 +167,43 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (address >= 0x4000 && address < 0x4004) {
 
             // Square Wave 1 Control
-            square1.writeReg(address, value);
+            square1->writeReg(address, value);
         ////System.out.println("Square Write");
 
         } else if (address >= 0x4004 && address < 0x4008) {
 
             // Square 2 Control
-            square2.writeReg(address, value);
+            square2->writeReg(address, value);
 
         } else if (address >= 0x4008 && address < 0x400C) {
 
             // Triangle Control
-            triangle.writeReg(address, value);
+            triangle->writeReg(address, value);
 
         } else if (address >= 0x400C && address <= 0x400F) {
 
             // Noise Control
-            noise.writeReg(address, value);
+            noise->writeReg(address, value);
 
         } else if (address == 0x4010) {
 
             // DMC Play mode & DMA frequency
-            dmc.writeReg(address, value);
+            dmc->writeReg(address, value);
 
         } else if (address == 0x4011) {
 
             // DMC Delta Counter
-            dmc.writeReg(address, value);
+            dmc->writeReg(address, value);
 
         } else if (address == 0x4012) {
 
             // DMC Play code starting address
-            dmc.writeReg(address, value);
+            dmc->writeReg(address, value);
 
         } else if (address == 0x4013) {
 
             // DMC Play code length
-            dmc.writeReg(address, value);
+            dmc->writeReg(address, value);
 
         } else if (address == 0x4015) {
 
@@ -200,7 +218,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
 
             // DMC/IRQ Status
-            dmc.writeReg(address, value);
+            dmc->writeReg(address, value);
 
         } else if (address == 0x4017) {
 
@@ -253,11 +271,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void PAPU::updateChannelEnable(int value) {
 
         channelEnableValue = (short) value;
-        square1.setEnabled(userEnableSquare1 && (value & 1) != 0);
-        square2.setEnabled(userEnableSquare2 && (value & 2) != 0);
-        triangle.setEnabled(userEnableTriangle && (value & 4) != 0);
-        noise.setEnabled(userEnableNoise && (value & 8) != 0);
-        dmc.setEnabled(userEnableDmc && (value & 16) != 0);
+        square1->setEnabled(userEnableSquare1 && (value & 1) != 0);
+        square2->setEnabled(userEnableSquare2 && (value & 2) != 0);
+        triangle->setEnabled(userEnableTriangle && (value & 4) != 0);
+        noise->setEnabled(userEnableNoise && (value & 8) != 0);
+        dmc->setEnabled(userEnableDmc && (value & 16) != 0);
 
     }
 
@@ -292,37 +310,37 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Clock DMC:
-        if (dmc.isEnabled) {
+        if (dmc->isEnabled()) {
 
-            dmc.shiftCounter -= (nCycles << 3);
-            while (dmc.shiftCounter <= 0 && dmc.dmaFrequency > 0) {
-                dmc.shiftCounter += dmc.dmaFrequency;
-                dmc.clockDmc();
+            dmc->shiftCounter -= (nCycles << 3);
+            while (dmc->shiftCounter <= 0 && dmc->dmaFrequency > 0) {
+                dmc->shiftCounter += dmc->dmaFrequency;
+                dmc->clockDmc();
             }
 
         }
 
         // Clock Triangle channel Prog timer:
-        if (triangle.progTimerMax > 0) {
+        if (triangle->progTimerMax > 0) {
 
-            triangle.progTimerCount -= nCycles;
-            while (triangle.progTimerCount <= 0) {
+            triangle->progTimerCount -= nCycles;
+            while (triangle->progTimerCount <= 0) {
 
-                triangle.progTimerCount += triangle.progTimerMax + 1;
-                if (triangle.linearCounter > 0 && triangle.lengthCounter > 0) {
+                triangle->progTimerCount += triangle->progTimerMax + 1;
+                if (triangle->linearCounter > 0 && triangle->lengthCounter > 0) {
 
-                    triangle.triangleCounter++;
-                    triangle.triangleCounter &= 0x1F;
+                    triangle->triangleCounter++;
+                    triangle->triangleCounter &= 0x1F;
 
-                    if (triangle.isEnabled) {
-                        if (triangle.triangleCounter >= 0x10) {
+                    if (triangle->isEnabled()) {
+                        if (triangle->triangleCounter >= 0x10) {
                             // Normal value.
-                            triangle.sampleValue = (triangle.triangleCounter & 0xF);
+                            triangle->sampleValue = (triangle->triangleCounter & 0xF);
                         } else {
                             // Inverted value.
-                            triangle.sampleValue = (0xF - (triangle.triangleCounter & 0xF));
+                            triangle->sampleValue = (0xF - (triangle->triangleCounter & 0xF));
                         }
-                        triangle.sampleValue <<= 4;
+                        triangle->sampleValue <<= 4;
                     }
 
                 }
@@ -331,73 +349,73 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Clock Square channel 1 Prog timer:
-        square1.progTimerCount -= nCycles;
-        if (square1.progTimerCount <= 0) {
+        square1->progTimerCount -= nCycles;
+        if (square1->progTimerCount <= 0) {
 
-            square1.progTimerCount += (square1.progTimerMax + 1) << 1;
+            square1->progTimerCount += (square1->progTimerMax + 1) << 1;
 
-            square1.squareCounter++;
-            square1.squareCounter &= 0x7;
-            square1.updateSampleValue();
+            square1->squareCounter++;
+            square1->squareCounter &= 0x7;
+            square1->updateSampleValue();
 
         }
 
         // Clock Square channel 2 Prog timer:
-        square2.progTimerCount -= nCycles;
-        if (square2.progTimerCount <= 0) {
+        square2->progTimerCount -= nCycles;
+        if (square2->progTimerCount <= 0) {
 
-            square2.progTimerCount += (square2.progTimerMax + 1) << 1;
+            square2->progTimerCount += (square2->progTimerMax + 1) << 1;
 
-            square2.squareCounter++;
-            square2.squareCounter &= 0x7;
-            square2.updateSampleValue();
+            square2->squareCounter++;
+            square2->squareCounter &= 0x7;
+            square2->updateSampleValue();
 
         }
 
         // Clock noise channel Prog timer:
         int acc_c = nCycles;
-        if (noise.progTimerCount - acc_c > 0) {
+        if (noise->progTimerCount - acc_c > 0) {
 
             // Do all cycles at once:
-            noise.progTimerCount -= acc_c;
-            noise.accCount += acc_c;
-            noise.accValue += acc_c * noise.sampleValue;
+            noise->progTimerCount -= acc_c;
+            noise->accCount += acc_c;
+            noise->accValue += acc_c * noise->sampleValue;
 
         } else {
 
             // Slow-step:
             while ((acc_c--) > 0) {
 
-                if (--noise.progTimerCount <= 0 && noise.progTimerMax > 0) {
+                if (--noise->progTimerCount <= 0 && noise->progTimerMax > 0) {
 
                     // Update noise shift register:
-                    noise.shiftReg <<= 1;
-                    noise.tmp = (((noise.shiftReg << (noise.randomMode == 0 ? 1 : 6)) ^ noise.shiftReg) & 0x8000);
-                    if (noise.tmp != 0) {
+                    noise->shiftReg <<= 1;
+                    noise->tmp = (((noise->shiftReg << (noise->randomMode == 0 ? 1 : 6)) ^ noise->shiftReg) & 0x8000);
+                    if (noise->tmp != 0) {
 
                         // Sample value must be 0.
-                        noise.shiftReg |= 0x01;
-                        noise.randomBit = 0;
-                        noise.sampleValue = 0;
+                        noise->shiftReg |= 0x01;
+                        noise->randomBit = 0;
+                        noise->sampleValue = 0;
 
                     } else {
 
                         // Find sample value:
-                        noise.randomBit = 1;
-                        if (noise.isEnabled && noise.lengthCounter > 0) {
-                            noise.sampleValue = noise.masterVolume;
+                        noise->randomBit = 1;
+                        if (noise->isEnabled() && noise->lengthCounter > 0) {
+                            noise->sampleValue = noise->masterVolume;
                         } else {
-                            noise.sampleValue = 0;
+                            noise->sampleValue = 0;
                         }
 
                     }
 
-                    noise.progTimerCount += noise.progTimerMax;
+                    noise->progTimerCount += noise->progTimerMax;
 
                 }
 
-                noise.accValue += noise.sampleValue;
-                noise.accCount++;
+                noise->accValue += noise->sampleValue;
+                noise->accCount++;
 
             }
         }
@@ -405,7 +423,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Frame IRQ handling:
         if (frameIrqEnabled && frameIrqActive) {
-            nes->cpu.requestIrq(CPU::IRQ_NORMAL);
+            nes->cpu->requestIrq(CPU::IRQ_NORMAL);
         }
 
         // Clock frame counter at double CPU speed:
@@ -439,18 +457,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void PAPU::accSample(int cycles) {
 
         // Special treatment for triangle channel - need to interpolate.
-        if (triangle.sampleCondition) {
+        if (triangle->sampleCondition) {
 
-            triValue = (triangle.progTimerCount << 4) / (triangle.progTimerMax + 1);
+            triValue = (triangle->progTimerCount << 4) / (triangle->progTimerMax + 1);
             if (triValue > 16) {
                 triValue = 16;
             }
-            if (triangle.triangleCounter >= 16) {
+            if (triangle->triangleCounter >= 16) {
                 triValue = 16 - triValue;
             }
 
             // Add non-interpolated sample value:
-            triValue += triangle.sampleValue;
+            triValue += triangle->sampleValue;
 
         }
 
@@ -459,25 +477,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (cycles == 2) {
 
             smpTriangle += triValue << 1;
-            smpDmc += dmc.sample << 1;
-            smpSquare1 += square1.sampleValue << 1;
-            smpSquare2 += square2.sampleValue << 1;
+            smpDmc += dmc->sample << 1;
+            smpSquare1 += square1->sampleValue << 1;
+            smpSquare2 += square2->sampleValue << 1;
             accCount += 2;
 
         } else if (cycles == 4) {
 
             smpTriangle += triValue << 2;
-            smpDmc += dmc.sample << 2;
-            smpSquare1 += square1.sampleValue << 2;
-            smpSquare2 += square2.sampleValue << 2;
+            smpDmc += dmc->sample << 2;
+            smpSquare1 += square1->sampleValue << 2;
+            smpSquare2 += square2->sampleValue << 2;
             accCount += 4;
 
         } else {
 
             smpTriangle += cycles * triValue;
-            smpDmc += cycles * dmc.sample;
-            smpSquare1 += cycles * square1.sampleValue;
-            smpSquare2 += cycles * square2.sampleValue;
+            smpDmc += cycles * dmc->sample;
+            smpSquare1 += cycles * square1->sampleValue;
+            smpSquare2 += cycles * square2->sampleValue;
             accCount += cycles;
 
         }
@@ -494,22 +512,22 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (derivedFrameCounter == 1 || derivedFrameCounter == 3) {
 
             // Clock length & sweep:
-            triangle.clockLengthCounter();
-            square1.clockLengthCounter();
-            square2.clockLengthCounter();
-            noise.clockLengthCounter();
-            square1.clockSweep();
-            square2.clockSweep();
+            triangle->clockLengthCounter();
+            square1->clockLengthCounter();
+            square2->clockLengthCounter();
+            noise->clockLengthCounter();
+            square1->clockSweep();
+            square2->clockSweep();
 
         }
 
         if (derivedFrameCounter >= 0 && derivedFrameCounter < 4) {
 
             // Clock linear & decay:
-            square1.clockEnvDecay();
-            square2.clockEnvDecay();
-            noise.clockEnvDecay();
-            triangle.clockLinearCounter();
+            square1->clockEnvDecay();
+            square2->clockEnvDecay();
+            noise->clockEnvDecay();
+            triangle->clockLinearCounter();
 
         }
 
@@ -547,16 +565,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         } else {
 
-            smpSquare1 = square1.sampleValue << 4;
-            smpSquare2 = square2.sampleValue << 4;
-            smpTriangle = triangle.sampleValue;
-            smpDmc = dmc.sample << 4;
+            smpSquare1 = square1->sampleValue << 4;
+            smpSquare2 = square2->sampleValue << 4;
+            smpTriangle = triangle->sampleValue;
+            smpDmc = dmc->sample << 4;
 
         }
 
-        smpNoise = (int) ((noise.accValue << 4) / noise.accCount);
-        noise.accValue = smpNoise >> 4;
-        noise.accCount = 1;
+        smpNoise = (int) ((noise->accValue << 4) / noise->accCount);
+        noise->accValue = smpNoise >> 4;
+        noise->accCount = 1;
 
         if (stereo) {
 
@@ -565,37 +583,37 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Left channel:
             sq_index = (smpSquare1 * stereoPosLSquare1 + smpSquare2 * stereoPosLSquare2) >> 8;
             tnd_index = (3 * smpTriangle * stereoPosLTriangle + (smpNoise << 1) * stereoPosLNoise + smpDmc * stereoPosLDMC) >> 8;
-            if (sq_index >= square_table.length) {
-                sq_index = square_table.length - 1;
+            if (sq_index >= square_table->size()) {
+                sq_index = square_table->size() - 1;
             }
-            if (tnd_index >= tnd_table.length) {
-                tnd_index = tnd_table.length - 1;
+            if (tnd_index >= tnd_table->size()) {
+                tnd_index = tnd_table->size() - 1;
             }
-            sampleValueL = square_table[sq_index] + tnd_table[tnd_index] - dcValue;
+            sampleValueL = (*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue;
 
             // Right channel:
             sq_index = (smpSquare1 * stereoPosRSquare1 + smpSquare2 * stereoPosRSquare2) >> 8;
             tnd_index = (3 * smpTriangle * stereoPosRTriangle + (smpNoise << 1) * stereoPosRNoise + smpDmc * stereoPosRDMC) >> 8;
-            if (sq_index >= square_table.length) {
-                sq_index = square_table.length - 1;
+            if (sq_index >= square_table->size()) {
+                sq_index = square_table->size() - 1;
             }
-            if (tnd_index >= tnd_table.length) {
-                tnd_index = tnd_table.length - 1;
+            if (tnd_index >= tnd_table->size()) {
+                tnd_index = tnd_table->size() - 1;
             }
-            sampleValueR = square_table[sq_index] + tnd_table[tnd_index] - dcValue;
+            sampleValueR = (*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue;
 
         } else {
 
             // Mono sound:
             sq_index = smpSquare1 + smpSquare2;
             tnd_index = 3 * smpTriangle + 2 * smpNoise + smpDmc;
-            if (sq_index >= square_table.length) {
-                sq_index = square_table.length - 1;
+            if (sq_index >= square_table->size()) {
+                sq_index = square_table->size() - 1;
             }
-            if (tnd_index >= tnd_table.length) {
-                tnd_index = tnd_table.length - 1;
+            if (tnd_index >= tnd_table->size()) {
+                tnd_index = tnd_table->size() - 1;
             }
-            sampleValueL = 3 * (square_table[sq_index] + tnd_table[tnd_index] - dcValue);
+            sampleValueL = 3 * ((*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue);
             sampleValueL >>= 2;
 
         }
@@ -615,12 +633,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             sampleValueR = smpAccumR;
 
             // Write:
-            if (bufferIndex + 4 < sampleBuffer.length) {
+            if (bufferIndex + 4 < sampleBuffer->size()) {
 
-                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
-                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
-                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueR) & 0xFF);
-                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueR >> 8) & 0xFF);
+                (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
+                (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
+                (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueR) & 0xFF);
+                (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueR >> 8) & 0xFF);
 
             }
 
@@ -628,10 +646,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
 
             // Write:
-            if (bufferIndex + 2 < sampleBuffer.length) {
+            if (bufferIndex + 2 < sampleBuffer->size()) {
 
-                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
-                sampleBuffer[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
+                (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
+                (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
 
             }
 
@@ -652,7 +670,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return;
         }
         bufferIndex -= (bufferIndex % (stereo ? 4 : 2));
-        line.write(sampleBuffer, 0, bufferIndex);
+//        line->write(sampleBuffer, 0, bufferIndex);
 
         bufferIndex = 0;
 
@@ -665,9 +683,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return;
         }
 
-        if (line != NULL && line.isOpen() && line.isActive()) {
-            line.close();
-        }
+//        if (line != NULL && line->isOpen() && line->isActive()) {
+//            line->close();
+//        }
 
         // Lose line:
         line = NULL;
@@ -692,11 +710,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         resetCounter();
 
-        square1.reset();
-        square2.reset();
-        triangle.reset();
-        noise.reset();
-        dmc.reset();
+        square1->reset();
+        square2->reset();
+        triangle->reset();
+        noise->reset();
+        dmc->reset();
 
         bufferIndex = 0;
         accCount = 0;
@@ -780,9 +798,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         stereo = s;
         if (stereo) {
-            sampleBuffer = new int8_t[bufferSize * 4];
+            sampleBuffer = new vector<int8_t>(bufferSize * 4);
         } else {
-            sampleBuffer = new int8_t[bufferSize * 2];
+            sampleBuffer = new vector<int8_t>(bufferSize * 2);
         }
 
         if (restart) {
@@ -796,8 +814,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     int gPAPU::etPapuBufferSize() {
-        return sampleBuffer.length;
+     int PAPU::getPapuBufferSize() {
+        return sampleBuffer->size();
     }
 
      void PAPU::setChannelEnabled(int channel, bool value) {
@@ -813,15 +831,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             userEnableDmc = value;
         }
         updateChannelEnable(channelEnableValue);
-    }
-
-     void PAPU::setPanning(int* pos) {
-
-        for (int i = 0; i < 5; i++) {
-            panning[i] = pos[i];
-        }
-        updateStereoPos();
-
     }
 
      void PAPU::setMasterVolume(int value) {
@@ -858,16 +867,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      bool PAPU::isRunning() {
-        return (line != NULL && line.isActive());
+        return (line != NULL && line->isActive());
     }
 
      int PAPU::getMillisToAvailableAbove(int target_avail) {
 
         double time;
         int cur_avail;
-        if ((cur_avail = line.available()) >= target_avail) {
-            return 0;
-        }
+//        if ((cur_avail = line->available()) >= target_avail) {
+//            return 0;
+//        }
 
         time = ((target_avail - cur_avail) * 1000) / sampleRate;
         time /= (stereo ? 4 : 2);
@@ -878,29 +887,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      int PAPU::getBufferPos() {
         return bufferIndex;
-    }
-
-     void PAPU::initLengthLookup() {
-
-        lengthLookup = new int[]{
-                    0x0A, 0xFE,
-                    0x14, 0x02,
-                    0x28, 0x04,
-                    0x50, 0x06,
-                    0xA0, 0x08,
-                    0x3C, 0x0A,
-                    0x0E, 0x0C,
-                    0x1A, 0x0E,
-                    0x0C, 0x10,
-                    0x18, 0x12,
-                    0x30, 0x14,
-                    0x60, 0x16,
-                    0xC0, 0x18,
-                    0x48, 0x1A,
-                    0x10, 0x1C,
-                    0x20, 0x1E
-                };
-
     }
 
      void PAPU::initDmcFrequencyLookup() {
@@ -952,8 +938,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PAPU::initDACtables() {
 
-        square_table = new int[32 * 16];
-        tnd_table = new int[204 * 16];
+        square_table = new vector<int>(32 * 16);
+        tnd_table = new vector<int>(204 * 16);
         double value;
 
         int ival;
@@ -968,7 +954,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             value *= 50000.0;
             ival = (int) value;
 
-            square_table[i] = ival;
+            (*square_table)[i] = ival;
             if (ival > max_sqr) {
                 max_sqr = ival;
             }
@@ -982,7 +968,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             value *= 50000.0;
             ival = (int) value;
 
-            tnd_table[i] = ival;
+            (*tnd_table)[i] = ival;
             if (ival > max_tnd) {
                 max_tnd = ival;
             }
@@ -1000,19 +986,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         cpuMem = NULL;
 
         if (square1 != NULL) {
-            square1.destroy();
+            square1->destroy();
         }
         if (square2 != NULL) {
-            square2.destroy();
+            square2->destroy();
         }
         if (triangle != NULL) {
-            triangle.destroy();
+            triangle->destroy();
         }
         if (noise != NULL) {
-            noise.destroy();
+            noise->destroy();
         }
         if (dmc != NULL) {
-            dmc.destroy();
+            dmc->destroy();
         }
 
         square1 = NULL;

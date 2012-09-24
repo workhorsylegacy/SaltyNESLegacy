@@ -276,7 +276,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                             for (int y = sy; y < ey; y++) {
                                 for (int x = sx; x < ex; x++) {
-                                    if ((nes->ppu->buffer[(y << 8) + x] & 0xFFFFFF) == 0xFFFFFF) {
+                                    if (((*nes->ppu->buffer)[(y << 8) + x] & 0xFFFFFF) == 0xFFFFFF) {
                                         w = 0x1 << 3;
                                         break;
                                     }
@@ -588,7 +588,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         arraycopy_short(rom->getVromBank(bank % rom->getVromBankCount()), 0, nes->ppuMem->mem, address, 4096);
 
-        vector<Tile>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
+        vector<Tile*>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
         arraycopy_Tile(vromTile, 0, ppu->ptTile, address >> 4, 256);
 
     }
@@ -624,10 +624,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         arraycopy_short(rom->getVromBank(bank4k), 0, nes->ppuMem->mem, bankoffset, 1024);
 
         // Update tiles:
-        vector<Tile>* vromTile = rom->getVromBankTiles(bank4k);
+        vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
         int baseIndex = address >> 4;
         for (int i = 0; i < 64; i++) {
-            ppu->ptTile[baseIndex + i] = vromTile[((bank1k % 4) << 6) + i];
+            (*ppu->ptTile)[baseIndex + i] = (*vromTile)[((bank1k % 4) << 6) + i];
         }
 
     }
@@ -644,10 +644,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         arraycopy_short(rom->getVromBank(bank4k), bankoffset, nes->ppuMem->mem, address, 2048);
 
         // Update tiles:
-        vector<Tile>* vromTile = rom->getVromBankTiles(bank4k);
+        vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
         int baseIndex = address >> 4;
         for (int i = 0; i < 128; i++) {
-            ppu->ptTile[baseIndex + i] = vromTile[((bank2k % 2) << 7) + i];
+            (*ppu->ptTile)[baseIndex + i] = (*vromTile)[((bank2k % 2) << 7) + i];
         }
 
     }

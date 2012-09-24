@@ -47,21 +47,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 int palIndex = 0;
                 while (!fStr.eof()) {
 					getline(fStr, line);
-                    if (line.startsWith("#")) {
+                    if (startsWith(line, "#")) {
 
-                        hexR = line.substring(1, 3);
-                        hexG = line.substring(3, 5);
-                        hexB = line.substring(5, 7);
+                        hexR = line.substr(1, 3);
+                        hexG = line.substr(3, 5);
+                        hexB = line.substr(5, 7);
 
-                        r = Integer.decode("0x" + hexR).intValue();
-                        g = Integer.decode("0x" + hexG).intValue();
-                        b = Integer.decode("0x" + hexB).intValue();
+                        r = hexStringTo<int>(hexR);
+                        g = hexStringTo<int>(hexG);
+                        b = hexStringTo<int>(hexB);
                         origTable[palIndex] = r | (g << 8) | (b << 16);
 
                         palIndex++;
 
                     }
-                    line = br.readLine();
+                    getline(fStr, line);
                 }
 
             setEmphasis(0);
@@ -70,10 +70,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
             return true;
 
-        } catch (Exception e) {
+        } catch (exception& e) {
 
             // Unable to load palette.
-            System.out.println("PaletteTable: Internal Palette Loaded.");
+            printf("%s\n", "PaletteTable: Internal Palette Loaded.");
             loadDefaultPalette();
             return false;
 
@@ -137,8 +137,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      int PaletteTable::RGBtoHSL(int r, int g, int b) {
 
         float* hsbvals = new float[3];
-        hsbvals = Color.RGBtoHSB(b, g, r, hsbvals);
-        hsbvals[0] -= Math.floor(hsbvals[0]);
+        hsbvals = Color::RGBtoHSB(b, g, r, hsbvals);
+        hsbvals[0] -= floor(hsbvals[0]);
 
         int ret = 0;
         ret |= (((int) (hsbvals[0] * 255.0d)) << 16);
@@ -156,7 +156,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      int PaletteTable::HSLtoRGB(int h, int s, int l) {
-        return Color.HSBtoRGB(h / 255.0f, s / 255.0f, l / 255.0f);
+        return Color::HSBtoRGB(h / 255.0f, s / 255.0f, l / 255.0f);
     }
 
      int PaletteTable::HSLtoRGB(int hsl) {
@@ -165,7 +165,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         h = (float) (((hsl >> 16) & 0xFF) / 255.0d);
         s = (float) (((hsl >> 8) & 0xFF) / 255.0d);
         l = (float) (((hsl) & 0xFF) / 255.0d);
-        return Color.HSBtoRGB(h, s, l);
+        return Color::HSBtoRGB(h, s, l);
 
     }
 
