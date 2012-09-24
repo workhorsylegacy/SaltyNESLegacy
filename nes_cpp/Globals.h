@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CPP_NES_GLOBALS_
-#define CPP_NES_GLOBALS_
+#ifndef CPP_NES_GLOBALS
+#define CPP_NES_GLOBALS
 
 #include <assert.h>
 #include <map>
@@ -62,7 +62,7 @@ class FileWriter {
 public:
 	FileWriter(File* file) {
 	}
-	void write(char* data) {
+	void write(const char* data) {
 	}
 	void close() {
 	}
@@ -87,8 +87,22 @@ public:
 		return 0;
 	}
 };
-class MouseAdapter {};
-class MouseEvent {};
+class MouseAdapter {
+public:
+	void setFocusable(bool derp) {
+	}
+	void requestFocus() {
+	}
+};
+class MouseEvent {
+public:
+	int getX() {
+		return 0;
+	}
+	int getY() {
+		return 0;
+	}
+};
 class Mixer {};
 class SourceDataLine {
 public:
@@ -170,6 +184,35 @@ class IPapuChannel {
      virtual bool isEnabled() = 0;
      virtual void reset() = 0;
      virtual int getLengthStatus() = 0;
+};
+
+namespace Parameters {
+	static const string rom = "mario.nes";
+	size_t romsize = 40976;
+	bool scale = false;
+	bool sound = true;
+	bool stereo = false;
+	bool scanlines = false;
+	bool fps = false;
+	bool timeemulation = true;
+	bool showsoundbuffer = false;
+	string p1_up = "VK_UP";
+	string p1_down = "VK_DOWN";
+	string p1_left = "VK_LEFT";
+	string p1_right = "VK_RIGHT";
+	string p1_a = "VK_Z";
+	string p1_b = "VK_X";
+	string p1_start = "VK_ENTER";
+	string p1_select = "VK_CONTROL";
+	
+	string p2_up = "VK_NUMPAD8";
+	string p2_down = "VK_NUMPAD2";
+	string p2_left = "VK_NUMPAD4";
+	string p2_right = "VK_NUMPAD6";
+	string p2_a = "VK_NUMPAD7";
+	string p2_b = "VK_NUMPAD9";
+	string p2_start = "VK_NUMPAD1";
+	string p2_select = "VK_NUMPAD3";
 };
 
 // Class Prototypes
@@ -1381,8 +1424,10 @@ public:
 class MyMouseAdapter : public MouseAdapter {
     long lastClickTime;
 public:
+	MyMouseAdapter();
     void mouseClicked(MouseEvent* me);
     void mousePressed(MouseEvent* me);
+    void mouseReleased(MouseEvent* me);
 };
 
 class ScreenView : public BufferView {
@@ -1392,7 +1437,6 @@ public:
 
      ScreenView(NES* nes, int width, int height);
      void init();
-     void mouseReleased(MouseEvent* me);
      void setNotifyImageReady(bool value);
      void imageReady(bool skipFrame);
 };

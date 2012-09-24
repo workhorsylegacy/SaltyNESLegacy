@@ -25,7 +25,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void Tile::setBuffer(vector<short>* scanline) {
         for (y = 0; y < 8; y++) {
-            setScanline(y, scanline[y], scanline[y + 8]);
+            setScanline(y, (*scanline)[y], (*scanline)[y + 8]);
         }
     }
 
@@ -48,7 +48,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             for (x = 8; x != 0; x--) {
                 palIndex = pix[tIndex];
                 if (palIndex != 0) {
-                    fBuffer[fbIndex] = palette[palIndex + palAdd];
+                    (*fBuffer)[fbIndex] = palette[palIndex + palAdd];
                 }
                 fbIndex++;
                 tIndex++;
@@ -70,7 +70,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 c += (palette[pix[tIndex + 1] + palAdd] >> 2) & 0x003F3F3F;
                 c += (palette[pix[tIndex + 8] + palAdd] >> 2) & 0x003F3F3F;
                 c += (palette[pix[tIndex + 9] + palAdd] >> 2) & 0x003F3F3F;
-                buffer[fbIndex] = c;
+                (*buffer)[fbIndex] = c;
                 fbIndex++;
                 tIndex += 2;
             }
@@ -111,11 +111,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 for (x = 0; x < 8; x++) {
                     if (x >= srcx1 && x < srcx2 && y >= srcy1 && y < srcy2) {
                         palIndex = pix[tIndex];
-                        tpri = priTable[fbIndex];
+                        tpri = (*priTable)[fbIndex];
                         if (palIndex != 0 && pri <= (tpri & 0xFF)) {
-                            fBuffer[fbIndex] = palette[palIndex + palAdd];
+                            (*fBuffer)[fbIndex] = palette[palIndex + palAdd];
                             tpri = (tpri & 0xF00) | pri;
-                            priTable[fbIndex] = tpri;
+                            (*priTable)[fbIndex] = tpri;
                         }
                     }
                     fbIndex++;
@@ -133,11 +133,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 for (x = 0; x < 8; x++) {
                     if (x >= srcx1 && x < srcx2 && y >= srcy1 && y < srcy2) {
                         palIndex = pix[tIndex];
-                        tpri = priTable[fbIndex];
+                        tpri = (*priTable)[fbIndex];
                         if (palIndex != 0 && pri <= (tpri & 0xFF)) {
-                            fBuffer[fbIndex] = palette[palIndex + palAdd];
+                            (*fBuffer)[fbIndex] = palette[palIndex + palAdd];
                             tpri = (tpri & 0xF00) | pri;
-                            priTable[fbIndex] = tpri;
+                            (*priTable)[fbIndex] = tpri;
                         }
                     }
                     fbIndex++;
@@ -156,11 +156,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 for (x = 0; x < 8; x++) {
                     if (x >= srcx1 && x < srcx2 && y >= srcy1 && y < srcy2) {
                         palIndex = pix[tIndex];
-                        tpri = priTable[fbIndex];
+                        tpri = (*priTable)[fbIndex];
                         if (palIndex != 0 && pri <= (tpri & 0xFF)) {
-                            fBuffer[fbIndex] = palette[palIndex + palAdd];
+                            (*fBuffer)[fbIndex] = palette[palIndex + palAdd];
                             tpri = (tpri & 0xF00) | pri;
-                            priTable[fbIndex] = tpri;
+                            (*priTable)[fbIndex] = tpri;
                         }
                     }
                     fbIndex++;
@@ -179,11 +179,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 for (x = 0; x < 8; x++) {
                     if (x >= srcx1 && x < srcx2 && y >= srcy1 && y < srcy2) {
                         palIndex = pix[tIndex];
-                        tpri = priTable[fbIndex];
+                        tpri = (*priTable)[fbIndex];
                         if (palIndex != 0 && pri <= (tpri & 0xFF)) {
-                            fBuffer[fbIndex] = palette[palIndex + palAdd];
+                            (*fBuffer)[fbIndex] = palette[palIndex + palAdd];
                             tpri = (tpri & 0xF00) | pri;
-                            priTable[fbIndex] = tpri;
+                            (*priTable)[fbIndex] = tpri;
                         }
                     }
                     fbIndex++;
@@ -205,22 +205,22 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         try {
 
-            File f = new File(file);
-            FileWriter fWriter = new FileWriter(f);
+            File* f = new File(file);
+            FileWriter* fWriter = new FileWriter(f);
 
             for (int y = 0; y < 8; y++) {
                 for (int x = 0; x < 8; x++) {
-                    fWriter.write(Misc.hex8(pix[(y << 3) + x]).substring(1));
+                    fWriter->write(Misc::hex8(pix[(y << 3) + x]).substr(1).c_str());
                 }
-                fWriter.write("\r\n");
+                fWriter->write("\r\n");
             }
 
-            fWriter.close();
+            fWriter->close();
         //System.out.println("Tile data dumped to file "+file);
 
-        } catch (Exception e) {
+        } catch (exception& e) {
             //System.out.println("Unable to dump tile to file.");
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 

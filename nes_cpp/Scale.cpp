@@ -95,18 +95,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 for (int si = y << 8; si < max; si++) {
 
                     // get pixel value:
-                    val = src[si];
+                    val = (*src)[si];
 
                     // fill the two pixels on the current scanline:
-                    dest[di] = val;
-                    dest[++di] = val;
+                    (*dest)[di] = val;
+                    (*dest)[++di] = val;
 
                     // darken pixel:
                     val -= ((val >> 2) & 0x003F3F3F);
 
                     // fill the two pixels on the next scanline:
-                    dest[di2] = val;
-                    dest[++di2] = val;
+                    (*dest)[di2] = val;
+                    (*dest)[++di2] = val;
 
                     //si ++;
                     di++;
@@ -142,15 +142,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 for (int si = y << 8; si < max; si++) {
 
                     // get pixel value:
-                    col1 = src[si];
+                    col1 = (*src)[si];
 
                     // fill the two pixels on the current scanline:
-                    dest[di] = col1;
-                    dest[++di] = col1;
+                    (*dest)[di] = col1;
+                    (*dest)[++di] = col1;
 
                     // fill the two pixels on the next scanline:
-                    dest[di2] = col1;
-                    dest[++di2] = col1;
+                    (*dest)[di2] = col1;
+                    (*dest)[++di2] = col1;
 
                     // darken pixel:
                     col2 = col1 - ((col1 >> darkenShift) & darkenShiftMask);
@@ -159,9 +159,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     col3 = col1 +
                             ((((0x00FFFFFF - col1) & brightenCutoffMask) >> brightenShift) & brightenShiftMask);
 
-                    dest[di + (512 & flag)] = col2;
-                    dest[di + (512 & flag) - 1] = col2;
-                    dest[di + 512 & (512 - flag)] = col3;
+                    (*dest)[di + (512 & flag)] = col2;
+                    (*dest)[di + (512 & flag) - 1] = col2;
+                    (*dest)[di + 512 & (512 - flag)] = col3;
                     flag = 512 - flag;
 
                     di++;
@@ -193,15 +193,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 for (int si = y << 8; si < max; si++) {
 
                     // get pixel value:
-                    val = src[si];
+                    val = (*src)[si];
 
                     // fill the two pixels on the current scanline:
-                    dest[di++] = val;
-                    dest[di++] = val;
+                    (*dest)[di++] = val;
+                    (*dest)[di++] = val;
 
                     // fill the two pixels on the next scanline:
-                    dest[di2++] = val;
-                    dest[di2++] = val;
+                    (*dest)[di2++] = val;
+                    (*dest)[di2++] = val;
 
                 }
             } else {

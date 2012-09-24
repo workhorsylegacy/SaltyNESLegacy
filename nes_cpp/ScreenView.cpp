@@ -31,33 +31,33 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             setFocusable(true);
             requestFocus();
 
-            if (me.getX() >= 0 && me.getY() >= 0 && me.getX() < 256 && me.getY() < 240) {
-                if (nes != NULL && nes->memMapper != NULL) {
-                    nes->memMapper.setMouseState(true, me.getX(), me.getY());
-                }
+            if (me->getX() >= 0 && me->getY() >= 0 && me->getX() < 256 && me->getY() < 240) {
+//                if (nes != NULL && nes->memMapper != NULL) {
+//                    nes->memMapper.setMouseState(true, me->getX(), me->getY());
+//                }
             }
 
         }
 
          void MyMouseAdapter::mouseReleased(MouseEvent* me) {
 
-            if (nes != NULL && nes->memMapper != NULL) {
-                nes->memMapper.setMouseState(false, 0, 0);
-            }
+//            if (nes != NULL && nes->memMapper != NULL) {
+//                nes->memMapper.setMouseState(false, 0, 0);
+//            }
 
         }
 
-     ScreenView::ScreenView(NES* nes, int width, int height) {
-        super(nes, width, height);
+     ScreenView::ScreenView(NES* nes, int width, int height)
+                 : BufferView(nes, width, height) {
     }
 
      void ScreenView::init() {
 
-        if (mouse == NULL) {
-            mouse = new MyMouseAdapter();
-            this->addMouseListener(mouse);
-        }
-        super.init();
+//        if (mouse == NULL) {
+//            mouse = new MyMouseAdapter();
+//            this->addMouseListener(mouse);
+//        }
+//        super.init();
 
     }
 
@@ -68,17 +68,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void ScreenView::imageReady(bool skipFrame) {
 
         if (!Globals::focused) {
-            setFocusable(true);
-            requestFocus();
-            Globals::focused = true;
+//            setFocusable(true);
+//            requestFocus();
+//            Globals::focused = true;
         }
 
         // Draw image first:
-        super.imageReady(skipFrame);
+//        super.imageReady(skipFrame);
 
         // Notify GUI, so it can write the sound buffer:
         if (notifyImageReady) {
-            nes->getGui().imageReady(skipFrame);
+//            nes->getGui().imageReady(skipFrame);
         }
 
     }
