@@ -17,6 +17,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+	void MapperDefault::write(int address, short value) {
+		
+	}
+
      void MapperDefault::base_init(NES* nes) {
 
         this->nes = nes;
@@ -31,6 +35,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         joypadLastWrite = -1;
 
     }
+
+	void MapperDefault::init(NES* nes) {
+		this->base_init(nes);
+	}
 
      void MapperDefault::stateLoad(ByteBuffer* buf) {
 

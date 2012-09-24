@@ -22,7 +22,7 @@
                     /*0xE0*/ 2, 6, 3, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
                     /*0xF0*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7};
 
-     int* CpuInfo::getOpData() {
+     vector<int>* CpuInfo::getOpData() {
         if (opdata == NULL) {
             initOpData();
         }
@@ -67,11 +67,11 @@
      void CpuInfo::initOpData() {
 
         // Create array:
-        opdata = new int[256];
+        opdata = new vector<int>(256);
 
         // Set all to invalid instruction (to detect crashes):
         for (int i = 0; i < 256; i++) {
-            opdata[i] = 0xFF;
+            (*opdata)[i] = 0xFF;
         }
 
 
@@ -344,7 +344,7 @@
 
      void CpuInfo::setOp(int inst, int op, int addr, int size, int cycles) {
 
-        opdata[op] =
+        (*opdata)[op] =
                 ((inst & 0xFF)) |
                 ((addr & 0xFF) << 8) |
                 ((size & 0xFF) << 16) |

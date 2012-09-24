@@ -18,7 +18,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
-     static void Scale::setFilterParams(int darkenDepth, int brightenDepth) {
+     void Scale::setFilterParams(int darkenDepth, int brightenDepth) {
 
         switch (darkenDepth) {
             case 0: {
@@ -83,7 +83,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     static const void Scale::doScanlineScaling(int* src, int* dest, bool* changed) {
+     const void Scale::doScanlineScaling(vector<int>* src, vector<int>* dest, bool* changed) {
 
         int di = 0;
         int di2 = 512;
@@ -126,7 +126,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     static const void Scale::doRasterScaling(int* src, int* dest, bool* changed) {
+     const void Scale::doRasterScaling(vector<int>* src, vector<int>* dest, bool* changed) {
 
         int di = 0;
         int di2 = 512;
@@ -181,7 +181,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     static const void Scale::doNormalScaling(int* src, int* dest, bool* changed) {
+     const void Scale::doNormalScaling(vector<int>* src, vector<int>* dest, bool* changed) {
 
         int di = 0;
         int di2 = 512;

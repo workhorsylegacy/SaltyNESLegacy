@@ -186,7 +186,7 @@ extern "C" {
 		mem = nes->cpuMem->mem;
 
 		// References to other parts of NES:
-		IMemoryMapper* mmap = nes->memMapper;
+		MapperDefault* mmap = nes->memMapper;
 		PPU* 		 ppu  = nes->ppu;
 		PAPU* 		 papu = nes->papu;
 
@@ -279,7 +279,7 @@ extern "C" {
 
 			}
 
-			opinf = opdata[mmap->load(REG_PC+1)];
+			opinf = (*opdata)[mmap->load(REG_PC+1)];
 			cycleCount = (opinf>>24);
 			cycleAdd = 0;
 
@@ -1391,7 +1391,7 @@ extern "C" {
 		this->crash = value;
 	}
 
-	 void CPU::setMapper(IMemoryMapper* mapper){
+	 void CPU::setMapper(MapperDefault* mapper){
 		mmap = mapper;
 	}
 

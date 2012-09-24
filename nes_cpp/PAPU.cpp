@@ -72,7 +72,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         setSampleRate(sampleRate, false);
         sampleBuffer = new vector<int8_t>(bufferSize * (stereo ? 4 : 2));
-        ismpbuffer = new int[bufferSize * (stereo ? 2 : 1)];
+        ismpbuffer = new vector<int>(bufferSize * (stereo ? 2 : 1));
         bufferIndex = 0;
         frameIrqEnabled = false;
         initCounter = 2048;

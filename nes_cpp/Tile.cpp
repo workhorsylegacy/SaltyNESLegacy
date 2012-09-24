@@ -40,7 +40,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     void Tile::renderSimple(int dx, int dy, int* fBuffer, int palAdd, int* palette) {
+     void Tile::renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette) {
 
         tIndex = 0;
         fbIndex = (dy << 8) + dx;
@@ -59,7 +59,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void Tile::renderSmall(int dx, int dy, int* buffer, int palAdd, int* palette) {
+     void Tile::renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette) {
 
         tIndex = 0;
         fbIndex = (dy << 8) + dx;
@@ -80,7 +80,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, int* fBuffer, int palAdd, int* palette, bool flipHorizontal, bool flipVertical, int pri, int* priTable) {
+     void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable) {
 
         if (dx < -7 || dx >= 256 || dy < -7 || dy >= 240) {
             return;

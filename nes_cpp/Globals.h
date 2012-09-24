@@ -18,6 +18,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef CPP_NES_GLOBALS_
 #define CPP_NES_GLOBALS_
 
+#include <assert.h>
 #include <map>
 #include <vector>
 #include <sstream>
@@ -52,6 +53,9 @@ class Graphics {};
 class File {
 public:
 	File(string file_name) {
+	}
+	string getName() {
+		return NULL;
 	}
 };
 class FileWriter {
@@ -90,6 +94,7 @@ class SourceDataLine {
 public:
 	size_t getBufferSize() { return 0; };
 	bool isActive() { return false; }
+	int available() { return 0; }
 };
 class Color {
 public:
@@ -106,7 +111,7 @@ public:
 class Graphics2D {};
 
 // Forward declarations
-class IMemoryMapper;
+//class IMemoryMapper;
 class IPapuChannel;
 
 class AppletUI;
@@ -139,6 +144,7 @@ class Tile;
 class vNES;
 
 // Interfaces
+/*
 class IMemoryMapper {
 public:
      virtual void init(NES* nes) = 0;
@@ -157,7 +163,7 @@ public:
      virtual void setMouseState(bool pressed, int x, int y) = 0;
      virtual void latchAccess(int address) = 0;
 };
-
+*/
 class IPapuChannel {
      virtual void writeReg(int address, int value) = 0;
      virtual void setEnabled(bool value) = 0;
@@ -242,7 +248,7 @@ public:
     int smp_period;
     int sinc_periods;
     // Different samplings of bandlimited impulse:
-    int** imp;
+    vector<vector<int>*>* imp;
     // Difference buffer:
     vector<int>* diff;
     // Last position changed in buffer:
@@ -278,8 +284,8 @@ public:
      Graphics* gfx;
      int width;
      int height;
-     int* pix;
-     int* pix_scaled;
+     vector<int>* pix;
+     vector<int>* pix_scaled;
      int scaleMode;
     // FPS counter variables:
      bool showFPS;
@@ -298,7 +304,7 @@ public:
     void createView();
     void imageReady(bool skipFrame);
     BufferedImage* getImage();
-    int* getBuffer();
+    vector<int>* getBuffer();
     void update(Graphics* g);
     bool scalingEnabled();
     int getScaleMode();
@@ -562,7 +568,7 @@ public:
 
 	// References to other parts of NES :
 	 NES* nes;
-	 IMemoryMapper* mmap;
+	 MapperDefault* mmap;
 	 vector<short>* mem;
 
 	// CPU Registers:
@@ -593,7 +599,7 @@ public:
 	 int irqType;
 
 	// Op/Inst Data:
-	 int* opdata;
+	 vector<int>* opdata;
 
 	// Misc vars:
 	 int cyclesToHalt;
@@ -626,14 +632,14 @@ public:
 	 int getStatus();
 	 void setStatus(int st);
 	 void setCrashed(bool value);
-	 void setMapper(IMemoryMapper* mapper);
+	 void setMapper(MapperDefault* mapper);
 	 void destroy();
 };
 
 class CpuInfo {
 public:
     // Opdata array:
-     static int* opdata;
+     static vector<int>* opdata;
     // Instruction names:
      static vector<string>* instname;
     // Address mode descriptions:
@@ -714,7 +720,7 @@ public:
      static const int ADDR_POSTIDXIND = 11;
      static const int ADDR_INDABS = 12;
 
-     static int* getOpData();
+     static vector<int>* getOpData();
      static vector<string>* getInstNames();
      static string getInstName(int inst);
      static vector<string>* getAddressModeNames();
@@ -742,7 +748,7 @@ public:
 class KbInputHandler : public KeyListener {
 public:
     vector<bool>* allKeysState;
-    int* keyMapping;
+    vector<int>* keyMapping;
     int id;
     NES* nes;
 
@@ -790,7 +796,7 @@ public:
 	 void destroy();
 };
 
-class MapperDefault : public IMemoryMapper {
+class MapperDefault {
 public:
      NES* nes;
      Memory* cpuMem;
@@ -809,7 +815,9 @@ public:
      int mouseY;
     int tmp;
 
-     void base_init(NES* nes);
+	 virtual void write(int address, short value);
+     virtual void init(NES* nes);
+     void base_init(NES* nes);     
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
      void mapperInternalStateLoad(ByteBuffer* buf);
@@ -925,7 +933,7 @@ public:
      Memory* cpuMem;
      Memory* ppuMem;
      Memory* sprMem;
-     IMemoryMapper* memMapper;
+     MapperDefault* memMapper;
      PaletteTable* palTable;
      ROM* rom;
      int cc;
@@ -949,7 +957,7 @@ public:
      Memory* getSprMemory();
      ROM* getRom();
      AppletUI* getGui();
-     IMemoryMapper* getMemoryMapper();
+     MapperDefault* getMemoryMapper();
      bool loadRom(string file);
      void reset();
      void enableSound(bool enable);
@@ -1004,7 +1012,7 @@ public:
     int* noiseWavelengthLookup;
     vector<int>* square_table;
     vector<int>* tnd_table;
-    int* ismpbuffer;
+    vector<int>* ismpbuffer;
     vector<int8_t>* sampleBuffer;
     int frameIrqCounter;
     int frameIrqCounterMax;
@@ -1142,7 +1150,7 @@ public:
     int vramTmpAddress;
     short vramBufferedReadValue;
     bool firstWrite; 		// VRAM/Scroll Hi/Lo latch
-    int* vramMirrorTable; 			// Mirroring Lookup Table.
+    vector<int>* vramMirrorTable; 			// Mirroring Lookup Table.
     int i;
 
     // SPR-RAM I/O:
@@ -1171,13 +1179,13 @@ public:
      int lastRenderedScanline;
      int mapperIrqCounter;
     // Sprite data:
-     int* sprX;				// X coordinate
-     int* sprY;				// Y coordinate
-     int* sprTile;			// Tile Index (into pattern table)
-     int* sprCol;			// Upper two bits of color
-     bool* vertFlip;		// Vertical Flip
-     bool* horiFlip;		// Horizontal Flip
-     bool* bgPriority;	// Background priority
+     int sprX[64];				// X coordinate
+     int sprY[64];				// Y coordinate
+     int sprTile[64];			// Tile Index (into pattern table)
+     int sprCol[64];			// Upper two bits of color
+     bool vertFlip[64];		// Vertical Flip
+     bool horiFlip[64];		// Horizontal Flip
+     bool bgPriority[64];;	// Background priority
      int spr0HitX;	// Sprite #0 hit X coordinate
      int spr0HitY;	// Sprite #0 hit Y coordinate
     bool hitSpr0;
@@ -1215,7 +1223,7 @@ public:
     bool requestRenderAll;
     bool validTileData;
     int att;
-    Tile* scantile;
+    vector<Tile*>* scantile;
     Tile* t;
     // These are temporary variables used in rendering and sound procedures.
     // Their states outside of those procedures can be ignored.
@@ -1260,7 +1268,7 @@ public:
      short mirroredLoad(int address);
      void mirroredWrite(int address, short value);
      void triggerRendering();
-     void renderFramePartially(int* buffer, int startScan, int scanCount);
+     void renderFramePartially(vector<int>* buffer, int startScan, int scanCount);
      void renderBgScanline(vector<int>* buffer, int scan);
      void renderSpritesPartially(int startscan, int scancount, bool bgPri);
      bool checkSprite0(int scan);
@@ -1286,11 +1294,11 @@ public:
 
 class Raster {
 public:
-     int* data;
+     vector<int>* data;
      int width;
      int height;
 
-     Raster(int* data, int w, int h);
+     Raster(vector<int>* data, int w, int h);
      Raster(int w, int h);
      void drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h);
 };
@@ -1308,7 +1316,7 @@ public:
      static const int CHRROM_MIRRORING = 7;
     bool failedSaveFile;
     bool saveRamUpToDate;
-    vector<short>* header;
+    short* header;
     vector<vector<short>*>* rom;
     vector<vector<short>*>* vrom;
     vector<short>* saveRam;
@@ -1325,17 +1333,17 @@ public:
     RandomAccessFile* raFile;
     bool enableSave;
     bool valid;
-    static string _mapperName;
-    static bool* _mapperSupported;
+    static vector<string>* _mapperName;
+    static vector<bool>* _mapperSupported;
 
      ROM(NES* nes);
-     static string getmapperName();
-     static bool* getmapperSupported();
+     string getmapperName();
+     static vector<bool>* getmapperSupported();
      void load(string fileName);
      bool isValid();
      int getRomBankCount();
      int getVromBankCount();
-     vector<short>* getHeader();
+     short* getHeader();
      vector<short>* getRomBank(int bank);
      vector<short>* getVromBank(int bank);
      vector<Tile*>* getVromBankTiles(int bank);
@@ -1346,7 +1354,7 @@ public:
      bool hasTrainer();
      string getFileName();
      bool mapperSupported();
-     IMemoryMapper* createMapper();
+     MapperDefault* createMapper();
      void setSaveState(bool enableSave);
      vector<short>* getBatteryRam();
      void loadBatteryRam();
@@ -1365,9 +1373,9 @@ public:
      static int si,  di,  di2,  val,  x,  y;
 
      static void setFilterParams(int darkenDepth, int brightenDepth);
-     static const void doScanlineScaling(int* src, int* dest, bool* changed);
-     static const void doRasterScaling(int* src, int* dest, bool* changed);
-     static const void doNormalScaling(int* src, int* dest, bool* changed);
+     static const void doScanlineScaling(vector<int>* src, vector<int>* dest, bool* changed);
+     static const void doRasterScaling(vector<int>* src, vector<int>* dest, bool* changed);
+     static const void doNormalScaling(vector<int>* src, vector<int>* dest, bool* changed);
 };
 
 class MyMouseAdapter : public MouseAdapter {
@@ -1407,9 +1415,9 @@ public:
      Tile();
      void setBuffer(vector<short>* scanline);
      void setScanline(int sline, short b1, short b2);
-     void renderSimple(int dx, int dy, int* fBuffer, int palAdd, int* palette);
-     void renderSmall(int dx, int dy, int* buffer, int palAdd, int* palette);
-     void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, int* fBuffer, int palAdd, int* palette, bool flipHorizontal, bool flipVertical, int pri, int* priTable);
+     void renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette);
+     void renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette);
+     void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable);
      bool isTransparent(int x, int y);
      void dumpData(string file);
      void stateSave(ByteBuffer* buf);

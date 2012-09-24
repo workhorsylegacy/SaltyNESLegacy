@@ -117,7 +117,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Retrieve raster from image:
 //        DataBufferInt dbi = (DataBufferInt) img.getRaster().getDataBuffer();
-//        int* raster = dbi.getData();
+//        vector<int>* raster = dbi.getData();
 
 
         // Replace current rasters with the one used by the image:
@@ -184,7 +184,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return img;
     }
 
-    int* BufferView::getBuffer() {
+    vector<int>* BufferView::getBuffer() {
         return pix;
     }
 

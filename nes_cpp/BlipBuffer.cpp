@@ -32,14 +32,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Fill into impulse buffer:
-        imp = new int*[smp_period];
+        imp = new vector<vector<int>*>(smp_period);
         for(int i=0; i<win_size; i++)
-        	imp[i] = new int[win_size];
+        	(*imp)[i] = new vector<int>(win_size);
         for (int off = 0; off < smp_period; off++) {
             double sum = 0;
             for (int i = 0; i < win_size; i++) {
                 sum += 32768.0 * buf[i * smp_period + off];
-                imp[smp_period - 1 - off][i] = (int) sum;
+                (*(*imp)[smp_period - 1 - off])[i] = (int) sum;
             }
         }
 
@@ -61,7 +61,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             (*diff)[i] = prevSum;
         }
         for (int i = 0; i < win_size; i++) {
-            (*diff)[smpPos + i] += (imp[smpOffset][i] * magnitude) >> 8;
+            (*diff)[smpPos + i] += ((*(*imp)[smpOffset])[i] * magnitude) >> 8;
         }
         lastChanged = smpPos + win_size;
         prevSum = (*diff)[smpPos + win_size - 1];

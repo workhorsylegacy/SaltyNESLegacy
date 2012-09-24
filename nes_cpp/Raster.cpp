@@ -17,21 +17,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-     Raster::Raster(int* data, int w, int h) {
+     Raster::Raster(vector<int>* data, int w, int h) {
         this->data = data;
         width = w;
         height = h;
     }
 
      Raster::Raster(int w, int h) {
-        data = new int[w * h];
+        data = new vector<int>(w * h);
         width = w;
         height = h;
     }
 
      void Raster::drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h) {
 
-        int* src = srcRaster->data;
+        vector<int>* src = srcRaster->data;
         int src_index;
         int dst_index;
         int tmp;
@@ -43,8 +43,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
             for (int x = 0; x < w; x++) {
 
-                if ((tmp = src[src_index]) != 0) {
-                    data[dst_index] = tmp;
+                if ((tmp = (*src)[src_index]) != 0) {
+                    (*data)[dst_index] = tmp;
                 }
 
                 src_index++;

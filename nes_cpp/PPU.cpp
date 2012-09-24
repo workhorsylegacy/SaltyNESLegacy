@@ -31,7 +31,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	    this->vblankAdd = 0;
 	    this->currentMirroring = -1;
 	    this->requestRenderAll = false;
-	    this->scantile = new Tile[32];
+	    this->scantile = new vector<Tile*>(32);
 	     this->cycles = 0;
 	     
 	    this->attrib = new vector<int>(32);
@@ -56,13 +56,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         timer = nes->getGui()->getTimer();
 
         // Create sprite arrays:
-        sprX = new int[64];
-        sprY = new int[64];
-        sprTile = new int[64];
-        sprCol = new int[64];
-        vertFlip = new bool[64];
-        horiFlip = new bool[64];
-        bgPriority = new bool[64];
+        for(int i=0; i<64; i++) {
+	        sprX[i] = 0;
+	        sprY[i] = 0;
+	        sprTile[i] = 0;
+	        sprCol[i] = 0;
+	        vertFlip[i] = 0;
+	        horiFlip[i] = 0;
+	        bgPriority[i] = 0;
+        }
 
         // Create pattern table tile buffers:
         if (ptTile == NULL) {
@@ -79,9 +81,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Initialize mirroring lookup table:
-        vramMirrorTable = new int[0x8000];
+        vramMirrorTable = new vector<int>(0x8000);
         for (int i = 0; i < 0x8000; i++) {
-            vramMirrorTable[i] = i;
+            (*vramMirrorTable)[i] = i;
         }
 
         lastRenderedScanline = -1;
@@ -107,10 +109,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Remove mirroring:
         if (vramMirrorTable == NULL) {
-            vramMirrorTable = new int[0x8000];
+            vramMirrorTable = new vector<int>(0x8000);
         }
         for (int i = 0; i < 0x8000; i++) {
-            vramMirrorTable[i] = i;
+            (*vramMirrorTable)[i] = i;
         }
 
         // Palette mirroring:
@@ -193,7 +195,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void PPU::defineMirrorRegion(int fromStart, int toStart, int size) {
 
         for (int i = 0; i < size; i++) {
-            vramMirrorTable[fromStart + i] = toStart + i;
+            (*vramMirrorTable)[fromStart + i] = toStart + i;
         }
 
     }
@@ -371,7 +373,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::startFrame() {
 
-        int* buffer = nes->getGui()->getScreenView()->getBuffer();
+        vector<int>* buffer = nes->getGui()->getScreenView()->getBuffer();
 
         // Set background color:
         int bgColor = 0;
@@ -429,26 +431,26 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::endFrame() {
 
-        int* buffer = nes->getGui()->getScreenView()->getBuffer();
+        vector<int>* buffer = nes->getGui()->getScreenView()->getBuffer();
 
         // Draw spr#0 hit coordinates:
         if (showSpr0Hit) {
             // Spr 0 position:
             if (sprX[0] >= 0 && sprX[0] < 256 && sprY[0] >= 0 && sprY[0] < 240) {
                 for (int i = 0; i < 256; i++) {
-                    buffer[(sprY[0] << 8) + i] = 0xFF5555;
+                    (*buffer)[(sprY[0] << 8) + i] = 0xFF5555;
                 }
                 for (int i = 0; i < 240; i++) {
-                    buffer[(i << 8) + sprX[0]] = 0xFF5555;
+                    (*buffer)[(i << 8) + sprX[0]] = 0xFF5555;
                 }
             }
             // Hit position:
             if (spr0HitX >= 0 && spr0HitX < 256 && spr0HitY >= 0 && spr0HitY < 240) {
                 for (int i = 0; i < 256; i++) {
-                    buffer[(spr0HitY << 8) + i] = 0x55FF55;
+                    (*buffer)[(spr0HitY << 8) + i] = 0x55FF55;
                 }
                 for (int i = 0; i < 240; i++) {
-                    buffer[(i << 8) + spr0HitX] = 0x55FF55;
+                    (*buffer)[(i << 8) + spr0HitX] = 0x55FF55;
                 }
             }
         }
@@ -460,7 +462,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Clip left 8-pixels column:
             for (int y = 0; y < 240; y++) {
                 for (int x = 0; x < 8; x++) {
-                    buffer[(y << 8) + x] = 0;
+                    (*buffer)[(y << 8) + x] = 0;
                 }
             }
         }
@@ -469,7 +471,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Clip right 8-pixels column too:
             for (int y = 0; y < 240; y++) {
                 for (int x = 0; x < 8; x++) {
-                    buffer[(y << 8) + 255 - x] = 0;
+                    (*buffer)[(y << 8) + 255 - x] = 0;
                 }
             }
         }
@@ -478,8 +480,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (clipTVrow) {
             for (int y = 0; y < 8; y++) {
                 for (int x = 0; x < 256; x++) {
-                    buffer[(y << 8) + x] = 0;
-                    buffer[((239 - y) << 8) + x] = 0;
+                    (*buffer)[(y << 8) + x] = 0;
+                    (*buffer)[((239 - y) << 8) + x] = 0;
                 }
             }
         }
@@ -495,9 +497,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 scanlineChanged[y] = true;
                 for (int x = 0; x < 256; x++) {
                     if (x >= (available / scale)) {
-                        buffer[y * 256 + x] = 0xFFFFFF;
+                        (*buffer)[y * 256 + x] = 0xFFFFFF;
                     } else {
-                        buffer[y * 256 + x] = 0;
+                        (*buffer)[y * 256 + x] = 0;
                     }
                 }
             }
@@ -840,7 +842,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // mirroring/mapping of address ranges.
      short PPU::mirroredLoad(int address) {
 
-        return ppuMem->load(vramMirrorTable[address]);
+        return ppuMem->load((*vramMirrorTable)[address]);
 
     }
 
@@ -881,12 +883,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
 
             // Use lookup table for mirrored address:
-            if (address < vramMirrorTable.length) {
-                writeMem(vramMirrorTable[address], value);
+            if (address < vramMirrorTable->size()) {
+                writeMem((*vramMirrorTable)[address], value);
             } else {
                 if (Globals::debug) {
                     //System.out.println("Invalid VRAM address: "+Misc.hex16(address));
-                    nes->getCpu().setCrashed(true);
+                    nes->getCpu()->setCrashed(true);
                 }
             }
 
@@ -908,7 +910,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void PPU::renderFramePartially(int* buffer, int startScan, int scanCount) {
+     void PPU::renderFramePartially(vector<int>* buffer, int startScan, int scanCount) {
 
         if (f_spVisibility == 1 && !Globals::disableSprites) {
             renderSpritesPartially(startScan, scanCount, true);
@@ -922,7 +924,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
             for (destIndex = si; destIndex < ei; destIndex++) {
                 if ((*pixrendered)[destIndex] > 0xFF) {
-                    buffer[destIndex] = (*bgbuffer)[destIndex];
+                    (*buffer)[destIndex] = (*bgbuffer)[destIndex];
                 }
             }
         }
@@ -931,8 +933,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             renderSpritesPartially(startScan, scanCount, false);
         }
 
-        BufferView* screen = nes->getGui().getScreenView();
-        if (screen.scalingEnabled() && !screen.useHWScaling() && !requestRenderAll) {
+        BufferView* screen = nes->getGui()->getScreenView();
+        if (screen->scalingEnabled() && !screen->useHWScaling() && !requestRenderAll) {
 
             // Check which scanlines have changed, to try to
             // speed up scaling:
@@ -945,13 +947,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 si = i << 8;
                 jmax = si + 256;
                 for (j = si; j < jmax; j++) {
-                    if (buffer[j] != (*oldFrame)[j]) {
+                    if ((*buffer)[j] != (*oldFrame)[j]) {
                         scanlineChanged[i] = true;
                         break;
                     }
-                    (*oldFrame)[j] = buffer[j];
+                    (*oldFrame)[j] = (*buffer)[j];
                 }
-                System.arraycopy(buffer, j, oldFrame, j, jmax - j);
+                arraycopy_int(buffer, j, oldFrame, j, jmax - j);
             }
 
         }
@@ -981,15 +983,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     // Fetch tile & attrib data:
                     if (validTileData) {
                         // Get data from array:
-                        t = scantile[tile];
-                        tpix = t.pix;
+                        t = (*scantile)[tile];
+                        tpix = t->pix;
                         att = (*attrib)[tile];
                     } else {
                         // Fetch data:
-                        t = ptTile[baseTile + (*nameTable)[curNt].getTileIndex(cntHT, cntVT)];
-                        tpix = t.pix;
-                        att = (*nameTable)[curNt].getAttrib(cntHT, cntVT);
-                        scantile[tile] = t;
+                        t = (*ptTile)[baseTile + (*nameTable)[curNt]->getTileIndex(cntHT, cntVT)];
+                        tpix = t->pix;
+                        att = (*nameTable)[curNt]->getAttrib(cntHT, cntVT);
+                        (*scantile)[tile] = t;
                         (*attrib)[tile] = att;
                     }
 
@@ -1001,7 +1003,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                             destIndex -= x;
                             sx = -x;
                         }
-                        if (t.opaque[cntFV]) {
+                        if (t->opaque[cntFV]) {
                             for (; sx < 8; sx++) {
                                 (*buffer)[destIndex] = imgPalette[tpix[tscanoffset + sx] + att];
                                 (*pixrendered)[destIndex] |= 256;
@@ -1062,7 +1064,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 
-        buffer = nes->getGui().getScreenView().getBuffer();
+        buffer = nes->getGui()->getScreenView()->getBuffer();
         if (f_spVisibility == 1) {
 
             int sprT1, sprT2;
@@ -1085,9 +1087,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                         }
 
                         if (f_spPatternTable == 0) {
-                            ptTile[sprTile[i]].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
+                            (*ptTile)[sprTile[i]]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
                         } else {
-                            ptTile[sprTile[i] + 256].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
+                            (*ptTile)[sprTile[i] + 256]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
                         }
                     } else {
                         // 8x16 sprites
@@ -1107,7 +1109,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                             srcy2 = startscan + scancount - sprY[i];
                         }
 
-                        ptTile[top + (vertFlip[i] ? 1 : 0)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
+                        (*ptTile)[top + (vertFlip[i] ? 1 : 0)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
 
                         srcy1 = 0;
                         srcy2 = 8;
@@ -1120,7 +1122,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                             srcy2 = startscan + scancount - (sprY[i] + 8);
                         }
 
-                        ptTile[top + (vertFlip[i] ? 0 : 1)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
+                        (*ptTile)[top + (vertFlip[i] ? 0 : 1)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, pixrendered);
 
                     }
                 }
@@ -1140,7 +1142,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int bufferIndex;
         int col;
         bool bgPri;
-        Tile t;
+        Tile* t;
 
         x = sprX[0];
         y = sprY[0] + 1;
@@ -1155,7 +1157,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                 // Sprite is in range.
                 // Draw scanline:
-                t = ptTile[sprTile[0] + tIndexAdd];
+                t = (*ptTile)[sprTile[0] + tIndexAdd];
                 col = sprCol[0];
                 bgPri = bgPriority[0];
 
@@ -1171,7 +1173,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     for (int i = 7; i >= 0; i--) {
                         if (x >= 0 && x < 256) {
                             if (bufferIndex >= 0 && bufferIndex < 61440 && (*pixrendered)[bufferIndex] != 0) {
-                                if (t.pix[toffset + i] != 0) {
+                                if (t->pix[toffset + i] != 0) {
                                     spr0HitX = bufferIndex % 256;
                                     spr0HitY = scan;
                                     return true;
@@ -1187,7 +1189,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     for (int i = 0; i < 8; i++) {
                         if (x >= 0 && x < 256) {
                             if (bufferIndex >= 0 && bufferIndex < 61440 && (*pixrendered)[bufferIndex] != 0) {
-                                if (t.pix[toffset + i] != 0) {
+                                if (t->pix[toffset + i] != 0) {
                                     spr0HitX = bufferIndex % 256;
                                     spr0HitY = scan;
                                     return true;
@@ -1221,10 +1223,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                 if (toffset < 8) {
                     // first half of sprite.
-                    t = ptTile[sprTile[0] + (vertFlip[0] ? 1 : 0) + ((sprTile[0] & 1) != 0 ? 255 : 0)];
+                    t = (*ptTile)[sprTile[0] + (vertFlip[0] ? 1 : 0) + ((sprTile[0] & 1) != 0 ? 255 : 0)];
                 } else {
                     // second half of sprite.
-                    t = ptTile[sprTile[0] + (vertFlip[0] ? 0 : 1) + ((sprTile[0] & 1) != 0 ? 255 : 0)];
+                    t = (*ptTile)[sprTile[0] + (vertFlip[0] ? 0 : 1) + ((sprTile[0] & 1) != 0 ? 255 : 0)];
                     if (vertFlip[0]) {
                         toffset = 15 - toffset;
                     } else {
@@ -1241,7 +1243,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     for (int i = 7; i >= 0; i--) {
                         if (x >= 0 && x < 256) {
                             if (bufferIndex >= 0 && bufferIndex < 61440 && (*pixrendered)[bufferIndex] != 0) {
-                                if (t.pix[toffset + i] != 0) {
+                                if (t->pix[toffset + i] != 0) {
                                     spr0HitX = bufferIndex % 256;
                                     spr0HitY = scan;
                                     return true;
@@ -1257,7 +1259,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     for (int i = 0; i < 8; i++) {
                         if (x >= 0 && x < 256) {
                             if (bufferIndex >= 0 && bufferIndex < 61440 && (*pixrendered)[bufferIndex] != 0) {
-                                if (t.pix[toffset + i] != 0) {
+                                if (t->pix[toffset + i] != 0) {
                                     spr0HitX = bufferIndex % 256;
                                     spr0HitY = scan;
                                     return true;
@@ -1282,25 +1284,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // pattern table into an image.
      void PPU::renderPattern() {
 
-        BufferView* scr = nes->getGui().getPatternView();
-        int* buffer = scr.getBuffer();
+        BufferView* scr = nes->getGui()->getPatternView();
+        vector<int>* buffer = scr->getBuffer();
 
         int tIndex = 0;
         for (int j = 0; j < 2; j++) {
             for (int y = 0; y < 16; y++) {
                 for (int x = 0; x < 16; x++) {
-                    ptTile[tIndex].renderSimple(j * 128 + x * 8, y * 8, buffer, 0, sprPalette);
+                    (*ptTile)[tIndex]->renderSimple(j * 128 + x * 8, y * 8, buffer, 0, sprPalette);
                     tIndex++;
                 }
             }
         }
-        nes->getGui().getPatternView().imageReady(false);
+        nes->getGui()->getPatternView()->imageReady(false);
 
     }
 
      void PPU::renderNameTables() {
 
-        int* buffer = nes->getGui().getNameTableView().getBuffer();
+        vector<int>* buffer = nes->getGui()->getNameTableView()->getBuffer();
         if (f_bgPatternTable == 0) {
             baseTile = 0;
         } else {
@@ -1326,8 +1328,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 // Render nametable:
                 for (int ty = 0; ty < 30; ty++) {
                     for (int tx = 0; tx < 32; tx++) {
-                        //ptTile[baseTile+nameTable[nt].getTileIndex(tx,ty)].render(0,0,4,4,x+tx*4,y+ty*4,buffer,nameTable[nt].getAttrib(tx,ty),imgPalette,false,false,0,dummyPixPriTable);
-                        ptTile[baseTile + (*nameTable)[nt].getTileIndex(tx, ty)].renderSmall(x + tx * 4, y + ty * 4, buffer, (*nameTable)[nt].getAttrib(tx, ty), imgPalette);
+                        //(*ptTile)[baseTile+nameTable[nt].getTileIndex(tx,ty)].render(0,0,4,4,x+tx*4,y+ty*4,buffer,nameTable[nt].getAttrib(tx,ty),imgPalette,false,false,0,dummyPixPriTable);
+                        (*ptTile)[baseTile + (*nameTable)[nt]->getTileIndex(tx, ty)]->renderSmall(x + tx * 4, y + ty * 4, buffer, (*nameTable)[nt]->getAttrib(tx, ty), imgPalette);
                     }
                 }
 
@@ -1350,32 +1352,32 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        nes->getGui().getNameTableView().imageReady(false);
+        nes->getGui()->getNameTableView()->imageReady(false);
 
     }
 
      void PPU::renderPalettes() {
 
-        int* buffer = nes->getGui().getImgPalView().getBuffer();
+        vector<int>* buffer = nes->getGui()->getImgPalView()->getBuffer();
         for (int i = 0; i < 16; i++) {
             for (int y = 0; y < 16; y++) {
                 for (int x = 0; x < 16; x++) {
-                    buffer[y * 256 + i * 16 + x] = imgPalette[i];
+                    (*buffer)[y * 256 + i * 16 + x] = imgPalette[i];
                 }
             }
         }
 
-        buffer = nes->getGui().getSprPalView().getBuffer();
+        buffer = nes->getGui()->getSprPalView()->getBuffer();
         for (int i = 0; i < 16; i++) {
             for (int y = 0; y < 16; y++) {
                 for (int x = 0; x < 16; x++) {
-                    buffer[y * 256 + i * 16 + x] = sprPalette[i];
+                    (*buffer)[y * 256 + i * 16 + x] = sprPalette[i];
                 }
             }
         }
 
-        nes->getGui().getImgPalView().imageReady(false);
-        nes->getGui().getSprPalView().imageReady(false);
+        nes->getGui()->getImgPalView()->imageReady(false);
+        nes->getGui()->getSprPalView()->imageReady(false);
 
     }
 
@@ -1385,12 +1387,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // appropriately.
      void PPU::writeMem(int address, short value) {
 
-        ppuMem.write(address, value);
+        ppuMem->write(address, value);
 
         // Update internally buffered data:
         if (address < 0x2000) {
 
-            ppuMem.write(address, value);
+            ppuMem->write(address, value);
             patternWrite(address, value);
 
         } else if (address >= 0x2000 && address < 0x23c0) {
@@ -1439,16 +1441,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         for (int i = 0; i < 16; i++) {
             if (f_dispType == 0) {
-                imgPalette[i] = nes->palTable.getEntry(ppuMem.load(0x3f00 + i) & 63);
+                imgPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f00 + i) & 63);
             } else {
-                imgPalette[i] = nes->palTable.getEntry(ppuMem.load(0x3f00 + i) & 32);
+                imgPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f00 + i) & 32);
             }
         }
         for (int i = 0; i < 16; i++) {
             if (f_dispType == 0) {
-                sprPalette[i] = nes->palTable.getEntry(ppuMem.load(0x3f10 + i) & 63);
+                sprPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f10 + i) & 63);
             } else {
-                sprPalette[i] = nes->palTable.getEntry(ppuMem.load(0x3f10 + i) & 32);
+                sprPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f10 + i) & 32);
             }
         }
 
@@ -1463,9 +1465,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int tileIndex = address / 16;
         int leftOver = address % 16;
         if (leftOver < 8) {
-            ptTile[tileIndex].setScanline(leftOver, value, ppuMem.load(address + 8));
+            (*ptTile)[tileIndex]->setScanline(leftOver, value, ppuMem->load(address + 8));
         } else {
-            ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8), value);
+            (*ptTile)[tileIndex]->setScanline(leftOver - 8, ppuMem->load(address - 8), value);
         }
     }
 
@@ -1480,9 +1482,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             leftOver = (address + i) % 16;
 
             if (leftOver < 8) {
-                ptTile[tileIndex].setScanline(leftOver, value[offset + i], ppuMem.load(address + 8 + i));
+                (*ptTile)[tileIndex]->setScanline(leftOver, (*value)[offset + i], ppuMem->load(address + 8 + i));
             } else {
-                ptTile[tileIndex].setScanline(leftOver - 8, ppuMem.load(address - 8 + i), value[offset + i]);
+                (*ptTile)[tileIndex]->setScanline(leftOver - 8, ppuMem->load(address - 8 + i), (*value)[offset + i]);
             }
 
         }
@@ -1495,7 +1497,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         for (int i = 0; i < 240; i++) {
             scanlineChanged[i] = true;
         }
-        java.util.Arrays.fill(oldFrame, -1);
+        for(int i=0; i<oldFrame->size(); i++)
+        	(*oldFrame)[i] = -1;
         requestRenderAll = true;
 
     }
@@ -1503,7 +1506,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // Updates the internal name table buffers
     // with this new byte.
      void PPU::nameTableWrite(int index, int address, short value) {
-        (*nameTable)[index].writeTileIndex(address, value);
+        (*nameTable)[index]->writeTileIndex(address, value);
 
         // Update Sprite #0 hit:
         //updateSpr0Hit();
@@ -1515,7 +1518,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // table buffers with this new attribute
     // table byte.
      void PPU::attribTableWrite(int index, int address, short value) {
-        (*nameTable)[index].writeAttrib(address, value);
+        (*nameTable)[index]->writeAttrib(address, value);
     }
 
     // Updates the internally buffered sprite
@@ -1561,7 +1564,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // Set VBlank flag:
         setStatusFlag(STATUS_VBLANK, true);
         //nes->getCpu().doNonMaskableInterrupt();
-        nes->getCpu().requestIrq(CPU::IRQ_NMI);
+        nes->getCpu()->requestIrq(CPU::IRQ_NMI);
 
     }
 
@@ -1644,8 +1647,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Mirroring:
             //currentMirroring = -1;
             //setMirroring(buf->readInt());
-            for (int i = 0; i < vramMirrorTable.length; i++) {
-                vramMirrorTable[i] = buf->readInt();
+            for (int i = 0; i < vramMirrorTable->size(); i++) {
+                (*vramMirrorTable)[i] = buf->readInt();
             }
 
 
@@ -1677,12 +1680,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Name tables:
             for (int i = 0; i < 4; i++) {
                 ntable1[i] = buf->readByte();
-                (*nameTable)[i].stateLoad(buf);
+                (*nameTable)[i]->stateLoad(buf);
             }
 
             // Pattern data:
-            for (int i = 0; i < ptTile.length; i++) {
-                ptTile[i].stateLoad(buf);
+            for (int i = 0; i < ptTile->size(); i++) {
+                (*ptTile)[i]->stateLoad(buf);
             }
 
             // Update internally stored stuff from VRAM memory:
@@ -1694,9 +1697,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
              */
             // Sprite data:
-            vector<short>* sprmem = nes->getSprMemory().mem;
-            for (int i = 0; i < sprmem.length; i++) {
-                spriteRamWriteUpdate(i, sprmem[i]);
+            vector<short>* sprmem = nes->getSprMemory()->mem;
+            for (int i = 0; i < sprmem->size(); i++) {
+                spriteRamWriteUpdate(i, (*sprmem)[i]);
             }
 
         }
@@ -1744,8 +1747,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Mirroring:
         //buf->putInt(currentMirroring);
-        for (int i = 0; i < vramMirrorTable.length; i++) {
-            buf->putInt(vramMirrorTable[i]);
+        for (int i = 0; i < vramMirrorTable->size(); i++) {
+            buf->putInt((*vramMirrorTable)[i]);
         }
 
 
@@ -1778,12 +1781,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // Name tables:
         for (int i = 0; i < 4; i++) {
             buf->putByte((short) ntable1[i]);
-            (*nameTable)[i].stateSave(buf);
+            (*nameTable)[i]->stateSave(buf);
         }
 
         // Pattern data:
-        for (int i = 0; i < ptTile.length; i++) {
-            ptTile[i].stateSave(buf);
+        for (int i = 0; i < ptTile->size(); i++) {
+            (*ptTile)[i]->stateSave(buf);
         }
 
     }
@@ -1791,8 +1794,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // Reset PPU:
      void PPU::reset() {
 
-        ppuMem.reset();
-        sprMem.reset();
+        ppuMem->reset();
+        sprMem->reset();
 
         vramBufferedReadValue = 0;
         sramAddress = 0;
@@ -1849,8 +1852,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         regFH = 0;
         regS = 0;
 
-        java.util.Arrays.fill(scanlineChanged, true);
-        java.util.Arrays.fill(oldFrame, -1);
+        for(int i=0; i<240; i++)
+        	scanlineChanged[i] = true;
+
+        for(int i=0; i<oldFrame->size(); i++)
+        	(*oldFrame)[i] = -1;
 
         // Initialize stuff:
         init();

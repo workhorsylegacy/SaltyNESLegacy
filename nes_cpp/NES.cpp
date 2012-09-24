@@ -225,7 +225,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     // Returns the memory mapper.
-     IMemoryMapper* NES::getMemoryMapper() {
+     MapperDefault* NES::getMemoryMapper() {
         return memMapper;
     }
 
