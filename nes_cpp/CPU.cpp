@@ -138,7 +138,8 @@ extern "C" {
 			endExecution();
 		}
 
-		pthread_create(&myThread, NULL, runCPU, this);
+		myThread = new pthread_t();
+		pthread_create(myThread, NULL, runCPU, this);
 //		myThread.setPriority(Thread.MIN_PRIORITY);
 
 	}
@@ -148,7 +149,9 @@ extern "C" {
 		if(myThread!=NULL && isAlive){
 			try{
 				stopRunning = true;
-				pthread_join(myThread, NULL);
+				pthread_join(*myThread, NULL);
+				delete myThread;
+				myThread = NULL;
 
 			}catch(exception& ie){
 				//System.out.println("** Unable to stop CPU thread!");

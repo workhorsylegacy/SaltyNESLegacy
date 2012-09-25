@@ -50,15 +50,13 @@
 		}
 		
 		try{
-			
-			File* f = new File(file);
-			FileWriter* writer = new FileWriter(f);
-			writer->write(ch);
-			writer->close();
-			//System.out.println("Memory dumped to file "+file+".");
+	        ofstream writer(file.c_str(), ios::out|ios::binary);
+			writer.write((char*)ch, length);
+			writer.close();
+			printf("Memory dumped to file \"%s\".\n", file.c_str());
 			
 		}catch(exception& ioe){
-			//System.out.println("Memory dump to file: IO Error!");
+			printf("%s\n", "Memory dump to file: IO Error!");
 		}
 		
 		

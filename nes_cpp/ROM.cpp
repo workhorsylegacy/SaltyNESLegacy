@@ -175,32 +175,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	}
 
      void ROM::load(string fileName) {
-
         this->fileName = fileName;
-        FileLoader* loader = new FileLoader();
-        size_t length = 0;
-        uint8_t* b = loader->loadFile(fileName, length);
+        ifstream reader(fileName.c_str(), ios::in|ios::binary);
+		size_t length = reader.tellg();
+		uint8_t* data = new uint8_t[length];
+		reader.read((char*)data, length);
+		reader.close();
         assert(length == 40976);
-
-        if (b == NULL || length == 0) {
-
-            // Unable to load file.
-            nes->gui->showErrorMsg("Unable to load ROM file.");
-            valid = false;
-
-        }
 
         // Read header:
         header = new short[16];
         for (int i = 0; i < 16; i++) {
-            header[i] = b[i];
+            header[i] = data[i];
         }
 
         // Check first four bytes:
-        if(b[0] != 'N' || 
-           b[1] != 'E' ||
-           b[2] != 'S' ||
-           b[3] != 0x1A) {
+        if(data[0] != 'N' || 
+           data[1] != 'E' ||
+           data[2] != 'S' ||
+           data[3] != 0x1A) {
             //System.out.println("Header is incorrect.");
             valid = false;
             return;
@@ -257,7 +250,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 if (offset + j >= length) {
                     break;
                 }
-                (*(*rom)[i])[j] = b[offset + j];
+                (*(*rom)[i])[j] = data[offset + j];
             }
             offset += 16384;
         }
@@ -268,7 +261,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 if (offset + j >= length) {
                     break;
                 }
-                (*(*vrom)[i])[j] = b[offset + j];
+                (*(*vrom)[i])[j] = data[offset + j];
             }
             offset += 4096;
         }
@@ -384,8 +377,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      string ROM::getFileName() {
-        File* f = new File(fileName);
-        return f->getName();
+        return fileName;
     }
 
      bool ROM::mapperSupported() {

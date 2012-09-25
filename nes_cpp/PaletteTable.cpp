@@ -141,7 +141,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      int PaletteTable::RGBtoHSL(int r, int g, int b) {
 
         float* hsbvals = new float[3];
-        hsbvals = Color::RGBtoHSB(b, g, r, hsbvals);
+        hsbvals = Color::RGBtoHSV(b, g, r, hsbvals);
         hsbvals[0] -= floor(hsbvals[0]);
 
         int ret = 0;
@@ -160,7 +160,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      int PaletteTable::HSLtoRGB(int h, int s, int l) {
-        return Color::HSBtoRGB(h / 255.0f, s / 255.0f, l / 255.0f);
+        return Color::HSVtoRGB(h / 255.0f, s / 255.0f, l / 255.0f);
     }
 
      int PaletteTable::HSLtoRGB(int hsl) {
@@ -169,7 +169,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         h = (float) (((hsl >> 16) & 0xFF) / 255.0d);
         s = (float) (((hsl >> 8) & 0xFF) / 255.0d);
         l = (float) (((hsl) & 0xFF) / 255.0d);
-        return Color::HSBtoRGB(h, s, l);
+        return Color::HSVtoRGB(h, s, l);
 
     }
 
@@ -196,6 +196,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      int PaletteTable::getBlue(int rgb) {
         return rgb & 0xFF;
     }
+
+	void PaletteTable::setRed(int& rgb, int r) {
+		rgb |= (16 << (r & 0xFF));
+    }
+
+	void PaletteTable::setGreen(int& rgb, int g) {
+		rgb |= (8 << (g & 0xFF));
+    }
+
+	void PaletteTable::setBlue(int& rgb, int b) {
+		rgb |= ((b & 0xFF));
+	}
 
      int PaletteTable::getRgb(int r, int g, int b) {
         return ((r << 16) | (g << 8) | (b));

@@ -205,17 +205,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         try {
 
-            File* f = new File(file);
-            FileWriter* fWriter = new FileWriter(f);
-
+	        ofstream writer(file.c_str(), ios::out|ios::binary);
+			string chunk;
             for (int y = 0; y < 8; y++) {
                 for (int x = 0; x < 8; x++) {
-                    fWriter->write(Misc::hex8(pix[(y << 3) + x]).substr(1).c_str());
+                    chunk = Misc::hex8(pix[(y << 3) + x]).substr(1);
+                    writer.write(chunk.c_str(), chunk.length());
                 }
-                fWriter->write("\r\n");
+                chunk = "\r\n";
+                writer.write(chunk.c_str(), chunk.length());
             }
 
-            fWriter->close();
+            writer.close();
         //System.out.println("Tile data dumped to file "+file);
 
         } catch (exception& e) {

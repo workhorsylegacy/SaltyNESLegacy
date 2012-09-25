@@ -18,7 +18,6 @@
     <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
     <CompileTarget>Bin</CompileTarget>
-    <Externalconsole>true</Externalconsole>
     <OutputName>derp</OutputName>
     <Libs>
       <Libs>
@@ -48,7 +47,6 @@
     <Compile Include="ChannelTriangle.cpp" />
     <Compile Include="CPU.cpp" />
     <Compile Include="CpuInfo.cpp" />
-    <Compile Include="FileLoader.cpp" />
     <Compile Include="HiResTimer.cpp" />
     <Compile Include="KbInputHandler.cpp" />
     <Compile Include="Mapper001.cpp" />
@@ -67,6 +65,7 @@
     <Compile Include="Tile.cpp" />
     <Compile Include="vNES.cpp" />
     <Compile Include="Parameters.cpp" />
+    <Compile Include="Color.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Globals.h" />

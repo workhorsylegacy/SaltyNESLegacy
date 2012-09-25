@@ -49,24 +49,6 @@ public:
 };
 class Image {};
 class Graphics {};
-class File {
-public:
-	File(string file_name) {
-	}
-	string getName() {
-		return NULL;
-	}
-};
-class FileWriter {
-public:
-	FileWriter(File* file) {
-	}
-	void write(const char* data) {
-	}
-	void close() {
-	}
-};
-class RandomAccessFile {};
 class BufferedImage {};
 class VolatileImage {};
 class Font {
@@ -109,18 +91,6 @@ public:
 	bool isActive() { return false; }
 	int available() { return 0; }
 };
-class Color {
-public:
-	int getRGB() {
-		return 0;
-	}
-	static float* RGBtoHSB(int b, int g, int r, float* hsbvals) {
-		return NULL;
-	}
-	static int HSBtoRGB(int b, int g, int r) {
-		return 0;
-	}
-};
 class Graphics2D {};
 
 // Forward declarations
@@ -135,6 +105,7 @@ class ChannelDM;
 class ChannelNoise;
 class ChannelSquare;
 class ChannelTriangle;
+class Color;
 class CPU;
 class CpuInfo;
 class FileLoader;
@@ -446,8 +417,8 @@ public:
     void crop();
     static ByteBuffer* asciiEncode(ByteBuffer* buf);
     static ByteBuffer* asciiDecode(ByteBuffer* buf);
-    static void saveToZipFile(File f, ByteBuffer* buf);
-    static ByteBuffer* readFromZipFile(File f);
+    //static void saveToZipFile(File f, ByteBuffer* buf);
+    //static ByteBuffer* readFromZipFile(File f);
 };
 
 class ChannelDM : public IPapuChannel {
@@ -602,10 +573,17 @@ public:
      void destroy();
 };
 
+class Color {
+public:
+	int getRGB();
+	static float* RGBtoHSV(int b, int g, int r, float* hsbvals);
+	static int HSVtoRGB(float h, float s, float v);
+};
+
 class CPU {
 public:
 	// Thread:
-	pthread_t myThread;
+	pthread_t* myThread;
 	bool isAlive;
 	mutable pthread_mutex_t _mutex;
 
@@ -1033,6 +1011,9 @@ public:
      int getRed(int rgb);
      int getGreen(int rgb);
      int getBlue(int rgb);
+	 static void setRed(int& rgb, int r);
+	 static void setGreen(int& rgb, int g);
+	 static void setBlue(int& rgb, int b);
      int getRgb(int r, int g, int b);
      void updatePalette();
      void updatePalette(int hueAdd, int saturationAdd, int lightnessAdd, int contrastAdd);
@@ -1373,7 +1354,6 @@ public:
     bool fourScreen;
     int mapperType;
     string fileName;
-    RandomAccessFile* raFile;
     bool enableSave;
     bool valid;
     static vector<string>* _mapperName;

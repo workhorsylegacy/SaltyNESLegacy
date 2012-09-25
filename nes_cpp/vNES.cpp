@@ -18,7 +18,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-
+extern "C" {
+    void* runVNES(void* arg) {
+        vNES* vnes = static_cast<vNES*>(arg);
+        vnes->run();
+        return 0;
+    }
+}
 
     void vNES::init() {
         started = false;
@@ -27,15 +33,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         initKeyCodes();
         readParams();
 
-//        gui = new AppletUI(this);
-//        gui.init(false);
+        gui = new AppletUI(this);
+        gui->init(false);
 
         Globals::appletMode = false;
         Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-//        nes = gui.getNES();
-//        nes->enableSound(sound);
-//        nes->reset();
+        nes = gui->getNES();
+        nes->enableSound(sound);
+        nes->reset();
+        printf("init"); fflush(stdout);
 
     }
 
@@ -70,10 +77,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     void vNES::start() {
-
-//        Thread t = new Thread(this);
-//        t.start();
-
+		pthread_t thread;
+		pthread_create(&thread, NULL, runVNES, this);
     }
 
     void vNES::run() {
