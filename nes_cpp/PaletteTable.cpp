@@ -18,6 +18,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+     int PaletteTable::curTable[64];
+     int* PaletteTable::origTable;
+     int PaletteTable::emphTable[8][64];
+
 	PaletteTable::PaletteTable() {
 		this->currentEmph = -1;
 	}

@@ -17,7 +17,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
-
      long HiResTimer::currentMicros() {
 	    timespec ts;
 		clock_gettime(CLOCK_REALTIME, &ts);

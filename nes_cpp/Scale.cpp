@@ -17,6 +17,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+     int Scale::brightenShift;
+     int Scale::brightenShiftMask;
+     int Scale::brightenCutoffMask;
+     int Scale::darkenShift;
+     int Scale::darkenShiftMask;
+     int Scale::si,  Scale::di,  Scale::di2,  Scale::val,  Scale::x,  Scale::y;
 
      void Scale::setFilterParams(int darkenDepth, int brightenDepth) {
 

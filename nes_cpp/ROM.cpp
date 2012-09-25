@@ -18,6 +18,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+     const int ROM::VERTICAL_MIRRORING;
+     const int ROM::HORIZONTAL_MIRRORING;
+     const int ROM::FOURSCREEN_MIRRORING;
+     const int ROM::SINGLESCREEN_MIRRORING;
+     const int ROM::SINGLESCREEN_MIRRORING2;
+     const int ROM::SINGLESCREEN_MIRRORING3;
+     const int ROM::SINGLESCREEN_MIRRORING4;
+
+    vector<string>* ROM::_mapperName;
+    vector<bool>* ROM::_mapperSupported;
 
      ROM::ROM(NES* nes) {
 	    this->failedSaveFile = false;

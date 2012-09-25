@@ -1,8 +1,12 @@
 
 #include "Globals.h"
 
-// Holds info on the cpu. Mostly constants that are placed here
-// to keep the CPU code clean.
+    // Opdata array:
+     vector<int>* CpuInfo::opdata;
+    // Instruction names:
+     vector<string>* CpuInfo::instname;
+    // Address mode descriptions:
+     vector<string>* CpuInfo::addrDesc;
 
         const int CpuInfo::cycTable[256] = {
                     /*0x00*/7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
@@ -21,6 +25,81 @@
                     /*0xD0*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
                     /*0xE0*/ 2, 6, 3, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
                     /*0xF0*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7};
+
+    // Instruction types:
+    // -------------------------------- //
+     const int CpuInfo::INS_ADC = 0;
+     const int CpuInfo::INS_AND = 1;
+     const int CpuInfo::INS_ASL = 2;
+     const int CpuInfo::INS_BCC = 3;
+     const int CpuInfo::INS_BCS = 4;
+     const int CpuInfo::INS_BEQ = 5;
+     const int CpuInfo::INS_BIT = 6;
+     const int CpuInfo::INS_BMI = 7;
+     const int CpuInfo::INS_BNE = 8;
+     const int CpuInfo::INS_BPL = 9;
+     const int CpuInfo::INS_BRK = 10;
+     const int CpuInfo::INS_BVC = 11;
+     const int CpuInfo::INS_BVS = 12;
+     const int CpuInfo::INS_CLC = 13;
+     const int CpuInfo::INS_CLD = 14;
+     const int CpuInfo::INS_CLI = 15;
+     const int CpuInfo::INS_CLV = 16;
+     const int CpuInfo::INS_CMP = 17;
+     const int CpuInfo::INS_CPX = 18;
+     const int CpuInfo::INS_CPY = 19;
+     const int CpuInfo::INS_DEC = 20;
+     const int CpuInfo::INS_DEX = 21;
+     const int CpuInfo::INS_DEY = 22;
+     const int CpuInfo::INS_EOR = 23;
+     const int CpuInfo::INS_INC = 24;
+     const int CpuInfo::INS_INX = 25;
+     const int CpuInfo::INS_INY = 26;
+     const int CpuInfo::INS_JMP = 27;
+     const int CpuInfo::INS_JSR = 28;
+     const int CpuInfo::INS_LDA = 29;
+     const int CpuInfo::INS_LDX = 30;
+     const int CpuInfo::INS_LDY = 31;
+     const int CpuInfo::INS_LSR = 32;
+     const int CpuInfo::INS_NOP = 33;
+     const int CpuInfo::INS_ORA = 34;
+     const int CpuInfo::INS_PHA = 35;
+     const int CpuInfo::INS_PHP = 36;
+     const int CpuInfo::INS_PLA = 37;
+     const int CpuInfo::INS_PLP = 38;
+     const int CpuInfo::INS_ROL = 39;
+     const int CpuInfo::INS_ROR = 40;
+     const int CpuInfo::INS_RTI = 41;
+     const int CpuInfo::INS_RTS = 42;
+     const int CpuInfo::INS_SBC = 43;
+     const int CpuInfo::INS_SEC = 44;
+     const int CpuInfo::INS_SED = 45;
+     const int CpuInfo::INS_SEI = 46;
+     const int CpuInfo::INS_STA = 47;
+     const int CpuInfo::INS_STX = 48;
+     const int CpuInfo::INS_STY = 49;
+     const int CpuInfo::INS_TAX = 50;
+     const int CpuInfo::INS_TAY = 51;
+     const int CpuInfo::INS_TSX = 52;
+     const int CpuInfo::INS_TXA = 53;
+     const int CpuInfo::INS_TXS = 54;
+     const int CpuInfo::INS_TYA = 55;
+     const int CpuInfo::INS_DUMMY = 56; // dummy instruction used for 'halting' the processor some cycles
+    // -------------------------------- //
+    // Addressing modes:
+     const int CpuInfo::ADDR_ZP = 0;
+     const int CpuInfo::ADDR_REL = 1;
+     const int CpuInfo::ADDR_IMP = 2;
+     const int CpuInfo::ADDR_ABS = 3;
+     const int CpuInfo::ADDR_ACC = 4;
+     const int CpuInfo::ADDR_IMM = 5;
+     const int CpuInfo::ADDR_ZPX = 6;
+     const int CpuInfo::ADDR_ZPY = 7;
+     const int CpuInfo::ADDR_ABSX = 8;
+     const int CpuInfo::ADDR_ABSY = 9;
+     const int CpuInfo::ADDR_PREIDXIND = 10;
+     const int CpuInfo::ADDR_POSTIDXIND = 11;
+     const int CpuInfo::ADDR_INDABS = 12;
 
      vector<int>* CpuInfo::getOpData() {
         if (opdata == NULL) {

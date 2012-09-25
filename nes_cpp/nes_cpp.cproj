@@ -20,6 +20,12 @@
     <CompileTarget>Bin</CompileTarget>
     <Externalconsole>true</Externalconsole>
     <OutputName>derp</OutputName>
+    <Libs>
+      <Libs>
+        <Lib>pthread</Lib>
+        <Lib>rt</Lib>
+      </Libs>
+    </Libs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
@@ -60,6 +66,7 @@
     <Compile Include="ScreenView.cpp" />
     <Compile Include="Tile.cpp" />
     <Compile Include="vNES.cpp" />
+    <Compile Include="Parameters.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Globals.h" />

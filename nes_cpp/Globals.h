@@ -24,13 +24,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <sstream>
 #include <fstream>
 #include <pthread.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string>
 #include <algorithm>
-#include <sys/time.h>
+#include <time.h>
 #define _USE_MATH_DEFINES
 #include "math.h"
 
@@ -186,33 +185,34 @@ class IPapuChannel {
      virtual int getLengthStatus() = 0;
 };
 
-namespace Parameters {
-	static const string rom = "mario.nes";
-	size_t romsize = 40976;
-	bool scale = false;
-	bool sound = true;
-	bool stereo = false;
-	bool scanlines = false;
-	bool fps = false;
-	bool timeemulation = true;
-	bool showsoundbuffer = false;
-	string p1_up = "VK_UP";
-	string p1_down = "VK_DOWN";
-	string p1_left = "VK_LEFT";
-	string p1_right = "VK_RIGHT";
-	string p1_a = "VK_Z";
-	string p1_b = "VK_X";
-	string p1_start = "VK_ENTER";
-	string p1_select = "VK_CONTROL";
+class Parameters {
+public:
+	static const string rom;
+	static size_t romsize;
+	static bool scale;
+	static bool sound;
+	static bool stereo;
+	static bool scanlines;
+	static bool fps;
+	static bool timeemulation;
+	static bool showsoundbuffer;
+	static string p1_up;
+	static string p1_down;
+	static string p1_left;
+	static string p1_right;
+	static string p1_a;
+	static string p1_b;
+	static string p1_start;
+	static string p1_select;
 	
-	string p2_up = "VK_NUMPAD8";
-	string p2_down = "VK_NUMPAD2";
-	string p2_left = "VK_NUMPAD4";
-	string p2_right = "VK_NUMPAD6";
-	string p2_a = "VK_NUMPAD7";
-	string p2_b = "VK_NUMPAD9";
-	string p2_start = "VK_NUMPAD1";
-	string p2_select = "VK_NUMPAD3";
+	static string p2_up;
+	static string p2_down;
+	static string p2_left;
+	static string p2_right;
+	static string p2_a;
+	static string p2_b;
+	static string p2_start;
+	static string p2_select;
 };
 
 // Class Prototypes
@@ -690,78 +690,78 @@ public:
      static const int cycTable[256];
     // Instruction types:
     // -------------------------------- //
-     static const int INS_ADC = 0;
-     static const int INS_AND = 1;
-     static const int INS_ASL = 2;
-     static const int INS_BCC = 3;
-     static const int INS_BCS = 4;
-     static const int INS_BEQ = 5;
-     static const int INS_BIT = 6;
-     static const int INS_BMI = 7;
-     static const int INS_BNE = 8;
-     static const int INS_BPL = 9;
-     static const int INS_BRK = 10;
-     static const int INS_BVC = 11;
-     static const int INS_BVS = 12;
-     static const int INS_CLC = 13;
-     static const int INS_CLD = 14;
-     static const int INS_CLI = 15;
-     static const int INS_CLV = 16;
-     static const int INS_CMP = 17;
-     static const int INS_CPX = 18;
-     static const int INS_CPY = 19;
-     static const int INS_DEC = 20;
-     static const int INS_DEX = 21;
-     static const int INS_DEY = 22;
-     static const int INS_EOR = 23;
-     static const int INS_INC = 24;
-     static const int INS_INX = 25;
-     static const int INS_INY = 26;
-     static const int INS_JMP = 27;
-     static const int INS_JSR = 28;
-     static const int INS_LDA = 29;
-     static const int INS_LDX = 30;
-     static const int INS_LDY = 31;
-     static const int INS_LSR = 32;
-     static const int INS_NOP = 33;
-     static const int INS_ORA = 34;
-     static const int INS_PHA = 35;
-     static const int INS_PHP = 36;
-     static const int INS_PLA = 37;
-     static const int INS_PLP = 38;
-     static const int INS_ROL = 39;
-     static const int INS_ROR = 40;
-     static const int INS_RTI = 41;
-     static const int INS_RTS = 42;
-     static const int INS_SBC = 43;
-     static const int INS_SEC = 44;
-     static const int INS_SED = 45;
-     static const int INS_SEI = 46;
-     static const int INS_STA = 47;
-     static const int INS_STX = 48;
-     static const int INS_STY = 49;
-     static const int INS_TAX = 50;
-     static const int INS_TAY = 51;
-     static const int INS_TSX = 52;
-     static const int INS_TXA = 53;
-     static const int INS_TXS = 54;
-     static const int INS_TYA = 55;
-     static const int INS_DUMMY = 56; // dummy instruction used for 'halting' the processor some cycles
+     static const int INS_ADC;
+     static const int INS_AND;
+     static const int INS_ASL;
+     static const int INS_BCC;
+     static const int INS_BCS;
+     static const int INS_BEQ;
+     static const int INS_BIT;
+     static const int INS_BMI;
+     static const int INS_BNE;
+     static const int INS_BPL;
+     static const int INS_BRK;
+     static const int INS_BVC;
+     static const int INS_BVS;
+     static const int INS_CLC;
+     static const int INS_CLD;
+     static const int INS_CLI;
+     static const int INS_CLV;
+     static const int INS_CMP;
+     static const int INS_CPX;
+     static const int INS_CPY;
+     static const int INS_DEC;
+     static const int INS_DEX;
+     static const int INS_DEY;
+     static const int INS_EOR;
+     static const int INS_INC;
+     static const int INS_INX;
+     static const int INS_INY;
+     static const int INS_JMP;
+     static const int INS_JSR;
+     static const int INS_LDA;
+     static const int INS_LDX;
+     static const int INS_LDY;
+     static const int INS_LSR;
+     static const int INS_NOP;
+     static const int INS_ORA;
+     static const int INS_PHA;
+     static const int INS_PHP;
+     static const int INS_PLA;
+     static const int INS_PLP;
+     static const int INS_ROL;
+     static const int INS_ROR;
+     static const int INS_RTI;
+     static const int INS_RTS;
+     static const int INS_SBC;
+     static const int INS_SEC;
+     static const int INS_SED;
+     static const int INS_SEI;
+     static const int INS_STA;
+     static const int INS_STX;
+     static const int INS_STY;
+     static const int INS_TAX;
+     static const int INS_TAY;
+     static const int INS_TSX;
+     static const int INS_TXA;
+     static const int INS_TXS;
+     static const int INS_TYA;
+     static const int INS_DUMMY; // dummy instruction used for 'halting' the processor some cycles
     // -------------------------------- //
     // Addressing modes:
-     static const int ADDR_ZP = 0;
-     static const int ADDR_REL = 1;
-     static const int ADDR_IMP = 2;
-     static const int ADDR_ABS = 3;
-     static const int ADDR_ACC = 4;
-     static const int ADDR_IMM = 5;
-     static const int ADDR_ZPX = 6;
-     static const int ADDR_ZPY = 7;
-     static const int ADDR_ABSX = 8;
-     static const int ADDR_ABSY = 9;
-     static const int ADDR_PREIDXIND = 10;
-     static const int ADDR_POSTIDXIND = 11;
-     static const int ADDR_INDABS = 12;
+     static const int ADDR_ZP;
+     static const int ADDR_REL;
+     static const int ADDR_IMP;
+     static const int ADDR_ABS;
+     static const int ADDR_ACC;
+     static const int ADDR_IMM;
+     static const int ADDR_ZPX;
+     static const int ADDR_ZPY;
+     static const int ADDR_ABSX;
+     static const int ADDR_ABSY;
+     static const int ADDR_PREIDXIND;
+     static const int ADDR_POSTIDXIND;
+     static const int ADDR_INDABS;
 
      static vector<int>* getOpData();
      static vector<string>* getInstNames();
@@ -1504,45 +1504,45 @@ public:
     int getHeight();
 };
 
-void arraycopy_short(vector<short>* src, int srcPos, vector<short>* dest, int destPos, int length) {
+inline void arraycopy_short(vector<short>* src, int srcPos, vector<short>* dest, int destPos, int length) {
 	dest->resize(length);
 	for(int i=srcPos; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[i];
 	}
 }
 
-void arraycopy_Tile(vector<Tile*>* src, int srcPos, vector<Tile*>* dest, int destPos, int length) {
+inline void arraycopy_Tile(vector<Tile*>* src, int srcPos, vector<Tile*>* dest, int destPos, int length) {
 	dest->resize(length);
 	for(int i=srcPos; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[i];
 	}
 }
 
-void arraycopy_int(vector<int>* src, int srcPos, vector<int>* dest, int destPos, int length) {
+inline void arraycopy_int(vector<int>* src, int srcPos, vector<int>* dest, int destPos, int length) {
 	dest->resize(length);
 	for(int i=srcPos; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[i];
 	}
 }
 
-string intToHexString(int i) {
+inline string intToHexString(int i) {
     stringstream ss;
     ss << std::hex << std::showbase << i;
     return ss.str();
 }
 
 
-string toUpperCase(string s) {
+inline string toUpperCase(string s) {
 	std::transform(s.begin(), s.end(), s.begin(), (int (*)(int))std::toupper);
 	return s;
 }
 
-string toLowerCase(string s) {
+inline string toLowerCase(string s) {
 	std::transform(s.begin(), s.end(), s.begin(), (int (*)(int))std::tolower);
 	return s;
 }
 
-bool endsWith(string str, string key) {
+inline bool endsWith(string str, string key) {
 	size_t keylen = key.length();
 	size_t strlen = str.length();
 	
@@ -1559,7 +1559,7 @@ bool endsWith(string str, string key) {
 	}
 }
 
-bool startsWith(string str, string key) {
+inline bool startsWith(string str, string key) {
 	size_t keylen = key.length();
 	size_t strlen = str.length();
 
@@ -1576,12 +1576,12 @@ bool startsWith(string str, string key) {
 	}
 }
 
-float rand_float() {
+inline float rand_float() {
 	return ((float) rand() / (RAND_MAX));
 }
 
 template <typename T>
-T hexStringTo(string str) {
+inline T hexStringTo(string str) {
 	T x;   
 	std::stringstream ss;
 	ss << std::hex << str;
