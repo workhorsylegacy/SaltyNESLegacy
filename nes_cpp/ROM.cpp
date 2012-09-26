@@ -176,12 +176,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void ROM::load(string fileName) {
         this->fileName = fileName;
-        ifstream reader(fileName.c_str(), ios::in|ios::binary);
+		ifstream reader(fileName.c_str(), ios::in|ios::binary);
+		reader.seekg(0, ios::end);
 		size_t length = reader.tellg();
+		reader.seekg(0, ios::beg);
 		uint8_t* data = new uint8_t[length];
 		reader.read((char*)data, length);
 		reader.close();
-        assert(length == 40976);
 
         // Read header:
         header = new short[16];

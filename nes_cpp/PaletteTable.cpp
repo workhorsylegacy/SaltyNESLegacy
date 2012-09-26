@@ -19,7 +19,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
      int PaletteTable::curTable[64];
-     int* PaletteTable::origTable;
+     int PaletteTable::origTable[64];
      int PaletteTable::emphTable[8][64];
 
 	PaletteTable::PaletteTable() {
@@ -298,11 +298,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PaletteTable::loadDefaultPalette() {
-
-        if (origTable == NULL) {
-            origTable = new int[64];
-        }
-
         origTable[ 0] = getRgb(124, 124, 124);
         origTable[ 1] = getRgb(0, 0, 252);
         origTable[ 2] = getRgb(0, 0, 188);

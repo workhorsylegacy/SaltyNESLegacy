@@ -989,7 +989,7 @@ public:
 class PaletteTable {
 public:
      static int curTable[64];
-     static int* origTable;
+     static int origTable[64];
      static int emphTable[8][64];
     int currentEmph;
     int currentHue, currentSaturation, currentLightness, currentContrast;
