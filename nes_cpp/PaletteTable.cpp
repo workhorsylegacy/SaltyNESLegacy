@@ -17,6 +17,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "Globals.h"
+#include <cstring>
+#include <cerrno>
+#include <sys/stat.h>
+
 
      int PaletteTable::curTable[64];
      int PaletteTable::origTable[64];
@@ -28,29 +32,48 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // Load the NTSC palette:
      bool PaletteTable::loadNTSCPalette() {
-        return loadPalette("palettes/ntsc.txt");
+		string file = "palettes/ntsc.txt";
+		struct stat st;
+		if(stat("palettes", &st) != 0) {
+        	printf("Could not find palette files in current directory!\n");
+			if(stat("../../palettes", &st) != 0) {
+				fprintf(stderr, "%s\n", "Could not palettes. Exiting ...");
+				abort();
+			 } else {
+				 file = "../../palettes/ntsc.txt";
+			}
+		}
+        return loadPalette(file);
     }
-
+/*
     // Load the PAL palette:
      bool PaletteTable::loadPALPalette() {
         return loadPalette("palettes/pal.txt");
     }
-
+*/
     // Load a palette file:
      bool PaletteTable::loadPalette(string file) {
-
         int r, g, b;
 
         try {
                 // Read text file with hex codes.
                 // Read binary palette file.
                 ifstream fStr;
-                fStr.open(file.c_str(), ios::in|ios::binary|ios::ate);
+                fStr.open(file.c_str(), ios::in|ios::binary);
+                if(fStr.fail()) {
+                	fprintf(stderr, "%s\n", strerror(errno));
+                	abort();
+                }
+				fStr.seekg(0, ios::end);
+				size_t length = fStr.tellg();
+				fStr.seekg(0, ios::beg);
+				assert(length > 0);
+                
+				printf("loading palette file: %s\n", file.c_str());
 				string line = "";
                 string hexR, hexG, hexB;
                 int palIndex = 0;
-                while (!fStr.eof()) {
-					getline(fStr, line);
+                while(getline(fStr, line)) {
                     if (startsWith(line, "#")) {
 
                         hexR = line.substr(1, 3);
@@ -65,7 +88,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                         palIndex++;
 
                     }
-                    getline(fStr, line);
                 }
 
             setEmphasis(0);

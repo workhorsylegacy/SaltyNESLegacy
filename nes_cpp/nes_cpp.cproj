@@ -70,5 +70,7 @@
   <ItemGroup>
     <None Include="Globals.h" />
     <None Include="Makefile" />
+    <None Include="palettes\ntsc.txt" />
+    <None Include="palettes\pal.txt" />
   </ItemGroup>
 </Project>

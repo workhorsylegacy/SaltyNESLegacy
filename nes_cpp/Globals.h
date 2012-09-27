@@ -996,7 +996,7 @@ public:
 
 	 PaletteTable();
      bool loadNTSCPalette();
-     bool loadPALPalette();
+//     bool loadPALPalette();
      bool loadPalette(string file);
      void makeTables();
      void setEmphasis(int emph);

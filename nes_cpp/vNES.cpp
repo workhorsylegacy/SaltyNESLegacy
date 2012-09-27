@@ -17,7 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "Globals.h"
-
+/*
 extern "C" {
     void* runVNES(void* arg) {
         vNES* vnes = static_cast<vNES*>(arg);
@@ -25,7 +25,7 @@ extern "C" {
         return 0;
     }
 }
-
+*/
     void vNES::init() {
         started = false;
         rom = "";
@@ -75,12 +75,12 @@ extern "C" {
 //        this->add(panelScreen);
 
     }
-
+/*
     void vNES::start() {
 		pthread_t thread;
 		pthread_create(&thread, NULL, runVNES, this);
     }
-
+*/
     void vNES::run() {
 
         // Set font to be used for progress display of loading:
