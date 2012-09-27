@@ -201,7 +201,7 @@ namespace Globals {
     static const bool debug = true;
     static const bool fsdebug = false;
 
-    static bool appletMode = true;
+    static bool appletMode = false;
     static bool disableSprites = false;
     static bool timeEmulation = true;
     static bool palEmulation;

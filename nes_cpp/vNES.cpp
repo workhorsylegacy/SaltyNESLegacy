@@ -36,13 +36,11 @@ extern "C" {
         gui = new AppletUI(this);
         gui->init(false);
 
-        Globals::appletMode = false;
         Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
         nes = gui->getNES();
         nes->enableSound(sound);
         nes->reset();
-        printf("init"); fflush(stdout);
 
     }
 
