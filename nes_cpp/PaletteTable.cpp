@@ -17,9 +17,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "Globals.h"
-#include <cstring>
-#include <cerrno>
-#include <sys/stat.h>
 
 
      int PaletteTable::curTable[64];
@@ -58,22 +55,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         try {
                 // Read text file with hex codes.
                 // Read binary palette file.
-                ifstream fStr;
-                fStr.open(file.c_str(), ios::in|ios::binary);
-                if(fStr.fail()) {
-                	fprintf(stderr, "%s\n", strerror(errno));
+                ifstream reader(file.c_str(), ios::in|ios::binary);
+                if(reader.fail()) {
+                	fprintf(stderr, "Error while loading palette: %s\n", strerror(errno));
                 	abort();
                 }
-				fStr.seekg(0, ios::end);
-				size_t length = fStr.tellg();
-				fStr.seekg(0, ios::beg);
+				reader.seekg(0, ios::end);
+				size_t length = reader.tellg();
+				reader.seekg(0, ios::beg);
 				assert(length > 0);
                 
 				printf("loading palette file: %s\n", file.c_str());
 				string line = "";
                 string hexR, hexG, hexB;
                 int palIndex = 0;
-                while(getline(fStr, line)) {
+                while(getline(reader, line)) {
                     if (startsWith(line, "#")) {
 
                         hexR = line.substr(1, 3);
@@ -89,7 +85,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     }
                 }
-
+				reader.close();
             setEmphasis(0);
             makeTables();
             updatePalette();

@@ -177,24 +177,36 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void ROM::load(string fileName) {
         this->fileName = fileName;
 		ifstream reader(fileName.c_str(), ios::in|ios::binary);
+		if(reader.fail()) {
+			fprintf(stderr, "Error while loading rom: %s\n", strerror(errno));
+			abort();
+		}
+		
 		reader.seekg(0, ios::end);
 		size_t length = reader.tellg();
 		reader.seekg(0, ios::beg);
-		uint8_t* data = new uint8_t[length];
-		reader.read((char*)data, length);
+		assert(length > 0);
+		uint8_t* bdata = new uint8_t[length];
+		short* sdata = new short[length];
+		reader.read((char*)bdata, length);
+		for(int i=0; i<length; i++) {
+			sdata[i] = (short) (bdata[i] & 255);
+		}
+		delete bdata;
+		bdata = NULL;
 		reader.close();
 
         // Read header:
         header = new short[16];
         for (int i = 0; i < 16; i++) {
-            header[i] = data[i];
+            header[i] = sdata[i];
         }
 
         // Check first four bytes:
-        if(data[0] != 'N' || 
-           data[1] != 'E' ||
-           data[2] != 'S' ||
-           data[3] != 0x1A) {
+        if(sdata[0] != 'N' || 
+           sdata[1] != 'E' ||
+           sdata[2] != 'S' ||
+           sdata[3] != 0x1A) {
             //System.out.println("Header is incorrect.");
             valid = false;
             return;
@@ -228,18 +240,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         rom = new vector<vector<short>*>(romCount);
-        for(int i=0; i<16384; i++) {
-	        (*rom)[i] = new vector<short>();
+        for(int i=0; i<romCount; i++) {
+	        (*rom)[i] = new vector<short>(16384);
         }
         
         vrom = new vector<vector<short>*>(vromCount);
-        for(int i=0; i<4096; i++) {
-	        (*vrom)[i] = new vector<short>();
+        for(int i=0; i<vromCount; i++) {
+	        (*vrom)[i] = new vector<short>(4096);
         }
         
         vromTile = new vector<vector<Tile*>*>(vromCount);
-        for(int i=0; i<256; i++) {
-	        (*vromTile)[i] = new vector<Tile*>();
+        for(int i=0; i<vromCount; i++) {
+	        (*vromTile)[i] = new vector<Tile*>(256);
         }
 
         //try{
@@ -251,7 +263,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 if (offset + j >= length) {
                     break;
                 }
-                (*(*rom)[i])[j] = data[offset + j];
+                (*(*rom)[i])[j] = sdata[offset + j];
             }
             offset += 16384;
         }
@@ -262,7 +274,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 if (offset + j >= length) {
                     break;
                 }
-                (*(*vrom)[i])[j] = data[offset + j];
+                (*(*vrom)[i])[j] = sdata[offset + j];
             }
             offset += 4096;
         }

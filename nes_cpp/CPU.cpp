@@ -228,6 +228,9 @@ extern "C" {
 		bool asApplet = Globals::appletMode;
 		stopRunning = false;
 
+		//nes->dumpRomMemory();
+		//nes->dumpCPUMemory();
+
 		while(true){
 
 
@@ -282,7 +285,16 @@ extern "C" {
 
 			}
 
-			opinf = (*opdata)[mmap->load(REG_PC+1)];
+			short z = mmap->load(REG_PC+1);
+			opinf = (*opdata)[z];
+			//printf("REG_PC: %d\n", REG_PC);
+			//printf("z: %d\n", z);
+			//printf("opinf: %d\n", opinf);
+			
+			//stringstream out;
+			//out << "opinf: 0x";
+			//out << std::hex << (int) opinf;
+			//printf("%s\n", out.str().c_str());
 			cycleCount = (opinf>>24);
 			cycleAdd = 0;
 

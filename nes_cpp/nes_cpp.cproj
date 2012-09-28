@@ -66,6 +66,7 @@
     <Compile Include="vNES.cpp" />
     <Compile Include="Parameters.cpp" />
     <Compile Include="Color.cpp" />
+    <Compile Include="Globals.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Globals.h" />

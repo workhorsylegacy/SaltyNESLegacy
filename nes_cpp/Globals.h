@@ -28,6 +28,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <string>
+#include <cstring>
+#include <cerrno>
+#include <sys/stat.h>
 #include <algorithm>
 #include <time.h>
 #define _USE_MATH_DEFINES
@@ -47,7 +50,6 @@ public:
 		this->y = y;
 	}
 };
-class Image {};
 class Graphics {};
 class BufferedImage {};
 class VolatileImage {};
@@ -187,35 +189,33 @@ public:
 };
 
 // Class Prototypes
-namespace Globals {
-
-    static double CPU_FREQ_NTSC = 1789772.5d;
-    static double CPU_FREQ_PAL = 1773447.4d;
-    static int preferredFrameRate = 60;
+class Globals {
+public:
+    static double CPU_FREQ_NTSC;
+    static double CPU_FREQ_PAL;
+    static int preferredFrameRate;
     
     // Microseconds per frame:
-    static int frameTime = 1000000 / preferredFrameRate;
+    static int frameTime;
     // What value to flush memory with on power-up:
-    static short memoryFlushValue = 0xFF;
+    static short memoryFlushValue;
 
-    static const bool debug = true;
-    static const bool fsdebug = false;
+    static const bool debug;
+    static const bool fsdebug;
 
-    static bool appletMode = false;
-    static bool disableSprites = false;
-    static bool timeEmulation = true;
+    static bool appletMode;
+    static bool disableSprites;
+    static bool timeEmulation;
     static bool palEmulation;
-    static bool enableSound = true;
-    static bool focused = false;
+    static bool enableSound;
+    static bool focused;
 
     static std::map<string, uint32_t> keycodes; //Java key codes
     static std::map<string, string> controls; //vNES controls codes
 
     static NES* nes;
 
-    static void println(string s) {
-        printf("%s\n", s.c_str());
-    }
+    static void println(string s);
 };
 
 class AppletUI {
@@ -969,6 +969,8 @@ public:
      void stopEmulation();
      void reloadRom();
      void clearCPUMemory();
+     void dumpRomMemory();
+     void dumpCPUMemory();
      void setGameGenieState(bool enable);
      CPU* getCpu();
      PPU* getPpu();
@@ -1485,23 +1487,38 @@ public:
 };
 
 inline void arraycopy_short(vector<short>* src, int srcPos, vector<short>* dest, int destPos, int length) {
-	dest->resize(length);
-	for(int i=srcPos; i<length; i++) {
-		(*dest)[destPos + i] = (*src)[i];
+	assert(srcPos >= 0);
+	assert(destPos >= 0);
+	assert(length >= 0);
+	assert(srcPos+length <= src->size());
+	assert(destPos+length <= dest->size());
+	
+	for(int i=0; i<length; i++) {
+		(*dest)[destPos + i] = (*src)[srcPos + i];
 	}
 }
 
 inline void arraycopy_Tile(vector<Tile*>* src, int srcPos, vector<Tile*>* dest, int destPos, int length) {
-	dest->resize(length);
-	for(int i=srcPos; i<length; i++) {
-		(*dest)[destPos + i] = (*src)[i];
+	assert(srcPos >= 0);
+	assert(destPos >= 0);
+	assert(length >= 0);
+	assert(srcPos+length <= src->size());
+	assert(destPos+length <= dest->size());
+	
+	for(int i=0; i<length; i++) {
+		(*dest)[destPos + i] = (*src)[srcPos + i];
 	}
 }
 
 inline void arraycopy_int(vector<int>* src, int srcPos, vector<int>* dest, int destPos, int length) {
-	dest->resize(length);
-	for(int i=srcPos; i<length; i++) {
-		(*dest)[destPos + i] = (*src)[i];
+	assert(srcPos >= 0);
+	assert(destPos >= 0);
+	assert(length >= 0);
+	assert(srcPos+length <= src->size());
+	assert(destPos+length <= dest->size());
+	
+	for(int i=0; i<length; i++) {
+		(*dest)[destPos + i] = (*src)[srcPos + i];
 	}
 }
 

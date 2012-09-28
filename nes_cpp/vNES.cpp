@@ -41,7 +41,6 @@ extern "C" {
         nes = gui->getNES();
         nes->enableSound(sound);
         nes->reset();
-
     }
 
     void vNES::addScreenView() {
@@ -80,7 +79,6 @@ extern "C" {
     }
 */
     void vNES::run() {
-
         // Set font to be used for progress display of loading:
 //        progressFont = new Font("Tahoma", Font.TRUETYPE_FONT | Font.BOLD, 12);
 
@@ -93,7 +91,7 @@ extern "C" {
         printf("%s\n", "Use of this program subject to GNU GPL, Version 3.");
 
         nes->loadRom(rom);
-
+        
         if (nes->rom->isValid()) {
 
             // Add the screen buffer:
@@ -105,7 +103,8 @@ extern "C" {
 
             // Start emulation:
             //System.out.println("vNES is now starting the processor.");
-            nes->getCpu()->beginExecution();
+//            nes->getCpu()->beginExecution();
+			nes->getCpu()->run();
 
         } else {
 

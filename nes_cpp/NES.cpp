@@ -28,7 +28,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         ppuMem = new Memory(this, 0x8000);	// VRAM memory (internal to PPU)
         sprMem = new Memory(this, 0x100);	// Sprite RAM  (internal to PPU)
 
-
         // Create system units:
         cpu = new CPU(this);
         palTable = new PaletteTable();
@@ -59,7 +58,30 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Clear CPU memory:
         clearCPUMemory();
+    }
 
+    void NES::dumpRomMemory() {
+        ofstream writer("rom_mem_cpp.txt", ios::out|ios::binary);
+        for (int i = 0;i<rom->rom->size(); i++) {
+	        for (int j = 0;j<(*rom->rom)[i]->size(); j++) {
+				stringstream out;
+				out << j << " " << (*(*rom->rom)[i])[j] << "\n";
+	            writer.write(out.str().c_str(), out.str().length());
+	        }
+        }
+        writer.close();
+        //exit(0);
+    }
+
+    void NES::dumpCPUMemory() {
+        ofstream writer("cpu_mem_cpp.txt", ios::out|ios::binary);
+        for (int i = 0;i<cpuMem->mem->size(); i++) {
+			stringstream out;
+			out << i << " " << (*cpuMem->mem)[i] << "\n";
+            writer.write(out.str().c_str(), out.str().length());
+        }
+        writer.close();
+        //exit(0);
     }
 
      bool NES::stateLoad(ByteBuffer* buf) {
@@ -156,7 +178,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void NES::reloadRom() {
 
-        if (romFile.empty()) {
+        if (!romFile.empty()) {
             loadRom(romFile);
         }
 
@@ -243,6 +265,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
             rom = new ROM(this);
             rom->load(file);
+            
             if (rom->isValid()) {
 
                 // The CPU will load
@@ -278,7 +301,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         cpuMem->reset();
         ppuMem->reset();
         sprMem->reset();
-
+        
         clearCPUMemory();
 
         cpu->reset();
