@@ -37,9 +37,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="main.cpp" />
-    <Compile Include="AppletUI.cpp" />
-    <Compile Include="BlipBuffer.cpp" />
-    <Compile Include="BufferView.cpp" />
     <Compile Include="ByteBuffer.cpp" />
     <Compile Include="ChannelDM.cpp" />
     <Compile Include="ChannelNoise.cpp" />
@@ -61,7 +58,6 @@
     <Compile Include="Raster.cpp" />
     <Compile Include="ROM.cpp" />
     <Compile Include="Scale.cpp" />
-    <Compile Include="ScreenView.cpp" />
     <Compile Include="Tile.cpp" />
     <Compile Include="vNES.cpp" />
     <Compile Include="Parameters.cpp" />

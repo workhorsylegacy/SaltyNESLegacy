@@ -504,9 +504,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        // If the mapper wasn't supported, create the standard one:
-        nes->gui->showErrorMsg("Warning: Mapper not supported yet.");
-        return new MapperDefault();
+        return NULL;
 
     }
 

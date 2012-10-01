@@ -414,9 +414,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      short MapperDefault::joy1Read() {
-
+		short ret;
+/*
         KbInputHandler* in = nes->getGui()->getJoy1();
-        short ret;
+
 
         switch (joy1StrobeState) {
             case 0:
@@ -467,12 +468,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (joy1StrobeState == 24) {
             joy1StrobeState = 0;
         }
-
+*/
         return ret;
 
     }
 
      short MapperDefault::joy2Read() {
+/*
         KbInputHandler* in = nes->getGui()->getJoy2();
         int st = joy2StrobeState;
 
@@ -508,6 +510,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
             return 0;
         }
+*/
+        return 0;
     }
 
      void MapperDefault::loadROM(ROM* rom) {

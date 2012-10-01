@@ -17,6 +17,26 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+	vector<int>* PPU::get_screen_buffer() {
+		return _screen_buffer;
+	}
+
+	vector<int>* PPU::get_pattern_buffer() {
+		return NULL;
+	}
+
+	vector<int>* PPU::get_name_buffer() {
+		return NULL;
+	}
+
+	vector<int>* PPU::get_img_palette_buffer() {
+		return NULL;
+	}
+	
+	vector<int>* PPU::get_spr_palette_buffer() {
+		return NULL;
+	}
+
      PPU::PPU(NES* nes) {
         this->nes = nes;
 	    this->showSpr0Hit = false;
@@ -40,6 +60,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	    this->spr0dummybuffer = new vector<int>(256 * 240);
 		this->dummyPixPriTable = new vector<int>(256 * 240);
 		this->oldFrame = new vector<int>(256 * 240);
+		
+		_screen_buffer = new vector<int>(256 * 240);
     }
 
      void PPU::init() {
@@ -53,7 +75,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Initialize misc vars:
         scanline = 0;
-        timer = nes->getGui()->getTimer();
+        timer = new HiResTimer();
 
         // Create sprite arrays:
         for(int i=0; i<64; i++) {
@@ -248,13 +270,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Make sure everything is rendered:
         if (lastRenderedScanline < 239) {
-            renderFramePartially(nes->gui->getScreenView()->getBuffer(), lastRenderedScanline + 1, 240 - lastRenderedScanline);
+            renderFramePartially(get_screen_buffer(), lastRenderedScanline + 1, 240 - lastRenderedScanline);
         }
 
         endFrame();
 
         // Notify image buffer:
-        nes->getGui()->getScreenView()->imageReady(false);
+//        nes->getGui()->getScreenView()->imageReady(false);
 
         // Reset scanline counter:
         lastRenderedScanline = -1;
@@ -373,7 +395,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::startFrame() {
 
-        vector<int>* buffer = nes->getGui()->getScreenView()->getBuffer();
+        vector<int>* buffer = get_screen_buffer();
 
         // Set background color:
         int bgColor = 0;
@@ -431,7 +453,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::endFrame() {
 
-        vector<int>* buffer = nes->getGui()->getScreenView()->getBuffer();
+        vector<int>* buffer = get_screen_buffer();
 
         // Draw spr#0 hit coordinates:
         if (showSpr0Hit) {
@@ -933,31 +955,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             renderSpritesPartially(startScan, scanCount, false);
         }
 
-        BufferView* screen = nes->getGui()->getScreenView();
-        if (screen->scalingEnabled() && !screen->useHWScaling() && !requestRenderAll) {
-
-            // Check which scanlines have changed, to try to
-            // speed up scaling:
-            int j, jmax;
-            if (startScan + scanCount > 240) {
-                scanCount = 240 - startScan;
-            }
-            for (int i = startScan; i < startScan + scanCount; i++) {
-                scanlineChanged[i] = false;
-                si = i << 8;
-                jmax = si + 256;
-                for (j = si; j < jmax; j++) {
-                    if ((*buffer)[j] != (*oldFrame)[j]) {
-                        scanlineChanged[i] = true;
-                        break;
-                    }
-                    (*oldFrame)[j] = (*buffer)[j];
-                }
-                arraycopy_int(buffer, j, oldFrame, j, jmax - j);
-            }
-
-        }
-
         validTileData = false;
 
     }
@@ -1064,7 +1061,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 
-        buffer = nes->getGui()->getScreenView()->getBuffer();
+        buffer = get_screen_buffer();
         if (f_spVisibility == 1) {
 
             int sprT1, sprT2;
@@ -1283,9 +1280,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     // Renders the contents of the
     // pattern table into an image.
      void PPU::renderPattern() {
-
-        BufferView* scr = nes->getGui()->getPatternView();
-        vector<int>* buffer = scr->getBuffer();
+        vector<int>* buffer = get_pattern_buffer();
 
         int tIndex = 0;
         for (int j = 0; j < 2; j++) {
@@ -1296,13 +1291,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
             }
         }
-        nes->getGui()->getPatternView()->imageReady(false);
+//        nes->getGui()->getPatternView()->imageReady(false);
 
     }
 
      void PPU::renderNameTables() {
 
-        vector<int>* buffer = nes->getGui()->getNameTableView()->getBuffer();
+        vector<int>* buffer = get_name_buffer();
         if (f_bgPatternTable == 0) {
             baseTile = 0;
         } else {
@@ -1352,13 +1347,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        nes->getGui()->getNameTableView()->imageReady(false);
+//        nes->getGui()->getNameTableView()->imageReady(false);
 
     }
 
      void PPU::renderPalettes() {
 
-        vector<int>* buffer = nes->getGui()->getImgPalView()->getBuffer();
+        vector<int>* buffer = get_img_palette_buffer();
         for (int i = 0; i < 16; i++) {
             for (int y = 0; y < 16; y++) {
                 for (int x = 0; x < 16; x++) {
@@ -1367,7 +1362,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        buffer = nes->getGui()->getSprPalView()->getBuffer();
+        buffer = get_spr_palette_buffer();
         for (int i = 0; i < 16; i++) {
             for (int y = 0; y < 16; y++) {
                 for (int x = 0; x < 16; x++) {
@@ -1376,8 +1371,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
-        nes->getGui()->getImgPalView()->imageReady(false);
-        nes->getGui()->getSprPalView()->imageReady(false);
+//        nes->getGui()->getImgPalView()->imageReady(false);
+//        nes->getGui()->getSprPalView()->imageReady(false);
 
     }
 

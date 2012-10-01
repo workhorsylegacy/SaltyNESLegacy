@@ -18,10 +18,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
     // Creates the NES system.
-     NES::NES(AppletUI* gui) {
+     NES::NES() {
 		this->_isRunning = false;
         Globals::nes = this;
-        this->gui = gui;
 
         // Create memory:
         cpuMem = new Memory(this, 0x10000);	// Main memory (internal to CPU)
@@ -241,11 +240,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return rom;
     }
 
-    // Returns the GUI.
-     AppletUI* NES::getGui() {
-        return gui;
-    }
-
     // Returns the memory mapper.
      MapperDefault* NES::getMemoryMapper() {
         return memMapper;
@@ -310,10 +304,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         palTable->reset();
         papu->reset();
 
-        KbInputHandler* joy1 = gui->getJoy1();
-        if (joy1 != NULL) {
-            joy1->reset();
-        }
+//        KbInputHandler* joy1 = gui->getJoy1();
+//        if (joy1 != NULL) {
+//            joy1->reset();
+//        }
 
     }
 
@@ -375,7 +369,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             rom->destroy();
         }
 
-        gui = NULL;
+//        gui = NULL;
         cpu = NULL;
         ppu = NULL;
         papu = NULL;

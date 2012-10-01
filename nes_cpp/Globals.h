@@ -99,9 +99,6 @@ class Graphics2D {};
 //class IMemoryMapper;
 class IPapuChannel;
 
-class AppletUI;
-class BlipBuffer;
-class BufferView;
 class ByteBuffer;
 class ChannelDM;
 class ChannelNoise;
@@ -125,7 +122,6 @@ class PPU;
 class Raster;
 class ROM;
 class Scale;
-class ScreenView;
 class Tile;
 class vNES;
 
@@ -217,125 +213,6 @@ public:
 
     static void println(string s);
 };
-
-class AppletUI {
-public:
-    vNES* applet;
-    NES* nes;
-    KbInputHandler* kbJoy1;
-    KbInputHandler* kbJoy2;
-    ScreenView* vScreen;
-    HiResTimer* timer;
-    long t1, t2;
-    int sleepTime;
-
-    AppletUI(vNES* applet);
-    void init(bool showGui);
-    void imageReady(bool skipFrame);
-    int getRomFileSize();
-    void showLoadProgress(int percentComplete);
-    void destroy();
-    NES* getNES();
-    KbInputHandler* getJoy1();
-    KbInputHandler* getJoy2();
-    BufferView* getScreenView();
-    BufferView* getPatternView();
-    BufferView* getSprPalView();
-    BufferView* getNameTableView();
-    BufferView* getImgPalView();
-    HiResTimer* getTimer();
-    string getWindowCaption();
-    void setWindowCaption(string s);
-    void setTitle(string s);
-    Point* getLocation();
-    int getWidth();
-    int getHeight();
-    void println(string s);
-     void showErrorMsg(string msg);
-};
-
-
-class BlipBuffer {
-public:
-	// These values must be set:
-    int win_size;
-    int smp_period;
-    int sinc_periods;
-    // Different samplings of bandlimited impulse:
-    vector<vector<int>*>* imp;
-    // Difference buffer:
-    vector<int>* diff;
-    // Last position changed in buffer:
-    int lastChanged;
-    // Previous end absolute value:
-    int prevSum;
-    // DC removal:
-    int dc_prev;
-    int dc_diff;
-    int dc_acc;
-    
-
-    void init(int bufferSize, int windowSize, int samplePeriod, int sincPeriods);
-    void impulse(int smpPos, int smpOffset, int magnitude);
-    int integrate();
-    void clear();
-    static double sinc(double x);
-};
-
-class BufferView { /*: public JPanel { */
-public:
-    // Scale modes:
-    static const int SCALE_NONE = 0;
-    static const int SCALE_HW2X = 1;
-    static const int SCALE_HW3X = 2;
-    static const int SCALE_NORMAL = 3;
-    static const int SCALE_SCANLINE = 4;
-    static const int SCALE_RASTER = 5;
-    NES* nes;
-     BufferedImage* img;
-     VolatileImage* vimg;
-     bool usingMenu;
-     Graphics* gfx;
-     int width;
-     int height;
-     vector<int>* pix;
-     vector<int>* pix_scaled;
-     int scaleMode;
-    // FPS counter variables:
-     bool showFPS;
-     long prevFrameTime;
-     string fps;
-     int fpsCounter;
-     Font* fpsFont;
-     int bgColor;
-     
-
-    // Constructor
-    BufferView(NES* nes, int width, int height);
-    void setBgColor(int color);
-    void setScaleMode(int newMode);
-    void init();
-    void createView();
-    void imageReady(bool skipFrame);
-    BufferedImage* getImage();
-    vector<int>* getBuffer();
-    void update(Graphics* g);
-    bool scalingEnabled();
-    int getScaleMode();
-    bool useNormalScaling();
-    void paint(Graphics* g);
-    void paint_scaled(Graphics* g);
-    void setFPSEnabled(bool val);
-    void paintFPS(int x, int y, Graphics* g);
-    int getBufferWidth();
-    int getBufferHeight();
-    void setUsingMenu(bool val);
-    bool useHWScaling();
-    bool useHWScaling(int mode);
-    int getScaleModeScale(int mode);
-    void destroy();
-};
-
 
 class ByteBuffer {
 public:
@@ -947,7 +824,6 @@ public:
 
 class NES {
 public:
-     AppletUI* gui;
      CPU* cpu;
      PPU* ppu;
      PAPU* papu;
@@ -961,7 +837,7 @@ public:
      string romFile;
     bool _isRunning;
 
-     NES(AppletUI* gui);
+     NES();
      bool stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
      bool isRunning();
@@ -979,7 +855,6 @@ public:
      Memory* getPpuMemory();
      Memory* getSprMemory();
      ROM* getRom();
-     AppletUI* getGui();
      MapperDefault* getMemoryMapper();
      bool loadRom(string file);
      void reset();
@@ -1263,8 +1138,14 @@ public:
     int tscanoffset;
     int srcy1, srcy2;
     int bufferSize, available, scale;
-     int cycles;
+    int cycles;
+    vector<int>* _screen_buffer;
 
+     vector<int>* get_screen_buffer();
+     vector<int>* get_pattern_buffer();
+     vector<int>* get_name_buffer();
+     vector<int>* get_img_palette_buffer();
+     vector<int>* get_spr_palette_buffer();
      PPU(NES* nes);
      void init();
      void setMirroring(int mirroring);
@@ -1412,17 +1293,6 @@ public:
     void mouseReleased(MouseEvent* me);
 };
 
-class ScreenView : public BufferView {
-public:
-     MyMouseAdapter mouse;
-     bool notifyImageReady;
-
-     ScreenView(NES* nes, int width, int height);
-     void init();
-     void setNotifyImageReady(bool value);
-     void imageReady(bool skipFrame);
-};
-
 class Tile {
 public:
     // Tile data:
@@ -1462,9 +1332,7 @@ public:
     int samplerate;
     int romSize;
     int progress;
-    AppletUI* gui;
     NES* nes;
-    ScreenView* panelScreen;
     string rom;
     Font* progressFont;
 
@@ -1472,7 +1340,6 @@ public:
     bool started;
 
     void init();
-    void addScreenView();
     void start();
     void run();
     void stop();

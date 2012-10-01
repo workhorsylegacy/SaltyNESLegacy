@@ -33,45 +33,13 @@ extern "C" {
         initKeyCodes();
         readParams();
 
-        gui = new AppletUI(this);
-        gui->init(false);
-
         Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-        nes = gui->getNES();
+        nes = new NES();
         nes->enableSound(sound);
         nes->reset();
     }
 
-    void vNES::addScreenView() {
-
-        panelScreen = (ScreenView*) gui->getScreenView();
-        panelScreen->setFPSEnabled(fps);
-
-//        this->setLayout(NULL);
-
-        if (scale) {
-
-            if (scanlines) {
-                panelScreen->setScaleMode(BufferView::SCALE_SCANLINE);
-            } else {
-                panelScreen->setScaleMode(BufferView::SCALE_NORMAL);
-            }
-
-//            this->setSize(512, 480);
-//            this->setBounds(0, 0, 512, 480);
-//            panelScreen->setBounds(0, 0, 512, 480);
-
-        } else {
-
-//            panelScreen->setBounds(0, 0, 256, 240);
-
-        }
-
-//        this->setIgnoreRepaint(true);
-//        this->add(panelScreen);
-
-    }
 /*
     void vNES::start() {
 		pthread_t thread;
@@ -95,7 +63,7 @@ extern "C" {
         if (nes->rom->isValid()) {
 
             // Add the screen buffer:
-            addScreenView();
+            //addScreenView();
 
             // Set some properties:
             Globals::timeEmulation = timeemulation;
@@ -132,13 +100,13 @@ extern "C" {
         if (nes != NULL) {
             nes->destroy();
         }
-        if (gui != NULL) {
-            gui->destroy();
-        }
+//        if (gui != NULL) {
+//            gui->destroy();
+//        }
 
-        gui = NULL;
+//        gui = NULL;
         nes = NULL;
-        panelScreen = NULL;
+//        panelScreen = NULL;
         rom.clear();
 
 //        System.runFinalization();

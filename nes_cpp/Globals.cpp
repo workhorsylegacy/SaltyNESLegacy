@@ -13,7 +13,7 @@
     const bool Globals::debug = true;
     const bool Globals::fsdebug = false;
 
-    bool Globals::appletMode = false;
+    bool Globals::appletMode = true;
     bool Globals::disableSprites = false;
     bool Globals::timeEmulation = true;
     bool Globals::palEmulation;
