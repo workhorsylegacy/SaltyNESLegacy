@@ -35,6 +35,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <time.h>
 #define _USE_MATH_DEFINES
 #include "math.h"
+#include <SDL/SDL.h>
 
 using namespace std;
 
@@ -188,6 +189,7 @@ public:
 // Class Prototypes
 class Globals {
 public:
+    static SDL_Surface* sdl_screen;
     static double CPU_FREQ_NTSC;
     static double CPU_FREQ_PAL;
     static int preferredFrameRate;

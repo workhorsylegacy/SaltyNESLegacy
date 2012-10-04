@@ -933,6 +933,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PPU::renderFramePartially(vector<int>* buffer, int startScan, int scanCount) {
+
+		// Lock the screen, if needed
+		if(SDL_MUSTLOCK(Globals::sdl_screen)) {
+			if(SDL_LockSurface(Globals::sdl_screen) < 0)
+				return;
+		}
+
         if (f_spVisibility == 1 && !Globals::disableSprites) {
             renderSpritesPartially(startScan, scanCount, true);
         }
@@ -955,6 +962,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         validTileData = false;
+
+		// Unlock the screen if needed
+		if(SDL_MUSTLOCK(Globals::sdl_screen)) {
+			SDL_UnlockSurface(Globals::sdl_screen);
+		}
+
+		SDL_Flip(Globals::sdl_screen);
     }
 
      void PPU::renderBgScanline(vector<int>* buffer, int scan) {
