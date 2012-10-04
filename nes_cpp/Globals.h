@@ -39,6 +39,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 
 
+
 // Temp stub classes
 class Point {
 public:
@@ -222,7 +223,7 @@ public:
      int byteOrder;
      vector<short>* buf;
      int size;
-     int curPos;
+     size_t curPos;
      bool hasBeenErrors;
      bool expandable;
      int expandBy;
@@ -620,7 +621,7 @@ public:
 
      static vector<int>* getOpData();
      static vector<string>* getInstNames();
-     static string getInstName(int inst);
+     static string getInstName(size_t inst);
      static vector<string>* getAddressModeNames();
      static string getAddressModeName(int addrMode);
      static void initOpData();
@@ -1229,8 +1230,8 @@ public:
     vector<short>* saveRam;
     vector<vector<Tile*>*>* vromTile;
     NES* nes;
-    int romCount;
-    int vromCount;
+    size_t romCount;
+    size_t vromCount;
     int mirroring;
     bool batteryRam;
     bool trainer;
@@ -1357,8 +1358,8 @@ inline void arraycopy_short(vector<short>* src, int srcPos, vector<short>* dest,
 	assert(srcPos >= 0);
 	assert(destPos >= 0);
 	assert(length >= 0);
-	assert(srcPos+length <= src->size());
-	assert(destPos+length <= dest->size());
+	assert(((size_t)srcPos)+length <= src->size());
+	assert(((size_t)destPos)+length <= dest->size());
 	
 	for(int i=0; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[srcPos + i];
@@ -1369,8 +1370,8 @@ inline void arraycopy_Tile(vector<Tile*>* src, int srcPos, vector<Tile*>* dest, 
 	assert(srcPos >= 0);
 	assert(destPos >= 0);
 	assert(length >= 0);
-	assert(srcPos+length <= src->size());
-	assert(destPos+length <= dest->size());
+	assert(((size_t)srcPos)+length <= src->size());
+	assert(((size_t)destPos)+length <= dest->size());
 	
 	for(int i=0; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[srcPos + i];
@@ -1381,8 +1382,8 @@ inline void arraycopy_int(vector<int>* src, int srcPos, vector<int>* dest, int d
 	assert(srcPos >= 0);
 	assert(destPos >= 0);
 	assert(length >= 0);
-	assert(srcPos+length <= src->size());
-	assert(destPos+length <= dest->size());
+	assert(((size_t)srcPos)+length <= src->size());
+	assert(((size_t)destPos)+length <= dest->size());
 	
 	for(int i=0; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[srcPos + i];

@@ -52,7 +52,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int basex, basey;
         int add;
         int tx, ty;
-        int attindex;
+        //int attindex;
         basex = index % 8;
         basey = index / 8;
         basex *= 4;
@@ -65,7 +65,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     for (int x = 0; x < 2; x++) {
                         tx = basex + sqx * 2 + x;
                         ty = basey + sqy * 2 + y;
-                        attindex = ty * width + tx;
+                        //attindex = ty * width + tx;
                         (*attrib)[ty * width + tx] = (short) ((add << 2) & 12);
                     ////System.out.println("x="+tx+" y="+ty+" value="+attrib[ty*width+tx]+" index="+attindex);
                     }

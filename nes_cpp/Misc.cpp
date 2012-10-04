@@ -25,7 +25,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	vector<float>* Misc::rnd() {
 		if(_rnd == NULL) {
 			_rnd = new vector<float>(100000);
-			for (int i = 0; i < _rnd->size(); i++) {
+			for (size_t i = 0; i < _rnd->size(); i++) {
 	            (*_rnd)[i] = rand_float();
 
 	        }
@@ -84,7 +84,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      string Misc::pad(string str, string padStr, int length) {
-        while (str.length() < length) {
+        while ((int)str.length() < length) {
             str += padStr;
         }
         return str;
@@ -93,7 +93,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      float Misc::random() {
         rndret = (*rnd())[nextRnd];
         nextRnd++;
-        if (nextRnd >= rnd()->size()) {
+        if (nextRnd >= (int) rnd()->size()) {
             nextRnd = (int) (rand_float() * (rnd()->size() - 1));
         }
         return rndret;

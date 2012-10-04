@@ -583,10 +583,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Left channel:
             sq_index = (smpSquare1 * stereoPosLSquare1 + smpSquare2 * stereoPosLSquare2) >> 8;
             tnd_index = (3 * smpTriangle * stereoPosLTriangle + (smpNoise << 1) * stereoPosLNoise + smpDmc * stereoPosLDMC) >> 8;
-            if (sq_index >= square_table->size()) {
+            if (sq_index >= (int) square_table->size()) {
                 sq_index = square_table->size() - 1;
             }
-            if (tnd_index >= tnd_table->size()) {
+            if (tnd_index >= (int) tnd_table->size()) {
                 tnd_index = tnd_table->size() - 1;
             }
             sampleValueL = (*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue;
@@ -594,10 +594,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Right channel:
             sq_index = (smpSquare1 * stereoPosRSquare1 + smpSquare2 * stereoPosRSquare2) >> 8;
             tnd_index = (3 * smpTriangle * stereoPosRTriangle + (smpNoise << 1) * stereoPosRNoise + smpDmc * stereoPosRDMC) >> 8;
-            if (sq_index >= square_table->size()) {
+            if (sq_index >= (int) square_table->size()) {
                 sq_index = square_table->size() - 1;
             }
-            if (tnd_index >= tnd_table->size()) {
+            if (tnd_index >= (int) tnd_table->size()) {
                 tnd_index = tnd_table->size() - 1;
             }
             sampleValueR = (*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue;
@@ -607,10 +607,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Mono sound:
             sq_index = smpSquare1 + smpSquare2;
             tnd_index = 3 * smpTriangle + 2 * smpNoise + smpDmc;
-            if (sq_index >= square_table->size()) {
+            if (sq_index >= (int) square_table->size()) {
                 sq_index = square_table->size() - 1;
             }
-            if (tnd_index >= tnd_table->size()) {
+            if (tnd_index >= (int) tnd_table->size()) {
                 tnd_index = tnd_table->size() - 1;
             }
             sampleValueL = 3 * ((*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue);
@@ -633,7 +633,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             sampleValueR = smpAccumR;
 
             // Write:
-            if (bufferIndex + 4 < sampleBuffer->size()) {
+            if (bufferIndex + 4 < (int) sampleBuffer->size()) {
 
                 (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
                 (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
@@ -646,7 +646,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
 
             // Write:
-            if (bufferIndex + 2 < sampleBuffer->size()) {
+            if (bufferIndex + 2 < (int) sampleBuffer->size()) {
 
                 (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
                 (*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
@@ -874,9 +874,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         double time;
         int cur_avail;
-//        if ((cur_avail = line->available()) >= target_avail) {
-//            return 0;
-//        }
+        if ((cur_avail = line->available()) >= target_avail) {
+            return 0;
+        }
 
         time = ((target_avail - cur_avail) * 1000) / sampleRate;
         time /= (stereo ? 4 : 2);

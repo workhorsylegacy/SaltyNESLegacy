@@ -414,7 +414,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      short MapperDefault::joy1Read() {
-		short ret;
+		short ret = 0;
 /*
         KbInputHandler* in = nes->getGui()->getJoy1();
 
@@ -585,7 +585,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Loads a ROM bank into the specified address.
         bank %= rom->getRomBankCount();
-        vector<short>* data = rom->getRomBank(bank);
+        //vector<short>* data = rom->getRomBank(bank);
         //cpuMem->write(address,data,data.length);
         arraycopy_short(rom->getRomBank(bank), 0, cpuMem->mem, address, 16384);
 
@@ -700,10 +700,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void MapperDefault::reset() {
 
-        joy1StrobeState = 0;
-        joy2StrobeState = 0;
-        joypadLastWrite = 0;
-        mousePressed = false;
+        this->joy1StrobeState = 0;
+        this->joy2StrobeState = 0;
+        this->joypadLastWrite = 0;
+        this->mousePressed = false;
 
     }
 

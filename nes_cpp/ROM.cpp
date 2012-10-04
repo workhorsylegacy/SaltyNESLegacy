@@ -125,7 +125,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	        (*_mapperName)[232] = "Camerica (Quattro series)";
 		}
 				
-        if (mapperType >= 0 && mapperType < _mapperName->size()) {
+        if (mapperType >= 0 && mapperType < (int) _mapperName->size()) {
             return (*_mapperName)[mapperType];
         }
         // else:
@@ -189,7 +189,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		uint8_t* bdata = new uint8_t[length];
 		short* sdata = new short[length];
 		reader.read((char*)bdata, length);
-		for(int i=0; i<length; i++) {
+		for(size_t i=0; i<length; i++) {
 			sdata[i] = (short) (bdata[i] & 255);
 		}
 		delete bdata;
@@ -240,26 +240,26 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         rom = new vector<vector<short>*>(romCount);
-        for(int i=0; i<romCount; i++) {
+        for(size_t i=0; i<romCount; i++) {
 	        (*rom)[i] = new vector<short>(16384);
         }
         
         vrom = new vector<vector<short>*>(vromCount);
-        for(int i=0; i<vromCount; i++) {
+        for(size_t i=0; i<vromCount; i++) {
 	        (*vrom)[i] = new vector<short>(4096);
         }
         
         vromTile = new vector<vector<Tile*>*>(vromCount);
-        for(int i=0; i<vromCount; i++) {
+        for(size_t i=0; i<vromCount; i++) {
 	        (*vromTile)[i] = new vector<Tile*>(256);
         }
 
         //try{
 
         // Load PRG-ROM banks:
-        int offset = 16;
-        for (int i = 0; i < romCount; i++) {
-            for (int j = 0; j < 16384; j++) {
+        size_t offset = 16;
+        for (size_t i = 0; i < romCount; i++) {
+            for (size_t j = 0; j < 16384; j++) {
                 if (offset + j >= length) {
                     break;
                 }
@@ -269,8 +269,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Load CHR-ROM banks:
-        for (int i = 0; i < vromCount; i++) {
-            for (int j = 0; j < 4096; j++) {
+        for (size_t i = 0; i < vromCount; i++) {
+            for (size_t j = 0; j < 4096; j++) {
                 if (offset + j >= length) {
                     break;
                 }
@@ -280,8 +280,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Create VROM tiles:
-        for (int i = 0; i < vromCount; i++) {
-            for (int j = 0; j < 256; j++) {
+        for (size_t i = 0; i < vromCount; i++) {
+            for (size_t j = 0; j < 256; j++) {
                 (*(*vromTile)[i])[j] = new Tile();
             }
         }
@@ -291,8 +291,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         //System.out.println("VROM bank count: "+vromCount);
         int tileIndex;
         int leftOver;
-        for (int v = 0; v < vromCount; v++) {
-            for (int i = 0; i < 4096; i++) {
+        for (size_t v = 0; v < vromCount; v++) {
+            for (size_t i = 0; i < 4096; i++) {
                 tileIndex = i >> 4;
                 leftOver = i % 16;
                 if (leftOver < 8) {
@@ -373,7 +373,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      string ROM::getMapperName() {
 
-        if (mapperType >= 0 && mapperType < getmapperName().length()) {
+        if (mapperType >= 0 && mapperType < (int) getmapperName().length()) {
             return (*_mapperName)[mapperType];
         }
         // else:
@@ -394,7 +394,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      bool ROM::mapperSupported() {
-        if (mapperType < getmapperSupported()->size() && mapperType >= 0) {
+        if (mapperType < (int) getmapperSupported()->size() && mapperType >= 0) {
             return (*getmapperSupported())[mapperType];
         }
         return false;
@@ -543,7 +543,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
 
                 // Convert hex-encoded memory string to bytes:
-                for (int i = 0; i < saveRam->size(); i++) {
+                for (size_t i = 0; i < saveRam->size(); i++) {
                     string hexByte = encodedData.substring(i * 2, i * 2 + 2);
                     (*saveRam)[i] = Short.parseShort(hexByte, 16);
                 }
@@ -582,7 +582,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                 // Convert bytes to hex-encoded memory string:
                 StringBuilder sb = new StringBuilder(saveRam->size() * 2 + saveRam->size() / 38);
-                for (int i = 0; i < saveRam->size(); i++) {
+                for (size_t i = 0; i < saveRam->size(); i++) {
                     string hexByte = string.format("%02x", (*saveRam)[i] & 0xFF);
                     if (i % 38 == 0 && i != 0) {
                         // Put spacing in so that word wrap will work.

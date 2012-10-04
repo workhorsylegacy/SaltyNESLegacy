@@ -128,7 +128,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void Mapper001::setReg(int reg, int value) {
 
-        int tmp, tmp2;
+        int tmp;
 
         if (reg == 0) {
 

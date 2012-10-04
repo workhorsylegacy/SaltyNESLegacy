@@ -133,7 +133,6 @@ extern "C" {
 	}
 
 	 /*synchronized*/ void CPU::beginExecution(){
-
 		if(myThread!=NULL && isAlive){
 			endExecution();
 		}
@@ -141,7 +140,6 @@ extern "C" {
 		myThread = new pthread_t();
 		pthread_create(myThread, NULL, runCPU, this);
 //		myThread.setPriority(Thread.MIN_PRIORITY);
-
 	}
 
 	 /*synchronized*/ void CPU::endExecution(){

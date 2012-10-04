@@ -126,8 +126,8 @@ extern "C" {
 
         string pad;
         string disp;
-        int scrw, scrh;
-        int txtw, txth;
+//        int scrw, scrh;
+//        int txtw, txth;
 
         if (!started) {
             return;
@@ -135,11 +135,11 @@ extern "C" {
 
         // Get screen size:
         if (scale) {
-            scrw = 512;
-            scrh = 480;
+//            scrw = 512;
+//            scrh = 480;
         } else {
-            scrw = 256;
-            scrh = 240;
+//            scrw = 256;
+//            scrh = 240;
         }
 
         // Fill background:

@@ -61,8 +61,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     void NES::dumpRomMemory() {
         ofstream writer("rom_mem_cpp.txt", ios::out|ios::binary);
-        for (int i = 0;i<rom->rom->size(); i++) {
-	        for (int j = 0;j<(*rom->rom)[i]->size(); j++) {
+        for (size_t i = 0;i<rom->rom->size(); i++) {
+	        for (size_t j = 0;j<(*rom->rom)[i]->size(); j++) {
 				stringstream out;
 				out << j << " " << (*(*rom->rom)[i])[j] << "\n";
 	            writer.write(out.str().c_str(), out.str().length());
@@ -74,7 +74,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     void NES::dumpCPUMemory() {
         ofstream writer("cpu_mem_cpp.txt", ios::out|ios::binary);
-        for (int i = 0;i<cpuMem->mem->size(); i++) {
+        for (size_t i = 0;i<cpuMem->mem->size(); i++) {
 			stringstream out;
 			out << i << " " << (*cpuMem->mem)[i] << "\n";
             writer.write(out.str().c_str(), out.str().length());

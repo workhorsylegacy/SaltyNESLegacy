@@ -34,7 +34,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     ByteBuffer::ByteBuffer(vector<int8_t>* content, int byteOrdering) {
         try {
             this->buf = new vector<short>(size);
-            for (int i = 0; i < content->size(); i++) {
+            for (size_t i = 0; i < content->size(); i++) {
                 (*buf)[i] = (short) ((*content)[i] & 255);
             }
             size = content->size();
@@ -68,7 +68,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     int8_t* ByteBuffer::getBytes() {
         int8_t* ret = new int8_t[buf->size()];
-        for (int i = 0; i < buf->size(); i++) {
+        for (size_t i = 0; i < buf->size(); i++) {
             ret[i] = (int8_t) (*buf)[i];
         }
         return ret;
@@ -92,7 +92,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     void ByteBuffer::clear() {
-        for (int i = 0; i < buf->size(); i++) {
+        for (size_t i = 0; i < buf->size(); i++) {
             (*buf)[i] = 0;
         }
         curPos = 0;
@@ -273,7 +273,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         char* charArr = (char*) var.c_str();
         short theChar;
         if (inRange(pos, var.length() * 2)) {
-            for (int i = 0; i < var.length(); i++) {
+            for (size_t i = 0; i < var.length(); i++) {
                 theChar = (short) (charArr[i]);
                 (*buf)[pos + 0] = (short) ((theChar >> 8) & 255);
                 (*buf)[pos + 1] = (short) ((theChar) & 255);
@@ -340,7 +340,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     bool ByteBuffer::putStringAscii(string var, int pos) {
         char* charArr = (char*) var.c_str();
         if (inRange(pos, var.length())) {
-            for (int i = 0; i < var.length(); i++) {
+            for (size_t i = 0; i < var.length(); i++) {
                 (*buf)[pos] = (short) charArr[i];
                 pos++;
             }
@@ -358,7 +358,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (buf->size() - curPos < arr->size()) {
             resize(curPos + arr->size());
         }
-        for (int i = 0; i < arr->size(); i++) {
+        for (size_t i = 0; i < arr->size(); i++) {
             (*buf)[curPos + i] = (int8_t) (*arr)[i];
         }
         curPos += arr->size();
@@ -372,7 +372,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (buf->size() - curPos < arr->size()) {
             return false;
         }
-        for (int i = 0; i < arr->size(); i++) {
+        for (size_t i = 0; i < arr->size(); i++) {
             (*arr)[i] = (short) ((*buf)[curPos + i] & 0xFF);
         }
         curPos += arr->size();
@@ -387,13 +387,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             resize(curPos + arr->size() * 2);
         }
         if (byteOrder == BO_BIG_ENDIAN) {
-            for (int i = 0; i < arr->size(); i++) {
+            for (size_t i = 0; i < arr->size(); i++) {
                 (*buf)[curPos + 0] = (short) (((*arr)[i] >> 8) & 255);
                 (*buf)[curPos + 1] = (short) (((*arr)[i]) & 255);
                 curPos += 2;
             }
         } else {
-            for (int i = 0; i < arr->size(); i++) {
+            for (size_t i = 0; i < arr->size(); i++) {
                 (*buf)[curPos + 1] = (short) (((*arr)[i] >> 8) & 255);
                 (*buf)[curPos + 0] = (short) (((*arr)[i]) & 255);
                 curPos += 2;
@@ -605,7 +605,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     vector<short>* ByteBuffer::expandShortArray(vector<short>* array, int size) {
         vector<short>* newArr = new vector<short>(array->size() + size);
-        for(int i=0; i<array->size(); i++)
+        for(size_t i=0; i<array->size(); i++)
         	(*newArr)[i] = (*array)[i];
         return newArr;
     }
@@ -627,11 +627,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         int encpos = 0;
         int tmp;
-        for (int i = 0; i < data->size(); i++) {
+        for (size_t i = 0; i < data->size(); i++) {
 
             tmp = (*data)[i];
-            (*enc)[encpos] = (int8_t) (65 + (tmp) & 0xF);
-            (*enc)[encpos + 1] = (int8_t) (65 + (tmp >> 4) & 0xF);
+            (*enc)[encpos] = (int8_t) ((65 + (tmp)) & 0xF);
+            (*enc)[encpos + 1] = (int8_t) ((65 + (tmp >> 4)) & 0xF);
             encpos += 2;
 
         }

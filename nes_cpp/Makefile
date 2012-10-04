@@ -1,7 +1,7 @@
 
 
 all: clean
-	g++ -g -o main *.cpp -lpthread -lrt -lSDL
+	g++ -Wall -Werror -g -o main *.cpp -lpthread -lSDL -lrt
 
 clean:
 	rm -f main *.o *~ core

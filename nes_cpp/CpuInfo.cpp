@@ -115,7 +115,7 @@
         return instname;
     }
 
-     string CpuInfo::getInstName(int inst) {
+     string CpuInfo::getInstName(size_t inst) {
         if (instname == NULL) {
             initInstNames();
         }
@@ -137,7 +137,7 @@
         if (addrDesc == NULL) {
             initAddrDesc();
         }
-        if (addrMode >= 0 && addrMode < addrDesc->size()) {
+        if (addrMode >= 0 && addrMode < (int)addrDesc->size()) {
             return (*addrDesc)[addrMode];
         }
         return "???";

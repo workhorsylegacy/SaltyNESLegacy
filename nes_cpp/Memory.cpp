@@ -23,7 +23,8 @@
 	}
 	
 	 void Memory::reset(){
-		for(int i=0;i<mem->size();i++)(*mem)[i] = 0;
+		for(size_t i=0; i<mem->size(); i++)
+			(*mem)[i] = 0;
 	}
 	
 	 int Memory::getMemSize(){
@@ -64,14 +65,14 @@
 	
 	 void Memory::write(int address, vector<short>* array, int length){
 	
-		if(address+length > mem->size())return;
+		if(address+length > (int) mem->size())return;
 		arraycopy_short(array, 0, mem, address, length);
 		
 	}
 	
 	 void Memory::write(int address, vector<short>* array, int arrayoffset, int length){
 		
-		if(address+length > mem->size())return;
+		if(address+length > (int) mem->size())return;
 		arraycopy_short(array,arrayoffset,mem,address,length);
 		
 	}

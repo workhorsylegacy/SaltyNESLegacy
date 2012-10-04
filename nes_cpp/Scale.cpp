@@ -139,7 +139,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         int max;
         int col1, col2, col3;
-        int r, g, b;
+        //int r, g, b;
         int flag = 0;
 
         for (int y = 0; y < 240; y++) {
@@ -167,7 +167,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     (*dest)[di + (512 & flag)] = col2;
                     (*dest)[di + (512 & flag) - 1] = col2;
-                    (*dest)[di + 512 & (512 - flag)] = col3;
+                    (*dest)[(di + 512) & (512 - flag)] = col3;
                     flag = 512 - flag;
 
                     di++;

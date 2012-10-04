@@ -112,7 +112,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         curX = 0;
 
         // Initialize old frame buffer:
-        for (int i = 0; i < oldFrame->size(); i++) {
+        for (size_t i = 0; i < oldFrame->size(); i++) {
             (*oldFrame)[i] = -1;
         }
 
@@ -442,10 +442,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         }
 
-        for (int i = 0; i < buffer->size(); i++) {
+        for (size_t i = 0; i < buffer->size(); i++) {
             (*buffer)[i] = bgColor;
         }
-        for (int i = 0; i < pixrendered->size(); i++) {
+        for (size_t i = 0; i < pixrendered->size(); i++) {
             (*pixrendered)[i] = 65;
         }
 
@@ -905,7 +905,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
 
             // Use lookup table for mirrored address:
-            if (address < vramMirrorTable->size()) {
+            if (address < (int) vramMirrorTable->size()) {
                 writeMem((*vramMirrorTable)[address], value);
             } else {
                 if (Globals::debug) {
@@ -933,7 +933,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PPU::renderFramePartially(vector<int>* buffer, int startScan, int scanCount) {
-
         if (f_spVisibility == 1 && !Globals::disableSprites) {
             renderSpritesPartially(startScan, scanCount, true);
         }
@@ -956,7 +955,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         validTileData = false;
-
     }
 
      void PPU::renderBgScanline(vector<int>* buffer, int scan) {
@@ -1064,8 +1062,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         buffer = get_screen_buffer();
         if (f_spVisibility == 1) {
 
-            int sprT1, sprT2;
-
             for (int i = 0; i < 64; i++) {
                 if (bgPriority[i] == bgPri && sprX[i] >= 0 && sprX[i] < 256 && sprY[i] + 8 >= startscan && sprY[i] < startscan + scancount) {
                     // Show sprite.
@@ -1137,8 +1133,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int tIndexAdd = (f_spPatternTable == 0 ? 0 : 256);
         int x, y;
         int bufferIndex;
-        int col;
-        bool bgPri;
+        //int col;
+        //bool bgPri;
         Tile* t;
 
         x = sprX[0];
@@ -1155,8 +1151,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 // Sprite is in range.
                 // Draw scanline:
                 t = (*ptTile)[sprTile[0] + tIndexAdd];
-                col = sprCol[0];
-                bgPri = bgPriority[0];
+                //col = sprCol[0];
+                //bgPri = bgPriority[0];
 
                 if (vertFlip[0]) {
                     toffset = 7 - (scan - y);
@@ -1232,7 +1228,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
                 toffset *= 8;
                 col = sprCol[0];
-                bgPri = bgPriority[0];
+                //bgPri = bgPriority[0];
 
                 bufferIndex = scan * 256 + x;
                 if (horiFlip[0]) {
@@ -1489,10 +1485,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void PPU::invalidateFrameCache() {
 
         // Clear the no-update scanline buffer:
-        for (int i = 0; i < 240; i++) {
+        for (size_t i = 0; i < 240; i++) {
             scanlineChanged[i] = true;
         }
-        for(int i=0; i<oldFrame->size(); i++)
+        for(size_t i=0; i<oldFrame->size(); i++)
         	(*oldFrame)[i] = -1;
         requestRenderAll = true;
 
@@ -1642,7 +1638,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Mirroring:
             //currentMirroring = -1;
             //setMirroring(buf->readInt());
-            for (int i = 0; i < vramMirrorTable->size(); i++) {
+            for (size_t i = 0; i < vramMirrorTable->size(); i++) {
                 (*vramMirrorTable)[i] = buf->readInt();
             }
 
@@ -1665,21 +1661,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
             // Stuff used during rendering:
-            for (int i = 0; i < bgbuffer->size(); i++) {
+            for (size_t i = 0; i < bgbuffer->size(); i++) {
                 (*bgbuffer)[i] = buf->readByte();
             }
-            for (int i = 0; i < pixrendered->size(); i++) {
+            for (size_t i = 0; i < pixrendered->size(); i++) {
                 (*pixrendered)[i] = buf->readByte();
             }
 
             // Name tables:
-            for (int i = 0; i < 4; i++) {
+            for (size_t i = 0; i < 4; i++) {
                 ntable1[i] = buf->readByte();
                 (*nameTable)[i]->stateLoad(buf);
             }
 
             // Pattern data:
-            for (int i = 0; i < ptTile->size(); i++) {
+            for (size_t i = 0; i < ptTile->size(); i++) {
                 (*ptTile)[i]->stateLoad(buf);
             }
 
@@ -1693,7 +1689,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
              */
             // Sprite data:
             vector<short>* sprmem = nes->getSprMemory()->mem;
-            for (int i = 0; i < sprmem->size(); i++) {
+            for (size_t i = 0; i < sprmem->size(); i++) {
                 spriteRamWriteUpdate(i, (*sprmem)[i]);
             }
 
@@ -1742,7 +1738,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Mirroring:
         //buf->putInt(currentMirroring);
-        for (int i = 0; i < vramMirrorTable->size(); i++) {
+        for (size_t i = 0; i < vramMirrorTable->size(); i++) {
             buf->putInt((*vramMirrorTable)[i]);
         }
 
@@ -1766,21 +1762,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
         // Stuff used during rendering:
-        for (int i = 0; i < bgbuffer->size(); i++) {
+        for (size_t i = 0; i < bgbuffer->size(); i++) {
             buf->putByte((short) (*bgbuffer)[i]);
         }
-        for (int i = 0; i < pixrendered->size(); i++) {
+        for (size_t i = 0; i < pixrendered->size(); i++) {
             buf->putByte((short) (*pixrendered)[i]);
         }
 
         // Name tables:
-        for (int i = 0; i < 4; i++) {
+        for (size_t i = 0; i < 4; i++) {
             buf->putByte((short) ntable1[i]);
             (*nameTable)[i]->stateSave(buf);
         }
 
         // Pattern data:
-        for (int i = 0; i < ptTile->size(); i++) {
+        for (size_t i = 0; i < ptTile->size(); i++) {
             (*ptTile)[i]->stateSave(buf);
         }
 
@@ -1847,10 +1843,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         regFH = 0;
         regS = 0;
 
-        for(int i=0; i<240; i++)
+        for(size_t i=0; i<240; i++)
         	scanlineChanged[i] = true;
 
-        for(int i=0; i<oldFrame->size(); i++)
+        for(size_t i=0; i<oldFrame->size(); i++)
         	(*oldFrame)[i] = -1;
 
         // Initialize stuff:
