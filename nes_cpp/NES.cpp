@@ -154,11 +154,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void NES::startEmulation() {
 
         if (Globals::enableSound && !papu->isRunning()) {
-            papu->start();
+            papu->lock_mutex();
+            papu->synchronized_start();
+            papu->unlock_mutex();
         }
         {
             if (rom != NULL && rom->isValid() && !cpu->isRunning()) {
-                cpu->beginExecution();
+	            cpu->lock_mutex();
+                cpu->synchronized_beginExecution();
+                cpu->unlock_mutex();
                 _isRunning = true;
             }
         }
@@ -166,7 +170,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void NES::stopEmulation() {
         if (cpu->isRunning()) {
-            cpu->endExecution();
+	        cpu->lock_mutex();
+            cpu->synchronized_endExecution();
+            cpu->unlock_mutex();
             _isRunning = false;
         }
 
@@ -320,7 +326,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (enable) {
-            papu->start();
+            papu->lock_mutex();
+            papu->synchronized_start();
+            papu->unlock_mutex();
         } else {
             papu->stop();
         }
@@ -338,8 +346,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         Globals::preferredFrameRate = rate;
         Globals::frameTime = 1000000 / rate;
-        papu->setSampleRate(papu->getSampleRate(), false);
-
+        
+        papu->lock_mutex();
+        papu->synchronized_setSampleRate(papu->getSampleRate(), false);
+        papu->unlock_mutex();
     }
 
      void NES::destroy() {

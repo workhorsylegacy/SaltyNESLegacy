@@ -31,9 +31,18 @@ extern "C" {
     }
 }
 
+	void CPU::lock_mutex() {
+		pthread_mutex_lock(&_mutex);
+	}
+
+	void CPU::unlock_mutex() {
+		pthread_mutex_unlock(&_mutex);
+	}
+
 	// Constructor:
 	 CPU::CPU(NES* nes){
 		this->nes = nes;
+		pthread_mutex_init(&_mutex, NULL);
 	}
 
 	// Initialize:
@@ -132,9 +141,11 @@ extern "C" {
 
 	}
 
-	 /*synchronized*/ void CPU::beginExecution(){
+	 void CPU::synchronized_beginExecution(){
 		if(myThread!=NULL && isAlive){
-			endExecution();
+			lock_mutex();
+			synchronized_endExecution();
+			unlock_mutex();
 		}
 
 		myThread = new pthread_t();
@@ -142,7 +153,7 @@ extern "C" {
 //		myThread.setPriority(Thread.MIN_PRIORITY);
 	}
 
-	 /*synchronized*/ void CPU::endExecution(){
+	 void CPU::synchronized_endExecution(){
 		//System.out.println("* Attempting to stop CPU thread.");
 		if(myThread!=NULL && isAlive){
 			try{
@@ -167,12 +178,14 @@ extern "C" {
 
 	 void CPU::run(){
 		 isAlive = true;
-		initRun();
+		lock_mutex();
+		synchronized_initRun();
+		unlock_mutex();
 		emulate();
 	    isAlive = false;
 	}
 
-	 /*synchronized*/ void CPU::initRun(){
+	 void CPU::synchronized_initRun(){
 		stopRunning = false;
 	}
 
@@ -1411,6 +1424,7 @@ extern "C" {
 	 void CPU::destroy(){
 		nes 	= NULL;
 		mmap 	= NULL;
+		pthread_mutex_destroy(&_mutex);
     }
 
 

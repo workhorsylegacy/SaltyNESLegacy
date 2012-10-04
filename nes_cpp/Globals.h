@@ -507,16 +507,18 @@ public:
 	 bool stopRunning;
 	 bool crash;
 
+	 void lock_mutex();
+	 void unlock_mutex();
 	 CPU(NES* nes);
 	 void init();
 	 void stateLoad(ByteBuffer* buf);
 	 void stateSave(ByteBuffer* buf);
 	 void reset();
-	 /*synchronized*/ void beginExecution();
-	 /*synchronized*/ void endExecution();
+	 void synchronized_beginExecution();
+	 void synchronized_endExecution();
 	 bool isRunning();
 	 void run();
-	 /*synchronized*/ void initRun();
+	 void synchronized_initRun();
 	 void emulate();
 	 int load(int addr);
 	 int load16bit(int addr);
@@ -903,6 +905,8 @@ public:
 
  class PAPU {
  public:
+
+    mutable pthread_mutex_t _mutex;
     NES* nes;
     Memory* cpuMem;
     Mixer* mixer;
@@ -982,10 +986,12 @@ public:
     SourceDataLine* line;
     int bufferIndex;
 
+     void lock_mutex();
+     void unlock_mutex();
      PAPU(NES* nes);
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
-     /*synchronized*/ void start();
+     void synchronized_start();
      NES* getNes();
      short readReg(int address);
      void writeReg(int address, short value);
@@ -1002,8 +1008,8 @@ public:
      int getLengthMax(int value);
      int getDmcFrequency(int value);
      int getNoiseWaveLength(int value);
-     /*synchronized*/ void setSampleRate(int rate, bool restart);
-     /*synchronized*/ void setStereo(bool s, bool restart);
+     void synchronized_setSampleRate(int rate, bool restart);
+     void synchronized_setStereo(bool s, bool restart);
      int getPapuBufferSize();
      void setChannelEnabled(int channel, bool value);
      void setMasterVolume(int value);

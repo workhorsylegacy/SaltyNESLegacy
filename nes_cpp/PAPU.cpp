@@ -45,6 +45,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		0x20, 0x1E
 	};
 
+	void PAPU::lock_mutex() {
+		pthread_mutex_lock(&_mutex);
+	}
+
+	void PAPU::unlock_mutex() {
+		pthread_mutex_unlock(&_mutex);
+	}
+
      PAPU::PAPU(NES* nes) {
 	    this->bufferSize = 2048;
 	    this->sampleRate = 44100;
@@ -70,7 +78,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         this->nes = nes;
         cpuMem = nes->getCpuMemory();
 
-        setSampleRate(sampleRate, false);
+        lock_mutex();
+        synchronized_setSampleRate(sampleRate, false);
+        unlock_mutex();
+        
         sampleBuffer = new vector<int8_t>(bufferSize * (stereo ? 4 : 2));
         ismpbuffer = new vector<int>(bufferSize * (stereo ? 2 : 1));
         bufferIndex = 0;
@@ -94,6 +105,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         frameIrqEnabled = false;
         frameIrqCounterMax = 4;
 
+        pthread_mutex_init(&_mutex, NULL);
     }
 
      void PAPU::stateLoad(ByteBuffer* buf) {
@@ -104,7 +116,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // not yet.
     }
 
-     /*synchronized*/ void PAPU::start() {
+     void PAPU::synchronized_start() {
 
         //System.out.println("* Starting PAPU lines->");
         if (line != NULL && line->isActive()) {
@@ -698,7 +710,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PAPU::reset() {
 
-        setSampleRate(sampleRate, false);
+        lock_mutex();
+        synchronized_setSampleRate(sampleRate, false);
+        unlock_mutex();
+        
         updateChannelEnable(0);
         masterFrameCounter = 0;
         derivedFrameCounter = 0;
@@ -760,7 +775,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return 0;
     }
 
-     /*synchronized*/ void PAPU::setSampleRate(int rate, bool restart) {
+     void PAPU::synchronized_setSampleRate(int rate, bool restart) {
 
         bool cpuRunning = nes->isRunning();
         if (cpuRunning) {
@@ -778,7 +793,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (restart) {
             stop();
-            start();
+            
+            lock_mutex();
+            synchronized_start();
+            unlock_mutex();
         }
 
         if (cpuRunning) {
@@ -787,7 +805,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     /*synchronized*/ void PAPU::setStereo(bool s, bool restart) {
+     void PAPU::synchronized_setStereo(bool s, bool restart) {
 
         if (stereo == s) {
             return;
@@ -805,7 +823,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (restart) {
             stop();
-            start();
+
+            lock_mutex();
+            synchronized_start();
+            unlock_mutex();
         }
 
         if (running) {
@@ -1011,4 +1032,5 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         mixer = NULL;
         line = NULL;
 
+        pthread_mutex_destroy(&_mutex);
     }

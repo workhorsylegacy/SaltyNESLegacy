@@ -71,7 +71,9 @@ extern "C" {
 
             // Start emulation:
             //System.out.println("vNES is now starting the processor.");
-//            nes->getCpu()->beginExecution();
+//            nes->getCpu()->lock_mutex();
+//            nes->getCpu()->synchronized_beginExecution();
+//            nes->getCpu()->unlock_mutex();
 			nes->getCpu()->run();
 
         } else {
