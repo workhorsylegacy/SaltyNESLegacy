@@ -1127,7 +1127,6 @@ public:
     vector<int>* spr0dummybuffer;
     vector<int>* dummyPixPriTable;
     vector<int>* oldFrame;
-    vector<int>* buffer;
     int* tpix;
     bool scanlineChanged[240];
     bool requestRenderAll;

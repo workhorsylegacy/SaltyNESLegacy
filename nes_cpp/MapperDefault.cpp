@@ -18,7 +18,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 	void MapperDefault::write(int address, short value) {
-		
+		base_write(address, value);
 	}
 
      void MapperDefault::base_init(NES* nes) {
@@ -271,7 +271,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         // 0x4017:
                         // Joystick 2 + Strobe
-                        if (mousePressed && nes->ppu != NULL && nes->ppu->buffer != NULL) {
+                        if (mousePressed && nes->ppu != NULL && nes->ppu->get_screen_buffer() != NULL) {
 
                             // Check for white pixel nearby:
 
@@ -284,7 +284,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                             for (int y = sy; y < ey; y++) {
                                 for (int x = sx; x < ex; x++) {
-                                    if (((*nes->ppu->buffer)[(y << 8) + x] & 0xFFFFFF) == 0xFFFFFF) {
+                                    if (((*nes->ppu->get_screen_buffer())[(y << 8) + x] & 0xFFFFFF) == 0xFFFFFF) {
                                         w = 0x1 << 3;
                                         break;
                                     }

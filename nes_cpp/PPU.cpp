@@ -258,11 +258,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PPU::startVBlank() {
+		vector<int>* buffer = this->get_screen_buffer();
 
         // Start VBlank period:
         // Do VBlank.
         if (Globals::debug) {
-            Globals::println("VBlank occurs!");
+//            Globals::println("VBlank occurs!");
         }
 
         // Do NMI:
@@ -270,7 +271,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Make sure everything is rendered:
         if (lastRenderedScanline < 239) {
-            renderFramePartially(get_screen_buffer(), lastRenderedScanline + 1, 240 - lastRenderedScanline);
+            renderFramePartially(buffer, lastRenderedScanline + 1, 240 - lastRenderedScanline);
         }
 
         endFrame();
@@ -286,7 +287,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PPU::endScanline() {
-
+		vector<int>* buffer = this->get_screen_buffer();
+		
         if (scanline < 19 + vblankAdd) {
 
             // VINT
@@ -919,7 +921,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PPU::triggerRendering() {
-
+		vector<int>* buffer = this->get_screen_buffer();
         if (scanline - vblankAdd >= 21 && scanline - vblankAdd <= 260) {
 
             // Render sprites, and combine:
@@ -962,6 +964,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         validTileData = false;
+
+		// Actually draw the screen
+//		uint8_t r = 0, g = 0, b = 255;
+		uint32_t color;
+		uint32_t* pixels = (uint32_t*) Globals::sdl_screen->pixels;
+		for(size_t y=0; y<240; ++y) {
+			for(size_t x=0; x<256; ++x) {
+				color = (*buffer)[x + (y * (256))];
+				
+//				color = SDL_MapRGB(Globals::sdl_screen->format, r, g, b);
+				pixels[x + (y * (256))] = color;
+			}
+		}
 
 		// Unlock the screen if needed
 		if(SDL_MUSTLOCK(Globals::sdl_screen)) {
@@ -1073,7 +1088,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 
-        buffer = get_screen_buffer();
+        vector<int>* buffer = this->get_screen_buffer();
         if (f_spVisibility == 1) {
 
             for (int i = 0; i < 64; i++) {
@@ -1286,7 +1301,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return false;
 
     }
-
+/*
     // Renders the contents of the
     // pattern table into an image.
      void PPU::renderPattern() {
@@ -1385,7 +1400,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 //        nes->getGui()->getSprPalView()->imageReady(false);
 
     }
-
+*/
 
     // This will write to PPU memory, and
     // update internally buffered data

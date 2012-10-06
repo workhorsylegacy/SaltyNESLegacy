@@ -73,13 +73,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     void NES::dumpCPUMemory() {
-        ofstream writer("cpu_mem_cpp.txt", ios::out|ios::binary);
+        //ofstream writer("cpu_mem_cpp.txt", ios::out|ios::binary);
         for (size_t i = 0;i<cpuMem->mem->size(); i++) {
 			stringstream out;
-			out << i << " " << (*cpuMem->mem)[i] << "\n";
-            writer.write(out.str().c_str(), out.str().length());
+			out << "-" << i << " " << (*cpuMem->mem)[i] << "\n";
+            printf(out.str().c_str(), out.str().length());
         }
-        writer.close();
+        //writer.close();
         //exit(0);
     }
 
