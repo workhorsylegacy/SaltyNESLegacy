@@ -21,6 +21,13 @@ void exit_handler(int signum) {
 }
 
 int main(int argc, char* argv[]) {
+	printf("%s\n", "");
+	printf("%s\n", "C++NES 2.14 \u00A9 2012 Matthew Brennan Jones <mattjones@workhorsy.org>");
+	printf("%s\n", "A Port of vNES from Java to C++");
+	printf("%s\n", "vNES 2.14 \u00A9 2006-2011 Jamie Sanders");
+	printf("%s\n", "For vNES, see www.thatsanderskid.com");
+	printf("%s\n", "Use of this program subject to GNU GPL, Version 3.");
+
 	// Initialize SDL, exit if there is an error.
 	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
 		fprintf(stderr, "Could not initialize SDL: %s\n", 

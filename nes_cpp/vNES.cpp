@@ -54,10 +54,6 @@ extern "C" {
         started = true;
 
         // Load ROM file:
-        printf("%s\n", "vNES 2.14 \u00A9 2006-2011 Jamie Sanders");
-        printf("%s\n", "For updates, see www.thatsanderskid.com");
-        printf("%s\n", "Use of this program subject to GNU GPL, Version 3.");
-
         nes->loadRom(rom);
         
         if (nes->rom->isValid()) {
