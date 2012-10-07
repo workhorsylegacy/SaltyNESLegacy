@@ -276,8 +276,37 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         endFrame();
 
-        // Notify image buffer:
-//        nes->getGui()->getScreenView()->imageReady(false);
+		// Lock the screen, if needed
+		if(SDL_MUSTLOCK(Globals::sdl_screen)) {
+			if(SDL_LockSurface(Globals::sdl_screen) < 0)
+				return;
+		}
+
+		// Actually draw the screen
+		//uint8_t r = 0, g = 0, b = 255;
+		int color;
+		//uint32_t color16;
+		uint32_t* pixels = (uint32_t*) Globals::sdl_screen->pixels;
+		for(size_t y=0; y<240; ++y) {
+			for(size_t x=0; x<256; ++x) {
+				//color16 = (*buffer)[x + (y * (256))];
+				//r = (color16 >> 12) & 0xF;
+				//g = (color16 >> 8) & 0xF;
+				//b = (color16 >> 4) & 0xF;
+				
+				//color = SDL_MapRGB(Globals::sdl_screen->format, r, g, b);
+				color = (*buffer)[x + (y * (256))];
+				//printf("color: %d\n", color);
+				pixels[x + (y * (256))] = color;
+			}
+		}
+
+		// Unlock the screen if needed
+		if(SDL_MUSTLOCK(Globals::sdl_screen)) {
+			SDL_UnlockSurface(Globals::sdl_screen);
+		}
+
+		SDL_Flip(Globals::sdl_screen);
 
         // Reset scanline counter:
         lastRenderedScanline = -1;
@@ -935,13 +964,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PPU::renderFramePartially(vector<int>* buffer, int startScan, int scanCount) {
-
-		// Lock the screen, if needed
-		if(SDL_MUSTLOCK(Globals::sdl_screen)) {
-			if(SDL_LockSurface(Globals::sdl_screen) < 0)
-				return;
-		}
-
         if (f_spVisibility == 1 && !Globals::disableSprites) {
             renderSpritesPartially(startScan, scanCount, true);
         }
@@ -964,26 +986,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         validTileData = false;
-
-		// Actually draw the screen
-//		uint8_t r = 0, g = 0, b = 255;
-		uint32_t color;
-		uint32_t* pixels = (uint32_t*) Globals::sdl_screen->pixels;
-		for(size_t y=0; y<240; ++y) {
-			for(size_t x=0; x<256; ++x) {
-				color = (*buffer)[x + (y * (256))];
-				
-//				color = SDL_MapRGB(Globals::sdl_screen->format, r, g, b);
-				pixels[x + (y * (256))] = color;
-			}
-		}
-
-		// Unlock the screen if needed
-		if(SDL_MUSTLOCK(Globals::sdl_screen)) {
-			SDL_UnlockSurface(Globals::sdl_screen);
-		}
-
-		SDL_Flip(Globals::sdl_screen);
     }
 
      void PPU::renderBgScanline(vector<int>* buffer, int scan) {

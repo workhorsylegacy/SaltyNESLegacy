@@ -8,6 +8,7 @@ using namespace std;
 
 
 SDL_Event sdl_event;
+vNES* vnes = NULL;
 
 void nes_CheckForQuitting() {
 	while(SDL_PollEvent(&sdl_event) == 1) {
@@ -17,6 +18,12 @@ void nes_CheckForQuitting() {
 }
 
 void exit_handler(int signum) {
+	printf("%s\n", "Exiting ...");
+	if(vnes != NULL) {
+		vnes->stop();
+		delete vnes;
+		vnes = NULL;
+	}
 	exit(signum);
 }
 
@@ -49,7 +56,7 @@ int main(int argc, char* argv[]) {
 	// Make ctrl+c exit too
 	signal(SIGINT, exit_handler);
 	
-	vNES* vnes = new vNES();
+	vnes = new vNES();
 	vnes->init();
 	vnes->run();
 	return 0;
