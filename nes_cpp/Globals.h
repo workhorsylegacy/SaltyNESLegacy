@@ -871,8 +871,6 @@ public:
 
 	 PaletteTable();
      bool loadNTSCPalette();
-//     bool loadPALPalette();
-     bool loadPalette(string file);
      void makeTables();
      void setEmphasis(int emph);
      int getEntry(int yiq);
