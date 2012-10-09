@@ -310,6 +310,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         startFrame();
 
+
+		// Check for quiting
+		SDL_Event sdl_event;
+		while(SDL_PollEvent(&sdl_event) == 1) {
+			if(sdl_event.type == SDL_QUIT)
+			exit(0);
+		}
     }
 
      void PPU::endScanline() {

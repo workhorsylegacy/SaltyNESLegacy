@@ -7,15 +7,8 @@
 using namespace std;
 
 
-SDL_Event sdl_event;
 vNES* vnes = NULL;
 
-void nes_CheckForQuitting() {
-	while(SDL_PollEvent(&sdl_event) == 1) {
-		//if(sdl_event.type == SDL_QUIT)
-		//	self->isQuitting = true;
-	}
-}
 
 void exit_handler(int signum) {
 	printf("%s\n", "Exiting ...");
@@ -35,7 +28,7 @@ int main(int argc, char* argv[]) {
 	printf("%s\n", "For vNES, see www.thatsanderskid.com");
 	printf("%s\n", "Use of this program subject to GNU GPL, Version 3.");
 
-	// Initialize SDL, exit if there is an error.
+	// Initialize SDL
 	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
 		fprintf(stderr, "Could not initialize SDL: %s\n", 
 			SDL_GetError());
