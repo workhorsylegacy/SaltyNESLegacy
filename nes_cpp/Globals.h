@@ -110,7 +110,6 @@ class ChannelTriangle;
 class CPU;
 class CpuInfo;
 class FileLoader;
-class HiResTimer;
 class KbInputHandler;
 class Mapper001;
 class MapperDefault;
@@ -195,7 +194,7 @@ public:
     static int preferredFrameRate;
     
     // Microseconds per frame:
-    static int frameTime;
+    static const double NS_PER_FRAME;
     // What value to flush memory with on power-up:
     static short memoryFlushValue;
 
@@ -621,15 +620,6 @@ public:
      uint8_t* loadFile(string fileName, size_t& length);
 };
 
-class HiResTimer {
-public:
-     long currentMicros();
-     long currentTick();
-     void sleepMicros(long time);
-     void sleepMillisIdle(int millis);
-     void yield();
-};
-
 class KbInputHandler : public KeyListener {
 public:
     vector<bool>* allKeysState;
@@ -847,7 +837,7 @@ public:
      bool loadRom(string file);
      void reset();
      void enableSound(bool enable);
-     void setFramerate(int rate);
+//     void setFramerate(int rate);
      void destroy();
 };
 
@@ -1009,7 +999,10 @@ public:
 class PPU {
 public:
      NES* nes;
-     HiResTimer* timer;
+     struct timespec g_frame_start;
+     struct timespec g_frame_end;
+     double g_frame_total;
+     int32_t frameCounter;
      Memory* ppuMem;
      Memory* sprMem;
     // Rendering Options:

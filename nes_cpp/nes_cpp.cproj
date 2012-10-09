@@ -45,7 +45,6 @@
     <Compile Include="ChannelTriangle.cpp" />
     <Compile Include="CPU.cpp" />
     <Compile Include="CpuInfo.cpp" />
-    <Compile Include="HiResTimer.cpp" />
     <Compile Include="KbInputHandler.cpp" />
     <Compile Include="Mapper001.cpp" />
     <Compile Include="MapperDefault.cpp" />

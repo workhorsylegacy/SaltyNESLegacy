@@ -8,7 +8,7 @@
     int Globals::preferredFrameRate = 60;
     
     // Microseconds per frame:
-    int Globals::frameTime = 1000000 / preferredFrameRate;
+    const double Globals::NS_PER_FRAME = 16666666.666666666;
     // What value to flush memory with on power-up:
     short Globals::memoryFlushValue = 0xFF;
 

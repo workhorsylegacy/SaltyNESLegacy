@@ -39,6 +39,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      PPU::PPU(NES* nes) {
         this->nes = nes;
+        this->g_frame_total = 0.0d;
 	    this->showSpr0Hit = false;
 	    this->showSoundBuffer = false;
 	    this->clipTVcolumn = true;
@@ -75,7 +76,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Initialize misc vars:
         scanline = 0;
-        timer = new HiResTimer();
 
         // Create sprite arrays:
         for(int i=0; i<64; i++) {
@@ -315,12 +315,41 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		SDL_Event sdl_event;
 		while(SDL_PollEvent(&sdl_event) == 1) {
 			if(sdl_event.type == SDL_QUIT)
-			exit(0);
+				exit(0);
 		}
 		
 		// Check for key presses
 		nes->_joy1->poll_for_key_events();
 		//nes->_joy2->poll_for_key_events();
+
+		// Figure out how much time we spent, and how much we have left
+		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &g_frame_end);
+		double e = g_frame_end.tv_nsec + (g_frame_end.tv_sec * 1000000000.0d);
+		double s = g_frame_start.tv_nsec + (g_frame_start.tv_sec * 1000000000.0d);
+		double diff = e - s;
+		
+		// Sleep if there is still time left over, after drawing this frame
+		double wait = 0;
+		if(diff < Globals::NS_PER_FRAME) {
+			wait = Globals::NS_PER_FRAME - diff;
+
+			struct timespec req={0};
+			req.tv_sec = 0;
+			req.tv_nsec = wait;
+			nanosleep(&req, NULL);
+		}
+		
+		// Print the frame rate
+		g_frame_total += diff + wait;
+		if(g_frame_total >= 1000000000.0d) {
+			printf("FPS: %d\n", frameCounter);
+			g_frame_total = 0;
+			frameCounter = 0;
+		}
+		frameCounter++;
+		
+		// Get the start time of the next frame
+		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &g_frame_start);
     }
 
      void PPU::endScanline() {

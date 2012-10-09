@@ -354,7 +354,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
     }
-
+/*
      void NES::setFramerate(int rate) {
 
         Globals::preferredFrameRate = rate;
@@ -364,7 +364,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         papu->synchronized_setSampleRate(papu->getSampleRate(), false);
         papu->unlock_mutex();
     }
-
+*/
      void NES::destroy() {
 
         if (cpu != NULL) {
