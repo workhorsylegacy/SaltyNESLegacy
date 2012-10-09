@@ -33,9 +33,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <sys/stat.h>
 #include <algorithm>
 #include <time.h>
-#define _USE_MATH_DEFINES
-#include "math.h"
+#include <math.h>
 #include <SDL/SDL.h>
+
+#include "Color.h"
 
 using namespace std;
 
@@ -106,7 +107,6 @@ class ChannelDM;
 class ChannelNoise;
 class ChannelSquare;
 class ChannelTriangle;
-class Color;
 class CPU;
 class CpuInfo;
 class FileLoader;
@@ -451,13 +451,6 @@ public:
      void updateSampleCondition();
      void reset();
      void destroy();
-};
-
-class Color {
-public:
-	//int getRGB();
-	static float* RGBtoHSB(int r, int g, int b, float* hsbvals);
-	static int HSBtoRGB(float hue, float saturation, float brightness);
 };
 
 class CPU {
@@ -1344,7 +1337,7 @@ public:
     string rom;
     Font* progressFont;
 
-    Color* bgColor;
+    //Color* bgColor;
     bool started;
 
     void init();

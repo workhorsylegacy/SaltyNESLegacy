@@ -71,5 +71,6 @@
     <None Include="Makefile" />
     <None Include="palettes\ntsc.txt" />
     <None Include="palettes\pal.txt" />
+    <None Include="Color.h" />
   </ItemGroup>
 </Project>

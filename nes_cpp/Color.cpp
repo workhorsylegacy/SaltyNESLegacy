@@ -24,17 +24,16 @@
  */
 
 
-// This code was copied from the Java library java.awt.Color.
+// This code was ported from the Java library java.awt.Color to C++.
 // It is licenced under GPL V2 with the classpath exception.
 // http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/awt/Color.java
 
-#include "Globals.h"
+#include "Color.h"
 
     float* Color::RGBtoHSB(int r, int g, int b, float* hsbvals) {
+        assert(hsbvals != NULL);
         float hue, saturation, brightness;
-        if (hsbvals == NULL) {
-            hsbvals = new float[3];
-        }
+
         int cmax = (r > g) ? r : g;
         if (b > cmax) cmax = b;
         int cmin = (r < g) ? r : g;
