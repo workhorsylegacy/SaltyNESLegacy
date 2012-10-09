@@ -1,144 +1,114 @@
+/*
+ * Copyright 1995-2007 Sun Microsystems, Inc.  All Rights Reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This code is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 only, as
+ * published by the Free Software Foundation.  Sun designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Sun in the LICENSE file that accompanied this code.
+ *
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * version 2 for more details (a copy is included in the LICENSE file that
+ * accompanied this code).
+ *
+ * You should have received a copy of the GNU General Public License version
+ * 2 along with this work; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
+ * CA 95054 USA or visit www.sun.com if you need additional information or
+ * have any questions.
+ */
 
+
+// This code was copied from the Java library java.awt.Color.
+// It is licenced under GPL V2 with the classpath exception.
+// http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/awt/Color.java
 
 #include "Globals.h"
-#include <limits.h>
 
-int Color::getRGB() {
-	return 0;
-}
-
-// Copied from
-// http://stackoverflow.com/questions/3018313/algorithm-to-convert-rgb-to-hsv-and-hsv-to-rgb
-typedef struct {
-    double r;       // percent
-    double g;       // percent
-    double b;       // percent
-} rgb;
-
-typedef struct {
-    double h;       // angle in degrees
-    double s;       // percent
-    double v;       // percent
-} hsv;
-
-float* Color::RGBtoHSV(int b, int g, int r, float* hsbvals) {
-    hsv         out;
-    double      min, max, delta;
-
-    min = r < g ? r : g;
-    min = min  < b ? min  : b;
-
-    max = r > g ? r : g;
-    max = max  > b ? max  : b;
-
-    out.v = max;                                // v
-    delta = max - min;
-    if( max > 0.0 ) {
-        out.s = (delta / max);                  // s
-    } else {
-        // r = g = b = 0                        // s = 0, v is undefined
-        out.s = 0.0;
-        out.h = NAN;                            // its now undefined
-		hsbvals[0] = out.h;
-		hsbvals[1] = out.s;
-		hsbvals[2] = out.v;
-         return hsbvals;
-    }
-    if( r >= max )                           // > is bogus, just keeps compilor happy
-        out.h = ( g - b ) / delta;        // between yellow & magenta
-    else
-    if( g >= max )
-        out.h = 2.0 + ( b - r ) / delta;  // between cyan & yellow
-    else
-        out.h = 4.0 + ( r - g ) / delta;  // between magenta & cyan
-
-    out.h *= 60.0;                              // degrees
-
-    if( out.h < 0.0 )
-        out.h += 360.0;
-
-	hsbvals[0] = out.h;
-	hsbvals[1] = out.s;
-	hsbvals[2] = out.v;
-    return hsbvals;
-}
-
-
-int Color::HSVtoRGB(float h, float s, float v) {
-	hsv in;
-	in.h = h;
-	in.s = s;
-	in.v = v;
-	int retval;
-    double      hh, p, q, t, ff;
-    long        i;
-    rgb         out;
-
-    if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
-        if(isnan(in.h)) {   // in.h == NAN
-            out.r = in.v;
-            out.g = in.v;
-            out.b = in.v;
-			PaletteTable::setRed(retval, out.r);
-			PaletteTable::setGreen(retval, out.g);
-			PaletteTable::setBlue(retval, out.b);
-            return retval;
+    float* Color::RGBtoHSB(int r, int g, int b, float* hsbvals) {
+        float hue, saturation, brightness;
+        if (hsbvals == NULL) {
+            hsbvals = new float[3];
         }
-        // error - should never happen
-        out.r = 0.0;
-        out.g = 0.0;
-        out.b = 0.0;
-		PaletteTable::setRed(retval, out.r);
-		PaletteTable::setGreen(retval, out.g);
-		PaletteTable::setBlue(retval, out.b);
-        return retval;
+        int cmax = (r > g) ? r : g;
+        if (b > cmax) cmax = b;
+        int cmin = (r < g) ? r : g;
+        if (b < cmin) cmin = b;
+
+        brightness = ((float) cmax) / 255.0f;
+        if (cmax != 0)
+            saturation = ((float) (cmax - cmin)) / ((float) cmax);
+        else
+            saturation = 0;
+        if (saturation == 0)
+            hue = 0;
+        else {
+            float redc = ((float) (cmax - r)) / ((float) (cmax - cmin));
+            float greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
+            float bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
+            if (r == cmax)
+                hue = bluec - greenc;
+            else if (g == cmax)
+                hue = 2.0f + redc - bluec;
+            else
+                hue = 4.0f + greenc - redc;
+            hue = hue / 6.0f;
+            if (hue < 0)
+                hue = hue + 1.0f;
+        }
+        hsbvals[0] = hue;
+        hsbvals[1] = saturation;
+        hsbvals[2] = brightness;
+        return hsbvals;
     }
-    hh = in.h;
-    if(hh >= 360.0) hh = 0.0;
-    hh /= 60.0;
-    i = (long)hh;
-    ff = hh - i;
-    p = in.v * (1.0 - in.s);
-    q = in.v * (1.0 - (in.s * ff));
-    t = in.v * (1.0 - (in.s * (1.0 - ff)));
 
-    switch(i) {
-    case 0:
-        out.r = in.v;
-        out.g = t;
-        out.b = p;
-        break;
-    case 1:
-        out.r = q;
-        out.g = in.v;
-        out.b = p;
-        break;
-    case 2:
-        out.r = p;
-        out.g = in.v;
-        out.b = t;
-        break;
-
-    case 3:
-        out.r = p;
-        out.g = q;
-        out.b = in.v;
-        break;
-    case 4:
-        out.r = t;
-        out.g = p;
-        out.b = in.v;
-        break;
-    case 5:
-    default:
-        out.r = in.v;
-        out.g = p;
-        out.b = q;
-        break;
+    int Color::HSBtoRGB(float hue, float saturation, float brightness) {
+        int r = 0, g = 0, b = 0;
+        if (saturation == 0) {
+            r = g = b = (int) (brightness * 255.0f + 0.5f);
+        } else {
+            float h = (hue - (float)floor(hue)) * 6.0f;
+            float f = h - (float)floor(h);
+            float p = brightness * (1.0f - saturation);
+            float q = brightness * (1.0f - saturation * f);
+            float t = brightness * (1.0f - (saturation * (1.0f - f)));
+            switch ((int) h) {
+            case 0:
+                r = (int) (brightness * 255.0f + 0.5f);
+                g = (int) (t * 255.0f + 0.5f);
+                b = (int) (p * 255.0f + 0.5f);
+                break;
+            case 1:
+                r = (int) (q * 255.0f + 0.5f);
+                g = (int) (brightness * 255.0f + 0.5f);
+                b = (int) (p * 255.0f + 0.5f);
+                break;
+            case 2:
+                r = (int) (p * 255.0f + 0.5f);
+                g = (int) (brightness * 255.0f + 0.5f);
+                b = (int) (t * 255.0f + 0.5f);
+                break;
+            case 3:
+                r = (int) (p * 255.0f + 0.5f);
+                g = (int) (q * 255.0f + 0.5f);
+                b = (int) (brightness * 255.0f + 0.5f);
+                break;
+            case 4:
+                r = (int) (t * 255.0f + 0.5f);
+                g = (int) (p * 255.0f + 0.5f);
+                b = (int) (brightness * 255.0f + 0.5f);
+                break;
+            case 5:
+                r = (int) (brightness * 255.0f + 0.5f);
+                g = (int) (p * 255.0f + 0.5f);
+                b = (int) (q * 255.0f + 0.5f);
+                break;
+            }
+        }
+        return 0xff000000 | (r << 16) | (g << 8) | (b << 0);
     }
-   	PaletteTable::setRed(retval, out.r);
-	PaletteTable::setGreen(retval, out.g);
-	PaletteTable::setBlue(retval, out.b);
-    return retval;     
-}
-

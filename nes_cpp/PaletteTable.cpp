@@ -86,6 +86,74 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     }
                 }
 				reader.close();
+		
+		// FIXME: This uses is the same as the default palette.
+		// It should use the one loaded from file.
+        origTable[ 0] = getRgb(124, 124, 124);
+        origTable[ 1] = getRgb(0, 0, 252);
+        origTable[ 2] = getRgb(0, 0, 188);
+        origTable[ 3] = getRgb(68, 40, 188);
+        origTable[ 4] = getRgb(148, 0, 132);
+        origTable[ 5] = getRgb(168, 0, 32);
+        origTable[ 6] = getRgb(168, 16, 0);
+        origTable[ 7] = getRgb(136, 20, 0);
+        origTable[ 8] = getRgb(80, 48, 0);
+        origTable[ 9] = getRgb(0, 120, 0);
+        origTable[10] = getRgb(0, 104, 0);
+        origTable[11] = getRgb(0, 88, 0);
+        origTable[12] = getRgb(0, 64, 88);
+        origTable[13] = getRgb(0, 0, 0);
+        origTable[14] = getRgb(0, 0, 0);
+        origTable[15] = getRgb(0, 0, 0);
+        origTable[16] = getRgb(188, 188, 188);
+        origTable[17] = getRgb(0, 120, 248);
+        origTable[18] = getRgb(0, 88, 248);
+        origTable[19] = getRgb(104, 68, 252);
+        origTable[20] = getRgb(216, 0, 204);
+        origTable[21] = getRgb(228, 0, 88);
+        origTable[22] = getRgb(248, 56, 0);
+        origTable[23] = getRgb(228, 92, 16);
+        origTable[24] = getRgb(172, 124, 0);
+        origTable[25] = getRgb(0, 184, 0);
+        origTable[26] = getRgb(0, 168, 0);
+        origTable[27] = getRgb(0, 168, 68);
+        origTable[28] = getRgb(0, 136, 136);
+        origTable[29] = getRgb(0, 0, 0);
+        origTable[30] = getRgb(0, 0, 0);
+        origTable[31] = getRgb(0, 0, 0);
+        origTable[32] = getRgb(248, 248, 248);
+        origTable[33] = getRgb(60, 188, 252);
+        origTable[34] = getRgb(104, 136, 252);
+        origTable[35] = getRgb(152, 120, 248);
+        origTable[36] = getRgb(248, 120, 248);
+        origTable[37] = getRgb(248, 88, 152);
+        origTable[38] = getRgb(248, 120, 88);
+        origTable[39] = getRgb(252, 160, 68);
+        origTable[40] = getRgb(248, 184, 0);
+        origTable[41] = getRgb(184, 248, 24);
+        origTable[42] = getRgb(88, 216, 84);
+        origTable[43] = getRgb(88, 248, 152);
+        origTable[44] = getRgb(0, 232, 216);
+        origTable[45] = getRgb(120, 120, 120);
+        origTable[46] = getRgb(0, 0, 0);
+        origTable[47] = getRgb(0, 0, 0);
+        origTable[48] = getRgb(252, 252, 252);
+        origTable[49] = getRgb(164, 228, 252);
+        origTable[50] = getRgb(184, 184, 248);
+        origTable[51] = getRgb(216, 184, 248);
+        origTable[52] = getRgb(248, 184, 248);
+        origTable[53] = getRgb(248, 164, 192);
+        origTable[54] = getRgb(240, 208, 176);
+        origTable[55] = getRgb(252, 224, 168);
+        origTable[56] = getRgb(248, 216, 120);
+        origTable[57] = getRgb(216, 248, 120);
+        origTable[58] = getRgb(184, 248, 184);
+        origTable[59] = getRgb(184, 248, 216);
+        origTable[60] = getRgb(0, 252, 252);
+        origTable[61] = getRgb(216, 216, 16);
+        origTable[62] = getRgb(0, 0, 0);
+        origTable[63] = getRgb(0, 0, 0);
+				
             setEmphasis(0);
             makeTables();
             updatePalette();
@@ -98,9 +166,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             printf("%s\n", "PaletteTable: Internal Palette Loaded.");
             loadDefaultPalette();
             return false;
-
         }
-
     }
 
      void PaletteTable::makeTables() {
@@ -159,7 +225,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      int PaletteTable::RGBtoHSL(int r, int g, int b) {
 
         float* hsbvals = new float[3];
-        hsbvals = Color::RGBtoHSV(b, g, r, hsbvals);
+        hsbvals = Color::RGBtoHSB(b, g, r, hsbvals);
         hsbvals[0] -= floor(hsbvals[0]);
 
         int ret = 0;
@@ -178,7 +244,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      int PaletteTable::HSLtoRGB(int h, int s, int l) {
-        return Color::HSVtoRGB(h / 255.0f, s / 255.0f, l / 255.0f);
+        return Color::HSBtoRGB(h / 255.0f, s / 255.0f, l / 255.0f);
     }
 
      int PaletteTable::HSLtoRGB(int hsl) {
@@ -187,7 +253,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         h = (float) (((hsl >> 16) & 0xFF) / 255.0d);
         s = (float) (((hsl >> 8) & 0xFF) / 255.0d);
         l = (float) (((hsl) & 0xFF) / 255.0d);
-        return Color::HSVtoRGB(h, s, l);
+        return Color::HSBtoRGB(h, s, l);
 
     }
 

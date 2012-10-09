@@ -118,7 +118,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-
     // Sets Nametable mirroring.
      void PPU::setMirroring(int mirroring) {
 
@@ -283,20 +282,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 
 		// Actually draw the screen
-		//uint8_t r = 0, g = 0, b = 255;
+		uint8_t r = 0, g = 0, b = 0;
 		int color;
-		//uint32_t color16;
-		uint32_t* pixels = (uint32_t*) Globals::sdl_screen->pixels;
+		int color32;
+		int* pixels = (int*) Globals::sdl_screen->pixels;
 		for(size_t y=0; y<240; ++y) {
 			for(size_t x=0; x<256; ++x) {
-				//color16 = (*buffer)[x + (y * (256))];
-				//r = (color16 >> 12) & 0xF;
-				//g = (color16 >> 8) & 0xF;
-				//b = (color16 >> 4) & 0xF;
+				color32 = (*buffer)[x + (y * (256))];
+				b = (color32 >> 16) & 0x000000FF;
+				g = (color32 >> 8) & 0x000000FF;
+				r = (color32 >> 0) & 0x000000FF;
 				
-				//color = SDL_MapRGB(Globals::sdl_screen->format, r, g, b);
-				color = (*buffer)[x + (y * (256))];
-				//printf("color: %d\n", color);
+				color = SDL_MapRGB(Globals::sdl_screen->format, r, g, b);
 				pixels[x + (y * (256))] = color;
 			}
 		}

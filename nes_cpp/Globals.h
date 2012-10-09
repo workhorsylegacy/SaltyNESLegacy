@@ -455,9 +455,9 @@ public:
 
 class Color {
 public:
-	int getRGB();
-	static float* RGBtoHSV(int b, int g, int r, float* hsbvals);
-	static int HSVtoRGB(float h, float s, float v);
+	//int getRGB();
+	static float* RGBtoHSB(int r, int g, int b, float* hsbvals);
+	static int HSBtoRGB(float hue, float saturation, float brightness);
 };
 
 class CPU {
