@@ -800,7 +800,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (cpuRunning) {
-            nes->startEmulation();
+//            nes->startEmulation();
         }
 
     }
@@ -830,7 +830,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (running) {
-            nes->startEmulation();
+//            nes->startEmulation();
         }
 
     }

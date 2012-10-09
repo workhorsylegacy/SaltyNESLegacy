@@ -455,11 +455,6 @@ public:
 
 class CPU {
 public:
-	// Thread:
-	pthread_t* myThread;
-	bool isAlive;
-	mutable pthread_mutex_t _mutex;
-
 	// References to other parts of NES :
 	 NES* nes;
 	 MapperDefault* mmap;
@@ -500,18 +495,12 @@ public:
 	 bool stopRunning;
 	 bool crash;
 
-	 void lock_mutex();
-	 void unlock_mutex();
 	 CPU(NES* nes);
 	 void init();
 	 void stateLoad(ByteBuffer* buf);
 	 void stateSave(ByteBuffer* buf);
 	 void reset();
-	 void synchronized_beginExecution();
-	 void synchronized_endExecution();
-	 bool isRunning();
 	 void run();
-	 void synchronized_initRun();
 	 void emulate();
 	 int load(int addr);
 	 int load16bit(int addr);
@@ -1339,7 +1328,6 @@ public:
     bool started;
 
     void init();
-    void start();
     void run();
     void stop();
     void destroy();

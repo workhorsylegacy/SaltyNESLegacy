@@ -56,7 +56,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void KbInputHandler::keyReleased(KeyEvent* ke) {
-
+/*
         int kc = ke->getKeyCode();
         if (kc >= (int)allKeysState->size()) {
             return;
@@ -89,7 +89,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
             }
         }
-
+*/
     }
 
      void KbInputHandler::keyTyped(KeyEvent* ke) {

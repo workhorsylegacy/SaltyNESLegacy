@@ -89,10 +89,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         bool success;
 
         // Pause emulation:
-        if (cpu->isRunning()) {
-            continueEmulation = true;
-            stopEmulation();
-        }
+        continueEmulation = true;
+        stopEmulation();
 
         // Check version:
         if (buf->readByte() == 1) {
@@ -159,22 +157,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             papu->unlock_mutex();
         }
         {
-            if (rom != NULL && rom->isValid() && !cpu->isRunning()) {
-	            cpu->lock_mutex();
-                cpu->synchronized_beginExecution();
-                cpu->unlock_mutex();
+            if (rom != NULL && rom->isValid()) {
                 _isRunning = true;
             }
         }
     }
 
      void NES::stopEmulation() {
-        if (cpu->isRunning()) {
-	        cpu->lock_mutex();
-            cpu->synchronized_endExecution();
-            cpu->unlock_mutex();
-            _isRunning = false;
-        }
+        _isRunning = false;
 
         if (Globals::enableSound && papu->isRunning()) {
             papu->stop();

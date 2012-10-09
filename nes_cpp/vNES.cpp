@@ -17,15 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "Globals.h"
-/*
-extern "C" {
-    void* runVNES(void* arg) {
-        vNES* vnes = static_cast<vNES*>(arg);
-        vnes->run();
-        return 0;
-    }
-}
-*/
+
     void vNES::init() {
         started = false;
         rom = "";
@@ -40,12 +32,6 @@ extern "C" {
         nes->reset();
     }
 
-/*
-    void vNES::start() {
-		pthread_t thread;
-		pthread_create(&thread, NULL, runVNES, this);
-    }
-*/
     void vNES::run() {
         // Set font to be used for progress display of loading:
 //        progressFont = new Font("Tahoma", Font.TRUETYPE_FONT | Font.BOLD, 12);
@@ -67,9 +53,6 @@ extern "C" {
 
             // Start emulation:
             //System.out.println("vNES is now starting the processor.");
-//            nes->getCpu()->lock_mutex();
-//            nes->getCpu()->synchronized_beginExecution();
-//            nes->getCpu()->unlock_mutex();
 			nes->getCpu()->run();
 
         } else {
@@ -91,25 +74,16 @@ extern "C" {
 
     void vNES::destroy() {
 
-        if (nes != NULL && nes->getCpu()->isRunning()) {
+        if (nes != NULL) {
             stop();
         }
         
         if (nes != NULL) {
             nes->destroy();
         }
-//        if (gui != NULL) {
-//            gui->destroy();
-//        }
 
-//        gui = NULL;
         nes = NULL;
-//        panelScreen = NULL;
         rom.clear();
-
-//        System.runFinalization();
-//        System.gc();
-
     }
 
     void vNES::showLoadProgress(int percentComplete) {

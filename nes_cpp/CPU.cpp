@@ -23,26 +23,9 @@ instructions and invokes emulation of the PPU and pAPU.
 
 #include "Globals.h"
 
-extern "C" {
-    void* runCPU(void* arg) {
-        CPU* cpu = static_cast<CPU*>(arg);
-        cpu->run();
-        return 0;
-    }
-}
-
-	void CPU::lock_mutex() {
-		pthread_mutex_lock(&_mutex);
-	}
-
-	void CPU::unlock_mutex() {
-		pthread_mutex_unlock(&_mutex);
-	}
-
 	// Constructor:
 	 CPU::CPU(NES* nes){
 		this->nes = nes;
-		pthread_mutex_init(&_mutex, NULL);
 	}
 
 	// Initialize:
@@ -141,52 +124,9 @@ extern "C" {
 
 	}
 
-	 void CPU::synchronized_beginExecution(){
-		if(myThread!=NULL && isAlive){
-			lock_mutex();
-			synchronized_endExecution();
-			unlock_mutex();
-		}
-
-		myThread = new pthread_t();
-		pthread_create(myThread, NULL, runCPU, this);
-//		myThread.setPriority(Thread.MIN_PRIORITY);
-	}
-
-	 void CPU::synchronized_endExecution(){
-		//System.out.println("* Attempting to stop CPU thread.");
-		if(myThread!=NULL && isAlive){
-			try{
-				stopRunning = true;
-				pthread_join(*myThread, NULL);
-				delete myThread;
-				myThread = NULL;
-
-			}catch(exception& ie){
-				//System.out.println("** Unable to stop CPU thread!");
-//				ie.printStackTrace();
-				throw;
-			}
-		}else{
-			//System.out.println("* CPU Thread was not alive.");
-		}
-	}
-
-	 bool CPU::isRunning(){
-		return (myThread!=NULL && isAlive);
-	}
-
-	 void CPU::run(){
-		 isAlive = true;
-		lock_mutex();
-		synchronized_initRun();
-		unlock_mutex();
-		emulate();
-	    isAlive = false;
-	}
-
-	 void CPU::synchronized_initRun(){
+	 void CPU::run() {
 		stopRunning = false;
+		emulate();
 	}
 
 	// Emulates cpu instructions until stopped.
@@ -1417,7 +1357,6 @@ extern "C" {
 	 void CPU::destroy(){
 		nes 	= NULL;
 		mmap 	= NULL;
-		pthread_mutex_destroy(&_mutex);
     }
 
 
