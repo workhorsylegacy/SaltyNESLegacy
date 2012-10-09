@@ -653,8 +653,7 @@ public:
      KbInputHandler(NES* nes, int id);
      short getKeyState(int padKey);
      void mapKey(int padKey, int kbKeycode);
-     void keyPressed(KeyEvent* ke);
-     void keyReleased(KeyEvent* ke);
+     void poll_for_key_events();
      void keyTyped(KeyEvent* ke);
      void reset();
      void update();
@@ -814,6 +813,8 @@ public:
      CPU* cpu;
      PPU* ppu;
      PAPU* papu;
+     KbInputHandler* _joy1;
+     KbInputHandler* _joy2;
      Memory* cpuMem;
      Memory* ppuMem;
      Memory* sprMem;

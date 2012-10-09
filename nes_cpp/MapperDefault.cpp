@@ -414,10 +414,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      short MapperDefault::joy1Read() {
-		short ret = 0;
-/*
-        KbInputHandler* in = nes->getGui()->getJoy1();
-
+        short ret = 0;
+        KbInputHandler* in = nes->_joy1;
 
         switch (joy1StrobeState) {
             case 0:
@@ -468,50 +466,65 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         if (joy1StrobeState == 24) {
             joy1StrobeState = 0;
         }
-*/
+        
         return ret;
-
     }
 
      short MapperDefault::joy2Read() {
-/*
-        KbInputHandler* in = nes->getGui()->getJoy2();
-        int st = joy2StrobeState;
+        short ret = 0;
+        KbInputHandler* in = nes->_joy2;
 
+        switch (joy2StrobeState) {
+            case 0:
+                ret = in->getKeyState(KbInputHandler::KEY_A);
+                break;
+            case 1:
+                ret = in->getKeyState(KbInputHandler::KEY_B);
+                break;
+            case 2:
+                ret = in->getKeyState(KbInputHandler::KEY_SELECT);
+                break;
+            case 3:
+                ret = in->getKeyState(KbInputHandler::KEY_START);
+                break;
+            case 4:
+                ret = in->getKeyState(KbInputHandler::KEY_UP);
+                break;
+            case 5:
+                ret = in->getKeyState(KbInputHandler::KEY_DOWN);
+                break;
+            case 6:
+                ret = in->getKeyState(KbInputHandler::KEY_LEFT);
+                break;
+            case 7:
+                ret = in->getKeyState(KbInputHandler::KEY_RIGHT);
+                break;
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+                ret = (short) 0;
+                break;
+            case 19:
+                ret = (short) 1;
+                break;
+            default:
+                ret = 0;
+        }
+        
         joy2StrobeState++;
         if (joy2StrobeState == 24) {
             joy2StrobeState = 0;
         }
-
-        if (st == 0) {
-            return in->getKeyState(KbInputHandler::KEY_A);
-        } else if (st == 1) {
-            return in->getKeyState(KbInputHandler::KEY_B);
-        } else if (st == 2) {
-            return in->getKeyState(KbInputHandler::KEY_SELECT);
-        } else if (st == 3) {
-            return in->getKeyState(KbInputHandler::KEY_START);
-        } else if (st == 4) {
-            return in->getKeyState(KbInputHandler::KEY_UP);
-        } else if (st == 5) {
-            return in->getKeyState(KbInputHandler::KEY_DOWN);
-        } else if (st == 6) {
-            return in->getKeyState(KbInputHandler::KEY_LEFT);
-        } else if (st == 7) {
-            return in->getKeyState(KbInputHandler::KEY_RIGHT);
-        } else if (st == 16) {
-            return (short) 0;
-        } else if (st == 17) {
-            return (short) 0;
-        } else if (st == 18) {
-            return (short) 1;
-        } else if (st == 19) {
-            return (short) 0;
-        } else {
-            return 0;
-        }
-*/
-        return 0;
+        
+        return ret;
     }
 
      void MapperDefault::loadROM(ROM* rom) {

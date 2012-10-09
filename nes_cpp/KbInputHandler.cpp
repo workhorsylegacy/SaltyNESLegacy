@@ -34,62 +34,33 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         (*keyMapping)[padKey] = kbKeycode;
     }
 
-     void KbInputHandler::keyPressed(KeyEvent* ke) {
+     void KbInputHandler::poll_for_key_events() {
+        int32_t numberOfKeys;
+        uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
+        vector<bool>* s = this->allKeysState;
+        vector<int>* m = this->keyMapping;
 
-        int kc = ke->getKeyCode();
-        if (kc >= (int)allKeysState->size()) {
-            return;
-        }
-
-        (*allKeysState)[kc] = true;
+        (*s)[(*m)[KbInputHandler::KEY_A]] =      keystate[SDLK_z];
+        (*s)[(*m)[KbInputHandler::KEY_B]] =      keystate[SDLK_x];
+        (*s)[(*m)[KbInputHandler::KEY_START]] =  keystate[SDLK_RETURN];
+        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
+        (*s)[(*m)[KbInputHandler::KEY_UP]] =     keystate[SDLK_UP];
+        (*s)[(*m)[KbInputHandler::KEY_DOWN]] =   keystate[SDLK_DOWN];
+        (*s)[(*m)[KbInputHandler::KEY_RIGHT]] =  keystate[SDLK_RIGHT];
+        (*s)[(*m)[KbInputHandler::KEY_LEFT]] =   keystate[SDLK_LEFT];
 
         // Can't hold both left & right or up & down at same time:
-        if (kc == (*keyMapping)[KbInputHandler::KEY_LEFT]) {
-            (*allKeysState)[(*keyMapping)[KbInputHandler::KEY_RIGHT]] = false;
-        } else if (kc == (*keyMapping)[KbInputHandler::KEY_RIGHT]) {
-            (*allKeysState)[(*keyMapping)[KbInputHandler::KEY_LEFT]] = false;
-        } else if (kc == (*keyMapping)[KbInputHandler::KEY_UP]) {
-            (*allKeysState)[(*keyMapping)[KbInputHandler::KEY_DOWN]] = false;
-        } else if (kc == (*keyMapping)[KbInputHandler::KEY_DOWN]) {
-            (*allKeysState)[(*keyMapping)[KbInputHandler::KEY_UP]] = false;
+        if ((*s)[(*m)[KbInputHandler::KEY_LEFT]]) {
+            (*s)[(*m)[KbInputHandler::KEY_RIGHT]] = false;
+        } else if ((*s)[(*m)[KbInputHandler::KEY_RIGHT]]) {
+            (*s)[(*m)[KbInputHandler::KEY_LEFT]] = false;
         }
-    }
-
-     void KbInputHandler::keyReleased(KeyEvent* ke) {
-/*
-        int kc = ke->getKeyCode();
-        if (kc >= (int)allKeysState->size()) {
-            return;
+        
+        if ((*s)[(*m)[KbInputHandler::KEY_UP]]) {
+            (*s)[(*m)[KbInputHandler::KEY_DOWN]] = false;
+        } else if ((*s)[(*m)[KbInputHandler::KEY_DOWN]]) {
+            (*s)[(*m)[KbInputHandler::KEY_UP]] = false;
         }
-
-        (*allKeysState)[kc] = false;
-
-        if (id == 0) {
-            switch (kc) {
-                case KeyEvent::VK_F5: {
-                    // Reset game:
-                    if (nes->isRunning()) {
-                        nes->stopEmulation();
-                        nes->reset();
-                        nes->reloadRom();
-                        nes->startEmulation();
-                    }
-                    break;
-                }
-                case KeyEvent::VK_F10: {
-                    // Just using this to display the battery RAM contents to user.
-                    if (nes->rom != NULL) {
-                        nes->rom->closeRom();
-                    }
-                    break;
-                }
-                case KeyEvent::VK_F12: {
-//                    JOptionPane.showInputDialog("Save Code for Resuming Game.", "Test");
-                    break;
-                }
-            }
-        }
-*/
     }
 
      void KbInputHandler::keyTyped(KeyEvent* ke) {

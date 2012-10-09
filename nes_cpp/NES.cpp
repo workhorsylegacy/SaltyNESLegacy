@@ -42,6 +42,29 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             }
         }
 
+        this->_joy1 = new KbInputHandler(this, 0);
+        this->_joy2 = new KbInputHandler(this, 1);
+
+        // Grab Controller Setting for Player 1:
+        this->_joy1->mapKey(KbInputHandler::KEY_A, Globals::keycodes[Globals::controls["p1_a"]]);
+        this->_joy1->mapKey(KbInputHandler::KEY_B, Globals::keycodes[Globals::controls["p1_b"]]);
+        this->_joy1->mapKey(KbInputHandler::KEY_START, Globals::keycodes[Globals::controls["p1_start"]]);
+        this->_joy1->mapKey(KbInputHandler::KEY_SELECT, Globals::keycodes[Globals::controls["p1_select"]]);
+        this->_joy1->mapKey(KbInputHandler::KEY_UP, Globals::keycodes[Globals::controls["p1_up"]]);
+        this->_joy1->mapKey(KbInputHandler::KEY_DOWN, Globals::keycodes[Globals::controls["p1_down"]]);
+        this->_joy1->mapKey(KbInputHandler::KEY_LEFT, Globals::keycodes[Globals::controls["p1_left"]]);
+        this->_joy1->mapKey(KbInputHandler::KEY_RIGHT, Globals::keycodes[Globals::controls["p1_right"]]);
+
+        // Grab Controller Setting for Player 2:
+        this->_joy2->mapKey(KbInputHandler::KEY_A, Globals::keycodes[Globals::controls["p2_a"]]);
+        this->_joy2->mapKey(KbInputHandler::KEY_B, Globals::keycodes[Globals::controls["p2_b"]]);
+        this->_joy2->mapKey(KbInputHandler::KEY_START, Globals::keycodes[Globals::controls["p2_start"]]);
+        this->_joy2->mapKey(KbInputHandler::KEY_SELECT, Globals::keycodes[Globals::controls["p2_select"]]);
+        this->_joy2->mapKey(KbInputHandler::KEY_UP, Globals::keycodes[Globals::controls["p2_up"]]);
+        this->_joy2->mapKey(KbInputHandler::KEY_DOWN, Globals::keycodes[Globals::controls["p2_down"]]);
+        this->_joy2->mapKey(KbInputHandler::KEY_LEFT, Globals::keycodes[Globals::controls["p2_left"]]);
+        this->_joy2->mapKey(KbInputHandler::KEY_RIGHT, Globals::keycodes[Globals::controls["p2_right"]]);
+
         // Load NTSC palette:
         if (!palTable->loadNTSCPalette()) {
             //System.out.println("Unable to load palette file. Using default.");

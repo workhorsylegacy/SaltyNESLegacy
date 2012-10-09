@@ -317,6 +317,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 			if(sdl_event.type == SDL_QUIT)
 			exit(0);
 		}
+		
+		// Check for key presses
+		nes->_joy1->poll_for_key_events();
+		//nes->_joy2->poll_for_key_events();
     }
 
      void PPU::endScanline() {
