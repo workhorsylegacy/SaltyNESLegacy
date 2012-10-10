@@ -39,7 +39,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      PPU::PPU(NES* nes) {
         this->nes = nes;
-        this->g_frame_total = 0.0d;
+        this->_ticks_since_second = 0.0d;
 	    this->showSpr0Hit = false;
 	    this->showSoundBuffer = false;
 	    this->clipTVcolumn = true;
@@ -323,9 +323,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		//nes->_joy2->poll_for_key_events();
 
 		// Figure out how much time we spent, and how much we have left
-		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &g_frame_end);
-		double e = g_frame_end.tv_nsec + (g_frame_end.tv_sec * 1000000000.0d);
-		double s = g_frame_start.tv_nsec + (g_frame_start.tv_sec * 1000000000.0d);
+		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_frame_end);
+		double e = _frame_end.tv_nsec + (_frame_end.tv_sec * 1000000000.0d);
+		double s = _frame_start.tv_nsec + (_frame_start.tv_sec * 1000000000.0d);
 		double diff = e - s;
 		
 		// Sleep if there is still time left over, after drawing this frame
@@ -340,16 +340,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 		
 		// Print the frame rate
-		g_frame_total += diff + wait;
-		if(g_frame_total >= 1000000000.0d) {
+		_ticks_since_second += diff + wait;
+		if(_ticks_since_second >= 1000000000.0d) {
 			printf("FPS: %d\n", frameCounter);
-			g_frame_total = 0;
+			_ticks_since_second = 0;
 			frameCounter = 0;
 		}
 		frameCounter++;
 		
 		// Get the start time of the next frame
-		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &g_frame_start);
+		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_frame_start);
     }
 
      void PPU::endScanline() {

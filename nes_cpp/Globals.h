@@ -999,9 +999,9 @@ public:
 class PPU {
 public:
      NES* nes;
-     struct timespec g_frame_start;
-     struct timespec g_frame_end;
-     double g_frame_total;
+     struct timespec _frame_start;
+     struct timespec _frame_end;
+     double _ticks_since_second;
      int32_t frameCounter;
      Memory* ppuMem;
      Memory* sprMem;
