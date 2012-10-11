@@ -84,6 +84,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         clearCPUMemory();
     }
 
+     NES::~NES() {
+        delete_n_null(cpu);
+        delete_n_null(ppu);
+        delete_n_null(papu);
+        delete_n_null(cpuMem);
+        delete_n_null(ppuMem);
+        delete_n_null(sprMem);
+        delete_n_null(memMapper);
+        delete_n_null(rom);
+        delete_n_null(palTable);
+    }
+
     void NES::dumpRomMemory() {
         ofstream writer("rom_mem_cpp.txt", ios::out|ios::binary);
         for (size_t i = 0;i<rom->rom->size(); i++) {
@@ -367,42 +379,4 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         papu->unlock_mutex();
     }
 */
-     void NES::destroy() {
 
-        if (cpu != NULL) {
-            cpu->destroy();
-        }
-        if (ppu != NULL) {
-            ppu->destroy();
-        }
-        if (papu != NULL) {
-            papu->destroy();
-        }
-        if (cpuMem != NULL) {
-            cpuMem->destroy();
-        }
-        if (ppuMem != NULL) {
-            ppuMem->destroy();
-        }
-        if (sprMem != NULL) {
-            sprMem->destroy();
-        }
-        if (memMapper != NULL) {
-            memMapper->destroy();
-        }
-        if (rom != NULL) {
-            rom->destroy();
-        }
-
-//        gui = NULL;
-        cpu = NULL;
-        ppu = NULL;
-        papu = NULL;
-        cpuMem = NULL;
-        ppuMem = NULL;
-        sprMem = NULL;
-        memMapper = NULL;
-        rom = NULL;
-        palTable = NULL;
-
-    }

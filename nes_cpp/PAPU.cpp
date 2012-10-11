@@ -154,6 +154,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         frameIrqCounterMax = 4;
     }
 
+     PAPU::~PAPU() {
+        delete_n_null(square1);
+        delete_n_null(square2);
+        delete_n_null(triangle);
+        delete_n_null(noise);
+        delete_n_null(dmc);
+
+        nes = NULL;
+        cpuMem = NULL;
+        mixer = NULL;
+        line = NULL;
+
+        pthread_mutex_destroy(&_mutex);
+    }
+
      void PAPU::stateLoad(ByteBuffer* buf) {
         // not yet.
     }
@@ -1047,36 +1062,3 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void PAPU::destroy() {
-
-        nes = NULL;
-        cpuMem = NULL;
-
-        if (square1 != NULL) {
-            square1->destroy();
-        }
-        if (square2 != NULL) {
-            square2->destroy();
-        }
-        if (triangle != NULL) {
-            triangle->destroy();
-        }
-        if (noise != NULL) {
-            noise->destroy();
-        }
-        if (dmc != NULL) {
-            dmc->destroy();
-        }
-
-        square1 = NULL;
-        square2 = NULL;
-        triangle = NULL;
-        ;
-        noise = NULL;
-        dmc = NULL;
-
-        mixer = NULL;
-        line = NULL;
-
-        pthread_mutex_destroy(&_mutex);
-    }

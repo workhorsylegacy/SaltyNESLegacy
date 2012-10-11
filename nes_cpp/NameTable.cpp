@@ -18,12 +18,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
      NameTable::NameTable(int width, int height, string name) {
-
         this->name = name;
         this->tile = new vector<short>(width * height);
         this->attrib = new vector<short>(width * height);
         this->width = width;
         this->height = height;
+    }
+
+    NameTable::~NameTable() {
+        delete_n_null(tile);
+        delete_n_null(attrib);
     }
 
      short NameTable::getTileIndex(int x, int y) {

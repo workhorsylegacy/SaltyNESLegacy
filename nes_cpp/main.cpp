@@ -9,14 +9,10 @@ using namespace std;
 
 vNES* vnes = NULL;
 
-
 void exit_handler(int signum) {
 	printf("%s\n", "Exiting ...");
-	if(vnes != NULL) {
-		vnes->stop();
-		delete vnes;
-		vnes = NULL;
-	}
+	fflush(stdout);
+	delete_n_null(vnes);
 	exit(signum);
 }
 
@@ -52,6 +48,8 @@ int main(int argc, char* argv[]) {
 	vnes = new vNES();
 	vnes->init();
 	vnes->run();
+
+	delete_n_null(vnes);
 	return 0;
 }
 

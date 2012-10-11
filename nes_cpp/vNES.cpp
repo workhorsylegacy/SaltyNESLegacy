@@ -36,6 +36,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         started = false;
     }
 
+    vNES::~vNES() {
+        stop();
+        delete_n_null(nes);
+        delete_n_null(progressFont);
+        
+        rom.clear();
+    }
+
     void vNES::init() {
         started = false;
         rom = "";
@@ -87,22 +95,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         nes->stopEmulation();
         //System.out.println("vNES has stopped the processor.");
         nes->getPapu()->stop();
-        this->destroy();
-
-    }
-
-    void vNES::destroy() {
-
-        if (nes != NULL) {
-            stop();
-        }
-        
-        if (nes != NULL) {
-            nes->destroy();
-        }
-
-        nes = NULL;
-        rom.clear();
     }
 
     void vNES::showLoadProgress(int percentComplete) {

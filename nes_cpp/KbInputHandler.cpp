@@ -26,6 +26,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         keyMapping = new vector<int>(KbInputHandler::NUM_KEYS);
     }
 
+     KbInputHandler::~KbInputHandler() {
+        nes = NULL;
+    }
+
      short KbInputHandler::getKeyState(int padKey) {
         return (short) ((*allKeysState)[(*keyMapping)[padKey]] ? 0x41 : 0x40);
     }
@@ -75,8 +79,4 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void KbInputHandler::update() {
         // doesn't do anything.
-    }
-
-     void KbInputHandler::destroy() {
-        nes = NULL;
     }

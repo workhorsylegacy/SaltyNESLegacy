@@ -49,6 +49,44 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
           valid = false;
     }
 
+     ROM::~ROM() {
+        closeRom();
+       
+        delete_n_null(header);
+        
+        if(rom != NULL) {
+            for(size_t i=0; i<rom->size(); i++) {
+                delete_n_null((*rom)[i]);
+            }
+            delete_n_null(rom);
+        }
+        
+        if(vrom != NULL) {
+            for(size_t i=0; i<vrom->size(); i++) {
+                delete_n_null((*vrom)[i]);
+            }
+            delete_n_null(vrom);
+        }
+        
+        delete_n_null(saveRam);
+        
+        if(vromTile != NULL) {
+            for(size_t i=0; i<vromTile->size(); i++) {
+                for(size_t j=0; j<(*vromTile)[i]->size(); j++) {
+                    delete_n_null((*(*vromTile)[i])[j]);
+                    printf("%s\n", "derp");
+                }
+                delete_n_null((*vromTile)[i]);
+            }
+            delete_n_null(vromTile);
+        }
+        
+        delete_n_null(_mapperName);
+        delete_n_null(_mapperSupported);
+        
+        nes = NULL;
+    }
+
 	string ROM::getmapperName() {
 		if(_mapperName == NULL) {
 	        _mapperName = new vector<string>(255);
@@ -202,8 +240,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		for(size_t i=0; i<length; i++) {
 			sdata[i] = (short) (bdata[i] & 255);
 		}
-		delete bdata;
-		bdata = NULL;
+		delete_n_null_array(bdata);
 		reader.close();
 
         // Read header:
@@ -618,9 +655,3 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 */
     }
 
-     void ROM::destroy() {
-
-        closeRom();
-        nes = NULL;
-
-    }

@@ -59,6 +59,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         vol = 0;
     }
 
+     ChannelSquare::~ChannelSquare() {
+        papu = NULL;
+    }
+
      void ChannelSquare::clockLengthCounter() {
 
         if (lengthCounterEnable && lengthCounter > 0) {
@@ -234,8 +238,4 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         envDecayDisable = false;
         envDecayLoopEnable = false;
 
-    }
-
-     void ChannelSquare::destroy() {
-        papu = NULL;
     }

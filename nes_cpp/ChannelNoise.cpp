@@ -43,6 +43,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         tmp = 0;
     }
 
+     ChannelNoise::~ChannelNoise() {
+        papu = NULL;
+    }
+
      void ChannelNoise::clockLengthCounter() {
         if (lengthCounterEnable && lengthCounter > 0) {
             lengthCounter--;
@@ -152,8 +156,4 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         sampleValue = 0;
         tmp = 0;
 
-    }
-
-     void ChannelNoise::destroy() {
-        papu = NULL;
     }

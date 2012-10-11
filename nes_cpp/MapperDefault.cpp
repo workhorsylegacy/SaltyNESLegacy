@@ -36,6 +36,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
          tmp = 0;
     }
 
+     MapperDefault::~MapperDefault() {
+        nes = NULL;
+        cpuMem = NULL;
+        ppuMem = NULL;
+        rom = NULL;
+        cpu = NULL;
+        ppu = NULL;
+    }
+
 	void MapperDefault::write(int address, short value) {
 		base_write(address, value);
 	}
@@ -739,13 +748,3 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void MapperDefault::destroy() {
-
-        nes = NULL;
-        cpuMem = NULL;
-        ppuMem = NULL;
-        rom = NULL;
-        cpu = NULL;
-        ppu = NULL;
-
-    }

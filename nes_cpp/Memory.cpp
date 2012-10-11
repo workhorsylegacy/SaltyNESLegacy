@@ -9,6 +9,11 @@
 		memLength = byteCount;
 	}
 	
+	 Memory::~Memory() {
+		nes = NULL;
+		mem = NULL;
+	}
+	
 	 void Memory::stateLoad(ByteBuffer* buf){
 		
 		if(mem==NULL)mem=new vector<short>(memLength);
@@ -77,10 +82,4 @@
 		
 	}
 	
-	 void Memory::destroy(){
-	
-		nes = NULL;
-		mem = NULL;
-		
-	}
 	

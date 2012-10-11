@@ -181,6 +181,34 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
          _screen_buffer = new vector<int>(256 * 240);
     }
 
+     PPU::~PPU() {
+        if(nameTable != NULL) {
+            for(size_t i = 0; i < nameTable->size(); i++) {
+                delete_n_null((*nameTable)[i]);
+            }
+        }
+        delete_n_null(nameTable);
+
+        if(scantile != NULL) {
+             for(size_t i=0; i<scantile->size(); i++) {
+                 delete_n_null((*scantile)[i]);
+             }
+        }
+        delete_n_null(scantile);
+        
+        delete_n_null(attrib);
+        delete_n_null(bgbuffer);
+        delete_n_null(pixrendered);
+        delete_n_null(spr0dummybuffer);
+        delete_n_null(dummyPixPriTable);
+        delete_n_null(oldFrame);
+        delete_n_null(_screen_buffer);
+
+        nes = NULL;
+        ppuMem = NULL;
+        sprMem = NULL;
+     }
+
      void PPU::init() {
 
         // Get the memory:
@@ -2038,11 +2066,3 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void PPU::destroy() {
-
-        nes = NULL;
-        ppuMem = NULL;
-        sprMem = NULL;
-        scantile = NULL;
-
-    }

@@ -41,6 +41,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         this->data = 0;
     }
 
+    ChannelDM::~ChannelDM() {
+        papu = NULL;
+    }
+
     void ChannelDM::clockDmc() {
 
         // Only alter DAC value if the sample buffer has data:
@@ -233,9 +237,5 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         reg4013 = 0;
         data = 0;
 
-    }
-
-    void ChannelDM::destroy() {
-        papu = NULL;
     }
     

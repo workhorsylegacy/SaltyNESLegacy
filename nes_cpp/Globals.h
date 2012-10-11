@@ -38,6 +38,23 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Color.h"
 
+template<class T> void delete_n_null(T*& obj) {
+	if(obj == NULL)
+		return;
+
+	delete obj;
+	obj = NULL;
+}
+
+template<class T> void delete_n_null_array(T*& obj) {
+	if(obj == NULL)
+		return;
+		
+	delete[] obj;
+	obj = NULL;
+}
+
+
 using namespace std;
 
 
@@ -325,6 +342,7 @@ public:
     int data;
 
     ChannelDM(PAPU* papu);
+    ~ChannelDM();
     void clockDmc();
      void endOfSample();
      void nextSample();
@@ -334,7 +352,6 @@ public:
     int getLengthStatus();
     int getIrqStatus();
     void reset();
-    void destroy();
 };
 
 
@@ -363,6 +380,7 @@ public:
      int tmp;
 
      ChannelNoise(PAPU* papu);
+     ~ChannelNoise();
      void clockLengthCounter();
      void clockEnvDecay();
      void updateSampleValue();
@@ -371,7 +389,6 @@ public:
      bool isEnabled();
      int getLengthStatus();
      void reset();
-     void destroy();
 };
 
 class ChannelSquare : public IPapuChannel {
@@ -407,6 +424,7 @@ public:
     int vol;
 
      ChannelSquare(PAPU* papu, bool square1);
+     ~ChannelSquare();
      void clockLengthCounter();
      void clockEnvDecay();
      void clockSweep();
@@ -416,7 +434,6 @@ public:
      bool isEnabled();
      int getLengthStatus();
      void reset();
-     void destroy();
 };
 
 class ChannelTriangle : public IPapuChannel {
@@ -437,6 +454,7 @@ public:
     int tmp;
 
      ChannelTriangle(PAPU* papu);
+     ~ChannelTriangle();
      void clockLengthCounter();
      void clockLinearCounter();
      int getLengthStatus();
@@ -448,7 +466,6 @@ public:
      bool isEnabled();
      void updateSampleCondition();
      void reset();
-     void destroy();
 };
 
 class CPU {
@@ -494,6 +511,7 @@ public:
 	 bool crash;
 
 	 CPU(NES* nes);
+	 ~CPU();
 	 void init();
 	 void stateLoad(ByteBuffer* buf);
 	 void stateSave(ByteBuffer* buf);
@@ -516,7 +534,6 @@ public:
 	 void setStatus(int st);
 	 void setCrashed(bool value);
 	 void setMapper(MapperDefault* mapper);
-	 void destroy();
 };
 
 class CpuInfo {
@@ -613,12 +630,12 @@ public:
      static void initInstNames();
      static void initAddrDesc();
 };
-
+/*
 class FileLoader {
 public:
      uint8_t* loadFile(string fileName, size_t& length);
 };
-
+*/
 class KbInputHandler : public KeyListener {
 public:
     // Joypad keys:
@@ -640,13 +657,13 @@ public:
     vector<int>* keyMapping;
 
      KbInputHandler(NES* nes, int id);
+     ~KbInputHandler();
      short getKeyState(int padKey);
      void mapKey(int padKey, int kbKeycode);
      void poll_for_key_events();
      void keyTyped(KeyEvent* ke);
      void reset();
      void update();
-     void destroy();
 };
 
 class Memory {
@@ -656,6 +673,7 @@ public:
 	int memLength;
 
 	 Memory(NES* nes, int byteCount);
+	 ~Memory();
 	 void stateLoad(ByteBuffer* buf);
 	 void stateSave(ByteBuffer* buf);
 	 void reset();
@@ -666,7 +684,6 @@ public:
 	 void dump(string file, int offset, int length);
 	 void write(int address, vector<short>* array, int length);
 	 void write(int address, vector<short>* array, int arrayoffset, int length);
-	 void destroy();
 };
 
 class MapperDefault {
@@ -689,6 +706,7 @@ public:
     int tmp;
 
      MapperDefault();
+     ~MapperDefault();
      virtual void write(int address, short value);
      virtual void init(NES* nes);
      void base_init(NES* nes);     
@@ -722,7 +740,6 @@ public:
      int syncH(int scanline);
      void setMouseState(bool pressed, int x, int y);
      void reset();
-     void destroy();
 };
 
 class Mapper001 : public MapperDefault {
@@ -791,6 +808,7 @@ public:
     int height;
 
      NameTable(int width, int height, string name);
+     ~NameTable();
      short getTileIndex(int x, int y);
      short getAttrib(int x, int y);
      void writeTileIndex(int index, int value);
@@ -817,6 +835,7 @@ public:
     bool _isRunning;
 
      NES();
+     ~NES();
      bool stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
      bool isRunning();
@@ -839,7 +858,6 @@ public:
      void reset();
      void enableSound(bool enable);
 //     void setFramerate(int rate);
-     void destroy();
 };
 
 class PaletteTable {
@@ -961,6 +979,7 @@ public:
      void lock_mutex();
      void unlock_mutex();
      PAPU(NES* nes);
+     ~PAPU();
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
      void synchronized_start();
@@ -994,7 +1013,6 @@ public:
      void initDmcFrequencyLookup();
      void initNoiseWavelengthLookup();
      void initDACtables();
-     void destroy();
 };
 
 class PPU {
@@ -1130,6 +1148,7 @@ public:
      vector<int>* get_img_palette_buffer();
      vector<int>* get_spr_palette_buffer();
      PPU(NES* nes);
+     ~PPU();
      void init();
      void setMirroring(int mirroring);
      void defineMirrorRegion(int fromStart, int toStart, int size);
@@ -1179,7 +1198,6 @@ public:
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
      void reset();
-     void destroy();
 };
 
 class Raster {
@@ -1227,6 +1245,7 @@ public:
     bool valid;
 
      ROM(NES* nes);
+     ~ROM();
      string getmapperName();
      static vector<bool>* getmapperSupported();
      void load(string fileName);
@@ -1250,7 +1269,6 @@ public:
      void loadBatteryRam();
      void writeBatteryRam(int address, short value);
      void closeRom();
-     void destroy();
 };
 
 class Scale {
@@ -1323,10 +1341,10 @@ public:
     bool started;
 
     vNES();
+    ~vNES();
     void init();
     void run();
     void stop();
-    void destroy();
     void showLoadProgress(int percentComplete);
     void paint(Graphics* g);
     void update(Graphics* g);

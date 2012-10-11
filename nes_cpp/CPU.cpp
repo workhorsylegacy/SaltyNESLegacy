@@ -60,6 +60,11 @@ instructions and invokes emulation of the PPU and pAPU.
 		this->crash = false;
 	}
 
+	CPU::~CPU(){
+		nes 	= NULL;
+		mmap 	= NULL;
+	}
+
 	// Initialize:
 	 void CPU::init(){
 
@@ -1385,10 +1390,5 @@ instructions and invokes emulation of the PPU and pAPU.
 	 void CPU::setMapper(MapperDefault* mapper){
 		mmap = mapper;
 	}
-
-	 void CPU::destroy(){
-		nes 	= NULL;
-		mmap 	= NULL;
-    }
 
 

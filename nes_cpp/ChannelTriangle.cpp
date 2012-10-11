@@ -34,6 +34,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         this->tmp = 0;
     }
 
+     ChannelTriangle::~ChannelTriangle() {
+        papu = NULL;
+    }
+
      void ChannelTriangle::clockLengthCounter() {
         if (lengthCounterEnable && lengthCounter > 0) {
             lengthCounter--;
@@ -162,8 +166,4 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         tmp = 0;
         sampleValue = 0xF;
 
-    }
-
-     void ChannelTriangle::destroy() {
-        papu = NULL;
     }
