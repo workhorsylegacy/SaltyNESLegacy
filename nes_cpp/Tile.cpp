@@ -20,7 +20,21 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
      Tile::Tile() {
-        this->initialized = false;
+          // Tile data:
+          memset(pix, 0, 64);
+          fbIndex = 0;
+          tIndex = 0;
+          x = 0;
+          y = 0;
+          w = 0;
+          h = 0;
+          incX = 0;
+          incY = 0;
+          palIndex = 0;
+          tpri = 0;
+          c = 0;
+          initialized = false;
+          memset(opaque, 0, 8);
     }
 
      void Tile::setBuffer(vector<short>* scanline) {

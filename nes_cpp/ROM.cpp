@@ -25,24 +25,28 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      const int ROM::SINGLESCREEN_MIRRORING2;
      const int ROM::SINGLESCREEN_MIRRORING3;
      const int ROM::SINGLESCREEN_MIRRORING4;
-
-    vector<string>* ROM::_mapperName = NULL;
-    vector<bool>* ROM::_mapperSupported = NULL;
+     vector<string>* ROM::_mapperName = NULL;
+     vector<bool>* ROM::_mapperSupported = NULL;
 
      ROM::ROM(NES* nes) {
-	    header = NULL;
-	    rom = NULL;
-	    vrom = NULL;
-	    saveRam = NULL;
-	    vromTile = NULL;
-    
-	    this->failedSaveFile = false;
-	    this->saveRamUpToDate = true;
-	    this->enableSave = true;
-    
-    
-        this->nes = nes;
-        valid = false;
+          failedSaveFile = false;
+          saveRamUpToDate = true;
+          header = NULL;
+          rom = NULL;
+          vrom = NULL;
+          saveRam = NULL;
+          vromTile = NULL;
+          this->nes = nes;
+          romCount = 0;
+          vromCount = 0;
+          mirroring = 0;
+          batteryRam = false;
+          trainer = false;
+          fourScreen = false;
+          mapperType = 0;
+          //string fileName;
+          enableSave = true;
+          valid = false;
     }
 
 	string ROM::getmapperName() {

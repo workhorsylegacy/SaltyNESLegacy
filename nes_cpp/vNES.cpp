@@ -18,6 +18,24 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+    vNES::vNES() {
+        scale = false;
+        scanlines = false;
+        sound = false;
+        fps = false;
+        stereo = false;
+        timeemulation = false;
+        showsoundbuffer = false;
+        samplerate = 0;
+        romSize = 0;
+        progress = 0;
+        nes = NULL;
+        //string rom;
+        progressFont = NULL;
+        //Color* bgColor;
+        started = false;
+    }
+
     void vNES::init() {
         started = false;
         rom = "";

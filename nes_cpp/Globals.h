@@ -1204,6 +1204,9 @@ public:
      static const int SINGLESCREEN_MIRRORING3 = 5;
      static const int SINGLESCREEN_MIRRORING4 = 6;
      static const int CHRROM_MIRRORING = 7;
+     static vector<string>* _mapperName;
+     static vector<bool>* _mapperSupported;
+
     bool failedSaveFile;
     bool saveRamUpToDate;
     short* header;
@@ -1222,8 +1225,6 @@ public:
     string fileName;
     bool enableSave;
     bool valid;
-    static vector<string>* _mapperName;
-    static vector<bool>* _mapperSupported;
 
      ROM(NES* nes);
      string getmapperName();
@@ -1318,10 +1319,10 @@ public:
     NES* nes;
     string rom;
     Font* progressFont;
-
     //Color* bgColor;
     bool started;
 
+    vNES();
     void init();
     void run();
     void stop();

@@ -38,40 +38,147 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	}
 
      PPU::PPU(NES* nes) {
-        ppuMem = NULL;
-        sprMem = NULL;
-        vramMirrorTable = NULL;
-        ptTile = NULL;
-        nameTable = NULL;
-        tpix = NULL;
-        scantile = NULL;
-        t = NULL;
-	     
-        this->nes = nes;
-        this->_ticks_since_second = 0.0d;
-	    this->showSpr0Hit = false;
-	    this->showSoundBuffer = false;
-	    this->clipTVcolumn = true;
-	    this->clipTVrow = false;
-	     this->STATUS_VRAMWRITE = 4;
-	     this->STATUS_SLSPRITECOUNT = 5;
-	     this->STATUS_SPRITE0HIT = 6;
-	     this->STATUS_VBLANK = 7;
-	    this->firstWrite = true;
-	    this->vblankAdd = 0;
-	    this->currentMirroring = -1;
-	    this->requestRenderAll = false;
-	    this->scantile = new vector<Tile*>(32);
-	     this->cycles = 0;
-	     
-	    this->attrib = new vector<int>(32);
-	    this->bgbuffer = new vector<int>(256 * 240);
-	    this->pixrendered = new vector<int>(256 * 240);
-	    this->spr0dummybuffer = new vector<int>(256 * 240);
-		this->dummyPixPriTable = new vector<int>(256 * 240);
-		this->oldFrame = new vector<int>(256 * 240);
-		
-		_screen_buffer = new vector<int>(256 * 240);
+         this->nes = nes;
+         _frame_start = (struct timespec){ 0 };
+         _frame_end = (struct timespec){ 0 };
+         _ticks_since_second = 0.0d;
+         frameCounter = 0;
+         ppuMem = NULL;
+         sprMem = NULL;
+
+         // Rendering Options:
+         showSpr0Hit = false;
+         showSoundBuffer = false;
+         clipTVcolumn = true;
+         clipTVrow = false;
+
+         // Control Flags Register 1:
+         f_nmiOnVblank = 0;
+         f_spriteSize = 0;
+         f_bgPatternTable = 0;
+         f_spPatternTable = 0;
+         f_addrInc = 0;
+         f_nTblAddress = 0;
+
+         // Control Flags Register 2:
+         f_color = 0;
+         f_spVisibility = 0;
+         f_bgVisibility = 0;
+         f_spClipping = 0;
+         f_bgClipping = 0;
+         f_dispType = 0;
+         
+         // Status flags:
+         STATUS_VRAMWRITE = 4;
+         STATUS_SLSPRITECOUNT = 5;
+         STATUS_SPRITE0HIT = 6;
+         STATUS_VBLANK = 7;
+         
+         // VRAM I/O:
+         vramAddress = 0;
+         vramTmpAddress = 0;
+         vramBufferedReadValue = 0;
+         firstWrite = true;
+         vramMirrorTable = NULL;
+         i = 0;
+
+         // SPR-RAM I/O:
+         sramAddress = 0;
+
+         // Counters:
+         cntFV = 0;
+         cntV = 0;
+         cntH = 0;
+         cntVT = 0;
+         cntHT = 0;
+
+         // Registers:
+         regFV = 0;
+         regV = 0;
+         regH = 0;
+         regVT = 0;
+         regHT = 0;
+         regFH = 0;
+         regS = 0;
+
+         // VBlank extension for PAL emulation:
+         vblankAdd = 0;
+         curX = 0;
+         scanline = 0;
+         lastRenderedScanline = 0;
+         mapperIrqCounter = 0;
+
+         // Sprite data:
+         memset(&sprX, 0, 64);
+         memset(sprY, 0, 64);
+         memset(sprTile, 0, 64);
+         memset(sprCol, 0, 64);
+         memset(vertFlip, false, 64);
+         memset(horiFlip, false, 64);
+         memset(bgPriority, false, 64);
+         spr0HitX = 0;
+         spr0HitY = 0;
+         hitSpr0 = false;
+
+         // Tiles:
+         ptTile = NULL;
+         // Name table data:
+         memset(ntable1, 0, 4);
+         nameTable = NULL;
+         currentMirroring = -1;
+
+         // Palette data:
+         memset(sprPalette, 0, 16);
+         memset(imgPalette, 0, 16);
+
+         // Misc:
+         scanlineAlreadyRendered = false;
+         requestEndFrame = false;
+         nmiOk = false;
+         nmiCounter = 0;
+         tmp = 0;
+         dummyCycleToggle = false;
+
+         // Vars used when updating regs/address:
+         address = 0;
+         b1 = 0;
+         b2 = 0;
+
+         // Variables used when rendering:
+         attrib = new vector<int>(32);
+         bgbuffer = new vector<int>(256 * 240);
+         pixrendered = new vector<int>(256 * 240);
+         spr0dummybuffer = new vector<int>(256 * 240);
+         dummyPixPriTable = new vector<int>(256 * 240);
+         oldFrame = new vector<int>(256 * 240);
+         tpix = NULL;
+         memset(scanlineChanged, false, 240);
+         requestRenderAll = false;
+         validTileData = false;
+         att = 0;
+         scantile = new vector<Tile*>(32);
+         t = NULL;
+
+         // These are temporary variables used in rendering and sound procedures.
+         // Their states outside of those procedures can be ignored.
+         curNt = 0;
+         destIndex = 0;
+         x = 0;
+         y = 0;
+         sx = 0;
+         si = 0;
+         ei = 0;
+         tile = 0;
+         col = 0;
+         baseTile = 0;
+         tscanoffset = 0;
+         srcy1 = 0;
+         srcy2 = 0;
+         bufferSize = 0;
+         available = 0;
+         scale = 0;
+         cycles = 0;
+         _screen_buffer = new vector<int>(256 * 240);
     }
 
      void PPU::init() {
