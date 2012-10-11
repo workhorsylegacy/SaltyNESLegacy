@@ -26,10 +26,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      const int ROM::SINGLESCREEN_MIRRORING3;
      const int ROM::SINGLESCREEN_MIRRORING4;
 
-    vector<string>* ROM::_mapperName;
-    vector<bool>* ROM::_mapperSupported;
+    vector<string>* ROM::_mapperName = NULL;
+    vector<bool>* ROM::_mapperSupported = NULL;
 
      ROM::ROM(NES* nes) {
+	    header = NULL;
+	    rom = NULL;
+	    vrom = NULL;
+	    saveRam = NULL;
+	    vromTile = NULL;
+    
 	    this->failedSaveFile = false;
 	    this->saveRamUpToDate = true;
 	    this->enableSave = true;

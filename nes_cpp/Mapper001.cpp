@@ -17,6 +17,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+     Mapper001::Mapper001() : MapperDefault() {
+          
+     }
+
      void Mapper001::init(NES* nes) {
 
         this->base_init(nes);

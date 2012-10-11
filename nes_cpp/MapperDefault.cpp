@@ -17,6 +17,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Globals.h"
 
+     MapperDefault::MapperDefault() {
+        this->nes = NULL;
+        this->cpuMem = NULL;
+        this->cpuMemArray = NULL;
+        this->ppuMem = NULL;
+        this->rom = NULL;
+        this->cpu = NULL;
+        this->ppu = NULL;
+    }
+
 	void MapperDefault::write(int address, short value) {
 		base_write(address, value);
 	}

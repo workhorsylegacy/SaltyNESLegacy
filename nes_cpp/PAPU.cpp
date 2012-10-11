@@ -77,6 +77,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         this->nes = nes;
         cpuMem = nes->getCpuMemory();
+        mixer = NULL;
+        dmcFreqLookup = NULL;
+        noiseWavelengthLookup = NULL;
+        square_table = NULL;
+        tnd_table = NULL;
+        ismpbuffer = NULL;
+        sampleBuffer = NULL;
+        line = NULL;
 
         lock_mutex();
         synchronized_setSampleRate(sampleRate, false);
@@ -104,7 +112,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         frameIrqEnabled = false;
         frameIrqCounterMax = 4;
-
+        
         pthread_mutex_init(&_mutex, NULL);
     }
 

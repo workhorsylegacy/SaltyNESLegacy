@@ -38,6 +38,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	}
 
      PPU::PPU(NES* nes) {
+        ppuMem = NULL;
+        sprMem = NULL;
+        vramMirrorTable = NULL;
+        ptTile = NULL;
+        nameTable = NULL;
+        tpix = NULL;
+        scantile = NULL;
+        t = NULL;
+	     
         this->nes = nes;
         this->_ticks_since_second = 0.0d;
 	    this->showSpr0Hit = false;

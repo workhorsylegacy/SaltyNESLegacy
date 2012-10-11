@@ -32,6 +32,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         palTable = new PaletteTable();
         ppu = new PPU(this);
         papu = new PAPU(this);
+        memMapper = NULL;
+        rom = NULL;
 
         // Init sound registers:
         for (int i = 0; i < 0x14; i++) {

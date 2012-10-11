@@ -189,6 +189,7 @@ public:
 class Globals {
 public:
     static SDL_Surface* sdl_screen;
+    static NES* nes;
     static double CPU_FREQ_NTSC;
     static double CPU_FREQ_PAL;
     static int preferredFrameRate;
@@ -210,8 +211,6 @@ public:
 
     static std::map<string, uint32_t> keycodes; //Java key codes
     static std::map<string, string> controls; //vNES controls codes
-
-    static NES* nes;
 
     static void println(string s);
 };
@@ -689,7 +688,8 @@ public:
      int mouseY;
     int tmp;
 
-	 virtual void write(int address, short value);
+     MapperDefault();
+     virtual void write(int address, short value);
      virtual void init(NES* nes);
      void base_init(NES* nes);     
      void stateLoad(ByteBuffer* buf);
@@ -749,6 +749,7 @@ public:
     int regBuffer;
     int regBufferCounter;
 
+     Mapper001();
      void init(NES* nes);
      void mapperInternalStateLoad(ByteBuffer* buf);
      void mapperInternalStateSave(ByteBuffer* buf);
@@ -1069,7 +1070,7 @@ public:
      int sprCol[64];			// Upper two bits of color
      bool vertFlip[64];		// Vertical Flip
      bool horiFlip[64];		// Horizontal Flip
-     bool bgPriority[64];;	// Background priority
+     bool bgPriority[64];	// Background priority
      int spr0HitX;	// Sprite #0 hit X coordinate
      int spr0HitY;	// Sprite #0 hit Y coordinate
     bool hitSpr0;

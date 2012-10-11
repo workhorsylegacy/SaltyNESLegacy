@@ -2,6 +2,7 @@
 #include "Globals.h"
 
     SDL_Surface* Globals::sdl_screen = NULL;
+    NES* Globals::nes = NULL;
 
     double Globals::CPU_FREQ_NTSC = 1789772.5d;
     double Globals::CPU_FREQ_PAL = 1773447.4d;
@@ -24,8 +25,6 @@
 
     std::map<string, uint32_t> Globals::keycodes; //Java key codes
     std::map<string, string> Globals::controls; //vNES controls codes
-
-    NES* Globals::nes;
 
     void Globals::println(string s) {
         printf("%s\n", s.c_str());

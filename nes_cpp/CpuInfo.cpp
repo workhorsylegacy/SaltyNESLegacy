@@ -2,11 +2,11 @@
 #include "Globals.h"
 
     // Opdata array:
-     vector<int>* CpuInfo::opdata;
+     vector<int>* CpuInfo::opdata = NULL;
     // Instruction names:
-     vector<string>* CpuInfo::instname;
+     vector<string>* CpuInfo::instname = NULL;
     // Address mode descriptions:
-     vector<string>* CpuInfo::addrDesc;
+     vector<string>* CpuInfo::addrDesc = NULL;
 
         const int CpuInfo::cycTable[256] = {
                     /*0x00*/7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
