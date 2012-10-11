@@ -54,6 +54,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	}
 
      PAPU::PAPU(NES* nes) {
+        pthread_mutex_init(&_mutex, NULL);
 	    this->bufferSize = 2048;
 	    this->sampleRate = 44100;
 	    this->startedPlaying = false;
@@ -112,8 +113,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         frameIrqEnabled = false;
         frameIrqCounterMax = 4;
-        
-        pthread_mutex_init(&_mutex, NULL);
     }
 
      void PAPU::stateLoad(ByteBuffer* buf) {
