@@ -9,12 +9,7 @@ using namespace std;
 
 vNES* vnes = NULL;
 
-void exit_handler(int signum) {
-	printf("%s\n", "Exiting ...");
-	fflush(stdout);
-	delete_n_null(vnes);
-	exit(signum);
-}
+
 
 int main(int argc, char* argv[]) {
 	printf("%s\n", "");
@@ -38,12 +33,6 @@ int main(int argc, char* argv[]) {
 			SDL_GetError());
 		return -1;
 	}
-	
-	// When the program is through executing, call SDL_Quit
-	atexit(SDL_Quit);
-	
-	// Make ctrl+c exit too
-	signal(SIGINT, exit_handler);
 	
 	vnes = new vNES();
 	vnes->init();

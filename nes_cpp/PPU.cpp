@@ -157,6 +157,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
          validTileData = false;
          att = 0;
          scantile = new vector<Tile*>(32);
+         for(size_t i=0; i<scantile->size(); i++)
+             (*scantile)[i] = NULL;
          t = NULL;
 
          // These are temporary variables used in rendering and sound procedures.
@@ -189,13 +191,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         delete_n_null(nameTable);
 
-        if(scantile != NULL) {
-             for(size_t i=0; i<scantile->size(); i++) {
-                 delete_n_null((*scantile)[i]);
-             }
-        }
         delete_n_null(scantile);
-        
         delete_n_null(attrib);
         delete_n_null(bgbuffer);
         delete_n_null(pixrendered);
@@ -458,8 +454,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		// Check for quiting
 		SDL_Event sdl_event;
 		while(SDL_PollEvent(&sdl_event) == 1) {
-			if(sdl_event.type == SDL_QUIT)
-				exit(0);
+			if(sdl_event.type == SDL_QUIT) {
+				nes->cpu->stopRunning = true;
+			}
 		}
 		
 		// Check for key presses

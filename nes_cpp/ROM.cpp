@@ -74,7 +74,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             for(size_t i=0; i<vromTile->size(); i++) {
                 for(size_t j=0; j<(*vromTile)[i]->size(); j++) {
                     delete_n_null((*(*vromTile)[i])[j]);
-                    printf("%s\n", "derp");
                 }
                 delete_n_null((*vromTile)[i]);
             }
