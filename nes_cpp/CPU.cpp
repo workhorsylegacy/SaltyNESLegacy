@@ -27,8 +27,37 @@ instructions and invokes emulation of the PPU and pAPU.
 	 CPU::CPU(NES* nes){
 		this->nes = nes;
 		this->mmap = NULL;
-	 	this->mem = NULL;
-	 	this->opdata = NULL;
+		this->mem = NULL;
+
+		// CPU Registers:
+		this->REG_ACC_NEW = 0;
+		this->REG_X_NEW = 0;
+		this->REG_Y_NEW = 0;
+		this->REG_STATUS_NEW = 0;
+		this->REG_PC_NEW = 0;
+		this->REG_SP = 0;
+
+		// Status flags:
+		this->F_CARRY_NEW = 0;
+		this->F_ZERO_NEW = 0;
+		this->F_INTERRUPT_NEW = 0;
+		this->F_DECIMAL_NEW = 0;
+		this->F_BRK_NEW = 0;
+		this->F_NOTUSED_NEW = 0;
+		this->F_OVERFLOW_NEW = 0;
+		this->F_SIGN_NEW = 0;
+
+		// Interrupt notification:
+		this->irqRequested = false;
+		this->irqType = 0;
+
+		// Op/Inst Data:
+		this->opdata = NULL;
+
+		// Misc vars:
+		this->cyclesToHalt = 0;
+		this->stopRunning = false;
+		this->crash = false;
 	}
 
 	// Initialize:

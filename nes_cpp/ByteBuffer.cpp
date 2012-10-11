@@ -17,6 +17,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "Globals.h"
+
+
+
 	ByteBuffer::ByteBuffer(int size, int byteOrdering) {
         if (size < 1) {
             size = 1;

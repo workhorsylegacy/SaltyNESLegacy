@@ -33,7 +33,30 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         this->papu = papu;
         sqr1 = square1;
-
+        _isEnabled = false;
+        lengthCounterEnable = false;
+        sweepActive = false;
+        envDecayDisable = false;
+        envDecayLoopEnable = false;
+        envReset = false;
+        sweepCarry = false;
+        updateSweepPeriod = false;
+        progTimerCount = 0;
+        progTimerMax = 0;
+        lengthCounter = 0;
+        squareCounter = 0;
+        sweepCounter = 0;
+        sweepCounterMax = 0;
+        sweepMode = 0;
+        sweepShiftAmount = 0;
+        envDecayRate = 0;
+        envDecayCounter = 0;
+        envVolume = 0;
+        masterVolume = 0;
+        dutyMode = 0;
+        sweepResult = 0;
+        sampleValue = 0;
+        vol = 0;
     }
 
      void ChannelSquare::clockLengthCounter() {

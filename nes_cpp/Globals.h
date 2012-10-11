@@ -220,15 +220,15 @@ public:
 	 static const bool debug = false;
 	 static const int BO_BIG_ENDIAN = 0;
      static const int BO_LITTLE_ENDIAN = 1;
-     int byteOrder;
+     
      vector<short>* buf;
      int size;
+     int byteOrder;
      size_t curPos;
      bool hasBeenErrors;
      bool expandable;
      int expandBy;
 
-	
     ByteBuffer(int size, int byteOrdering);
     ByteBuffer(vector<int8_t>* content, int byteOrdering);
     void setExpandable(bool exp);
@@ -304,6 +304,7 @@ public:
     static const int MODE_NORMAL = 0;
     static const int MODE_LOOP = 1;
     static const int MODE_IRQ = 2;
+    
     PAPU* papu;
     bool _isEnabled;
     bool hasSample;
@@ -375,6 +376,9 @@ public:
 
 class ChannelSquare : public IPapuChannel {
 public:
+    static const int dutyLookup[32];
+    static const int impLookup[32];
+
     PAPU* papu;
     bool sqr1;
     bool _isEnabled;
@@ -401,10 +405,6 @@ public:
     int sweepResult;
     int sampleValue;
     int vol;
-
-    static const int dutyLookup[32];
-
-    static const int impLookup[32];
 
      ChannelSquare(PAPU* papu, bool square1);
      void clockLengthCounter();
@@ -453,6 +453,11 @@ public:
 
 class CPU {
 public:
+	// IRQ Types:
+	static const int IRQ_NORMAL = 0;
+	static const int IRQ_NMI    = 1;
+	static const int IRQ_RESET  = 2;
+	 
 	// References to other parts of NES :
 	 NES* nes;
 	 MapperDefault* mmap;
@@ -475,11 +480,6 @@ public:
 	 int F_NOTUSED_NEW;
 	 int F_OVERFLOW_NEW;
 	 int F_SIGN_NEW;
-
-	// IRQ Types:
-	 static const int IRQ_NORMAL = 0;
-	 static const int IRQ_NMI    = 1;
-	 static const int IRQ_RESET  = 2;
 
 	// Interrupt notification:
 	 bool irqRequested;
@@ -621,11 +621,6 @@ public:
 
 class KbInputHandler : public KeyListener {
 public:
-    vector<bool>* allKeysState;
-    vector<int>* keyMapping;
-    int id;
-    NES* nes;
-
     // Joypad keys:
     static const int KEY_A = 0;
     static const int KEY_B = 1;
@@ -638,7 +633,12 @@ public:
     
     // Key count:
     static const int NUM_KEYS = 8;
-    
+
+    NES* nes;
+    int id;
+    vector<bool>* allKeysState;
+    vector<int>* keyMapping;
+
      KbInputHandler(NES* nes, int id);
      short getKeyState(int padKey);
      void mapKey(int padKey, int kbKeycode);
@@ -651,9 +651,9 @@ public:
 
 class Memory {
 public:
+	NES* nes;
 	vector<short>* mem;
 	int memLength;
-	NES* nes;
 
 	 Memory(NES* nes, int byteCount);
 	 void stateLoad(ByteBuffer* buf);
@@ -770,7 +770,7 @@ public:
      static int nextRnd;
      static float rndret;
 
-	 static vector<float>* rnd();
+     static vector<float>* rnd();
      static string hex8(int i);
      static string hex16(int i);
      static string binN(int num, int N);
@@ -847,6 +847,7 @@ public:
      static int curTable[64];
      static int origTable[64];
      static int emphTable[8][64];
+     
     int currentEmph;
     int currentHue, currentSaturation, currentLightness, currentContrast;
 
@@ -877,6 +878,9 @@ public:
 
  class PAPU {
  public:
+    // Panning:
+    static const int panning[];
+    static const int lengthLookup[];
 
     mutable pthread_mutex_t _mutex;
     NES* nes;
@@ -887,7 +891,6 @@ public:
     ChannelTriangle* triangle;
     ChannelNoise* noise;
     ChannelDM* dmc;
-    static const int lengthLookup[];
     int* dmcFreqLookup;
     int* noiseWavelengthLookup;
     vector<int>* square_table;
@@ -937,9 +940,6 @@ public:
 
     // Master volume:
     int masterVolume;
-
-    // Panning:
-    static const int panning[];
 
     // Stereo positioning:
     int stereoPosLSquare1;

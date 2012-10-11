@@ -18,13 +18,22 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
      MapperDefault::MapperDefault() {
-        this->nes = NULL;
-        this->cpuMem = NULL;
-        this->cpuMemArray = NULL;
-        this->ppuMem = NULL;
-        this->rom = NULL;
-        this->cpu = NULL;
-        this->ppu = NULL;
+         nes = NULL;
+         cpuMem = NULL;
+         ppuMem = NULL;
+         cpuMemArray = NULL;
+         rom = NULL;
+         cpu = NULL;
+         ppu = NULL;
+         cpuMemSize = 0;
+         joy1StrobeState = 0;
+         joy2StrobeState = 0;
+         joypadLastWrite = 0;
+         mousePressed = false;
+         gameGenieActive = false;
+         mouseX = 0;
+         mouseY = 0;
+         tmp = 0;
     }
 
 	void MapperDefault::write(int address, short value) {

@@ -54,7 +54,46 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	}
 
      PAPU::PAPU(NES* nes) {
-        pthread_mutex_init(&_mutex, NULL);
+         pthread_mutex_init(&_mutex, NULL);
+        
+          channelEnableValue = 0;
+          b1 = 0;
+          b2 = 0;
+          b3 = 0;
+          b4 = 0;
+          frameClockNow = false;
+          masterFrameCounter = 0;
+          derivedFrameCounter = 0;
+          countSequence = 0;
+          sampleTimer = 0;
+          frameTime = 0;
+          sampleTimerMax = 0;
+          sampleCount = 0;
+          sampleValueL = 0;
+          sampleValueR = 0;
+          smpSquare1 = 0;
+          smpSquare2 = 0;
+          smpTriangle = 0;
+          smpNoise = 0;
+          smpDmc = 0;
+          accCount = 0;
+          sq_index = 0;
+          tnd_index = 0;
+
+          // Stereo positioning:
+          stereoPosLSquare1 = 0;
+          stereoPosLSquare2 = 0;
+          stereoPosLTriangle = 0;
+          stereoPosLNoise = 0;
+          stereoPosLDMC = 0;
+          stereoPosRSquare1 = 0;
+          stereoPosRSquare2 = 0;
+          stereoPosRTriangle = 0;
+          stereoPosRNoise = 0;
+          stereoPosRDMC = 0;
+          extraCycles = 0;
+          maxCycles = 0;
+
 	    this->bufferSize = 2048;
 	    this->sampleRate = 44100;
 	    this->startedPlaying = false;
@@ -111,7 +150,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         initNoiseWavelengthLookup();
         initDACtables();
 
-        frameIrqEnabled = false;
+        frameIrqCounter = 0;
         frameIrqCounterMax = 4;
     }
 

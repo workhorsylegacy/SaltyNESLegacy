@@ -20,13 +20,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      NameTable::NameTable(int width, int height, string name) {
 
         this->name = name;
-
+        this->tile = new vector<short>(width * height);
+        this->attrib = new vector<short>(width * height);
         this->width = width;
         this->height = height;
-
-        tile = new vector<short>(width * height);
-        attrib = new vector<short>(width * height);
-
     }
 
      short NameTable::getTileIndex(int x, int y) {

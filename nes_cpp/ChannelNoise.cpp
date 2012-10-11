@@ -20,9 +20,27 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      ChannelNoise::ChannelNoise(PAPU* papu) {
         this->papu = papu;
+
+        _isEnabled = false;
+        envDecayDisable = false;
+        envDecayLoopEnable = false;
+        lengthCounterEnable = false;
+        envReset = false;
+        shiftNow = false;
+        lengthCounter = 0;
+        progTimerCount = 0;
+        progTimerMax = 0;
+        envDecayRate = 0;
+        envDecayCounter = 0;
+        envVolume = 0;
+        masterVolume = 0;
         shiftReg = 1 << 14;
-        this->accValue = 0;
-        this->accCount = 1;
+        randomBit = 0;
+        randomMode = 0;
+        sampleValue = 0;
+        accValue = 0;
+        accCount = 1;
+        tmp = 0;
     }
 
      void ChannelNoise::clockLengthCounter() {

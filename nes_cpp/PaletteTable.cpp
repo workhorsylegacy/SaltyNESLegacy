@@ -19,12 +19,16 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
 
-     int PaletteTable::curTable[64];
-     int PaletteTable::origTable[64];
-     int PaletteTable::emphTable[8][64];
+     int PaletteTable::curTable[64] = {0};
+     int PaletteTable::origTable[64] = {0};
+     int PaletteTable::emphTable[8][64] = {{0}};
 
 	PaletteTable::PaletteTable() {
-		this->currentEmph = -1;
+		currentEmph = -1;
+		currentHue = 0;
+		currentSaturation = 0;
+		currentLightness = 0;
+		currentContrast = 0;
 	}
 
     // Load the NTSC palette:

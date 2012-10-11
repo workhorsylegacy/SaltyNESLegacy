@@ -19,7 +19,7 @@
     bool Globals::appletMode = true;
     bool Globals::disableSprites = false;
     bool Globals::timeEmulation = true;
-    bool Globals::palEmulation;
+    bool Globals::palEmulation = false;
     bool Globals::enableSound = true;
     bool Globals::focused = false;
 

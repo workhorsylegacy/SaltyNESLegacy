@@ -18,7 +18,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Globals.h"
 
      Mapper001::Mapper001() : MapperDefault() {
-          
+        // Register 0:
+        mirroring = 0;
+        oneScreenMirroring = 0;
+        prgSwitchingArea = 0;
+        prgSwitchingSize = 0;
+        vromSwitchingSize = 0;
+
+        // Register 1:
+        romSelectionReg0 = 0;
+
+        // Register 2:
+        romSelectionReg1 = 0;
+
+        // Register 3:
+        romBankSelect = 0;
+
+        // 5-bit buffer:
+        regBuffer = 0;
+        regBufferCounter = 0;
      }
 
      void Mapper001::init(NES* nes) {

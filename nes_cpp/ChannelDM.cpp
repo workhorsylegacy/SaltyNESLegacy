@@ -20,7 +20,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     ChannelDM::ChannelDM(PAPU* papu) {
         this->papu = papu;
+
+        this->_isEnabled = false;
+        this->hasSample = false;
         this->irqGenerated = false;
+        this->playMode = 0;
+        this->dmaFrequency = 0;
+        this->dmaCounter = 0;
+        this->deltaCounter = 0;
+        this->playStartAddress = 0;
+        this->playAddress = 0;
+        this->playLength = 0;
+        this->playLengthCounter = 0;
+        this->shiftCounter = 0;
+        this->reg4012 = 0;
+        this->reg4013 = 0;
+        this->status = 0;
+        this->sample = 0;
+        this->dacLsb = 0;
+        this->data = 0;
     }
 
     void ChannelDM::clockDmc() {

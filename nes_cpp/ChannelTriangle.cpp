@@ -19,6 +19,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      ChannelTriangle::ChannelTriangle(PAPU* papu) {
         this->papu = papu;
+        this->_isEnabled = false;
+        this->sampleCondition = false;
+        this->lengthCounterEnable = false;
+        this->lcHalt = false;
+        this->lcControl = false;
+        this->progTimerCount = 0;
+        this->progTimerMax = 0;
+        this->triangleCounter = 0;
+        this->lengthCounter = 0;
+        this->linearCounter = 0;
+        this->lcLoadValue = 0;
+        this->sampleValue = 0;
+        this->tmp = 0;
     }
 
      void ChannelTriangle::clockLengthCounter() {
