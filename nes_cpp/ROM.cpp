@@ -52,7 +52,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      ROM::~ROM() {
         closeRom();
        
-        delete_n_null(header);
+        delete_n_null_array(header);
         
         if(rom != NULL) {
             for(size_t i=0; i<rom->size(); i++) {

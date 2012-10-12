@@ -30,16 +30,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         romSize = 0;
         progress = 0;
         nes = NULL;
-        //string rom;
-        progressFont = NULL;
-        //Color* bgColor;
         started = false;
     }
 
     vNES::~vNES() {
         stop();
         delete_n_null(nes);
-        delete_n_null(progressFont);
         
         rom.clear();
     }
@@ -47,22 +43,17 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     void vNES::init() {
         started = false;
         rom = "";
-//        bgColor = Color.black.darker().darker();
         initKeyCodes();
         readParams();
 
         Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-        progressFont = NULL;
         nes = new NES();
         nes->enableSound(sound);
         nes->reset();
     }
 
     void vNES::run() {
-        // Set font to be used for progress display of loading:
-//        progressFont = new Font("Tahoma", Font.TRUETYPE_FONT | Font.BOLD, 12);
-
         // Can start painting:
         started = true;
 
@@ -70,17 +61,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         nes->loadRom(rom);
         
         if (nes->rom->isValid()) {
-
-            // Add the screen buffer:
-            //addScreenView();
-
             // Set some properties:
             Globals::timeEmulation = timeemulation;
             nes->ppu->showSoundBuffer = showsoundbuffer;
 
             // Start emulation:
             //System.out.println("vNES is now starting the processor.");
-			nes->getCpu()->run();
+            nes->getCpu()->run();
 
         } else {
 
@@ -97,66 +84,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         nes->getPapu()->stop();
     }
 
-    void vNES::showLoadProgress(int percentComplete) {
-
-        progress = percentComplete;
-//        paint(getGraphics());
-
-    }
-
-    // Show the progress graphically.
-    void vNES::paint(Graphics* g) {
-
-        string pad;
-        string disp;
-//        int scrw, scrh;
-//        int txtw, txth;
-
-        if (!started) {
-            return;
-        }
-
-        // Get screen size:
-        if (scale) {
-//            scrw = 512;
-//            scrh = 480;
-        } else {
-//            scrw = 256;
-//            scrh = 240;
-        }
-
-        // Fill background:
-//        g->setColor(bgColor);
-//        g->fillRect(0, 0, scrw, scrh);
-
-        // Prepare text:
-        if (progress < 10) {
-            pad = "  ";
-        } else if (progress < 100) {
-            pad = " ";
-        } else {
-            pad = "";
-        }
-//        disp = "vNES is Loading Game... " + pad + progress + "%";
-
-        // Measure text:
-//        g->setFont(progressFont);
-//        txtw = g->getFontMetrics(progressFont).stringWidth(disp);
-//        txth = g->getFontMetrics(progressFont).getHeight();
-
-        // Display text:
-//        g->setFont(progressFont);
-//        g->setColor(Color.white);
-//        g->drawString(disp, scrw / 2 - txtw / 2, scrh / 2 - txth / 2);
-//        g->drawString(disp, scrw / 2 - txtw / 2, scrh / 2 - txth / 2);
-//        g->drawString("vNES \u00A9 2006-2011 Jamie Sanders", 12, 448);
-//        g->drawString("For updates, visit www.thatsanderskid.com", 12, 464);
-    }
-
-    void vNES::update(Graphics* g) {
-        // do nothing.
-    }
-
     void vNES::readParams() {
         rom = Parameters::rom;
         romSize = Parameters::romsize;
@@ -169,24 +96,24 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         showsoundbuffer = Parameters::showsoundbuffer;
 
         /* Controller Setup for Player 1 */
-		Globals::controls["p1_up"] = Parameters::p1_up;
-		Globals::controls["p1_down"] = Parameters::p1_down;
-		Globals::controls["p1_left"] = Parameters::p1_left;
-		Globals::controls["p1_right"] = Parameters::p1_right;
-		Globals::controls["p1_a"] = Parameters::p1_a;
-		Globals::controls["p1_b"] = Parameters::p1_b;
-		Globals::controls["p1_select"] = Parameters::p1_select;
-		Globals::controls["p1_start"] = Parameters::p1_start;
-	
+        Globals::controls["p1_up"] = Parameters::p1_up;
+        Globals::controls["p1_down"] = Parameters::p1_down;
+        Globals::controls["p1_left"] = Parameters::p1_left;
+        Globals::controls["p1_right"] = Parameters::p1_right;
+        Globals::controls["p1_a"] = Parameters::p1_a;
+        Globals::controls["p1_b"] = Parameters::p1_b;
+        Globals::controls["p1_select"] = Parameters::p1_select;
+        Globals::controls["p1_start"] = Parameters::p1_start;
+
         /* Controller Setup for Player 2 */
-		Globals::controls["p2_up"] = Parameters::p2_up;
-		Globals::controls["p2_down"] = Parameters::p2_down;
-		Globals::controls["p2_left"] = Parameters::p2_left;
-		Globals::controls["p2_right"] = Parameters::p2_right;
-		Globals::controls["p2_a"] = Parameters::p2_a;
-		Globals::controls["p2_b"] = Parameters::p2_b;
-		Globals::controls["p2_select"] = Parameters::p2_select;
-		Globals::controls["p2_start"] = Parameters::p2_start;
+        Globals::controls["p2_up"] = Parameters::p2_up;
+        Globals::controls["p2_down"] = Parameters::p2_down;
+        Globals::controls["p2_left"] = Parameters::p2_left;
+        Globals::controls["p2_right"] = Parameters::p2_right;
+        Globals::controls["p2_a"] = Parameters::p2_a;
+        Globals::controls["p2_b"] = Parameters::p2_b;
+        Globals::controls["p2_select"] = Parameters::p2_select;
+        Globals::controls["p2_start"] = Parameters::p2_start;
     }
 
     void vNES::initKeyCodes() {
@@ -269,13 +196,4 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         Globals::keycodes["VK_MINUS"] = 45;
         Globals::keycodes["VK_PERIOD"] = 46;
         Globals::keycodes["VK_SLASH"] = 47;
-    }
-
-
-    int vNES::getWidth() {
-	    return 500;
-    }
-    
-    int vNES::getHeight() {
-	    return 500;
     }

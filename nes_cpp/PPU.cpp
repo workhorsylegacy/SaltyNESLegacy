@@ -39,8 +39,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      PPU::PPU(NES* nes) {
          this->nes = nes;
-         _frame_start = (struct timespec){ 0 };
-         _frame_end = (struct timespec){ 0 };
+         _frame_start = (struct timespec){ 0, 0 };
+         _frame_end = (struct timespec){ 0, 0 };
          _ticks_since_second = 0.0d;
          frameCounter = 0;
          ppuMem = NULL;
@@ -474,7 +474,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		if(diff < Globals::NS_PER_FRAME) {
 			wait = Globals::NS_PER_FRAME - diff;
 
-			struct timespec req={0};
+			struct timespec req = (struct timespec){ 0, 0 };
 			req.tv_sec = 0;
 			req.tv_nsec = wait;
 			nanosleep(&req, NULL);

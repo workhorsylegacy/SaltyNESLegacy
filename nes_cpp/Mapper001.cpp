@@ -355,16 +355,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void Mapper001::switchLowHighPrgRom(int oldSetting) {
-
         // not yet.
+        assert(oldSetting != -1);
     }
 
      void Mapper001::switch16to32() {
-
         // not yet.
     }
 
      void Mapper001::switch32to16() {
-
         // not yet.
     }
+

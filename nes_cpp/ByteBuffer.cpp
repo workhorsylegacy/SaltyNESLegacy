@@ -641,11 +641,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return new ByteBuffer(enc, ByteBuffer::BO_BIG_ENDIAN);
 
     }
-
+/*
     ByteBuffer* ByteBuffer::asciiDecode(ByteBuffer* buf) {
         return NULL;
     }
-/*
+
     void ByteBuffer::saveToZipFile(File f, ByteBuffer* buf) {
 
         try {

@@ -75,11 +75,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      int ChannelTriangle::getLengthStatus() {
         return ((lengthCounter == 0 || !_isEnabled) ? 0 : 1);
     }
-
+/*
      int ChannelTriangle::readReg(int address) {
         return 0;
     }
-
+*/
      void ChannelTriangle::writeReg(int address, int value) {
 
         if (address == 0x4008) {

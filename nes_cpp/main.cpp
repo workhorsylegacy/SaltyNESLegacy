@@ -11,7 +11,7 @@ vNES* vnes = NULL;
 
 
 
-int main(int argc, char* argv[]) {
+int main(/*int argc, char* argv[]*/) {
 	printf("%s\n", "");
 	printf("%s\n", "C++NES 2.14 \u00A9 2012 Matthew Brennan Jones <mattjones@workhorsy.org>");
 	printf("%s\n", "A Port of vNES from Java to C++");
@@ -39,6 +39,8 @@ int main(int argc, char* argv[]) {
 	vnes->run();
 
 	delete_n_null(vnes);
+	SDL_Quit();
+	
 	return 0;
 }
 

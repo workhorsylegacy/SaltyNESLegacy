@@ -94,7 +94,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     const void Scale::doScanlineScaling(vector<int>* src, vector<int>* dest, bool* changed) {
+     void Scale::doScanlineScaling(vector<int>* src, vector<int>* dest, bool* changed) {
 
         int di = 0;
         int di2 = 512;
@@ -137,7 +137,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     const void Scale::doRasterScaling(vector<int>* src, vector<int>* dest, bool* changed) {
+     void Scale::doRasterScaling(vector<int>* src, vector<int>* dest, bool* changed) {
 
         int di = 0;
         int di2 = 512;
@@ -192,7 +192,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     const void Scale::doNormalScaling(vector<int>* src, vector<int>* dest, bool* changed) {
+     void Scale::doNormalScaling(vector<int>* src, vector<int>* dest, bool* changed) {
 
         int di = 0;
         int di2 = 512;

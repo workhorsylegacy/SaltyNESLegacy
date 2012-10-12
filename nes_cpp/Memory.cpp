@@ -11,7 +11,7 @@
 	
 	 Memory::~Memory() {
 		nes = NULL;
-		mem = NULL;
+		delete_n_null(mem);
 	}
 	
 	 void Memory::stateLoad(ByteBuffer* buf){

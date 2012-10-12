@@ -100,6 +100,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         ret |= (((int) (hsbvals[0] * 255.0d)) << 16);
         ret |= (((int) (hsbvals[1] * 255.0d)) << 8);
         ret |= (((int) (hsbvals[2] * 255.0d)));
+        delete_n_null_array(hsbvals);
 
         return ret;
 

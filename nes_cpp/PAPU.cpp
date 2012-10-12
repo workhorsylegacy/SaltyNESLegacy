@@ -170,10 +170,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PAPU::stateLoad(ByteBuffer* buf) {
+        assert(buf);
         // not yet.
     }
 
      void PAPU::stateSave(ByteBuffer* buf) {
+        assert(buf);
         // not yet.
     }
 
@@ -215,7 +217,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return nes;
     }
 
-     short PAPU::readReg(int address) {
+     short PAPU::readReg() {
 
         // Read 0x4015:
         int tmp = 0;

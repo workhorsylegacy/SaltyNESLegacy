@@ -38,6 +38,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Color.h"
 
+using namespace std;
+
 template<class T> void delete_n_null(T*& obj) {
 	if(obj == NULL)
 		return;
@@ -55,10 +57,6 @@ template<class T> void delete_n_null_array(T*& obj) {
 }
 
 
-using namespace std;
-
-
-
 // Temp stub classes
 class Point {
 public:
@@ -73,13 +71,6 @@ public:
 class Graphics {};
 class BufferedImage {};
 class VolatileImage {};
-class Font {
-public:
-	static const int BOLD = 0;
-	Font(string name, int style, int size) {
-		
-	}
-};
 class KeyListener {};
 class KeyEvent {
 public:
@@ -87,22 +78,6 @@ public:
 	static const int VK_F10 = 1; // FIXME
 	static const int VK_F12 = 2; // FIXME
 	int getKeyCode() {
-		return 0;
-	}
-};
-class MouseAdapter {
-public:
-	void setFocusable(bool derp) {
-	}
-	void requestFocus() {
-	}
-};
-class MouseEvent {
-public:
-	int getX() {
-		return 0;
-	}
-	int getY() {
 		return 0;
 	}
 };
@@ -144,26 +119,6 @@ class Tile;
 class vNES;
 
 // Interfaces
-/*
-class IMemoryMapper {
-public:
-     virtual void init(NES* nes) = 0;
-     virtual void loadROM(ROM* rom) = 0;
-     virtual void write(int address, short value) = 0;
-     virtual short load(int address) = 0;
-     virtual short joy1Read() = 0;
-     virtual short joy2Read() = 0;
-     virtual void reset() = 0;
-     virtual void setGameGenieState(bool value) = 0;
-     virtual void clockIrqCounter() = 0;
-     virtual void loadBatteryRam() = 0;
-     virtual void destroy() = 0;
-     virtual void stateLoad(ByteBuffer* buf) = 0;
-     virtual void stateSave(ByteBuffer* buf) = 0;
-     virtual void setMouseState(bool pressed, int x, int y) = 0;
-     virtual void latchAccess(int address) = 0;
-};
-*/
 class IPapuChannel {
      virtual void writeReg(int address, int value) = 0;
      virtual void setEnabled(bool value) = 0;
@@ -311,7 +266,7 @@ public:
     vector<short>* expandShortArray(vector<short>* array, int size);
     void crop();
     static ByteBuffer* asciiEncode(ByteBuffer* buf);
-    static ByteBuffer* asciiDecode(ByteBuffer* buf);
+    //static ByteBuffer* asciiDecode(ByteBuffer* buf);
     //static void saveToZipFile(File f, ByteBuffer* buf);
     //static ByteBuffer* readFromZipFile(File f);
 };
@@ -458,7 +413,7 @@ public:
      void clockLengthCounter();
      void clockLinearCounter();
      int getLengthStatus();
-     int readReg(int address);
+     //int readReg(int address);
      void writeReg(int address, int value);
      void clockProgrammableTimer(int nCycles);
      void clockTriangleGenerator();
@@ -661,9 +616,7 @@ public:
      short getKeyState(int padKey);
      void mapKey(int padKey, int kbKeycode);
      void poll_for_key_events();
-     void keyTyped(KeyEvent* ke);
      void reset();
-     void update();
 };
 
 class Memory {
@@ -984,7 +937,7 @@ public:
      void stateSave(ByteBuffer* buf);
      void synchronized_start();
      NES* getNes();
-     short readReg(int address);
+     short readReg();
      void writeReg(int address, short value);
      void resetCounter();
      void updateChannelEnable(int value);
@@ -1281,18 +1234,9 @@ public:
      static int si,  di,  di2,  val,  x,  y;
 
      static void setFilterParams(int darkenDepth, int brightenDepth);
-     static const void doScanlineScaling(vector<int>* src, vector<int>* dest, bool* changed);
-     static const void doRasterScaling(vector<int>* src, vector<int>* dest, bool* changed);
-     static const void doNormalScaling(vector<int>* src, vector<int>* dest, bool* changed);
-};
-
-class MyMouseAdapter : public MouseAdapter {
-    long lastClickTime;
-public:
-	MyMouseAdapter();
-    void mouseClicked(MouseEvent* me);
-    void mousePressed(MouseEvent* me);
-    void mouseReleased(MouseEvent* me);
+     static void doScanlineScaling(vector<int>* src, vector<int>* dest, bool* changed);
+     static void doRasterScaling(vector<int>* src, vector<int>* dest, bool* changed);
+     static void doNormalScaling(vector<int>* src, vector<int>* dest, bool* changed);
 };
 
 class Tile {
@@ -1336,8 +1280,6 @@ public:
     int progress;
     NES* nes;
     string rom;
-    Font* progressFont;
-    //Color* bgColor;
     bool started;
 
     vNES();
@@ -1345,13 +1287,8 @@ public:
     void init();
     void run();
     void stop();
-    void showLoadProgress(int percentComplete);
-    void paint(Graphics* g);
-    void update(Graphics* g);
     void readParams();
     void initKeyCodes();
-    int getWidth();
-    int getHeight();
 };
 
 inline void arraycopy_short(vector<short>* src, int srcPos, vector<short>* dest, int destPos, int length) {

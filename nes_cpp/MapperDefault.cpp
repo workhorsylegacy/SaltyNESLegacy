@@ -285,7 +285,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
                         // 0x4015:
                         // Sound channel enable, DMC Status
-                        return nes->getPapu()->readReg(address);
+                        return nes->getPapu()->readReg();
 
                     }
                     case 1: {
@@ -721,6 +721,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void MapperDefault::latchAccess(int address) {
         // Does nothing. This is used by MMC2.
+        assert(address > -1);
     }
 
      int MapperDefault::syncV() {
@@ -728,6 +729,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      int MapperDefault::syncH(int scanline) {
+        assert(scanline);
         return 0;
     }
 

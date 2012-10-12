@@ -67,16 +67,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     void KbInputHandler::keyTyped(KeyEvent* ke) {
-        // Ignore.
-    }
-
      void KbInputHandler::reset() {
         size_t size = allKeysState->size();
         allKeysState->clear();
         allKeysState->resize(size);
     }
-
-     void KbInputHandler::update() {
-        // doesn't do anything.
-    }
+    
