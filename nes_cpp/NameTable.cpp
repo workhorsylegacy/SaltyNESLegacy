@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Globals.h"
+#include "nes_cpp.h"
 
      NameTable::NameTable(int width, int height, string name) {
         this->name = name;

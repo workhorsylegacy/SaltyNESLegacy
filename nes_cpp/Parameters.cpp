@@ -1,6 +1,6 @@
 
 
-#include "Globals.h"
+#include "nes_cpp.h"
 
 	const string Parameters::rom = "mario.nes";
 	size_t Parameters::romsize = 40976;

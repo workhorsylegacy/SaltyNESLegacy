@@ -1,5 +1,5 @@
 
-#include "Globals.h"
+#include "nes_cpp.h"
 
     // Opdata array:
      vector<int>* CpuInfo::opdata = NULL;

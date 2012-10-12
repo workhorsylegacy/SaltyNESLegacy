@@ -1,5 +1,5 @@
 
-#include "Globals.h"
+#include "nes_cpp.h"
 
     SDL_Surface* Globals::sdl_screen = NULL;
     NES* Globals::nes = NULL;

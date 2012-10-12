@@ -16,7 +16,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
-#include "Globals.h"
+#include "nes_cpp.h"
 
      const int ROM::VERTICAL_MIRRORING;
      const int ROM::HORIZONTAL_MIRRORING;

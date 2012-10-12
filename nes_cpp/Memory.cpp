@@ -1,6 +1,6 @@
 
 
-#include "Globals.h"
+#include "nes_cpp.h"
 
 
 	 Memory::Memory(NES* nes, int byteCount){

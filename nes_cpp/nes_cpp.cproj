@@ -66,8 +66,8 @@
     <Compile Include="PapuChannel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Globals.h" />
     <None Include="Makefile" />
     <None Include="Color.h" />
+    <None Include="nes_cpp.h" />
   </ItemGroup>
 </Project>

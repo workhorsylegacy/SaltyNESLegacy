@@ -58,29 +58,6 @@ template<class T> void delete_n_null_array(T*& obj) {
 
 
 // Temp stub classes
-class Point {
-public:
-	int x;
-	int y;
-	
-	Point(int x, int y) {
-		this->x = x;
-		this->y = y;
-	}
-};
-class Graphics {};
-class BufferedImage {};
-class VolatileImage {};
-class KeyListener {};
-class KeyEvent {
-public:
-	static const int VK_F5 = 0; // FIXME
-	static const int VK_F10 = 1; // FIXME
-	static const int VK_F12 = 2; // FIXME
-	int getKeyCode() {
-		return 0;
-	}
-};
 class Mixer {};
 class SourceDataLine {
 public:
@@ -88,10 +65,8 @@ public:
 	bool isActive() { return false; }
 	int available() { return 0; }
 };
-class Graphics2D {};
 
 // Forward declarations
-//class IMemoryMapper;
 class IPapuChannel;
 
 class ByteBuffer;
@@ -585,13 +560,8 @@ public:
      static void initInstNames();
      static void initAddrDesc();
 };
-/*
-class FileLoader {
-public:
-     uint8_t* loadFile(string fileName, size_t& length);
-};
-*/
-class KbInputHandler : public KeyListener {
+
+class KbInputHandler {
 public:
     // Joypad keys:
     static const int KEY_A = 0;

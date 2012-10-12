@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Globals.h"
+#include "nes_cpp.h"
 
      int Scale::brightenShift = 0;
      int Scale::brightenShiftMask = 0;
