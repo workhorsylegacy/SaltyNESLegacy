@@ -26,7 +26,3 @@
     std::map<string, uint32_t> Globals::keycodes; //Java key codes
     std::map<string, string> Globals::controls; //vNES controls codes
 
-    void Globals::println(string s) {
-        printf("%s\n", s.c_str());
-    }
-

@@ -40,7 +40,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace std;
 
-template<class T> void delete_n_null(T*& obj) {
+template<class T> inline void delete_n_null(T*& obj) {
 	if(obj == NULL)
 		return;
 
@@ -48,7 +48,7 @@ template<class T> void delete_n_null(T*& obj) {
 	obj = NULL;
 }
 
-template<class T> void delete_n_null_array(T*& obj) {
+template<class T> inline void delete_n_null_array(T*& obj) {
 	if(obj == NULL)
 		return;
 		
@@ -68,7 +68,6 @@ public:
 
 // Forward declarations
 class IPapuChannel;
-
 class ByteBuffer;
 class ChannelDM;
 class ChannelNoise;
@@ -158,14 +157,12 @@ public:
 
     static std::map<string, uint32_t> keycodes; //Java key codes
     static std::map<string, string> controls; //vNES controls codes
-
-    static void println(string s);
 };
 
 class ByteBuffer {
 public:
-	 static const bool debug = false;
-	 static const int BO_BIG_ENDIAN = 0;
+     static const bool debug = false;
+     static const int BO_BIG_ENDIAN = 0;
      static const int BO_LITTLE_ENDIAN = 1;
      
      vector<short>* buf;

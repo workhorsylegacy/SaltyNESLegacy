@@ -20,7 +20,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-	ByteBuffer::ByteBuffer(int size, int byteOrdering) {
+     ByteBuffer::ByteBuffer(int size, int byteOrdering) {
         if (size < 1) {
             size = 1;
         }
