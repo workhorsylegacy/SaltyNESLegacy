@@ -698,6 +698,13 @@ public:
      void switch32to16();
 };
 
+class Mapper002 : public MapperDefault {
+public:
+    void init(NES* nes);
+    virtual void write(int address, short value);
+    virtual void loadROM(ROM* rom);
+};
+
 class Misc {
 public:
      static bool debug;

@@ -186,7 +186,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	        // The mappers supported:
 	        (*_mapperSupported)[ 0] = true; // No Mapper
 	        (*_mapperSupported)[ 1] = true; // MMC1
-	        (*_mapperSupported)[ 2] = false; // UNROM
+	        (*_mapperSupported)[ 2] = true; // UNROM
 	        (*_mapperSupported)[ 3] = false; // CNROM
 	        (*_mapperSupported)[ 4] = false; // MMC3
 	        (*_mapperSupported)[ 7] = false; // AOROM
@@ -464,10 +464,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 case 1: {
                     return new Mapper001();
                 }
-/*
                 case 2: {
                     return new Mapper002();
                 }
+/*
                 case 3: {
                     return new Mapper003();
                 }

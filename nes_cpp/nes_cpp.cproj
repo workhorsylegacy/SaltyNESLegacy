@@ -64,6 +64,7 @@
     <Compile Include="Color.cpp" />
     <Compile Include="Globals.cpp" />
     <Compile Include="PapuChannel.cpp" />
+    <Compile Include="Mapper002.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
