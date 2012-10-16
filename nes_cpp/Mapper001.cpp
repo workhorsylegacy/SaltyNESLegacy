@@ -21,8 +21,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // Register 0:
         mirroring = 0;
         oneScreenMirroring = 0;
-        prgSwitchingArea = 0;
-        prgSwitchingSize = 0;
+        prgSwitchingArea = 1;
+        prgSwitchingSize = 1;
         vromSwitchingSize = 0;
 
         // Register 1:
@@ -42,8 +42,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void Mapper001::init(NES* nes) {
 
         this->base_init(nes);
-    	this->prgSwitchingArea = 1;
-    	this->prgSwitchingSize = 1;
     }
 
      void Mapper001::mapperInternalStateLoad(ByteBuffer* buf) {

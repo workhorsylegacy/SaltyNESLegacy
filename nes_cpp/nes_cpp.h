@@ -103,8 +103,6 @@ class IPapuChannel {
 
 class Parameters {
 public:
-	static const string rom;
-	static size_t romsize;
 	static bool scale;
 	static bool sound;
 	static bool stereo;
@@ -632,8 +630,8 @@ public:
      void base_init(NES* nes);     
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
-     void mapperInternalStateLoad(ByteBuffer* buf);
-     void mapperInternalStateSave(ByteBuffer* buf);
+     virtual void mapperInternalStateLoad(ByteBuffer* buf);
+     virtual void mapperInternalStateSave(ByteBuffer* buf);
      void setGameGenieState(bool enable);
      bool getGameGenieState();
      void base_write(int address, short value);
@@ -643,7 +641,7 @@ public:
      void regWrite(int address, short value);
      short joy1Read();
      short joy2Read();
-     void loadROM(ROM* rom);
+     virtual void loadROM(ROM* rom);
     void loadPRGROM();
     void loadCHRROM();
      void loadBatteryRam();
@@ -659,7 +657,7 @@ public:
      int syncV();
      int syncH(int scanline);
      void setMouseState(bool pressed, int x, int y);
-     void reset();
+     virtual void reset();
 };
 
 class Mapper001 : public MapperDefault {
@@ -688,13 +686,13 @@ public:
 
      Mapper001();
      void init(NES* nes);
-     void mapperInternalStateLoad(ByteBuffer* buf);
-     void mapperInternalStateSave(ByteBuffer* buf);
-     void write(int address, short value);
+     virtual void mapperInternalStateLoad(ByteBuffer* buf);
+     virtual void mapperInternalStateSave(ByteBuffer* buf);
+     virtual void write(int address, short value);
      void setReg(int reg, int value);
      int getRegNumber(int address);
-     void loadROM(ROM* rom);
-     void reset();
+     virtual void loadROM(ROM* rom);
+     virtual void reset();
      void switchLowHighPrgRom(int oldSetting);
      void switch16to32();
      void switch32to16();
@@ -763,8 +761,8 @@ public:
      void stopEmulation();
      void reloadRom();
      void clearCPUMemory();
-     void dumpRomMemory();
-     void dumpCPUMemory();
+     void dumpRomMemory(ofstream* writer);
+     void dumpCPUMemory(ofstream* writer);
      void setGameGenieState(bool enable);
      CPU* getCpu();
      PPU* getPpu();
@@ -1243,7 +1241,6 @@ public:
     bool timeemulation;
     bool showsoundbuffer;
     int samplerate;
-    int romSize;
     int progress;
     NES* nes;
     string rom;
@@ -1251,7 +1248,7 @@ public:
 
     vNES();
     ~vNES();
-    void init();
+    void init(string rom_name);
     void run();
     void stop();
     void readParams();

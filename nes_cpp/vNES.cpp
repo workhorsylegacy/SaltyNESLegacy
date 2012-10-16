@@ -27,7 +27,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         timeemulation = false;
         showsoundbuffer = false;
         samplerate = 0;
-        romSize = 0;
         progress = 0;
         nes = NULL;
         started = false;
@@ -40,9 +39,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         rom.clear();
     }
 
-    void vNES::init() {
+    void vNES::init(string rom_name) {
         started = false;
-        rom = "";
+        rom = rom_name;
         initKeyCodes();
         readParams();
 
@@ -85,8 +84,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     void vNES::readParams() {
-        rom = Parameters::rom;
-        romSize = Parameters::romsize;
         scale = Parameters::scale;
         sound = Parameters::sound;
         stereo = Parameters::stereo;

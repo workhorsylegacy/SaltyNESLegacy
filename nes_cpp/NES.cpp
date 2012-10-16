@@ -96,25 +96,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         delete_n_null(palTable);
     }
 
-    void NES::dumpRomMemory() {
-        ofstream writer("rom_mem_cpp.txt", ios::out|ios::binary);
+    void NES::dumpRomMemory(ofstream* writer) {
+        //ofstream writer("rom_mem_cpp.txt", ios::out|ios::binary);
         for (size_t i = 0;i<rom->rom->size(); i++) {
 	        for (size_t j = 0;j<(*rom->rom)[i]->size(); j++) {
 				stringstream out;
-				out << j << " " << (*(*rom->rom)[i])[j] << "\n";
-	            writer.write(out.str().c_str(), out.str().length());
+				out << "@" << j << " " << (*(*rom->rom)[i])[j] << "\n";
+	            writer->write(out.str().c_str(), out.str().length());
 	        }
         }
-        writer.close();
+        //writer.close();
         //exit(0);
     }
 
-    void NES::dumpCPUMemory() {
+    void NES::dumpCPUMemory(ofstream* writer) {
         //ofstream writer("cpu_mem_cpp.txt", ios::out|ios::binary);
         for (size_t i = 0;i<cpuMem->mem->size(); i++) {
 			stringstream out;
 			out << "-" << i << " " << (*cpuMem->mem)[i] << "\n";
-            printf(out.str().c_str(), out.str().length());
+            writer->write(out.str().c_str(), out.str().length());
         }
         //writer.close();
         //exit(0);

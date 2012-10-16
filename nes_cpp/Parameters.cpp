@@ -2,8 +2,6 @@
 
 #include "nes_cpp.h"
 
-	const string Parameters::rom = "mario.nes";
-	size_t Parameters::romsize = 40976;
 	bool Parameters::scale = false;
 	bool Parameters::sound = true;
 	bool Parameters::stereo = false;

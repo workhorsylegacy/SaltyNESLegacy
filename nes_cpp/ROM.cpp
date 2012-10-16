@@ -186,36 +186,36 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	        // The mappers supported:
 	        (*_mapperSupported)[ 0] = true; // No Mapper
 	        (*_mapperSupported)[ 1] = true; // MMC1
-	        (*_mapperSupported)[ 2] = true; // UNROM
-	        (*_mapperSupported)[ 3] = true; // CNROM
-	        (*_mapperSupported)[ 4] = true; // MMC3
-	        (*_mapperSupported)[ 7] = true; // AOROM
-	        (*_mapperSupported)[ 9] = true; // MMC2
-	        (*_mapperSupported)[10] = true; // MMC4
-	        (*_mapperSupported)[11] = true; // ColorDreams
-	        (*_mapperSupported)[15] = true;
-	        (*_mapperSupported)[18] = true;
-	        (*_mapperSupported)[21] = true;
-	        (*_mapperSupported)[22] = true;
-	        (*_mapperSupported)[23] = true;
-	        (*_mapperSupported)[32] = true;
-	        (*_mapperSupported)[33] = true;
-	        (*_mapperSupported)[34] = true; // BxROM
-	        (*_mapperSupported)[48] = true;
-	        (*_mapperSupported)[64] = true;
-	        (*_mapperSupported)[66] = true; // GNROM
-	        (*_mapperSupported)[68] = true; // SunSoft4 chip
-	        (*_mapperSupported)[71] = true; // Camerica
-	        (*_mapperSupported)[72] = true;
-	        (*_mapperSupported)[75] = true;
-	        (*_mapperSupported)[78] = true;
-	        (*_mapperSupported)[79] = true;
-	        (*_mapperSupported)[87] = true;
-	        (*_mapperSupported)[94] = true;
-	        (*_mapperSupported)[105] = true;
-	        (*_mapperSupported)[140] = true;
-	        (*_mapperSupported)[182] = true;
-	        (*_mapperSupported)[232] = true; // Camerica /Quattro
+	        (*_mapperSupported)[ 2] = false; // UNROM
+	        (*_mapperSupported)[ 3] = false; // CNROM
+	        (*_mapperSupported)[ 4] = false; // MMC3
+	        (*_mapperSupported)[ 7] = false; // AOROM
+	        (*_mapperSupported)[ 9] = false; // MMC2
+	        (*_mapperSupported)[10] = false; // MMC4
+	        (*_mapperSupported)[11] = false; // ColorDreams
+	        (*_mapperSupported)[15] = false;
+	        (*_mapperSupported)[18] = false;
+	        (*_mapperSupported)[21] = false;
+	        (*_mapperSupported)[22] = false;
+	        (*_mapperSupported)[23] = false;
+	        (*_mapperSupported)[32] = false;
+	        (*_mapperSupported)[33] = false;
+	        (*_mapperSupported)[34] = false; // BxROM
+	        (*_mapperSupported)[48] = false;
+	        (*_mapperSupported)[64] = false;
+	        (*_mapperSupported)[66] = false; // GNROM
+	        (*_mapperSupported)[68] = false; // SunSoft4 chip
+	        (*_mapperSupported)[71] = false; // Camerica
+	        (*_mapperSupported)[72] = false;
+	        (*_mapperSupported)[75] = false;
+	        (*_mapperSupported)[78] = false;
+	        (*_mapperSupported)[79] = false;
+	        (*_mapperSupported)[87] = false;
+	        (*_mapperSupported)[94] = false;
+	        (*_mapperSupported)[105] = false;
+	        (*_mapperSupported)[140] = false;
+	        (*_mapperSupported)[182] = false;
+	        (*_mapperSupported)[232] = false; // Camerica /Quattro
 		}     
 		
 		return _mapperSupported;
@@ -266,6 +266,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         trainer = (header[6] & 4) != 0;
         fourScreen = (header[6] & 8) != 0;
         mapperType = (header[6] >> 4) | (header[7] & 0xF0);
+
+        printf("prog_rom_pages: %d\n", romCount);
+        printf("char_rom_pages: %d\n", vromCount);
+        printf("mirroring: %d\n", mirroring);
+        printf("is_sram_on: %d\n", batteryRam);
+        printf("is_trainer_on: %d\n", trainer);
+        printf("mapper: %d\n", mapperType);
 
         // Battery RAM?
         if (batteryRam) {
@@ -335,8 +342,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // Convert CHR-ROM banks to tiles:
         //System.out.println("Converting CHR-ROM image data..");
         //System.out.println("VROM bank count: "+vromCount);
-        int tileIndex;
-        int leftOver;
+        int tileIndex = 0;
+        int leftOver = 0;
         for (size_t v = 0; v < vromCount; v++) {
             for (size_t i = 0; i < 4096; i++) {
                 tileIndex = i >> 4;
@@ -546,7 +553,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                     return new Mapper182();
                 }
 */
-
+                default: {
+	                fprintf(stderr, "Unsupported mapper: %d. Exiting ...\n", mapperType);
+	                exit(1);
+                }
             }
         }
 

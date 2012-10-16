@@ -275,7 +275,7 @@ instructions and invokes emulation of the PPU and pAPU.
 			//stringstream out;
 			//out << "opinf: 0x";
 			//out << std::hex << (opinf&0xFF);
-//			printf("%d opinf: 0x%02x\n", counter, (opinf&0xFF));
+//			printf("opinf: 0x%02x\n", (opinf&0xFF));
 			cycleCount = (opinf>>24);
 			cycleAdd = 0;
 
