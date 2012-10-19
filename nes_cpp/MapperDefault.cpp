@@ -174,6 +174,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      short MapperDefault::load(int address) {
+         return base_load(address);
+     }
+
+     short MapperDefault::base_load(int address) {
 
         // Wrap around:
         address &= 0xFFFF;
@@ -741,7 +745,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void MapperDefault::reset() {
+    void MapperDefault::reset() {
+        this->base_reset();
+    }
+
+     void MapperDefault::base_reset() {
 
         this->joy1StrobeState = 0;
         this->joy2StrobeState = 0;

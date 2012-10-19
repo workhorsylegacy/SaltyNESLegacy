@@ -67,6 +67,7 @@
     <Compile Include="Mapper002.cpp" />
     <Compile Include="Mapper003.cpp" />
     <Compile Include="Mapper004.cpp" />
+    <Compile Include="Mapper007.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />

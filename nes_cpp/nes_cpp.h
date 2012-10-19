@@ -81,6 +81,7 @@ class Mapper001;
 class Mapper002;
 class Mapper003;
 class Mapper004;
+class Mapper007;
 class MapperDefault;
 class Memory;
 class Misc;
@@ -639,7 +640,8 @@ public:
      bool getGameGenieState();
      void base_write(int address, short value);
      void writelow(int address, short value);
-     short load(int address);
+     short base_load(int address);
+     virtual short load(int address);
      short regLoad(int address);
      void regWrite(int address, short value);
      short joy1Read();
@@ -660,7 +662,8 @@ public:
      int syncV();
      int syncH(int scanline);
      void setMouseState(bool pressed, int x, int y);
-     virtual void reset();
+     virtual void base_reset();
+     void reset();
 };
 
 class Mapper001 : public MapperDefault {
@@ -741,6 +744,20 @@ public:
     virtual void executeCommand(int cmd, int arg);
     virtual void loadROM(ROM* rom);
     virtual void clockIrqCounter();
+    virtual void reset();
+};
+
+class Mapper007 : public MapperDefault {
+public:
+    int currentOffset;
+    int currentMirroring;
+    vector<short>* prgrom;
+
+    virtual void init(NES* nes);
+    virtual short load(int address);
+    virtual void write(int address, short value);
+    void mapperInternalStateLoad(ByteBuffer* buf);
+    void mapperInternalStateSave(ByteBuffer* buf);
     virtual void reset();
 };
 
