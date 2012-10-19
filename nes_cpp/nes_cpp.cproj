@@ -66,6 +66,7 @@
     <Compile Include="PapuChannel.cpp" />
     <Compile Include="Mapper002.cpp" />
     <Compile Include="Mapper003.cpp" />
+    <Compile Include="Mapper004.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />

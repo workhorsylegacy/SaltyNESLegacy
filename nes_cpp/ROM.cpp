@@ -188,7 +188,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	        (*_mapperSupported)[ 1] = true; // MMC1
 	        (*_mapperSupported)[ 2] = true; // UNROM
 	        (*_mapperSupported)[ 3] = true; // CNROM
-	        (*_mapperSupported)[ 4] = false; // MMC3
+	        (*_mapperSupported)[ 4] = true; // MMC3
 	        (*_mapperSupported)[ 7] = false; // AOROM
 	        (*_mapperSupported)[ 9] = false; // MMC2
 	        (*_mapperSupported)[10] = false; // MMC4
@@ -465,8 +465,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 case 1: return new Mapper001();
                 case 2: return new Mapper002();
                 case 3: return new Mapper003();
-/*
                 case 4: return new Mapper004();
+/*
                 case 7: return new Mapper007();
                 case 9: return new Mapper009();
                 case 10: return new Mapper010();

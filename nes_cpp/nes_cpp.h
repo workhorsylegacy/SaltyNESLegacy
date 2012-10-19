@@ -80,6 +80,7 @@ class KbInputHandler;
 class Mapper001;
 class Mapper002;
 class Mapper003;
+class Mapper004;
 class MapperDefault;
 class Memory;
 class Misc;
@@ -632,8 +633,8 @@ public:
      void base_init(NES* nes);     
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
-     virtual void mapperInternalStateLoad(ByteBuffer* buf);
-     virtual void mapperInternalStateSave(ByteBuffer* buf);
+     void base_mapperInternalStateLoad(ByteBuffer* buf);
+     void base_mapperInternalStateSave(ByteBuffer* buf);
      void setGameGenieState(bool enable);
      bool getGameGenieState();
      void base_write(int address, short value);
@@ -688,8 +689,8 @@ public:
 
      Mapper001();
      void init(NES* nes);
-     virtual void mapperInternalStateLoad(ByteBuffer* buf);
-     virtual void mapperInternalStateSave(ByteBuffer* buf);
+     void mapperInternalStateLoad(ByteBuffer* buf);
+     void mapperInternalStateSave(ByteBuffer* buf);
      virtual void write(int address, short value);
      void setReg(int reg, int value);
      int getRegNumber(int address);
@@ -708,8 +709,39 @@ public:
 };
 
 class Mapper003 : public MapperDefault {
+public:
     virtual void init(NES* nes);
     virtual void write(int address, short value);
+};
+
+class Mapper004 : public MapperDefault {
+public:
+    static const int CMD_SEL_2_1K_VROM_0000 = 0;
+    static const int CMD_SEL_2_1K_VROM_0800 = 1;
+    static const int CMD_SEL_1K_VROM_1000 = 2;
+    static const int CMD_SEL_1K_VROM_1400 = 3;
+    static const int CMD_SEL_1K_VROM_1800 = 4;
+    static const int CMD_SEL_1K_VROM_1C00 = 5;
+    static const int CMD_SEL_ROM_PAGE1 = 6;
+    static const int CMD_SEL_ROM_PAGE2 = 7;
+    int command;
+    int prgAddressSelect;
+    int chrAddressSelect;
+    int pageNumber;
+    int irqCounter;
+    int irqLatchValue;
+    int irqEnable;
+    bool prgAddressChanged;
+
+    Mapper004();
+    virtual void init(NES* nes);
+    void mapperInternalStateLoad(ByteBuffer* buf);
+    void mapperInternalStateSave(ByteBuffer* buf);
+    virtual void write(int address, short value);
+    virtual void executeCommand(int cmd, int arg);
+    virtual void loadROM(ROM* rom);
+    virtual void clockIrqCounter();
+    virtual void reset();
 };
 
 class Misc {

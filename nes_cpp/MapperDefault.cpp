@@ -79,7 +79,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             joypadLastWrite = buf->readInt();
 
             // Mapper specific stuff:
-            mapperInternalStateLoad(buf);
+            base_mapperInternalStateLoad(buf);
 
         }
 
@@ -96,11 +96,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         buf->putInt(joypadLastWrite);
 
         // Mapper specific stuff:
-        mapperInternalStateSave(buf);
+        base_mapperInternalStateSave(buf);
 
     }
 
-     void MapperDefault::mapperInternalStateLoad(ByteBuffer* buf) {
+     void MapperDefault::base_mapperInternalStateLoad(ByteBuffer* buf) {
 
         buf->putByte((short) joy1StrobeState);
         buf->putByte((short) joy2StrobeState);
@@ -108,7 +108,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-     void MapperDefault::mapperInternalStateSave(ByteBuffer* buf) {
+     void MapperDefault::base_mapperInternalStateSave(ByteBuffer* buf) {
 
         joy1StrobeState = buf->readByte();
         joy2StrobeState = buf->readByte();
