@@ -1,0 +1,120 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+# This file is part of Raise a small build automation tool.
+# This project is hosted at http://launchpad.net/raise .
+# Copyright (c) 2012, Matthew Brennan Jones <mattjones@workhorsy.org>
+# 
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+import os, sys
+import stat
+if sys.version_info < (3, 0):
+	import urllib2
+	globals()['urlopen'] = urllib2.urlopen
+else:
+	import urllib.request
+	globals()['urlopen'] = urllib.request.urlopen
+
+def friendly_size(data_length):
+	retval = ''
+	size_map = [
+		{'B'  : 1},
+		{'KB' : 1024.0},
+		{'MB' : 1024000.0},
+		{'GB' : 1024000000.0}
+	]
+	for i in size_map:
+		for name, size in i.items():
+			if data_length >= size:
+				retval = '{0} {1}'.format(round(data_length / size, 2), name)
+				break
+
+	return retval
+
+def download_file(url, cb):
+	chunk_size = 1024
+	response = urlopen(url)
+	content_length = int(response.headers['Content-Length'])
+	data = b''
+	data_length = 0
+
+	while True:
+		chunk = response.read(chunk_size)
+		if not chunk:
+			break
+
+		data += chunk
+		data_length += len(chunk)
+		percent = round((float(data_length) / content_length)*100, 2)
+
+		cb(chunk, data_length, chunk_size, content_length, percent)
+
+def update():
+	print("Downloading newest Raise version ...")
+
+	# Get the file name for actual
+	file_name = '.raise_actual'
+	if os.path.isfile('raise_actual'):
+		file_name = 'raise_actual'
+
+	try:
+		url = 'http://bazaar.launchpad.net/~workhorsy/raise/main/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual'
+		f = open(file_name, 'wb')
+
+		def cb(chunk, data_length, chunk_size, content_length, percent):
+			# Write the next chunk to the file
+			f.write(chunk)
+
+			# Write the download progress
+			sys.stdout.write("Downloaded {0} of {1} ({2}%)\r".format(friendly_size(data_length), friendly_size(content_length), percent))
+
+			# Write a newline if the download is complete
+			if data_length >= content_length:
+				sys.stdout.write('\n')
+
+			sys.stdout.flush()
+
+		# Download the file and call the cb after each chunk
+		download_file(url, cb)
+
+		# Make the file executable
+		os.chmod(file_name, 0o775 | stat.S_IXOTH)
+	except Exception as e:
+		print(str(e))
+
+if __name__ == '__main__':
+	# Clear the terminal if ran as clear; ./raise
+	os.system('clear')
+
+	args = str(str.join(' ', sys.argv[1:]))
+	if args == 'update':
+		update()
+		exit()
+
+	actual = '.raise_actual'
+	if os.path.isfile('raise_actual'):
+		actual = 'raise_actual'
+	elif not os.path.isfile('.raise_actual'):
+		update()
+
+	os.system('./{0} {1}'.format(actual, args))
+
+

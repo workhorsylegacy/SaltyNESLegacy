@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+import os
+
+def clean():
+	rmdir_and_children('build')
+
+def configure():
+	require_programs(['g++'])
+
+	require_shared_libraries([
+	'libSDL']) #, 'pthread', 'rt'])
+
+	os.environ['CC'] = 'g++'
+	os.environ['CFLAGS'] = ' -g -O2 -Wall -Wunused -Wextra -Werror'
+
+def build():
+	require_not_root()
+	#clean()
+	configure()
+
+	# Copy the files to the build directory
+	mkdir_f('build')
+	rmdir_and_children('build/src')
+	cpdir('nes_cpp', 'build/src')
+	cd('build')
+
+	# Get the names of all the c++ files
+	code_files = []
+	for entry in os.listdir('src'):
+		if entry.lower().endswith('.cpp'):
+			code_files.append(entry[:-4])
+	code_files.sort()
+
+	# Build each c++ file into an object
+	for f in code_files:
+		object_name = '{0}.o'.format(f)
+		code_name = 'src/{0}.cpp'.format(f)
+		c_build_object(object_name, [code_name])
+
+	# Link all the objects into the program
+	object_files = [s + '.o' for s in code_files]
+	c_build_program('main', object_files, ['-lSDL', '-lpthread', '-lrt'])
+
+	# Run the program
+	cd('..')
+	mvfile('build/main', 'main')
+	run_say('./main')
+
+
+
+

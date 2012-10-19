@@ -73,5 +73,11 @@
     <None Include="Makefile" />
     <None Include="Color.h" />
     <None Include="nes_cpp.h" />
+    <None Include="..\rscript">
+      <Link>rscript</Link>
+    </None>
+    <None Include="..\raise">
+      <Link>raise</Link>
+    </None>
   </ItemGroup>
 </Project>
