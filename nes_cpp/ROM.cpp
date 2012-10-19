@@ -225,8 +225,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         this->fileName = fileName;
 		ifstream reader(fileName.c_str(), ios::in|ios::binary);
 		if(reader.fail()) {
-			fprintf(stderr, "Error while loading rom: %s\n", strerror(errno));
-			abort();
+			fprintf(stderr, "Error while loading rom '%s': %s\n", fileName.c_str(), strerror(errno));
+			exit(1);
 		}
 		
 		reader.seekg(0, ios::end);
