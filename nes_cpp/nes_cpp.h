@@ -78,6 +78,8 @@ class CpuInfo;
 class FileLoader;
 class KbInputHandler;
 class Mapper001;
+class Mapper002;
+class Mapper003;
 class MapperDefault;
 class Memory;
 class Misc;
@@ -703,6 +705,11 @@ public:
     void init(NES* nes);
     virtual void write(int address, short value);
     virtual void loadROM(ROM* rom);
+};
+
+class Mapper003 : public MapperDefault {
+    virtual void init(NES* nes);
+    virtual void write(int address, short value);
 };
 
 class Misc {
