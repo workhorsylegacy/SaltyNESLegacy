@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NaclNES</title>
+		<script src="jquery-1.4.4.min.js" type="text/javascript"></script>
+	</head>
+	<body id="bodyId" onunload="pageDidUnload()">
+		<script type="text/javascript">
+			var nacl_nes = null;
+			var paintInterval = null;
+			var debugInterval = null;
+
+			function stringToBytes(str) {
+				var retval = new Array();
+				for(var j=0; j < str.length; j++) {
+					var result = 0;
+					for(var i=j + 1; i>j; i--) {
+						result = result * 256 + (str.charCodeAt(i-1) & 0xff);
+					}
+
+					retval.push(result);
+				}
+				return retval;
+			}
+
+			function handleMessage(message_event) {
+				//alert(message_event.data);
+				if(message_event.data.split(':')[0] == 'get_fps') {
+					var debug = $('#debug')[0];
+					debug.innerHTML = 'FPS: ' + message_event.data.split(':')[1];
+				} else if(message_event.data == 'running') {
+					// Repaint the screen every 33ms
+					paintInterval = setInterval(function() {
+						nacl_nes.postMessage('paint');
+					}, 33);
+
+					// Have the FPS sent to us every second
+					// FIXME: This should just be sent from the nexe directly
+					debugInterval = setInterval(function() {
+						nacl_nes.postMessage('get_fps');
+					}, 1000);
+
+					// Make the pause button clickable
+					$('#pause').attr('disabled', false);
+					
+					var debug = $('#debug')[0];
+					debug.innerHTML = message_event.data;
+				} else {
+					var debug = $('#debug')[0];
+					debug.innerHTML = message_event.data;
+				}
+			}
+
+			function handleProgress(event) {
+				var debug = $('#debug')[0];
+				// Print unknown progress if unknown
+				if(!event.lengthComputable || event.total == 0) {
+					debug.innerHTML = 'Loading ' + event.loaded + ' Bytes of unknown total size';
+					return;
+				}
+
+				// Or print progress
+				var progress = event.loaded / event.total * 100.0;
+				debug.innerHTML = 'Loading ' + progress.toFixed(2) + '% ...';
+			}
+
+			function handleLoadEnd() {
+				$('#game_selector').attr('disabled', false);
+				var debug = $('#debug')[0];
+				debug.innerHTML = 'Loaded';
+			}
+
+			function pageDidUnload() {
+				clearInterval(paintInterval);
+			}
+
+			function load_rom(rom_url) {
+				nacl_nes = $('#NaclNesApp')[0];
+						
+				$.ajax({
+					url: rom_url,
+					xhr: function() {
+						var xhr = $.ajaxSettings.xhr();
+						if(typeof xhr.overrideMimeType !== 'undefined') {
+							// Download as binary
+							xhr.overrideMimeType('text/plain; charset=x-user-defined');
+						}
+						return xhr;
+					},
+					complete: function(xhr, status) {
+						// Make sure the rom file exists
+						if(status != 'success') {
+							var debug = $('#debug')[0];
+							debug.innerHTML = 'Failed to download ROM file!';
+							return;
+						}
+
+						// Convert the rom to a string of bytes
+						// like: [255, 12] == "FF0C"
+						var response = stringToBytes(xhr.responseText);
+						var rom_data = "";
+						for(var i=0; i<response.length; i++) {
+							var byte = response[i].toString(16).toUpperCase();
+							if(byte.length == 1)
+								byte = "0" + byte;
+							rom_data += byte;
+						}
+
+						// Send the rom to the nexe
+						nacl_nes.postMessage('load_rom:' + rom_data);
+					}
+				});
+			}
+
+		</script>
+		<select id="game_selector" disabled="disabled">
+			<option id="none">Select a game to play</option>
+			<option id="castlevania_1.nes">Castlevania</option>
+			<option id="contra.nes">Contra</option>
+			<option id="dd.nes">Double Dragon</option>
+			<option id="KidIcaru.nes">Kid Icarus</option>
+			<option id="Kirby's Adventure.nes">Kirby's Adventure</option>
+			<option id="zelda.nes">Legend of Zelda, The</option>
+			<option id="Little Nemo - The Dream Master.nes">Little Nemo - The Dream Master</option>
+			<option id="MEGAMAN2.NES">Mega Man 2</option>
+			<option id="metalgear.nes">Meta Gear</option>
+			<option id="METROID.NES">Metroid</option>
+			<option id="NinjaGa.nes">Ninja Gaiden</option>
+			<option id="PunchOut.nes">Punch Out</option>
+			<option id="Shatterhand.nes">Shatter Hand</option>
+			<option id="Strider.nes">Strider</option>
+			<option id="mario.nes">Super Mario Brothers</option>
+			<option id="smb3.nes">Super Mario Brothers 3</option>
+			<option id="TETRIS.NES">Tetris</option>
+		</select>
+		<button id="pause" disabled="disabled">Pause</button>
+		<div id="listener">
+			<embed name="nacl_module"
+				id="NaclNesApp"
+				width=256 height=240
+				src="newlib/nacl_nes.nmf"
+				type="application/x-nacl" 
+				style="background-color: #000000"/>
+		</div>
+		<span id="debug">
+		Debug messages will be printed here
+		</span>
+		<p>
+			A = Start<br />
+			S = Select<br />
+			Z = A<br />
+			X = B<br />
+			Arrow keys for the D-Pad
+		</p>
+		<script type="text/javascript">
+			// Send all key down events to the nacl app
+			$('#bodyId').keydown(function(event) {
+				if(nacl_nes == null) return false;
+
+				nacl_nes.postMessage('button_down:' + event.which);
+				return false;
+			});
+
+			// Send all key up events to the nacl app
+			$('#bodyId').keyup(function(event) {
+				if(nacl_nes == null) return false;
+				
+				nacl_nes.postMessage('button_up:' + event.which);
+				return false;
+			});
+
+			// Pause when the button is clicked
+			$('#pause').click(function() {
+				if(nacl_nes == null) return false;
+
+				nacl_nes.postMessage('pause');
+				var pause = $('#pause');
+				if(pause.text() == 'Pause') {
+					pause.text('Unpause');
+				} else {
+					pause.text('Pause');
+				}
+
+				return false;
+			});
+
+			// Load a game when one is selected
+			$('#game_selector').change(function() {
+				var id = $(this).find('option:selected').attr('id');
+				if(id == 'none') return;
+
+				$('#pause').attr('disabled', true);
+				$('#pause').text('Pause');
+
+				if(paintInterval != null) {
+					clearInterval(paintInterval);
+					paintInterval = null;
+				}
+
+				if(debugInterval != null) {
+					clearInterval(debugInterval);
+					debugInterval = null;
+				}
+
+				if(nacl_nes != null) {
+					nacl_nes.postMessage('quit');
+					nacl_nes = null;
+				}
+				load_rom('roms/' + id);
+			});
+
+			var listener = $('#listener')[0];
+			listener.addEventListener('loadend', handleLoadEnd, true);
+			listener.addEventListener('progress', handleProgress, true);
+			listener.addEventListener('message', handleMessage, true);
+		</script>
+	</body>
+</html>
+
+

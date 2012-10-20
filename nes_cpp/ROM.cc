@@ -221,7 +221,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		return _mapperSupported;
 	}
 
-     void ROM::load(string fileName) {
+     void ROM::load_from_file(string fileName) {
         this->fileName = fileName;
 		ifstream reader(fileName.c_str(), ios::in|ios::binary);
 		if(reader.fail()) {
@@ -234,13 +234,20 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		reader.seekg(0, ios::beg);
 		assert(length > 0);
 		uint8_t* bdata = new uint8_t[length];
-		short* sdata = new short[length];
 		reader.read((char*)bdata, length);
-		for(size_t i=0; i<length; i++) {
-			sdata[i] = (short) (bdata[i] & 255);
-		}
+		load_from_data(bdata, length);
 		delete_n_null_array(bdata);
 		reader.close();
+     }
+
+	void ROM::load_from_data(uint8_t* data, size_t length) {
+		short* sdata = new short[length];
+		for(size_t i=0; i<length; i++) {
+			sdata[i] = (short) (data[i] & 255);
+		}
+		#ifdef NACL
+		nacl_nes::NaclNes::log_to_browser("log: rom::load_from_data");
+		#endif
 
         // Read header:
         header = new short[16];

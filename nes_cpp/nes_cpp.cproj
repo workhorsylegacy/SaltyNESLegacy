@@ -37,40 +37,41 @@
     <CompileTarget>Bin</CompileTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="main.cpp" />
-    <Compile Include="ByteBuffer.cpp" />
-    <Compile Include="ChannelDM.cpp" />
-    <Compile Include="ChannelNoise.cpp" />
-    <Compile Include="ChannelSquare.cpp" />
-    <Compile Include="ChannelTriangle.cpp" />
-    <Compile Include="CPU.cpp" />
-    <Compile Include="CpuInfo.cpp" />
-    <Compile Include="KbInputHandler.cpp" />
-    <Compile Include="Mapper001.cpp" />
-    <Compile Include="MapperDefault.cpp" />
-    <Compile Include="Memory.cpp" />
-    <Compile Include="Misc.cpp" />
-    <Compile Include="NameTable.cpp" />
-    <Compile Include="NES.cpp" />
-    <Compile Include="PaletteTable.cpp" />
-    <Compile Include="PAPU.cpp" />
-    <Compile Include="PPU.cpp" />
-    <Compile Include="Raster.cpp" />
-    <Compile Include="ROM.cpp" />
-    <Compile Include="Scale.cpp" />
-    <Compile Include="Tile.cpp" />
-    <Compile Include="vNES.cpp" />
-    <Compile Include="Parameters.cpp" />
-    <Compile Include="Color.cpp" />
-    <Compile Include="Globals.cpp" />
-    <Compile Include="PapuChannel.cpp" />
-    <Compile Include="Mapper002.cpp" />
-    <Compile Include="Mapper003.cpp" />
-    <Compile Include="Mapper004.cpp" />
-    <Compile Include="Mapper007.cpp" />
+    <Compile Include="nacl_nes.cc" />
+    <Compile Include="nacl_nes_module.cc" />
+    <Compile Include="ByteBuffer.cc" />
+    <Compile Include="ChannelDM.cc" />
+    <Compile Include="ChannelNoise.cc" />
+    <Compile Include="ChannelSquare.cc" />
+    <Compile Include="ChannelTriangle.cc" />
+    <Compile Include="Color.cc" />
+    <Compile Include="CPU.cc" />
+    <Compile Include="CpuInfo.cc" />
+    <Compile Include="Globals.cc" />
+    <Compile Include="KbInputHandler.cc" />
+    <Compile Include="main.cc" />
+    <Compile Include="Mapper001.cc" />
+    <Compile Include="Mapper002.cc" />
+    <Compile Include="Mapper003.cc" />
+    <Compile Include="Mapper004.cc" />
+    <Compile Include="Mapper007.cc" />
+    <Compile Include="MapperDefault.cc" />
+    <Compile Include="Memory.cc" />
+    <Compile Include="Misc.cc" />
+    <Compile Include="NameTable.cc" />
+    <Compile Include="NES.cc" />
+    <Compile Include="PaletteTable.cc" />
+    <Compile Include="PAPU.cc" />
+    <Compile Include="PapuChannel.cc" />
+    <Compile Include="Parameters.cc" />
+    <Compile Include="PPU.cc" />
+    <Compile Include="Raster.cc" />
+    <Compile Include="ROM.cc" />
+    <Compile Include="Scale.cc" />
+    <Compile Include="Tile.cc" />
+    <Compile Include="vNES.cc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile" />
     <None Include="Color.h" />
     <None Include="nes_cpp.h" />
     <None Include="..\rscript">
@@ -79,5 +80,8 @@
     <None Include="..\raise">
       <Link>raise</Link>
     </None>
+    <None Include="Makefile" />
+    <None Include="index.html" />
+    <None Include="nacl_nes.h" />
   </ItemGroup>
 </Project>

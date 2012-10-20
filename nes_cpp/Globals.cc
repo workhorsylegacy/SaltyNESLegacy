@@ -1,11 +1,14 @@
 
 #include "nes_cpp.h"
 
+#ifdef SDL
     SDL_Surface* Globals::sdl_screen = NULL;
+#endif
+
     NES* Globals::nes = NULL;
 
-    double Globals::CPU_FREQ_NTSC = 1789772.5d;
-    double Globals::CPU_FREQ_PAL = 1773447.4d;
+    double Globals::CPU_FREQ_NTSC = 1789772.5;
+    double Globals::CPU_FREQ_PAL = 1773447.4;
     int Globals::preferredFrameRate = 60;
     
     // Microseconds per frame:

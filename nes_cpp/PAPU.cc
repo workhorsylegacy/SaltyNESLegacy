@@ -847,9 +847,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         sampleRate = rate;
         sampleTimerMax = (int) ((1024.0 * Globals::CPU_FREQ_NTSC * Globals::preferredFrameRate) /
-                (sampleRate * 60.0d));
+                (sampleRate * 60.0));
 
-        frameTime = (int) ((14915.0 * (double) Globals::preferredFrameRate) / 60.0d);
+        frameTime = (int) ((14915.0 * (double) Globals::preferredFrameRate) / 60.0);
 
         sampleTimer = 0;
         bufferIndex = 0;

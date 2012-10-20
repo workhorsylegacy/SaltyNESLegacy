@@ -39,9 +39,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      PPU::PPU(NES* nes) {
          this->nes = nes;
-         _frame_start = (struct timespec){ 0, 0 };
-         _frame_end = (struct timespec){ 0, 0 };
-         _ticks_since_second = 0.0d;
+         _frame_start.tv_nsec = 0;
+         _frame_start.tv_sec = 0;
+         _frame_end.tv_nsec = 0;
+         _frame_end.tv_sec = 0;
+         _ticks_since_second = 0.0;
          frameCounter = 0;
          ppuMem = NULL;
          sprMem = NULL;
@@ -397,6 +399,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PPU::startVBlank() {
+#ifdef SDL
 		vector<int>* buffer = this->get_screen_buffer();
 
         // Start VBlank period:
@@ -465,8 +468,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		// Figure out how much time we spent, and how much we have left
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_frame_end);
-		double e = _frame_end.tv_nsec + (_frame_end.tv_sec * 1000000000.0d);
-		double s = _frame_start.tv_nsec + (_frame_start.tv_sec * 1000000000.0d);
+		double e = _frame_end.tv_nsec + (_frame_end.tv_sec * 1000000000.0);
+		double s = _frame_start.tv_nsec + (_frame_start.tv_sec * 1000000000.0);
 		double diff = e - s;
 		
 		// Sleep if there is still time left over, after drawing this frame
@@ -482,7 +485,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		
 		// Print the frame rate
 		_ticks_since_second += diff + wait;
-		if(_ticks_since_second >= 1000000000.0d) {
+		if(_ticks_since_second >= 1000000000.0) {
 			printf("FPS: %d\n", frameCounter);
 			_ticks_since_second = 0;
 			frameCounter = 0;
@@ -491,6 +494,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		
 		// Get the start time of the next frame
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_frame_start);
+#endif
     }
 
      void PPU::endScanline() {

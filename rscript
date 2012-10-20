@@ -29,19 +29,19 @@ def build():
 	# Get the names of all the c++ files
 	code_files = []
 	for entry in os.listdir('src'):
-		if entry.lower().endswith('.cpp'):
-			code_files.append(entry[:-4])
+		if entry.lower().endswith('.cc'):
+			code_files.append(entry[:-3])
 	code_files.sort()
 
 	# Build each c++ file into an object
 	for f in code_files:
 		object_name = '{0}.o'.format(f)
-		code_name = 'src/{0}.cpp'.format(f)
-		c_build_object(object_name, [code_name])
+		code_name = 'src/{0}.cc'.format(f)
+		c_build_object(object_name, [code_name], ['-DSDL=true'])
 
 	# Link all the objects into the program
 	object_files = [s + '.o' for s in code_files]
-	c_build_program('main', object_files, ['-lSDL', '-lpthread', '-lrt'])
+	c_build_program('main', object_files, ['-lSDL', '-lpthread', '-lrt', '-DSDL=true'])
 
 	# Run the program
 	cd('..')

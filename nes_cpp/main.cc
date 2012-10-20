@@ -1,9 +1,9 @@
 
-
 #include "nes_cpp.h"
 
 using namespace std;
 
+#ifdef SDL
 
 int main(/*int argc, char* argv[]*/) {
 	printf("%s\n", "");
@@ -37,3 +37,4 @@ int main(/*int argc, char* argv[]*/) {
 	return 0;
 }
 
+#endif

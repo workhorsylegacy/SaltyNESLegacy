@@ -211,7 +211,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      void NES::reloadRom() {
 
         if (!romFile.empty()) {
-            loadRom(romFile);
+            load_rom_from_file(romFile);
         }
 
     }
@@ -280,7 +280,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // Loads a ROM file into the CPU and PPU.
     // The ROM file is validated first.
-     bool NES::loadRom(string file) {
+     bool NES::load_rom_from_file(string file) {
 
         // Can't load ROM while still running.
         if (_isRunning) {
@@ -291,7 +291,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Load ROM file:
 
             rom = new ROM(this);
-            rom->load(file);
+            rom->load_from_file(file);
             
             if (rom->isValid()) {
 
@@ -313,6 +313,36 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             return rom->isValid();
         }
 
+    }
+
+    bool NES::load_rom_from_data(uint8_t* data, size_t length) {
+        // Can't load ROM while still running.
+        if (_isRunning) {
+            stopEmulation();
+        }
+
+        {
+            // Load ROM file:
+
+            rom = new ROM(this);
+            rom->load_from_data(data, length);
+            
+            if (rom->isValid()) {
+
+                // The CPU will load
+                // the ROM into the CPU
+                // and PPU memory.
+
+                reset();
+
+                memMapper = rom->createMapper();
+                memMapper->init(this);
+                cpu->setMapper(memMapper);
+                memMapper->loadROM(rom);
+                ppu->setMirroring(rom->getMirroringType());
+            }
+            return rom->isValid();
+        }
     }
 
     // Resets the system.

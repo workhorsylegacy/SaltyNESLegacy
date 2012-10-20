@@ -29,6 +29,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         samplerate = 0;
         progress = 0;
         nes = NULL;
+        _rom_data = NULL;
         started = false;
     }
 
@@ -36,12 +37,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         stop();
         delete_n_null(nes);
         
-        rom.clear();
+        _rom_name.clear();
     }
 
     void vNES::init(string rom_name) {
         started = false;
-        rom = rom_name;
+        _rom_name = rom_name;
+        initKeyCodes();
+        readParams();
+
+        Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
+
+        nes = new NES();
+        nes->enableSound(sound);
+        nes->reset();
+    }
+
+    void vNES::init_data(uint8_t* rom_data) {
+        started = false;
+        _rom_data = rom_data;
         initKeyCodes();
         readParams();
 
@@ -57,7 +71,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         started = true;
 
         // Load ROM file:
-        nes->loadRom(rom);
+        nes->load_rom_from_file(_rom_name);
         
         if (nes->rom->isValid()) {
             // Set some properties:
@@ -71,7 +85,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
 
             // ROM file was invalid.
-            printf("vNES was unable to find (%s).\n", rom.c_str());
+            printf("vNES was unable to find (%s).\n", _rom_name.c_str());
 
         }
 

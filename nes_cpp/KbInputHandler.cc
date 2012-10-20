@@ -39,6 +39,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void KbInputHandler::poll_for_key_events() {
+#ifdef SDL
         int32_t numberOfKeys;
         uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
         vector<bool>* s = this->allKeysState;
@@ -65,6 +66,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else if ((*s)[(*m)[KbInputHandler::KEY_DOWN]]) {
             (*s)[(*m)[KbInputHandler::KEY_UP]] = false;
         }
+#endif
     }
 
      void KbInputHandler::reset() {

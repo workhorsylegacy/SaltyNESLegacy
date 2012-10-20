@@ -97,9 +97,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         hsbvals[0] -= floor(hsbvals[0]);
 
         int ret = 0;
-        ret |= (((int) (hsbvals[0] * 255.0d)) << 16);
-        ret |= (((int) (hsbvals[1] * 255.0d)) << 8);
-        ret |= (((int) (hsbvals[2] * 255.0d)));
+        ret |= (((int) (hsbvals[0] * 255.0)) << 16);
+        ret |= (((int) (hsbvals[1] * 255.0)) << 8);
+        ret |= (((int) (hsbvals[2] * 255.0)));
         delete_n_null_array(hsbvals);
 
         return ret;
@@ -119,9 +119,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      int PaletteTable::HSLtoRGB(int hsl) {
 
         float h, s, l;
-        h = (float) (((hsl >> 16) & 0xFF) / 255.0d);
-        s = (float) (((hsl >> 8) & 0xFF) / 255.0d);
-        l = (float) (((hsl) & 0xFF) / 255.0d);
+        h = (float) (((hsl >> 16) & 0xFF) / 255.0);
+        s = (float) (((hsl >> 8) & 0xFF) / 255.0);
+        l = (float) (((hsl) & 0xFF) / 255.0);
         return Color::HSBtoRGB(h, s, l);
 
     }
