@@ -71,6 +71,8 @@ NACL_NES_LDFLAGS:=$(NACL_LDFLAGS)
 # Default target
 #
 all: newlib/nacl_nes.nmf glibc/nacl_nes.nmf
+	rm -f ~/Desktop/nacl_stdout.log
+	rm -f ~/Desktop/nacl_stderr.log
 
 #
 # Alias for standard commands

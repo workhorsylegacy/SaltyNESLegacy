@@ -65,6 +65,9 @@ namespace nacl_nes {
 	NaclNes* NaclNes::g_nacl_nes = NULL;
 	
 	void NaclNes::log_to_browser(string message) {
+		fprintf(stdout, "%s\n", message.c_str());
+		fflush(stdout);
+		
 		if(g_nacl_nes != NULL)
 			g_nacl_nes->PostMessage(message.c_str());
 	}
@@ -129,7 +132,6 @@ NaclNes::NaclNes(PP_Instance instance)
       flush_pending_(false),
       quit_(false),
       thread_(0) {
-    //nacl_nes::g_nacl_nes = this;
     pthread_mutex_init(&pixel_buffer_mutex_, NULL);
 }
 
@@ -185,6 +187,9 @@ uint32_t* NaclNes::LockPixels() {
 }
 
 void NaclNes::HandleMessage(const pp::Var& var_message) {
+	if(nacl_nes::NaclNes::g_nacl_nes == NULL)
+		nacl_nes::NaclNes::g_nacl_nes = this;
+	
 	string message;
 	if(var_message.is_string())
 		message = var_message.AsString();
@@ -236,7 +241,7 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 
 			// Run the ROM
 			vnes = new vNES();
-			vnes->init_data((uint8_t*) rom_data);
+			vnes->init_data((uint8_t*) rom_data, (size_t)ROM_DATA_LENGTH);
 			pthread_create(&thread_, NULL, start_main_loop, this);
 			nacl_nes::NaclNes::log_to_browser("running");
 		}
@@ -295,8 +300,7 @@ void NaclNes::FlushPixelBuffer() {
 }
 
 void* NaclNes::start_main_loop(void* param) {
-	//daNes->nacl_nes->PostMessage("start_main_loop");
-	nacl_nes::NaclNes::log_to_browser("nes_RunCart");
+	nacl_nes::NaclNes::log_to_browser("start_main_loop");
 	vnes->run();
 	return 0;
 }

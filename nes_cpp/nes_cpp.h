@@ -1324,12 +1324,13 @@ public:
     NES* nes;
     string _rom_name;
     uint8_t* _rom_data;
+    size_t _rom_data_length;
     bool started;
 
     vNES();
     ~vNES();
     void init(string rom_name);
-    void init_data(uint8_t* rom_data);
+    void init_data(uint8_t* rom_data, size_t length);
     void run();
     void stop();
     void readParams();

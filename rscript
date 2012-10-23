@@ -4,9 +4,10 @@
 import os
 
 def clean():
+	"""Removes any files and directories generated when building."""
 	rmdir_and_children('build')
 
-def configure():
+def _configure():
 	require_programs(['g++'])
 
 	require_shared_libraries([
@@ -16,9 +17,18 @@ def configure():
 	os.environ['CFLAGS'] = ' -g -O2 -Wall -Wunused -Wextra -Werror'
 
 def build():
+	"""Builds the program. Will only build files that have changed since the last build."""
 	require_not_root()
-	#clean()
-	configure()
+	_build()
+
+def rebuild():
+	"""Rebuilds the program. Will build all the files. Even if they have not changed since last build."""
+	require_not_root()
+	clean()
+	_build()
+
+def _build():
+	_configure()
 
 	# Copy the files to the build directory
 	mkdir_f('build')
@@ -37,7 +47,9 @@ def build():
 	for f in code_files:
 		object_name = '{0}.o'.format(f)
 		code_name = 'src/{0}.cc'.format(f)
+		#parallel_c_build_object(object_name, [code_name], ['-DSDL=true'])
 		c_build_object(object_name, [code_name], ['-DSDL=true'])
+	#parallel_wait()
 
 	# Link all the objects into the program
 	object_files = [s + '.o' for s in code_files]
@@ -46,7 +58,7 @@ def build():
 	# Run the program
 	cd('..')
 	mvfile('build/main', 'main')
-	run_say('./main')
+	#run_say('./main')
 
 
 

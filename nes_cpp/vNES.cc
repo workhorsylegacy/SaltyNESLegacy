@@ -30,6 +30,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         progress = 0;
         nes = NULL;
         _rom_data = NULL;
+        _rom_data_length = 0;
         started = false;
     }
 
@@ -53,9 +54,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         nes->reset();
     }
 
-    void vNES::init_data(uint8_t* rom_data) {
+    void vNES::init_data(uint8_t* rom_data, size_t length) {
         started = false;
         _rom_data = rom_data;
+        _rom_data_length = length;
         initKeyCodes();
         readParams();
 
@@ -69,9 +71,27 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     void vNES::run() {
         // Can start painting:
         started = true;
+        #ifdef NACL
+        nacl_nes::NaclNes::log_to_browser("a");
+        #endif
 
         // Load ROM file:
-        nes->load_rom_from_file(_rom_name);
+        if(_rom_data == NULL) {
+	        #ifdef NACL
+            nacl_nes::NaclNes::log_to_browser("no rom data. Loading from file.");
+            #endif
+            nes->load_rom_from_file(_rom_name);
+        } else {
+	        #ifdef NACL
+            nacl_nes::NaclNes::log_to_browser("no data. Loading from data.");
+            #endif
+            nes->load_rom_from_data(_rom_data, _rom_data_length);
+        }
+        #ifdef NACL
+        nacl_nes::NaclNes::log_to_browser(nes == NULL ? "nes is null" : "nes is NOT null");
+        nacl_nes::NaclNes::log_to_browser(nes->rom == NULL ? "rom is null" : "rom is NOT null");
+        nacl_nes::NaclNes::log_to_browser(nes->rom->isValid() ? "rom is valid" : "rom is NOT valid");
+        #endif
         
         if (nes->rom->isValid()) {
             // Set some properties:
@@ -80,7 +100,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
             // Start emulation:
             //System.out.println("vNES is now starting the processor.");
+            #ifdef NACL
+            nacl_nes::NaclNes::log_to_browser("c");
+            #endif
             nes->getCpu()->run();
+            #ifdef NACL
+            nacl_nes::NaclNes::log_to_browser("d");
+            #endif
 
         } else {
 
