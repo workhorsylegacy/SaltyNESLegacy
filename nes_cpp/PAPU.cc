@@ -18,6 +18,20 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "nes_cpp.h"
 
+#ifdef SDL
+void fill_audio(void* udata, uint8_t* stream, int len) {
+	PAPU* papu = reinterpret_cast<PAPU*>(udata);
+	
+	if(!papu->ready_for_buffer_write)
+		return;
+
+	int32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
+	SDL_MixAudio(stream, (uint8_t*)papu->sampleBuffer, mix_len, SDL_MIX_MAXVOLUME);
+	papu->ready_for_buffer_write = false;
+	papu->bufferIndex = 0;
+}
+#endif
+
 	const int PAPU::panning[] = {
 		80,
 		170,
@@ -124,6 +138,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         tnd_table = NULL;
         ismpbuffer = NULL;
         sampleBuffer = NULL;
+        ready_for_buffer_write = false;
         line = NULL;
 
         lock_mutex();
@@ -152,6 +167,29 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         frameIrqCounter = 0;
         frameIrqCounterMax = 4;
+        
+#ifdef SDL
+		// Setup SDL for the format we want
+		SDL_Init(SDL_INIT_AUDIO);
+		SDL_AudioSpec desiredSpec;
+		desiredSpec.freq = 44100;
+		desiredSpec.format = AUDIO_S16SYS;
+		desiredSpec.channels = 2;
+		desiredSpec.samples = 4096;
+		desiredSpec.callback = fill_audio;
+		desiredSpec.userdata = this;
+	
+		SDL_AudioSpec obtainedSpec;
+		if(SDL_OpenAudio(&desiredSpec, &obtainedSpec) < 0) {
+			fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
+			exit(1);
+		}
+		/*cout << "freq: " << obtainedSpec.freq << endl;
+		cout << "format: " << obtainedSpec.format << endl;
+		cout << "channels: " << (s32) obtainedSpec.channels << endl;
+		cout << "samples: " << obtainedSpec.samples << endl;
+		cout << "callback: " << obtainedSpec.callback << endl;*/
+#endif
     }
 
      PAPU::~PAPU() {
@@ -188,6 +226,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         bufferIndex = 0;
+        
 //        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
 
 //        if (mixerInfo == NULL || mixerInfo.length == 0) {
@@ -206,6 +245,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 //            line = (SourceDataLine*) AudioSystem.getLine(info);
 //            line->open(audioFormat);
 //            line->start();
+            // Start running the stream
+            #ifdef SDL
+            SDL_PauseAudio(0);
+            #endif
 
         } catch (exception& e) {
             //System.out.println("Couldn't get sound lines->");
@@ -740,31 +783,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // Writes the sound buffer to the output line:
      void PAPU::writeBuffer() {
-
-        if (line == NULL) {
-            return;
-        }
         bufferIndex -= (bufferIndex % (stereo ? 4 : 2));
-//        line->write(sampleBuffer, 0, bufferIndex);
-
-        bufferIndex = 0;
-
+        ready_for_buffer_write = true;
     }
 
      void PAPU::stop() {
-
-        if (line == NULL) {
-            // No line to close. Probably lack of sound card.
-            return;
-        }
-
-//        if (line != NULL && line->isOpen() && line->isActive()) {
-//            line->close();
-//        }
-
-        // Lose line:
-        line = NULL;
-
+            #ifdef SDL
+            SDL_PauseAudio(1);
+            #endif
     }
 
      int PAPU::getSampleRate() {

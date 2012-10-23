@@ -418,6 +418,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         endFrame();
 
+		nes->papu->writeBuffer();
+
 		// Lock the screen, if needed
 		if(SDL_MUSTLOCK(Globals::sdl_screen)) {
 			if(SDL_LockSurface(Globals::sdl_screen) < 0)

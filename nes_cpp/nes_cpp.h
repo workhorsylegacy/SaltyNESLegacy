@@ -48,6 +48,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef SDL
 	#include <SDL/SDL.h>
+	#include <SDL/SDL_audio.h>
 #endif
 
 using namespace std;
@@ -911,6 +912,7 @@ public:
     vector<int>* tnd_table;
     vector<int>* ismpbuffer;
     vector<int8_t>* sampleBuffer;
+    bool ready_for_buffer_write;
     int frameIrqCounter;
     int frameIrqCounterMax;
     int initCounter;
