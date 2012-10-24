@@ -5,12 +5,19 @@ using namespace std;
 
 #ifdef SDL
 
-int main(/*int argc, char* argv[]*/) {
+int main(int argc, char* argv[]) {
 	printf("%s\n", "");
 	printf("%s\n", "C++NES: A Port of vNES from Java to C++");
 	printf("%s\n", "C++NES 2.14 (C) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>");
 	printf("%s\n", "vNES 2.14 (C) 2006-2011 Jamie Sanders thatsanderskid.com");
 	printf("%s\n", "Use of this program subject to GNU GPL, Version 3.");
+	printf("%s\n", "");
+
+	// Make sure there is a rom file name
+	if(argc < 2) {
+		fprintf(stderr, "No rom file argument provided. Exiting ...\n");
+		return -1;
+	}
 
 	// Initialize SDL
 	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
@@ -29,7 +36,7 @@ int main(/*int argc, char* argv[]*/) {
 
 	// Run the emulator
 	vNES vnes;
-	vnes.init("example.nes");
+	vnes.init(argv[1]);
 	vnes.run();
 
 	// Clanup the SDL resources then exit

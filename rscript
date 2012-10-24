@@ -6,6 +6,9 @@ import os
 def clean():
 	"""Removes any files and directories generated when building."""
 	rmdir_and_children('build')
+	rmdir_and_children('src/bin')
+	rmdir_and_children('src/glibc')
+	rmdir_and_children('src/newlib')
 
 def _configure():
 	require_programs(['g++'])
@@ -33,7 +36,7 @@ def _build():
 	# Copy the files to the build directory
 	mkdir_f('build')
 	rmdir_and_children('build/src')
-	cpdir('nes_cpp', 'build/src')
+	cpdir('src', 'build/src')
 	cd('build')
 
 	# Get the names of all the c++ files
@@ -58,7 +61,7 @@ def _build():
 	# Run the program
 	cd('..')
 	mvfile('build/main', 'main')
-	#run_say('./main')
+	print('Run the program like this:\n./main roms/example.nes')
 
 
 
