@@ -15,10 +15,10 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
+    <DefineSymbols>DEBUG MONODEVELOP SDL</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
     <CompileTarget>Bin</CompileTarget>
-    <OutputName>derp</OutputName>
+    <OutputName>nes_cpp</OutputName>
     <Libs>
       <Libs>
         <Lib>pthread</Lib>
