@@ -1,0 +1,27 @@
+C++NES is a port of the Java NES emulator vNES to C++. It can be run as a
+stand-alone SDL application, or in a web browser using Google NACL. C++NES is
+licenced as GPLv3. Any NACL shim code is licensed under a BSD style license.
+
+For vNES see:
+http://thatsanderskid.com/programming/vnes/index.html
+
+TO BUILD SDL VERSION:
+	# Build the program
+	./raise build
+
+	# Run a NES ROM file
+	./main roms/example.nes
+
+
+TO BUILD NACL VERSION:
+	# Run the web server
+	python httpd.py
+
+	# Build the program
+	make
+
+	# View the website in a web browser
+	http://localhost:5103/
+
+
+
