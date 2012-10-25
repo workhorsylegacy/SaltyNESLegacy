@@ -5,10 +5,11 @@ import os
 
 def clean():
 	"""Removes any files and directories generated when building."""
+	rmfile('main')
 	rmdir_and_children('build')
 	rmdir_and_children('src/bin')
-	rmdir_and_children('src/glibc')
-	rmdir_and_children('src/newlib')
+	rmdir_and_children('glibc')
+	rmdir_and_children('newlib')
 
 def _configure():
 	require_programs(['g++'])

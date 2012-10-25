@@ -81,8 +81,10 @@
     <None Include="..\raise">
       <Link>raise</Link>
     </None>
-    <None Include="Makefile" />
     <None Include="index.html" />
     <None Include="nacl_nes.h" />
+    <None Include="..\Makefile">
+      <Link>Makefile</Link>
+    </None>
   </ItemGroup>
 </Project>

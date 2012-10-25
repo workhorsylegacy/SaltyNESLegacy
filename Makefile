@@ -31,38 +31,40 @@ NACL_LDFLAGS:=-g -pthread -lppapi_cpp -lppapi
 VALID_TOOLCHAINS:=newlib glibc
 TOOLCHAIN?=newlib
 
-NACL_NES_CXX:=nacl_nes.cc nacl_nes_module.cc \
-ByteBuffer.cc \
-CPU.cc \
-ChannelDM.cc \
-ChannelNoise.cc \
-ChannelSquare.cc \
-ChannelTriangle.cc \
-Color.cc \
-CpuInfo.cc \
-Globals.cc \
-KbInputHandler.cc \
-Mapper001.cc \
-Mapper002.cc \
-Mapper003.cc \
-Mapper004.cc \
-Mapper007.cc \
-MapperDefault.cc \
-Memory.cc \
-Misc.cc \
-NES.cc \
-NameTable.cc \
-PAPU.cc \
-PPU.cc \
-PaletteTable.cc \
-PapuChannel.cc \
-Parameters.cc \
-ROM.cc \
-Raster.cc \
-Scale.cc \
-Tile.cc \
-main.cc \
-vNES.cc
+NACL_NES_CXX:= \
+src/nacl_nes.cc \
+src/nacl_nes_module.cc \
+src/ByteBuffer.cc \
+src/CPU.cc \
+src/ChannelDM.cc \
+src/ChannelNoise.cc \
+src/ChannelSquare.cc \
+src/ChannelTriangle.cc \
+src/Color.cc \
+src/CpuInfo.cc \
+src/Globals.cc \
+src/KbInputHandler.cc \
+src/Mapper001.cc \
+src/Mapper002.cc \
+src/Mapper003.cc \
+src/Mapper004.cc \
+src/Mapper007.cc \
+src/MapperDefault.cc \
+src/Memory.cc \
+src/Misc.cc \
+src/NES.cc \
+src/NameTable.cc \
+src/PAPU.cc \
+src/PPU.cc \
+src/PaletteTable.cc \
+src/PapuChannel.cc \
+src/Parameters.cc \
+src/ROM.cc \
+src/Raster.cc \
+src/Scale.cc \
+src/Tile.cc \
+src/main.cc \
+src/vNES.cc
 NACL_NES_CXXFLAGS:=$(NACL_CXXFLAGS)
 NACL_NES_LDFLAGS:=$(NACL_LDFLAGS)
 
@@ -166,6 +168,7 @@ endif
 #
 newlib:
 	$(MKDIR) newlib
+	$(MKDIR) newlib/src
 
 NEWLIB_NACL_NES_x86_32_CXX_O:=$(patsubst %.cc, newlib/%_x86_32.o,$(NACL_NES_CXX))
 $(NEWLIB_NACL_NES_x86_32_CXX_O) : newlib/%_x86_32.o : %.cc $(THIS_MAKE) | newlib
@@ -192,6 +195,7 @@ newlib/nacl_nes.nmf : $(NEWLIB_NMF)
 #
 glibc:
 	$(MKDIR) glibc
+	$(MKDIR) glibc/src
 
 GLIBC_NACL_NES_x86_32_CXX_O:=$(patsubst %.cc, glibc/%_x86_32.o,$(NACL_NES_CXX))
 $(GLIBC_NACL_NES_x86_32_CXX_O) : glibc/%_x86_32.o : %.cc $(THIS_MAKE) | glibc
@@ -224,8 +228,11 @@ LAUNCH_NEXE: CHECK_FOR_CHROME all
 
 
 clean:
-	rm -rf -f glibc
-	rm -rf -f newlib
+	rm -f 'main'
+	rm -rf -f 'build'
+	rm -rf -f 'src/bin'
+	rm -rf -f 'glibc'
+	rm -rf -f 'newlib'
 
 strip:
 	$(NEWLIB_STRIP32) newlib/nacl_nes_x86_32.nexe
