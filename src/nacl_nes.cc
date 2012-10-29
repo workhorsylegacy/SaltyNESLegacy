@@ -241,7 +241,9 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 
 			// Run the ROM
 			vnes = new vNES();
-			vnes->init_data((uint8_t*) rom_data, (size_t)ROM_DATA_LENGTH);
+#ifdef NACL
+			vnes->init_data((uint8_t*) rom_data, (size_t)ROM_DATA_LENGTH, this);
+#endif
 			pthread_create(&thread_, NULL, start_main_loop, this);
 			nacl_nes::NaclNes::log_to_browser("running");
 		}

@@ -399,7 +399,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void PPU::startVBlank() {
-#ifdef SDL
 		vector<int>* buffer = this->get_screen_buffer();
 
         // Start VBlank period:
@@ -419,7 +418,23 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         endFrame();
 
 		nes->papu->writeBuffer();
-
+#ifdef NACL
+//		nacl_nes::NaclNes::log_to_browser("startVBlank");
+		uint8_t r = 0, g = 0, b = 0;
+		uint32_t* pixel_bits = nes->_nacl_nes->LockPixels();
+		for(int y=0; y<240; ++y) {
+			for(int x=0; x<256; ++x) {
+				uint16_t p = (*buffer)[(y*256) + x];
+				r = (uint8_t)(((p & 0xF800) >> 11) * 8);
+				g = (uint8_t)(((p & 0x7E0) >> 5) * 4);
+				b = (uint8_t)(((p & 0x001F) >> 0) * 8);
+				//printf("r: %d, g: %d, b: %d\n", r, g, b);
+				pixel_bits[(y*256) + x] = 0xFF000000 + (r << (4 * 4)) + (g << (2 * 4)) + (b << (0 * 4));
+			}
+		}
+		nes->_nacl_nes->UnlockPixels();
+#endif
+#ifdef SDL
 		// Lock the screen, if needed
 		if(SDL_MUSTLOCK(Globals::sdl_screen)) {
 			if(SDL_LockSurface(Globals::sdl_screen) < 0)
@@ -463,11 +478,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 				nes->cpu->stopRunning = true;
 			}
 		}
-		
+#endif
 		// Check for key presses
 		nes->_joy1->poll_for_key_events();
 		//nes->_joy2->poll_for_key_events();
-
+#ifdef SDL
 		// Figure out how much time we spent, and how much we have left
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_frame_end);
 		double e = _frame_end.tv_nsec + (_frame_end.tv_sec * 1000000000.0);

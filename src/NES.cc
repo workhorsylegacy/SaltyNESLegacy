@@ -18,7 +18,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "nes_cpp.h"
 
     // Creates the NES system.
+#ifdef SDL
      NES::NES() {
+#endif
+#ifdef NACL
+     NES::NES(nacl_nes::NaclNes* nacl_nes) {
+        _nacl_nes = nacl_nes;
+#endif
 		this->_isRunning = false;
         Globals::nes = this;
 
@@ -208,14 +214,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
     }
 
-     void NES::reloadRom() {
-
-        if (!romFile.empty()) {
-            load_rom_from_file(romFile);
-        }
-
-    }
-
      void NES::clearCPUMemory() {
 
         short flushval = Globals::memoryFlushValue;
@@ -278,10 +276,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return memMapper;
     }
 
-    // Loads a ROM file into the CPU and PPU.
-    // The ROM file is validated first.
-     bool NES::load_rom_from_file(string file) {
-
+    bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length) {
         // Can't load ROM while still running.
         if (_isRunning) {
             stopEmulation();
@@ -291,41 +286,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Load ROM file:
 
             rom = new ROM(this);
-            rom->load_from_file(file);
-            
-            if (rom->isValid()) {
-
-                // The CPU will load
-                // the ROM into the CPU
-                // and PPU memory.
-
-                reset();
-
-                memMapper = rom->createMapper();
-                memMapper->init(this);
-                cpu->setMapper(memMapper);
-                memMapper->loadROM(rom);
-                ppu->setMirroring(rom->getMirroringType());
-
-                this->romFile = file;
-
-            }
-            return rom->isValid();
-        }
-
-    }
-
-    bool NES::load_rom_from_data(uint8_t* data, size_t length) {
-        // Can't load ROM while still running.
-        if (_isRunning) {
-            stopEmulation();
-        }
-
-        {
-            // Load ROM file:
-
-            rom = new ROM(this);
-            rom->load_from_data(data, length);
+            rom->load_from_data(rom_name, data, length);
             
             if (rom->isValid()) {
 

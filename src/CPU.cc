@@ -222,7 +222,6 @@ instructions and invokes emulation of the PPU and pAPU.
 
 			// Check interrupts:
 			if(irqRequested){
-
 				temp =
 					(F_CARRY)|
 					((F_ZERO==0?1:0)<<1)|
@@ -235,6 +234,7 @@ instructions and invokes emulation of the PPU and pAPU.
 
 				REG_PC_NEW = REG_PC;
 				F_INTERRUPT_NEW = F_INTERRUPT;
+				
 				switch(irqType){
 					case 0:{
 
@@ -271,11 +271,6 @@ instructions and invokes emulation of the PPU and pAPU.
 
 			short z = mmap->load(REG_PC+1);
 			opinf = (*opdata)[z];
-			
-			//stringstream out;
-			//out << "opinf: 0x";
-			//out << std::hex << (opinf&0xFF);
-//			printf("opinf: 0x%02x\n", (opinf&0xFF));
 			cycleCount = (opinf>>24);
 			cycleAdd = 0;
 

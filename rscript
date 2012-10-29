@@ -51,9 +51,8 @@ def _build():
 	for f in code_files:
 		object_name = '{0}.o'.format(f)
 		code_name = 'src/{0}.cc'.format(f)
-		#parallel_c_build_object(object_name, [code_name], ['-DSDL=true'])
-		c_build_object(object_name, [code_name], ['-DSDL=true'])
-	#parallel_wait()
+		parallel_c_build_object(object_name, [code_name], ['-DSDL=true'])
+	parallel_wait()
 
 	# Link all the objects into the program
 	object_files = [s + '.o' for s in code_files]

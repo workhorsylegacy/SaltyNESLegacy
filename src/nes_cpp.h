@@ -815,6 +815,9 @@ public:
 
 class NES {
 public:
+#ifdef NACL
+    nacl_nes::NaclNes* _nacl_nes;
+#endif
      CPU* cpu;
      PPU* ppu;
      PAPU* papu;
@@ -827,17 +830,20 @@ public:
      PaletteTable* palTable;
      ROM* rom;
      int cc;
-     string romFile;
     bool _isRunning;
 
+#ifdef SDL
      NES();
+#endif
+#ifdef NACL
+     NES(nacl_nes::NaclNes* nacl_nes);
+#endif
      ~NES();
      bool stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
      bool isRunning();
      void startEmulation();
      void stopEmulation();
-     void reloadRom();
      void clearCPUMemory();
      void dumpRomMemory(ofstream* writer);
      void dumpCPUMemory(ofstream* writer);
@@ -850,8 +856,7 @@ public:
      Memory* getSprMemory();
      ROM* getRom();
      MapperDefault* getMemoryMapper();
-     bool load_rom_from_file(string file);
-     bool load_rom_from_data(uint8_t* data, size_t length);
+     bool load_rom_from_data(string rom_name, uint8_t* data, size_t length);
      void reset();
      void enableSound(bool enable);
 //     void setFramerate(int rate);
@@ -1246,8 +1251,7 @@ public:
      ~ROM();
      string getmapperName();
      static vector<bool>* getmapperSupported();
-     void load_from_file(string fileName);
-     void load_from_data(uint8_t* data, size_t length);
+     void load_from_data(string file_name, uint8_t* data, size_t length);
      bool isValid();
      int getRomBankCount();
      int getVromBankCount();
@@ -1331,8 +1335,12 @@ public:
 
     vNES();
     ~vNES();
+#ifdef SDL
     void init(string rom_name);
-    void init_data(uint8_t* rom_data, size_t length);
+#endif
+#ifdef NACL
+    void init_data(uint8_t* rom_data, size_t length, nacl_nes::NaclNes* nacl_nes);
+#endif
     void run();
     void stop();
     void readParams();

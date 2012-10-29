@@ -221,26 +221,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		return _mapperSupported;
 	}
 
-     void ROM::load_from_file(string fileName) {
-        this->fileName = fileName;
-		ifstream reader(fileName.c_str(), ios::in|ios::binary);
-		if(reader.fail()) {
-			fprintf(stderr, "Error while loading rom '%s': %s\n", fileName.c_str(), strerror(errno));
-			exit(1);
-		}
-		
-		reader.seekg(0, ios::end);
-		size_t length = reader.tellg();
-		reader.seekg(0, ios::beg);
-		assert(length > 0);
-		uint8_t* bdata = new uint8_t[length];
-		reader.read((char*)bdata, length);
-		load_from_data(bdata, length);
-		delete_n_null_array(bdata);
-		reader.close();
-     }
-
-	void ROM::load_from_data(uint8_t* data, size_t length) {
+	void ROM::load_from_data(string file_name, uint8_t* data, size_t length) {
+		fileName = file_name;
 		short* sdata = new short[length];
 		for(size_t i=0; i<length; i++) {
 			sdata[i] = (short) (data[i] & 255);

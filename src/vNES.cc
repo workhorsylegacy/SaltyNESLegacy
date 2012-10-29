@@ -41,6 +41,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         _rom_name.clear();
     }
 
+#ifdef SDL
     void vNES::init(string rom_name) {
         started = false;
         _rom_name = rom_name;
@@ -53,8 +54,10 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         nes->enableSound(sound);
         nes->reset();
     }
+#endif
 
-    void vNES::init_data(uint8_t* rom_data, size_t length) {
+#ifdef NACL
+    void vNES::init_data(uint8_t* rom_data, size_t length, nacl_nes::NaclNes* nacl_nes) {
         started = false;
         _rom_data = rom_data;
         _rom_data_length = length;
@@ -63,35 +66,43 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-        nes = new NES();
+        nes = new NES(nacl_nes);
         nes->enableSound(sound);
         nes->reset();
     }
+#endif
 
     void vNES::run() {
         // Can start painting:
         started = true;
-        #ifdef NACL
-        nacl_nes::NaclNes::log_to_browser("a");
-        #endif
 
         // Load ROM file:
         if(_rom_data == NULL) {
-	        #ifdef NACL
-            nacl_nes::NaclNes::log_to_browser("no rom data. Loading from file.");
+            #ifdef NACL
+            nacl_nes::NaclNes::log_to_browser("Loading ROM from file.");
             #endif
-            nes->load_rom_from_file(_rom_name);
+
+			ifstream reader(_rom_name.c_str(), ios::in|ios::binary);
+			if(reader.fail()) {
+				fprintf(stderr, "Error while loading rom '%s': %s\n", _rom_name.c_str(), strerror(errno));
+				exit(1);
+			}
+
+			reader.seekg(0, ios::end);
+			size_t length = reader.tellg();
+			reader.seekg(0, ios::beg);
+			assert(length > 0);
+			uint8_t* bdata = new uint8_t[length];
+			reader.read((char*)bdata, length);
+			nes->load_rom_from_data(_rom_name.c_str(), bdata, length);
+			delete_n_null_array(bdata);
+			reader.close();
         } else {
 	        #ifdef NACL
-            nacl_nes::NaclNes::log_to_browser("no data. Loading from data.");
+            nacl_nes::NaclNes::log_to_browser("Loading ROM from data.");
             #endif
-            nes->load_rom_from_data(_rom_data, _rom_data_length);
+            nes->load_rom_from_data("rom_from_browser.nes", _rom_data, _rom_data_length);
         }
-        #ifdef NACL
-        nacl_nes::NaclNes::log_to_browser(nes == NULL ? "nes is null" : "nes is NOT null");
-        nacl_nes::NaclNes::log_to_browser(nes->rom == NULL ? "rom is null" : "rom is NOT null");
-        nacl_nes::NaclNes::log_to_browser(nes->rom->isValid() ? "rom is valid" : "rom is NOT valid");
-        #endif
         
         if (nes->rom->isValid()) {
             // Set some properties:
@@ -100,13 +111,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
             // Start emulation:
             //System.out.println("vNES is now starting the processor.");
-            #ifdef NACL
-            nacl_nes::NaclNes::log_to_browser("c");
-            #endif
             nes->getCpu()->run();
-            #ifdef NACL
-            nacl_nes::NaclNes::log_to_browser("d");
-            #endif
 
         } else {
 
