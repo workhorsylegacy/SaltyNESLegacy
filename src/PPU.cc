@@ -420,16 +420,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		nes->papu->writeBuffer();
 #ifdef NACL
 //		nacl_nes::NaclNes::log_to_browser("startVBlank");
-		uint8_t r = 0, g = 0, b = 0;
+		uint8_t a = 0, r = 0, g = 0, b = 0;
+		int color;
+		int color32;
 		uint32_t* pixel_bits = nes->_nacl_nes->LockPixels();
-		for(int y=0; y<240; ++y) {
-			for(int x=0; x<256; ++x) {
-				uint16_t p = (*buffer)[(y*256) + x];
-				r = (uint8_t)(((p & 0xF800) >> 11) * 8);
-				g = (uint8_t)(((p & 0x7E0) >> 5) * 4);
-				b = (uint8_t)(((p & 0x001F) >> 0) * 8);
-				//printf("r: %d, g: %d, b: %d\n", r, g, b);
-				pixel_bits[(y*256) + x] = 0xFF000000 + (r << (4 * 4)) + (g << (2 * 4)) + (b << (0 * 4));
+		for(size_t y=0; y<240; ++y) {
+			for(size_t x=0; x<256; ++x) {
+				color32 = (*buffer)[x + (y * (256))];
+				b = (color32 >> 16) & 0x000000FF;
+				g = (color32 >> 8) & 0x000000FF;
+				r = (color32 >> 0) & 0x000000FF;
+
+				color = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+				pixel_bits[x + (y * 256)] = color;
 			}
 		}
 		nes->_nacl_nes->UnlockPixels();
@@ -464,13 +467,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 
 		SDL_Flip(Globals::sdl_screen);
-
+#endif
         // Reset scanline counter:
         lastRenderedScanline = -1;
 
         startFrame();
 
-
+#ifdef SDL
 		// Check for quiting
 		SDL_Event sdl_event;
 		while(SDL_PollEvent(&sdl_event) == 1) {
