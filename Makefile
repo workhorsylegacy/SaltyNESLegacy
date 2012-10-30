@@ -22,8 +22,8 @@ CHROME_PATH?=Undefined
 # Defaults
 #
 NACL_WARNINGS:=-Wno-long-long -Wall -Wswitch-enum -Werror -pedantic
-NACL_CCFLAGS:=-O0 -g -pthread $(NACL_WARNINGS)
-NACL_CXXFLAGS:= -O0 -g -pthread -std=gnu++98 $(NACL_WARNINGS)
+NACL_CCFLAGS:=-O2 -g -pthread $(NACL_WARNINGS)
+NACL_CXXFLAGS:= -O2 -g -pthread -std=gnu++98 $(NACL_WARNINGS)
 NACL_LDFLAGS:=-g -pthread -lppapi_cpp -lppapi 
 
 #
