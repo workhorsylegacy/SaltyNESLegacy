@@ -39,9 +39,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      PPU::PPU(NES* nes) {
          this->nes = nes;
-         _frame_start.tv_nsec = 0;
+         _frame_start.tv_usec = 0;
          _frame_start.tv_sec = 0;
-         _frame_end.tv_nsec = 0;
+         _frame_end.tv_usec = 0;
          _frame_end.tv_sec = 0;
          _ticks_since_second = 0.0;
          frameCounter = 0;
@@ -485,27 +485,23 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		// Check for key presses
 		nes->_joy1->poll_for_key_events();
 		//nes->_joy2->poll_for_key_events();
-#ifdef SDL
+
 		// Figure out how much time we spent, and how much we have left
-		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_frame_end);
-		double e = _frame_end.tv_nsec + (_frame_end.tv_sec * 1000000000.0);
-		double s = _frame_start.tv_nsec + (_frame_start.tv_sec * 1000000000.0);
+		gettimeofday(&_frame_end, NULL);
+		double e = _frame_end.tv_usec + (_frame_end.tv_sec * 1000000.0);
+		double s = _frame_start.tv_usec + (_frame_start.tv_sec * 1000000.0);
 		double diff = e - s;
 		
 		// Sleep if there is still time left over, after drawing this frame
 		double wait = 0;
-		if(diff < Globals::NS_PER_FRAME) {
-			wait = Globals::NS_PER_FRAME - diff;
-
-			struct timespec req = (struct timespec){ 0, 0 };
-			req.tv_sec = 0;
-			req.tv_nsec = wait;
-			nanosleep(&req, NULL);
+		if(diff < Globals::MS_PER_FRAME) {
+			wait = Globals::MS_PER_FRAME - diff;
+			usleep(wait);
 		}
 		
 		// Print the frame rate
 		_ticks_since_second += diff + wait;
-		if(_ticks_since_second >= 1000000000.0) {
+		if(_ticks_since_second >= 1000000.0) {
 			printf("FPS: %d\n", frameCounter);
 			_ticks_since_second = 0;
 			frameCounter = 0;
@@ -513,8 +509,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		frameCounter++;
 		
 		// Get the start time of the next frame
-		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &_frame_start);
-#endif
+		gettimeofday(&_frame_start, NULL);
     }
 
      void PPU::endScanline() {

@@ -32,7 +32,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <cerrno>
 #include <sys/stat.h>
 #include <algorithm>
-#include <time.h>
+#include <sys/time.h>
 #include <math.h>
 
 #include "Color.h"
@@ -158,7 +158,7 @@ public:
     static int preferredFrameRate;
     
     // Microseconds per frame:
-    static const double NS_PER_FRAME;
+    static const double MS_PER_FRAME;
     // What value to flush memory with on power-up:
     static short memoryFlushValue;
 
@@ -1021,8 +1021,8 @@ public:
 class PPU {
 public:
      NES* nes;
-     struct timespec _frame_start;
-     struct timespec _frame_end;
+     struct timeval _frame_start;
+     struct timeval _frame_end;
      double _ticks_since_second;
      int32_t frameCounter;
      Memory* ppuMem;

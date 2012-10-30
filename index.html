@@ -29,10 +29,12 @@
 					var debug = $('#debug')[0];
 					debug.innerHTML = 'FPS: ' + message_event.data.split(':')[1];
 				} else if(message_event.data == 'running') {
-					// Repaint the screen every 33ms
+					// Repaint the screen
+					// FIXME: Paint calls should happen automatically inside the nexe.
+					var fps = 60.0;
 					paintInterval = setInterval(function() {
 						nacl_nes.postMessage('paint');
-					}, 33);
+					}, 1000.0 / fps);
 
 					// Have the FPS sent to us every second
 					// FIXME: This should just be sent from the nexe directly
