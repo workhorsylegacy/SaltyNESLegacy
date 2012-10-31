@@ -25,6 +25,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      NES::NES(NaclNes* nacl_nes) {
         _nacl_nes = nacl_nes;
 #endif
+        this->_is_paused = false;
 		this->_isRunning = false;
         Globals::nes = this;
 

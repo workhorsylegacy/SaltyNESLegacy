@@ -810,6 +810,7 @@ public:
 #ifdef NACL
     NaclNes* _nacl_nes;
 #endif
+     bool _is_paused;
      CPU* cpu;
      PPU* ppu;
      PAPU* papu;

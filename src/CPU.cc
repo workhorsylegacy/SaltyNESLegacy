@@ -216,9 +216,13 @@ instructions and invokes emulation of the PPU and pAPU.
 		bool asApplet = Globals::appletMode;
 		stopRunning = false;
 
-		while(true){
+		while(!stopRunning){
 			
-			if(stopRunning)break;
+			// Sleep a second if we are paused
+			if(this->nes->_is_paused) {
+				usleep(1000000);
+				continue;
+			}
 
 			// Check interrupts:
 			if(irqRequested){

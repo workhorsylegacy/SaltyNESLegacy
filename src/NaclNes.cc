@@ -138,10 +138,10 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 		message = var_message.AsString();
 
 	if(message == "paint") {
-//		if(!vnes->isPaused)
+		if(!vnes->nes->_is_paused)
 			Paint();
 	} else if(message == "pause") {
-//		vnes->isPaused = !vnes->isPaused;
+		vnes->nes->_is_paused = !vnes->nes->_is_paused;
 	} else if(message.find("button_down:") == 0) {
 		size_t sep_pos = message.find_first_of(":");
 		int32_t button = 0;
