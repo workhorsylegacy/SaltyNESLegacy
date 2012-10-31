@@ -57,7 +57,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #ifdef NACL
-    void vNES::init_data(uint8_t* rom_data, size_t length, nacl_nes::NaclNes* nacl_nes) {
+    void vNES::init_data(uint8_t* rom_data, size_t length, NaclNes* nacl_nes) {
         started = false;
         _rom_data = rom_data;
         _rom_data_length = length;
@@ -79,7 +79,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         // Load ROM file:
         if(_rom_data == NULL) {
             #ifdef NACL
-            nacl_nes::NaclNes::log_to_browser("Loading ROM from file.");
+            NaclNes::log_to_browser("Loading ROM from file.");
             #endif
 
 			ifstream reader(_rom_name.c_str(), ios::in|ios::binary);
@@ -99,7 +99,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 			reader.close();
         } else {
 	        #ifdef NACL
-            nacl_nes::NaclNes::log_to_browser("Loading ROM from data.");
+            NaclNes::log_to_browser("Loading ROM from data.");
             #endif
             nes->load_rom_from_data("rom_from_browser.nes", _rom_data, _rom_data_length);
         }

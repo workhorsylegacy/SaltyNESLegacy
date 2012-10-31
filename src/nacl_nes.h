@@ -14,9 +14,7 @@
 
 using namespace std;
 
-class NaclNes;
 
-namespace nacl_nes {
 	class NaclNes : public pp::Instance {
 		mutable pthread_mutex_t pixel_buffer_mutex_;
 		pp::Graphics2D* graphics_2d_context_;
@@ -116,7 +114,6 @@ namespace nacl_nes {
 			flush_pending_ = flag;
 		}
 	};
-}
 
 
 

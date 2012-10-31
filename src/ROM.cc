@@ -228,7 +228,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 			sdata[i] = (short) (data[i] & 255);
 		}
 		#ifdef NACL
-		nacl_nes::NaclNes::log_to_browser("log: rom::load_from_data");
+		NaclNes::log_to_browser("log: rom::load_from_data");
 		#endif
 
         // Read header:

@@ -419,7 +419,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		nes->papu->writeBuffer();
 #ifdef NACL
-//		nacl_nes::NaclNes::log_to_browser("startVBlank");
+//		NaclNes::log_to_browser("startVBlank");
 		uint8_t a = 0, r = 0, g = 0, b = 0;
 		int color;
 		int color32;
@@ -735,26 +735,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
             }
         }
-
-        // Show sound buffer:
-        if (showSoundBuffer && nes->getPapu()->getLine() != NULL) {
-
-            bufferSize = nes->getPapu()->getLine()->getBufferSize();
-            available = nes->getPapu()->getLine()->available();
-            scale = bufferSize / 256;
-
-            for (int y = 0; y < 4; y++) {
-                scanlineChanged[y] = true;
-                for (int x = 0; x < 256; x++) {
-                    if (x >= (available / scale)) {
-                        (*buffer)[y * 256 + x] = 0xFFFFFF;
-                    } else {
-                        (*buffer)[y * 256 + x] = 0;
-                    }
-                }
-            }
-        }
-
     }
 
      void PPU::updateControlReg1(int value) {

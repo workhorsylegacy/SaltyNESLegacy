@@ -22,7 +22,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
      NES::NES() {
 #endif
 #ifdef NACL
-     NES::NES(nacl_nes::NaclNes* nacl_nes) {
+     NES::NES(NaclNes* nacl_nes) {
         _nacl_nes = nacl_nes;
 #endif
 		this->_isRunning = false;

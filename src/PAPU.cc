@@ -69,7 +69,8 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
 
      PAPU::PAPU(NES* nes) {
          pthread_mutex_init(&_mutex, NULL);
-        
+         _is_running = false;
+
           channelEnableValue = 0;
           b1 = 0;
           b2 = 0;
@@ -131,7 +132,6 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
 
         this->nes = nes;
         cpuMem = nes->getCpuMemory();
-        mixer = NULL;
         dmcFreqLookup = NULL;
         noiseWavelengthLookup = NULL;
         square_table = NULL;
@@ -139,7 +139,6 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
         ismpbuffer = NULL;
         sampleBuffer = NULL;
         ready_for_buffer_write = false;
-        line = NULL;
 
         lock_mutex();
         synchronized_setSampleRate(sampleRate, false);
@@ -201,8 +200,6 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
 
         nes = NULL;
         cpuMem = NULL;
-        mixer = NULL;
-        line = NULL;
 
         pthread_mutex_destroy(&_mutex);
     }
@@ -218,13 +215,7 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
     }
 
      void PAPU::synchronized_start() {
-
-        //System.out.println("* Starting PAPU lines->");
-        if (line != NULL && line->isActive()) {
-            //System.out.println("* Already running.");
-            return;
-        }
-
+        _is_running = true;
         bufferIndex = 0;
         
 //        Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
@@ -791,6 +782,7 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
             #ifdef SDL
             SDL_PauseAudio(1);
             #endif
+            _is_running = false;
     }
 
      int PAPU::getSampleRate() {
@@ -972,19 +964,15 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
 
     }
 
-     SourceDataLine* PAPU::getLine() {
-        return line;
-    }
-
      bool PAPU::isRunning() {
-        return (line != NULL && line->isActive());
+        return _is_running;
     }
 
      int PAPU::getMillisToAvailableAbove(int target_avail) {
 
         double time;
         int cur_avail;
-        if ((cur_avail = line->available()) >= target_avail) {
+        if ((cur_avail = 0) >= target_avail) {
             return 0;
         }
 

@@ -46,22 +46,15 @@ uint8_t string_to_byte(uint8_t upper, uint8_t lower) {
 
 namespace {
 	const int kPthreadMutexSuccess = 0;
-	const int kMaxPointCount = 1000000000;  // The total number of points to draw.
-	const uint32_t kOpaqueColorMask = 0xff000000;  // Opaque pixels.
-	const uint32_t kRedMask = 0xff0000;
-	const uint32_t kBlueMask = 0xff;
-	const uint32_t kRedShift = 16;
-	const uint32_t kBlueShift = 0;
 
 	// This is called by the browser when the 2D context has been flushed to the
 	// browser window.
 	void FlushCallback(void* data, int32_t result) {
-		static_cast<nacl_nes::NaclNes*>(data)->set_flush_pending(false);
+		static_cast<NaclNes*>(data)->set_flush_pending(false);
 	}
 }
 
 
-namespace nacl_nes {
 	NaclNes* NaclNes::g_nacl_nes = NULL;
 	
 	void NaclNes::log_to_browser(string message) {
@@ -168,9 +161,6 @@ void NaclNes::DidChangeView(const pp::View& view) {
 }
 
 bool NaclNes::Init(uint32_t argc, const char* argn[], const char* argv[]) {
-	//pthread_create(&thread_, NULL, start_main_loop, this);
-
-  //pthread_create(&thread_, NULL, ComputePi, this);
   return true;
 }
 
@@ -187,8 +177,8 @@ uint32_t* NaclNes::LockPixels() {
 }
 
 void NaclNes::HandleMessage(const pp::Var& var_message) {
-	if(nacl_nes::NaclNes::g_nacl_nes == NULL)
-		nacl_nes::NaclNes::g_nacl_nes = this;
+	if(NaclNes::g_nacl_nes == NULL)
+		NaclNes::g_nacl_nes = this;
 	
 	string message;
 	if(var_message.is_string())
@@ -215,7 +205,7 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 		stringstream out;
 		out << "get_fps:";
 		out << get_fps();
-		nacl_nes::NaclNes::log_to_browser(out.str());
+		NaclNes::log_to_browser(out.str());
 	} else if(message.find("load_rom:") == 0) {
 		// Convert the rom data to bytes
 		size_t sep_pos = message.find_first_of(":");
@@ -230,7 +220,7 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 
 		// Make sure the ROM is valid
 		if(rom_data[0] != 'N' || rom_data[1] != 'E' || rom_data[2] != 'S' || rom_data[3] != 0x1A) {
-			nacl_nes::NaclNes::log_to_browser("Invalid ROM file!");
+			NaclNes::log_to_browser("Invalid ROM file!");
 		} else {
 			// Stop any previously running NES
 			if(vnes != NULL) {
@@ -241,14 +231,12 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 
 			// Run the ROM
 			vnes = new vNES();
-#ifdef NACL
 			vnes->init_data((uint8_t*) rom_data, (size_t)ROM_DATA_LENGTH, this);
-#endif
 			pthread_create(&thread_, NULL, start_main_loop, this);
-			nacl_nes::NaclNes::log_to_browser("running");
+			NaclNes::log_to_browser("running");
 		}
 	} else {
-		nacl_nes::NaclNes::log_to_browser("unknown message");
+		NaclNes::log_to_browser("unknown message");
 	}
 
 }
@@ -302,11 +290,9 @@ void NaclNes::FlushPixelBuffer() {
 }
 
 void* NaclNes::start_main_loop(void* param) {
-	nacl_nes::NaclNes::log_to_browser("start_main_loop");
+	NaclNes::log_to_browser("start_main_loop");
 	vnes->run();
 	return 0;
 }
-
-}  // namespace nacl_nes
 
 #endif

@@ -69,16 +69,6 @@ template<class T> inline void delete_n_null_array(T*& obj) {
 	obj = NULL;
 }
 
-
-// Temp stub classes
-class Mixer {};
-class SourceDataLine {
-public:
-	size_t getBufferSize() { return 0; };
-	bool isActive() { return false; }
-	int available() { return 0; }
-};
-
 // Forward declarations
 class IPapuChannel;
 class ByteBuffer;
@@ -816,7 +806,7 @@ public:
 class NES {
 public:
 #ifdef NACL
-    nacl_nes::NaclNes* _nacl_nes;
+    NaclNes* _nacl_nes;
 #endif
      CPU* cpu;
      PPU* ppu;
@@ -836,7 +826,7 @@ public:
      NES();
 #endif
 #ifdef NACL
-     NES(nacl_nes::NaclNes* nacl_nes);
+     NES(NaclNes* nacl_nes);
 #endif
      ~NES();
      bool stateLoad(ByteBuffer* buf);
@@ -903,9 +893,9 @@ public:
     static const int lengthLookup[];
 
     mutable pthread_mutex_t _mutex;
+    bool _is_running;
     NES* nes;
     Memory* cpuMem;
-    Mixer* mixer;
     ChannelSquare* square1;
     ChannelSquare* square2;
     ChannelTriangle* triangle;
@@ -976,7 +966,6 @@ public:
     int extraCycles;
     int maxCycles;
 
-    SourceDataLine* line;
     int bufferIndex;
 
      void lock_mutex();
@@ -1008,7 +997,6 @@ public:
      void setChannelEnabled(int channel, bool value);
      void setMasterVolume(int value);
      void updateStereoPos();
-     SourceDataLine* getLine();
      bool isRunning();
      int getMillisToAvailableAbove(int target_avail);
      int getBufferPos();
@@ -1339,7 +1327,7 @@ public:
     void init(string rom_name);
 #endif
 #ifdef NACL
-    void init_data(uint8_t* rom_data, size_t length, nacl_nes::NaclNes* nacl_nes);
+    void init_data(uint8_t* rom_data, size_t length, NaclNes* nacl_nes);
 #endif
     void run();
     void stop();
@@ -1440,112 +1428,12 @@ inline float rand_float() {
 
 template <typename T>
 inline T hexStringTo(string str) {
-	T x;   
+	T x;
 	std::stringstream ss;
 	ss << std::hex << str;
 	ss >> x;
 	return x;
 }
-
-#ifdef NACL
-class NaclNes : public pp::Instance {
- public:
-  explicit NaclNes(PP_Instance instance);
-  virtual ~NaclNes();
-
-  bool _button_a_down;
-  bool _button_b_down;
-  bool _button_start_down;
-  bool _button_select_down;
-  bool _button_up_down;
-  bool _button_down_down;
-  bool _button_left_down;
-  bool _button_right_down;
-
-  static void* start_main_loop(void* param);
-  virtual bool Init(uint32_t argc, const char* argn[], const char* argv[]);
-  virtual void DidChangeView(const pp::View& view);
-  virtual void HandleMessage(const pp::Var& var_message);
-
-  uint32_t* LockPixels();
-  void UnlockPixels() const;
-  void Paint();
-
-  bool quit() const {
-    return quit_;
-  }
-
-  void button_down(int32_t key) {
-	switch(key) {
-		case(90): _button_a_down = true; break; // z = 90
-		case(88): _button_b_down = true; break; // x = 88
-		case(65): _button_start_down = true; break; // a = 65
-		case(83): _button_select_down = true; break; // s = 83
-		case(38): _button_up_down = true; break; // up = 38
-		case(37): _button_left_down = true; break; // left = 37
-		case(40): _button_down_down = true; break; // down = 40
-		case(39): _button_right_down = true; break; // right = 39
-	}
-  }
-  void button_up(int32_t key) {
-	switch(key) {
-		case(90): _button_a_down = false; break; // z = 90
-		case(88): _button_b_down = false; break; // x = 88
-		case(65): _button_start_down = false; break; // a = 65
-		case(83): _button_select_down = false; break; // s = 83
-		case(38): _button_up_down = false; break; // up = 38
-		case(37): _button_left_down = false; break; // left = 37
-		case(40): _button_down_down = false; break; // down = 40
-		case(39): _button_right_down = false; break; // right = 39
-	}
-  }
-
-  void set_fps(uint32_t value) {
-    _fps = value;
-  }
-  uint32_t get_fps() {
-    return _fps;
-  }
-
-  int width() const {
-    return pixel_buffer_ ? pixel_buffer_->size().width() : 0;
-  }
-  int height() const {
-    return pixel_buffer_ ? pixel_buffer_->size().height() : 0;
-  }
-
-  // Indicate whether a flush is pending.  This can only be called from the
-  // main thread; it is not thread safe.
-  bool flush_pending() const {
-    return flush_pending_;
-  }
-  void set_flush_pending(bool flag) {
-    flush_pending_ = flag;
-  }
-
- private:
-  // Create and initialize the 2D context used for drawing.
-  void CreateContext(const pp::Size& size);
-  // Destroy the 2D drawing context.
-  void DestroyContext();
-  // Push the pixels to the browser, then attempt to flush the 2D context.  If
-  // there is a pending flush on the 2D context, then update the pixels only
-  // and do not flush.
-  void FlushPixelBuffer();
-
-  bool IsContextValid() const {
-    return graphics_2d_context_ != NULL;
-  }
-
-  mutable pthread_mutex_t pixel_buffer_mutex_;
-  pp::Graphics2D* graphics_2d_context_;
-  pp::ImageData* pixel_buffer_;
-  bool flush_pending_;
-  bool quit_;
-  uint32_t _fps;
-  pthread_t thread_;
-};
-#endif
 
 #endif
 
