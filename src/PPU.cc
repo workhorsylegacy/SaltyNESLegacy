@@ -503,6 +503,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		_ticks_since_second += diff + wait;
 		if(_ticks_since_second >= 1000000.0) {
 			printf("FPS: %d\n", frameCounter);
+#ifdef NACL
+			this->nes->_nacl_nes->set_fps(frameCounter);
+#endif
 			_ticks_since_second = 0;
 			frameCounter = 0;
 		}

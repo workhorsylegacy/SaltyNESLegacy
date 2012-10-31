@@ -9,6 +9,7 @@
 			var nacl_nes = null;
 			var paintInterval = null;
 			var debugInterval = null;
+			var vfps = 0;
 
 			function stringToBytes(str) {
 				var retval = new Array();
@@ -24,16 +25,17 @@
 			}
 
 			function handleMessage(message_event) {
-				//alert(message_event.data);
 				if(message_event.data.split(':')[0] == 'get_fps') {
 					var debug = $('#debug')[0];
-					debug.innerHTML = 'FPS: ' + message_event.data.split(':')[1];
+					debug.innerHTML = 'FPS: ' + vfps + ', VFPS: ' + message_event.data.split(':')[1];
+					vfps = 0;
 				} else if(message_event.data == 'running') {
 					// Repaint the screen
 					// FIXME: Paint calls should happen automatically inside the nexe.
 					var fps = 60.0;
 					paintInterval = setInterval(function() {
 						nacl_nes.postMessage('paint');
+						vfps += 1;
 					}, 1000.0 / fps);
 
 					// Have the FPS sent to us every second
