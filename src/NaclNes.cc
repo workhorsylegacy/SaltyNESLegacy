@@ -25,26 +25,12 @@ using namespace std;
 
 // Globals
 NaclNes* NaclNes::g_nacl_nes = NULL;
-uint64_t g_frame_start = 0;
-uint64_t g_frame_end = 0;
-uint64_t g_fps_start = 0;
-static vNES* vnes;
-
 const int kPthreadMutexSuccess = 0;
 
 // This is called by the browser when the 2D context has been flushed to the
 // browser window.
 void FlushCallback(void* data, int32_t result) {
 	static_cast<NaclNes*>(data)->set_flush_pending(false);
-}
-
-
-void NaclNes::log_to_browser(string message) {
-	fprintf(stdout, "%s\n", message.c_str());
-	fflush(stdout);
-
-	if(g_nacl_nes != NULL)
-		g_nacl_nes->PostMessage(message.c_str());
 }
 
 
@@ -101,6 +87,11 @@ NaclNes::NaclNes(PP_Instance instance)
 			quit_(false),
 			thread_(0) {
 	pthread_mutex_init(&pixel_buffer_mutex_, NULL);
+
+	vnes = NULL;
+
+	if(NaclNes::g_nacl_nes == NULL)
+		NaclNes::g_nacl_nes = this;
 }
 
 NaclNes::~NaclNes() {
@@ -142,9 +133,6 @@ bool NaclNes::Init(uint32_t argc, const char* argn[], const char* argv[]) {
 }
 
 void NaclNes::HandleMessage(const pp::Var& var_message) {
-	if(NaclNes::g_nacl_nes == NULL)
-		NaclNes::g_nacl_nes = this;
-	
 	string message;
 	if(var_message.is_string())
 		message = var_message.AsString();
@@ -170,7 +158,7 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 		stringstream out;
 		out << "get_fps:";
 		out << get_fps();
-		NaclNes::log_to_browser(out.str());
+		log_to_browser(out.str());
 	} else if(message.find("load_rom:") == 0) {
 		// Convert the rom data to bytes
 		size_t sep_pos = message.find_first_of(":");
@@ -185,7 +173,7 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 
 		// Make sure the ROM is valid
 		if(rom_data[0] != 'N' || rom_data[1] != 'E' || rom_data[2] != 'S' || rom_data[3] != 0x1A) {
-			NaclNes::log_to_browser("Invalid ROM file!");
+			log_to_browser("Invalid ROM file!");
 		} else {
 			// Stop any previously running NES
 			if(vnes != NULL) {
@@ -198,10 +186,10 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 			vnes = new vNES();
 			vnes->init_data((uint8_t*) rom_data, (size_t)ROM_DATA_LENGTH, this);
 			pthread_create(&thread_, NULL, start_main_loop, this);
-			NaclNes::log_to_browser("running");
+			log_to_browser("running");
 		}
 	} else {
-		NaclNes::log_to_browser("unknown message");
+		log_to_browser("unknown message");
 	}
 
 }
@@ -267,9 +255,15 @@ void NaclNes::FlushPixelBuffer() {
 }
 
 void* NaclNes::start_main_loop(void* param) {
-	NaclNes::log_to_browser("start_main_loop");
-	vnes->run();
+	log_to_browser("start_main_loop");
+
+	NaclNes* nacl_nes = reinterpret_cast<NaclNes*>(param);
+	nacl_nes->vnes->run();
 	return 0;
+}
+
+void NaclNes::log(string message) {
+	PostMessage(message);
 }
 
 #endif

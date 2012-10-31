@@ -1361,11 +1361,11 @@ class NaclNes : public pp::Instance {
 	}
 
 public:
+	static NaclNes* g_nacl_nes;
+	vNES* vnes;
+	
 	explicit NaclNes(PP_Instance instance);
 	virtual ~NaclNes();
-
-	static NaclNes* g_nacl_nes;
-	static void log_to_browser(string message);
 
 	bool _button_a_down;
 	bool _button_b_down;
@@ -1436,6 +1436,8 @@ public:
 	void set_flush_pending(bool flag) {
 		flush_pending_ = flag;
 	}
+	
+	void log(string message);
 };
 #endif
 
@@ -1556,6 +1558,16 @@ inline uint8_t string_to_byte(uint8_t upper, uint8_t lower) {
 	lower = string_to_half_byte(lower);
 	retval = ((uint8_t)(upper << 4)) | lower;
 	return retval;
+}
+
+inline void log_to_browser(string message) {
+	fprintf(stdout, "%s\n", message.c_str());
+	fflush(stdout);
+	
+#ifdef NACL
+	if(NaclNes::g_nacl_nes != NULL)
+		NaclNes::g_nacl_nes->log(message);
+#endif
 }
 
 #endif

@@ -227,9 +227,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		for(size_t i=0; i<length; i++) {
 			sdata[i] = (short) (data[i] & 255);
 		}
-		#ifdef NACL
-		NaclNes::log_to_browser("log: rom::load_from_data");
-		#endif
+		log_to_browser("log: rom::load_from_data");
 
         // Read header:
         header = new short[16];

@@ -78,9 +78,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // Load ROM file:
         if(_rom_data == NULL) {
-            #ifdef NACL
-            NaclNes::log_to_browser("Loading ROM from file.");
-            #endif
+            log_to_browser("Loading ROM from file.");
 
 			ifstream reader(_rom_name.c_str(), ios::in|ios::binary);
 			if(reader.fail()) {
@@ -98,9 +96,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 			delete_n_null_array(bdata);
 			reader.close();
         } else {
-	        #ifdef NACL
-            NaclNes::log_to_browser("Loading ROM from data.");
-            #endif
+            log_to_browser("Loading ROM from data.");
             nes->load_rom_from_data("rom_from_browser.nes", _rom_data, _rom_data_length);
         }
         

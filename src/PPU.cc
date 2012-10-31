@@ -419,7 +419,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		nes->papu->writeBuffer();
 #ifdef NACL
-//		NaclNes::log_to_browser("startVBlank");
+//		log_to_browser("startVBlank");
 		uint8_t a = 0, r = 0, g = 0, b = 0;
 		int color;
 		int color32;
