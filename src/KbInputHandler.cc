@@ -39,11 +39,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void KbInputHandler::poll_for_key_events() {
+        vector<bool>* s = this->allKeysState;
+        vector<int>* m = this->keyMapping;
+        
 #ifdef SDL
         int32_t numberOfKeys;
         uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
-        vector<bool>* s = this->allKeysState;
-        vector<int>* m = this->keyMapping;
 
         (*s)[(*m)[KbInputHandler::KEY_A]] =      keystate[SDLK_z];
         (*s)[(*m)[KbInputHandler::KEY_B]] =      keystate[SDLK_x];
@@ -53,6 +54,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         (*s)[(*m)[KbInputHandler::KEY_DOWN]] =   keystate[SDLK_DOWN];
         (*s)[(*m)[KbInputHandler::KEY_RIGHT]] =  keystate[SDLK_RIGHT];
         (*s)[(*m)[KbInputHandler::KEY_LEFT]] =   keystate[SDLK_LEFT];
+#endif
+
+#ifdef NACL
+        (*s)[(*m)[KbInputHandler::KEY_A]] = this->nes->_nacl_nes->_button_a_down;
+        (*s)[(*m)[KbInputHandler::KEY_B]] = this->nes->_nacl_nes->_button_b_down;
+        (*s)[(*m)[KbInputHandler::KEY_START]] = this->nes->_nacl_nes->_button_start_down;
+        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = this->nes->_nacl_nes->_button_select_down;
+        (*s)[(*m)[KbInputHandler::KEY_UP]] = this->nes->_nacl_nes->_button_up_down;
+        (*s)[(*m)[KbInputHandler::KEY_DOWN]] = this->nes->_nacl_nes->_button_down_down;
+        (*s)[(*m)[KbInputHandler::KEY_RIGHT]] = this->nes->_nacl_nes->_button_right_down;
+        (*s)[(*m)[KbInputHandler::KEY_LEFT]] = this->nes->_nacl_nes->_button_left_down;
+#endif
 
         // Can't hold both left & right or up & down at same time:
         if ((*s)[(*m)[KbInputHandler::KEY_LEFT]]) {
@@ -66,7 +79,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         } else if ((*s)[(*m)[KbInputHandler::KEY_DOWN]]) {
             (*s)[(*m)[KbInputHandler::KEY_UP]] = false;
         }
-#endif
     }
 
      void KbInputHandler::reset() {
