@@ -43,7 +43,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	#include "ppapi/cpp/instance.h"
 	#include "ppapi/cpp/rect.h"
 	#include "ppapi/cpp/size.h"
-	#include "nacl_nes.h"
 #endif
 
 #ifdef SDL
@@ -98,6 +97,9 @@ class ROM;
 class Scale;
 class Tile;
 class vNES;
+#ifdef NACL
+class NaclNes;
+#endif
 
 // Interfaces
 class IPapuChannel {
@@ -1335,6 +1337,108 @@ public:
     void initKeyCodes();
 };
 
+#ifdef NACL
+class NaclNes : public pp::Instance {
+	mutable pthread_mutex_t pixel_buffer_mutex_;
+	pp::Graphics2D* graphics_2d_context_;
+	pp::ImageData* pixel_buffer_;
+	bool flush_pending_;
+	bool quit_;
+	uint32_t _fps;
+	pthread_t thread_;
+
+	// Create and initialize the 2D context used for drawing.
+	void CreateContext(const pp::Size& size);
+	// Destroy the 2D drawing context.
+	void DestroyContext();
+	// Push the pixels to the browser, then attempt to flush the 2D context.  If
+	// there is a pending flush on the 2D context, then update the pixels only
+	// and do not flush.
+	void FlushPixelBuffer();
+
+	bool IsContextValid() const {
+		return graphics_2d_context_ != NULL;
+	}
+
+public:
+	explicit NaclNes(PP_Instance instance);
+	virtual ~NaclNes();
+
+	static NaclNes* g_nacl_nes;
+	static void log_to_browser(string message);
+
+	bool _button_a_down;
+	bool _button_b_down;
+	bool _button_start_down;
+	bool _button_select_down;
+	bool _button_up_down;
+	bool _button_down_down;
+	bool _button_left_down;
+	bool _button_right_down;
+
+	static void* start_main_loop(void* param);
+	virtual bool Init(uint32_t argc, const char* argn[], const char* argv[]);
+	virtual void DidChangeView(const pp::View& view);
+	virtual void HandleMessage(const pp::Var& var_message);
+
+	uint32_t* LockPixels();
+	void UnlockPixels() const;
+	void Paint();
+
+	bool quit() const {
+		return quit_;
+	}
+
+	void button_down(int32_t key) {
+		switch(key) {
+			case(90): _button_a_down = true; break; // z = 90
+			case(88): _button_b_down = true; break; // x = 88
+			case(65): _button_start_down = true; break; // a = 65
+			case(83): _button_select_down = true; break; // s = 83
+			case(38): _button_up_down = true; break; // up = 38
+			case(37): _button_left_down = true; break; // left = 37
+			case(40): _button_down_down = true; break; // down = 40
+			case(39): _button_right_down = true; break; // right = 39
+		}
+	}
+	void button_up(int32_t key) {
+		switch(key) {
+			case(90): _button_a_down = false; break; // z = 90
+			case(88): _button_b_down = false; break; // x = 88
+			case(65): _button_start_down = false; break; // a = 65
+			case(83): _button_select_down = false; break; // s = 83
+			case(38): _button_up_down = false; break; // up = 38
+			case(37): _button_left_down = false; break; // left = 37
+			case(40): _button_down_down = false; break; // down = 40
+			case(39): _button_right_down = false; break; // right = 39
+		}
+	}
+
+	void set_fps(uint32_t value) {
+		_fps = value;
+	}
+	uint32_t get_fps() {
+		return _fps;
+	}
+
+	int width() const {
+		return pixel_buffer_ ? pixel_buffer_->size().width() : 0;
+	}
+	int height() const {
+	return pixel_buffer_ ? pixel_buffer_->size().height() : 0;
+	}
+
+	// Indicate whether a flush is pending.  This can only be called from the
+	// main thread; it is not thread safe.
+	bool flush_pending() const {
+		return flush_pending_;
+	}
+	void set_flush_pending(bool flag) {
+		flush_pending_ = flag;
+	}
+};
+#endif
+
 inline void arraycopy_short(vector<short>* src, int srcPos, vector<short>* dest, int destPos, int length) {
 	assert(srcPos >= 0);
 	assert(destPos >= 0);
@@ -1433,6 +1537,25 @@ inline T hexStringTo(string str) {
 	ss << std::hex << str;
 	ss >> x;
 	return x;
+}
+
+inline uint8_t string_to_half_byte(uint8_t byte) {
+	// '0'(48) through '9'(57)
+	if(byte >= 48 && byte <= 57) {
+		byte -= 48;
+	// 'A'(65) through 'F'(70)
+	} else if(byte >= 65 && byte <= 70) {
+		byte -= 55;
+	}
+	return byte;
+}
+
+inline uint8_t string_to_byte(uint8_t upper, uint8_t lower) {
+	uint8_t retval = 0;
+	upper = string_to_half_byte(upper);
+	lower = string_to_half_byte(lower);
+	retval = ((uint8_t)(upper << 4)) | lower;
+	return retval;
 }
 
 #endif

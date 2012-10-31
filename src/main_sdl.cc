@@ -13,12 +13,11 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifdef SDL
 
 #include "nes_cpp.h"
 
 using namespace std;
-
-#ifdef SDL
 
 int main(int argc, char* argv[]) {
 	printf("%s\n", "");

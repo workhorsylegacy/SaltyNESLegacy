@@ -3,7 +3,7 @@
 
 #include <ppapi/cpp/module.h>
 
-#include "nacl_nes.h"
+#include "nes_cpp.h"
 
 // The Module class.  The browser calls the CreateInstance() method to create
 // an instance of your NaCl module on the web page.  The browser creates a new

@@ -38,8 +38,6 @@
     <CompileTarget>Bin</CompileTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="nacl_nes.cc" />
-    <Compile Include="nacl_nes_module.cc" />
     <Compile Include="ByteBuffer.cc" />
     <Compile Include="ChannelDM.cc" />
     <Compile Include="ChannelNoise.cc" />
@@ -50,7 +48,6 @@
     <Compile Include="CpuInfo.cc" />
     <Compile Include="Globals.cc" />
     <Compile Include="KbInputHandler.cc" />
-    <Compile Include="main.cc" />
     <Compile Include="Mapper001.cc" />
     <Compile Include="Mapper002.cc" />
     <Compile Include="Mapper003.cc" />
@@ -71,6 +68,9 @@
     <Compile Include="Scale.cc" />
     <Compile Include="Tile.cc" />
     <Compile Include="vNES.cc" />
+    <Compile Include="main_nacl.cc" />
+    <Compile Include="NaclNes.cc" />
+    <Compile Include="main_sdl.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Color.h" />
@@ -81,7 +81,6 @@
     <None Include="..\raise">
       <Link>raise</Link>
     </None>
-    <None Include="nacl_nes.h" />
     <None Include="..\Makefile">
       <Link>Makefile</Link>
     </None>
