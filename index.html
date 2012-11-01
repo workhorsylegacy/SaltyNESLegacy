@@ -120,31 +120,48 @@
 			}
 
 		</script>
-		<select id="game_selector" disabled="disabled">
-			<option id="none">Select a game to play</option>
-			<option id="castlevania_1.nes">Castlevania</option>
-			<option id="contra.nes">Contra</option>
-			<option id="dd.nes">Double Dragon</option>
-			<option id="KidIcaru.nes">Kid Icarus</option>
-			<option id="Kirby's Adventure.nes">Kirby's Adventure</option>
-			<option id="zelda.nes">Legend of Zelda, The</option>
-			<option id="Little Nemo - The Dream Master.nes">Little Nemo - The Dream Master</option>
-			<option id="MEGAMAN2.NES">Mega Man 2</option>
-			<option id="metalgear.nes">Meta Gear</option>
-			<option id="METROID.NES">Metroid</option>
-			<option id="NinjaGa.nes">Ninja Gaiden</option>
-			<option id="PunchOut.nes">Punch Out</option>
-			<option id="Shatterhand.nes">Shatter Hand</option>
-			<option id="Strider.nes">Strider</option>
-			<option id="mario.nes">Super Mario Brothers</option>
-			<option id="smb3.nes">Super Mario Brothers 3</option>
-			<option id="TETRIS.NES">Tetris</option>
-		</select>
-		<button id="pause" disabled="disabled">Pause</button>
-		zoom: 
-		<button id="zoom_out" disabled="disabled">-</button>
-		<button id="zoom_in" disabled="disabled">+</button>
-		<div id="listener">
+		<div style="float: left;">
+			<b>Status:</b><br />
+			<span id="debug">
+			Debug messages will be printed here
+			</span>
+			<p>
+				<b>Controls:</b><br />
+				A = Start<br />
+				S = Select<br />
+				Z = A<br />
+				X = B<br />
+				Arrow keys for the D-Pad
+			</p>
+		</div>
+
+		<div id="listener" style="text-align: center;">
+			<div>
+				<select id="game_selector" disabled="disabled">
+					<option id="none">Select a game to play ...</option>
+					<option id="castlevania_1.nes">Castlevania</option>
+					<option id="contra.nes">Contra</option>
+					<option id="dd.nes">Double Dragon</option>
+					<option id="KidIcaru.nes">Kid Icarus</option>
+					<option id="Kirby's Adventure.nes">Kirby's Adventure</option>
+					<option id="zelda.nes">Legend of Zelda, The</option>
+					<option id="Little Nemo - The Dream Master.nes">Little Nemo - The Dream Master</option>
+					<option id="MEGAMAN2.NES">Mega Man 2</option>
+					<option id="metalgear.nes">Meta Gear</option>
+					<option id="METROID.NES">Metroid</option>
+					<option id="NinjaGa.nes">Ninja Gaiden</option>
+					<option id="PunchOut.nes">Punch Out</option>
+					<option id="Shatterhand.nes">Shatter Hand</option>
+					<option id="Strider.nes">Strider</option>
+					<option id="mario.nes">Super Mario Brothers</option>
+					<option id="smb3.nes">Super Mario Brothers 3</option>
+					<option id="TETRIS.NES">Tetris</option>
+				</select>
+				<button id="pause" disabled="disabled">Pause</button>
+				zoom: 
+				<button id="zoom_out" disabled="disabled">-</button>
+				<button id="zoom_in" disabled="disabled">+</button>
+			</div>
 			<embed name="nacl_module"
 				id="NaclNesApp"
 				width=256 height=240
@@ -152,16 +169,7 @@
 				src="newlib/nacl_nes.nmf"
 				type="application/x-nacl" />
 		</div>
-		<span id="debug">
-		Debug messages will be printed here
-		</span>
-		<p>
-			A = Start<br />
-			S = Select<br />
-			Z = A<br />
-			X = B<br />
-			Arrow keys for the D-Pad
-		</p>
+
 		<script type="text/javascript">
 			// Send all key down events to the nacl app
 			$('#bodyId').keydown(function(event) {
