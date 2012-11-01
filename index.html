@@ -10,6 +10,8 @@
 			var paintInterval = null;
 			var debugInterval = null;
 			var vfps = 0;
+			var zoom = 1;
+			var max_zoom = 4;
 
 			function stringToBytes(str) {
 				var retval = new Array();
@@ -112,6 +114,7 @@
 
 						// Send the rom to the nexe
 						nacl_nes.postMessage('load_rom:' + rom_data);
+						nacl_nes.postMessage('zoom:' + zoom);
 					}
 				});
 			}
@@ -138,13 +141,16 @@
 			<option id="TETRIS.NES">Tetris</option>
 		</select>
 		<button id="pause" disabled="disabled">Pause</button>
+		zoom: 
+		<button id="zoom_out" disabled="disabled">-</button>
+		<button id="zoom_in" disabled="disabled">+</button>
 		<div id="listener">
 			<embed name="nacl_module"
 				id="NaclNesApp"
 				width=256 height=240
+				style="background-color: #000000;"
 				src="newlib/nacl_nes.nmf"
-				type="application/x-nacl" 
-				style="background-color: #000000"/>
+				type="application/x-nacl" />
 		</div>
 		<span id="debug">
 		Debug messages will be printed here
@@ -159,20 +165,60 @@
 		<script type="text/javascript">
 			// Send all key down events to the nacl app
 			$('#bodyId').keydown(function(event) {
+				// Let the browser handle F11 for full screen
+				if(event.which == 122)
+					return true;
+			
 				if(nacl_nes == null) return false;
-
 				nacl_nes.postMessage('button_down:' + event.which);
 				return false;
 			});
 
 			// Send all key up events to the nacl app
 			$('#bodyId').keyup(function(event) {
+				// Let the browser handle F11 for full screen
+				if(event.which == 122)
+					return true;
+			
 				if(nacl_nes == null) return false;
-				
 				nacl_nes.postMessage('button_up:' + event.which);
 				return false;
 			});
 
+			// Zoom in when clicked
+			$('#zoom_in').click(function() {
+				if(zoom < max_zoom)
+					zoom += 1;
+
+				$('#zoom_in').attr('disabled', zoom == max_zoom);
+				$('#zoom_out').attr('disabled', zoom == 1);
+
+				$('#NaclNesApp').width(256 * zoom);
+				$('#NaclNesApp').height(240 * zoom);
+
+				if(nacl_nes)
+					nacl_nes.postMessage('zoom:' + zoom);
+
+				return false;
+			});
+
+			// Zoom out when clicked
+			$('#zoom_out').click(function() {
+				if(zoom > 1)
+					zoom -= 1;
+
+				$('#zoom_in').attr('disabled', zoom == max_zoom);
+				$('#zoom_out').attr('disabled', zoom == 1);
+			
+				$('#NaclNesApp').width(256 * zoom);
+				$('#NaclNesApp').height(240 * zoom);
+
+				if(nacl_nes)
+					nacl_nes.postMessage('zoom:' + zoom);
+
+				return false;
+			});
+			
 			// Pause when the button is clicked
 			$('#pause').click(function() {
 				if(nacl_nes == null) return false;
@@ -217,6 +263,9 @@
 			listener.addEventListener('loadend', handleLoadEnd, true);
 			listener.addEventListener('progress', handleProgress, true);
 			listener.addEventListener('message', handleMessage, true);
+			
+			$('#zoom_in').attr('disabled', zoom == max_zoom);
+			$('#zoom_out').attr('disabled', zoom == 1);
 		</script>
 	</body>
 </html>

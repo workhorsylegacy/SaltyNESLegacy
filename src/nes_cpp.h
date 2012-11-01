@@ -94,7 +94,6 @@ class PAPU;
 class PPU;
 class Raster;
 class ROM;
-class Scale;
 class Tile;
 class vNES;
 #ifdef NACL
@@ -1012,6 +1011,7 @@ public:
 class PPU {
 public:
      NES* nes;
+     int _zoom;
      struct timeval _frame_start;
      struct timeval _frame_end;
      double _ticks_since_second;
@@ -1132,7 +1132,7 @@ public:
     int baseTile;
     int tscanoffset;
     int srcy1, srcy2;
-    int bufferSize, available, scale;
+    int bufferSize, available;
     int cycles;
     vector<int>* _screen_buffer;
 
@@ -1192,6 +1192,9 @@ public:
      void stateLoad(ByteBuffer* buf);
      void stateSave(ByteBuffer* buf);
      void reset();
+#ifdef NACL
+     bool is_safe_to_paint();
+#endif
 };
 
 class Raster {
@@ -1263,21 +1266,6 @@ public:
      void loadBatteryRam();
      void writeBatteryRam(int address, short value);
      void closeRom();
-};
-
-class Scale {
-public:
-     static int brightenShift;
-     static int brightenShiftMask;
-     static int brightenCutoffMask;
-     static int darkenShift;
-     static int darkenShiftMask;
-     static int si,  di,  di2,  val,  x,  y;
-
-     static void setFilterParams(int darkenDepth, int brightenDepth);
-     static void doScanlineScaling(vector<int>* src, vector<int>* dest, bool* changed);
-     static void doRasterScaling(vector<int>* src, vector<int>* dest, bool* changed);
-     static void doNormalScaling(vector<int>* src, vector<int>* dest, bool* changed);
 };
 
 class Tile {

@@ -65,7 +65,6 @@
     <Compile Include="PPU.cc" />
     <Compile Include="Raster.cc" />
     <Compile Include="ROM.cc" />
-    <Compile Include="Scale.cc" />
     <Compile Include="Tile.cc" />
     <Compile Include="vNES.cc" />
     <Compile Include="main_nacl.cc" />

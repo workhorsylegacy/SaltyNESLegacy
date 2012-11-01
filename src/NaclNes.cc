@@ -87,7 +87,6 @@ NaclNes::NaclNes(PP_Instance instance)
 			quit_(false),
 			thread_(0) {
 	pthread_mutex_init(&pixel_buffer_mutex_, NULL);
-
 	vnes = NULL;
 
 	if(NaclNes::g_nacl_nes == NULL)
@@ -102,7 +101,7 @@ NaclNes::~NaclNes() {
 		pthread_join(thread_, NULL);
 	}
 	DestroyContext();
-	delete pixel_buffer_;
+	delete_n_null(pixel_buffer_);
 	pthread_mutex_destroy(&pixel_buffer_mutex_);
 }
 
@@ -116,8 +115,7 @@ void NaclNes::DidChangeView(const pp::View& view) {
 	CreateContext(position.size());
 	// Delete the old pixel buffer and create a new one.
 	ScopedMutexLock scoped_mutex(&pixel_buffer_mutex_);
-	delete pixel_buffer_;
-	pixel_buffer_ = NULL;
+	delete_n_null(pixel_buffer_);
 	if (graphics_2d_context_ != NULL) {
 		pixel_buffer_ = new pp::ImageData(
 			this,
@@ -142,6 +140,12 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 			Paint();
 	} else if(message == "pause") {
 		vnes->nes->_is_paused = !vnes->nes->_is_paused;
+	} else if(message.find("zoom:") == 0) {
+		size_t sep_pos = message.find_first_of(":");
+		int32_t zoom = 0;
+		string str_zoom = message.substr(sep_pos + 1);
+		istringstream ( str_zoom ) >> zoom;
+		vnes->nes->ppu->_zoom = zoom;
 	} else if(message.find("button_down:") == 0) {
 		size_t sep_pos = message.find_first_of(":");
 		int32_t button = 0;
@@ -238,8 +242,7 @@ void NaclNes::DestroyContext() {
 	}
 	if (!IsContextValid())
 		return;
-	delete graphics_2d_context_;
-	graphics_2d_context_ = NULL;
+	delete_n_null(graphics_2d_context_);
 }
 
 void NaclNes::FlushPixelBuffer() {

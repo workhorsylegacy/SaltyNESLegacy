@@ -39,6 +39,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      PPU::PPU(NES* nes) {
          this->nes = nes;
+         _zoom = 1;
          _frame_start.tv_usec = 0;
          _frame_start.tv_sec = 0;
          _frame_end.tv_usec = 0;
@@ -180,7 +181,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
          srcy2 = 0;
          bufferSize = 0;
          available = 0;
-         scale = 0;
          cycles = 0;
          _screen_buffer = new vector<int>(256 * 240);
     }
@@ -420,22 +420,37 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		nes->papu->writeBuffer();
 #ifdef NACL
 //		log_to_browser("startVBlank");
-		uint8_t a = 0, r = 0, g = 0, b = 0;
-		int color;
-		int color32;
-		uint32_t* pixel_bits = nes->_nacl_nes->LockPixels();
-		for(size_t y=0; y<240; ++y) {
-			for(size_t x=0; x<256; ++x) {
-				color32 = (*buffer)[x + (y * (256))];
-				b = (color32 >> 16) & 0x000000FF;
-				g = (color32 >> 8) & 0x000000FF;
-				r = (color32 >> 0) & 0x000000FF;
-
-				color = (a << 24) | (r << 16) | (g << 8) | (b << 0);
-				pixel_bits[x + (y * 256)] = color;
+			uint8_t a = 0, r = 0, g = 0, b = 0;
+			int color;
+			int color32;
+			int zoomed_x = 0, zoomed_y = 0;
+			int zoom = _zoom;
+			uint32_t* pixel_bits = nes->_nacl_nes->LockPixels();
+			
+			if(is_safe_to_paint()) {
+				// Each column
+				for(int y=0; y<240; ++y) {
+					// Each row
+					for(int x=0; x<256; ++x) {
+						color32 = (*buffer)[x + (y * (256))];
+						b = (color32 >> 16) & 0x000000FF;
+						g = (color32 >> 8) & 0x000000FF;
+						r = (color32 >> 0) & 0x000000FF;
+						color = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+						
+						// Each pixel zoomed
+						for(int y_offset=0; y_offset<zoom; ++y_offset) {
+							zoomed_y = (y * zoom) + y_offset;
+							for(int x_offset=0; x_offset<zoom; ++x_offset) {
+								zoomed_x = (x * zoom) + x_offset;
+								pixel_bits[zoomed_x + (zoomed_y * (256 * zoom))] = color;
+							}
+						}
+					}
+				}
 			}
-		}
-		nes->_nacl_nes->UnlockPixels();
+			
+			nes->_nacl_nes->UnlockPixels();
 #endif
 #ifdef SDL
 		// Lock the screen, if needed
@@ -2064,4 +2079,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         init();
 
     }
+
+#ifdef NACL
+	bool PPU::is_safe_to_paint() {
+		return nes->_nacl_nes->width() * nes->_nacl_nes->height() == 
+		(_zoom * 256) * (_zoom * 240);
+	}
+#endif
 
