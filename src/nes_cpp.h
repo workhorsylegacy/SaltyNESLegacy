@@ -1380,8 +1380,8 @@ public:
 
 	void button_down(int32_t key) {
 		switch(key) {
-			case(90): _button_a_down = true; break; // z = 90
-			case(88): _button_b_down = true; break; // x = 88
+			case(90): _button_b_down = true; break; // z = 90
+			case(88): _button_a_down = true; break; // x = 88
 			case(65): _button_start_down = true; break; // a = 65
 			case(83): _button_select_down = true; break; // s = 83
 			case(38): _button_up_down = true; break; // up = 38
@@ -1392,8 +1392,8 @@ public:
 	}
 	void button_up(int32_t key) {
 		switch(key) {
-			case(90): _button_a_down = false; break; // z = 90
-			case(88): _button_b_down = false; break; // x = 88
+			case(90): _button_b_down = false; break; // z = 90
+			case(88): _button_a_down = false; break; // x = 88
 			case(65): _button_start_down = false; break; // a = 65
 			case(83): _button_select_down = false; break; // s = 83
 			case(38): _button_up_down = false; break; // up = 38

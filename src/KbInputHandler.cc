@@ -46,8 +46,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int32_t numberOfKeys;
         uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
 
-        (*s)[(*m)[KbInputHandler::KEY_A]] =      keystate[SDLK_z];
-        (*s)[(*m)[KbInputHandler::KEY_B]] =      keystate[SDLK_x];
+        (*s)[(*m)[KbInputHandler::KEY_B]] =      keystate[SDLK_z];
+        (*s)[(*m)[KbInputHandler::KEY_A]] =      keystate[SDLK_x];
         (*s)[(*m)[KbInputHandler::KEY_START]] =  keystate[SDLK_RETURN];
         (*s)[(*m)[KbInputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
         (*s)[(*m)[KbInputHandler::KEY_UP]] =     keystate[SDLK_UP];
@@ -57,8 +57,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #ifdef NACL
-        (*s)[(*m)[KbInputHandler::KEY_A]] = this->nes->_nacl_nes->_button_a_down;
         (*s)[(*m)[KbInputHandler::KEY_B]] = this->nes->_nacl_nes->_button_b_down;
+        (*s)[(*m)[KbInputHandler::KEY_A]] = this->nes->_nacl_nes->_button_a_down;
         (*s)[(*m)[KbInputHandler::KEY_START]] = this->nes->_nacl_nes->_button_start_down;
         (*s)[(*m)[KbInputHandler::KEY_SELECT]] = this->nes->_nacl_nes->_button_select_down;
         (*s)[(*m)[KbInputHandler::KEY_UP]] = this->nes->_nacl_nes->_button_up_down;
