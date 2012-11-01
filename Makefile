@@ -61,7 +61,6 @@ src/PapuChannel.cc \
 src/Parameters.cc \
 src/ROM.cc \
 src/Raster.cc \
-src/Scale.cc \
 src/Tile.cc \
 src/main_sdl.cc \
 src/main_nacl.cc \
