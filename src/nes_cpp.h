@@ -38,6 +38,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Color.h"
 
 #ifdef NACL
+	#include "ppapi/c/ppb_gamepad.h"
 	#include "ppapi/cpp/graphics_2d.h"
 	#include "ppapi/cpp/image_data.h"
 	#include "ppapi/cpp/instance.h"
@@ -1331,6 +1332,7 @@ class NaclNes : public pp::Instance {
 	mutable pthread_mutex_t pixel_buffer_mutex_;
 	pp::Graphics2D* graphics_2d_context_;
 	pp::ImageData* pixel_buffer_;
+	const PPB_Gamepad* gamepad_;
 	bool flush_pending_;
 	bool quit_;
 	uint32_t _fps;
@@ -1356,8 +1358,11 @@ public:
 	explicit NaclNes(PP_Instance instance);
 	virtual ~NaclNes();
 
-	bool _button_a_down;
+	bool _is_gamepad_connected;
+	bool _is_gamepad_used;
+	bool _is_keyboard_used;
 	bool _button_b_down;
+	bool _button_a_down;
 	bool _button_start_down;
 	bool _button_select_down;
 	bool _button_up_down;
@@ -1373,12 +1378,15 @@ public:
 	uint32_t* LockPixels();
 	void UnlockPixels() const;
 	void Paint();
+	void update_gamepad();
 
 	bool quit() const {
 		return quit_;
 	}
 
 	void button_down(int32_t key) {
+		_is_gamepad_used = false;
+		_is_keyboard_used = true;
 		switch(key) {
 			case(90): _button_b_down = true; break; // z = 90
 			case(88): _button_a_down = true; break; // x = 88
@@ -1391,6 +1399,8 @@ public:
 		}
 	}
 	void button_up(int32_t key) {
+		_is_gamepad_used = false;
+		_is_keyboard_used = true;
 		switch(key) {
 			case(90): _button_b_down = false; break; // z = 90
 			case(88): _button_a_down = false; break; // x = 88

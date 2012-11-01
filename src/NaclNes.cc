@@ -91,6 +91,24 @@ NaclNes::NaclNes(PP_Instance instance)
 
 	if(NaclNes::g_nacl_nes == NULL)
 		NaclNes::g_nacl_nes = this;
+
+	_is_gamepad_connected = false;
+	_is_gamepad_used = false;
+	_is_keyboard_used = false;
+	_button_b_down = false;
+	_button_a_down = false;
+	_button_start_down = false;
+	_button_select_down = false;
+	_button_up_down = false;
+	_button_down_down = false;
+	_button_left_down = false;
+	_button_right_down = false;
+
+	pp::Module* module = pp::Module::Get();
+	assert(module);
+	gamepad_ = static_cast<const PPB_Gamepad*>(
+		module->GetBrowserInterface(PPB_GAMEPAD_INTERFACE));
+	assert(gamepad_);
 }
 
 NaclNes::~NaclNes() {
@@ -163,6 +181,21 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 		out << "get_fps:";
 		out << get_fps();
 		log_to_browser(out.str());
+	} else if(message == "get_gamepad_status") {
+		// Get current gamepad data.
+		PP_GamepadsSampleData gamepad_data;
+		gamepad_->Sample(pp_instance(), &gamepad_data);
+		_is_gamepad_connected = false;
+		for(size_t i=0; i<gamepad_data.length; ++i) {
+			if(gamepad_data.items[i].connected)
+				_is_gamepad_connected = true;
+		}
+	
+		// Tell the browser if the gamepad is connected or not
+		stringstream out;
+		out << "get_gamepad_status:";
+		out << (_is_gamepad_connected ? "yes" : "no");
+		log_to_browser(out.str());
 	} else if(message.find("load_rom:") == 0) {
 		// Convert the rom data to bytes
 		size_t sep_pos = message.find_first_of(":");
@@ -193,7 +226,10 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 			log_to_browser("running");
 		}
 	} else {
-		log_to_browser("unknown message");
+		stringstream out;
+		out << "unknown message:";
+		out << message;
+		log_to_browser(out.str());
 	}
 
 }
@@ -219,7 +255,48 @@ void NaclNes::Paint() {
 	if (!scoped_mutex.is_valid()) {
 		return;
 	}
+
+	update_gamepad();
+	
 	FlushPixelBuffer();
+}
+
+void NaclNes::update_gamepad() {
+	// Get current gamepad data.
+	PP_GamepadsSampleData gamepad_data;
+	gamepad_->Sample(pp_instance(), &gamepad_data);
+	
+	for(size_t i=0; i<gamepad_data.length; ++i) {
+		PP_GamepadSampleData& pad = gamepad_data.items[i];
+
+		if(!pad.connected)
+			continue;
+
+		// Check if we are switching to the gamepad from the keyboard
+		for(size_t j=0; j<pad.buttons_length; ++j) {
+			if(pad.buttons[j])
+				_is_gamepad_used = true;
+				_is_keyboard_used = false;
+		}
+		for(size_t j=0; j<pad.axes_length; ++j) {
+			if(pad.axes[j] != 0) {
+				_is_gamepad_used = true;
+				_is_keyboard_used = false;
+			}
+		}
+
+		// Get the key states
+		if(_is_gamepad_used) {
+			_button_b_down = pad.buttons[0] > 0;
+			_button_a_down = pad.buttons[1] > 0;
+			_button_start_down = pad.buttons[9] > 0;
+			_button_select_down = pad.buttons[8] > 0;
+			_button_up_down = pad.axes[1] < 0;
+			_button_down_down = pad.axes[1] > 0;
+			_button_left_down = pad.axes[0] < 0;
+			_button_right_down = pad.axes[0] > 0;
+		}
+	}
 }
 
 void NaclNes::CreateContext(const pp::Size& size) {

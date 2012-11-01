@@ -7,8 +7,10 @@
 	<body id="bodyId" onunload="pageDidUnload()">
 		<script type="text/javascript">
 			var nacl_nes = null;
+			var is_running = false;
 			var paintInterval = null;
 			var debugInterval = null;
+			var gamepadInterval = null;
 			var vfps = 0;
 			var zoom = 1;
 			var max_zoom = 4;
@@ -31,7 +33,15 @@
 					var debug = $('#debug')[0];
 					debug.innerHTML = 'FPS: ' + vfps + ', VFPS: ' + message_event.data.split(':')[1];
 					vfps = 0;
+				} else if(message_event.data.split(':')[0] == 'get_gamepad_status') {
+					var status = message_event.data.split(':')[1];
+					if(status == "yes") {
+						$('#gamepad_indicator')[0].style.display = 'inline';
+					} else {
+						$('#gamepad_indicator')[0].style.display = 'none';
+					}
 				} else if(message_event.data == 'running') {
+					is_running = true;
 					// Repaint the screen
 					// FIXME: Paint calls should happen automatically inside the nexe.
 					var fps = 60.0;
@@ -45,7 +55,7 @@
 					debugInterval = setInterval(function() {
 						nacl_nes.postMessage('get_fps');
 					}, 1000);
-
+			
 					// Make the pause button clickable
 					$('#pause').attr('disabled', false);
 					
@@ -71,9 +81,15 @@
 			}
 
 			function handleLoadEnd() {
+				nacl_nes = $('#NaclNesApp')[0];
+			
 				$('#game_selector').attr('disabled', false);
 				var debug = $('#debug')[0];
 				debug.innerHTML = 'Loaded';
+			
+				gamepadInterval = setInterval(function() {
+					nacl_nes.postMessage('get_gamepad_status');
+				}, 2000);
 			}
 
 			function pageDidUnload() {
@@ -81,8 +97,6 @@
 			}
 
 			function load_rom(rom_url) {
-				nacl_nes = $('#NaclNesApp')[0];
-						
 				$.ajax({
 					url: rom_url,
 					xhr: function() {
@@ -133,6 +147,9 @@
 				X = A<br />
 				Arrow keys for the D-Pad
 			</p>
+			<p id="gamepad_indicator" style="display: none;">
+				<b>Gamepad is connected</b>
+			</p>
 		</div>
 
 		<div id="listener" style="text-align: center;">
@@ -177,7 +194,7 @@
 				if(event.which == 122)
 					return true;
 			
-				if(nacl_nes == null) return false;
+				if(!is_running) return false;
 				nacl_nes.postMessage('button_down:' + event.which);
 				return false;
 			});
@@ -188,7 +205,7 @@
 				if(event.which == 122)
 					return true;
 			
-				if(nacl_nes == null) return false;
+				if(!is_running) return false;
 				nacl_nes.postMessage('button_up:' + event.which);
 				return false;
 			});
@@ -204,7 +221,7 @@
 				$('#NaclNesApp').width(256 * zoom);
 				$('#NaclNesApp').height(240 * zoom);
 
-				if(nacl_nes)
+				if(is_running)
 					nacl_nes.postMessage('zoom:' + zoom);
 
 				return false;
@@ -221,7 +238,7 @@
 				$('#NaclNesApp').width(256 * zoom);
 				$('#NaclNesApp').height(240 * zoom);
 
-				if(nacl_nes)
+				if(is_running)
 					nacl_nes.postMessage('zoom:' + zoom);
 
 				return false;
@@ -229,7 +246,7 @@
 			
 			// Pause when the button is clicked
 			$('#pause').click(function() {
-				if(nacl_nes == null) return false;
+				if(!is_running) return false;
 
 				nacl_nes.postMessage('pause');
 				var pause = $('#pause');
@@ -259,10 +276,9 @@
 					clearInterval(debugInterval);
 					debugInterval = null;
 				}
-
-				if(nacl_nes != null) {
+			
+				if(is_running) {
 					nacl_nes.postMessage('quit');
-					nacl_nes = null;
 				}
 				load_rom('roms/' + id);
 			});
