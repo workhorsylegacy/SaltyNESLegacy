@@ -2,6 +2,7 @@ C++NES is a port of the Java NES emulator vNES to C++. It can be run as a
 stand-alone SDL application, or in a web browser using Google NACL.
 
 C++NES is licenced as GPLv3 or later.
+sha256sum.cc & sha256sum.h are from ulib and licensed under MIT.
 Color.cc from java.awt.Color is licenced as GPLv2.
 NACL httpd.py, and Makefile are licensed under a BSD style license.
 Jquery is dual licensed under MIT and GPLv2.

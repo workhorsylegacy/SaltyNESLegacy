@@ -17,6 +17,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "nes_cpp.h"
+#include "sha256sum.h"
 
      const int ROM::VERTICAL_MIRRORING;
      const int ROM::HORIZONTAL_MIRRORING;
@@ -85,6 +86,28 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         
         nes = NULL;
     }
+
+     string ROM::sha256sum(uint8_t* data, size_t length) {
+        // Get the sha256 hash of the data
+        unsigned char hash[32] = {0};
+        SHA256Context ctx;
+        SHA256Init(&ctx);
+        SHA256Update(&ctx, data, length);
+        SHA256Final(&ctx, hash);
+        
+        // Convert the hash into a string of hexadecimal values
+        char hex_map[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+        stringstream ss;
+        for(size_t i=0; i<sizeof(hash); i++) {
+            uint8_t byte = hash[i];
+            uint8_t upper_byte = byte >> 4;
+            uint8_t lower_byte = byte & 0x0F;
+            ss << hex_map[upper_byte];
+            ss << hex_map[lower_byte];
+        }
+        
+        return ss.str();
+     }
 
 	string ROM::getmapperName() {
 		if(_mapperName == NULL) {
@@ -229,6 +252,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 		log_to_browser("log: rom::load_from_data");
 
+        // Get sha256 of the rom
+        string sha256 = sha256sum(data, length);
+
         // Read header:
         header = new short[16];
         for (int i = 0; i < 16; i++) {
@@ -260,6 +286,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         printf("is_sram_on: %d\n", batteryRam);
         printf("is_trainer_on: %d\n", trainer);
         printf("mapper: %d\n", mapperType);
+        printf("sha256: %s\n", sha256.c_str());
 
         // Battery RAM?
         if (batteryRam) {

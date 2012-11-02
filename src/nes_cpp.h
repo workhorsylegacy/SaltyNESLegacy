@@ -1244,6 +1244,7 @@ public:
 
      ROM(NES* nes);
      ~ROM();
+     string sha256sum(uint8_t* data, size_t length);
      string getmapperName();
      static vector<bool>* getmapperSupported();
      void load_from_data(string file_name, uint8_t* data, size_t length);

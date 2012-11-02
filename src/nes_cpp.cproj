@@ -70,6 +70,7 @@
     <Compile Include="main_nacl.cc" />
     <Compile Include="NaclNes.cc" />
     <Compile Include="main_sdl.cc" />
+    <Compile Include="sha256sum.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Color.h" />
@@ -86,5 +87,6 @@
     <None Include="..\index.html">
       <Link>index.html</Link>
     </None>
+    <None Include="sha256sum.h" />
   </ItemGroup>
 </Project>
