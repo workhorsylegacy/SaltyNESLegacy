@@ -3,8 +3,8 @@ stand-alone SDL application, or in a web browser using Google NACL.
 
 C++NES is licenced as GPLv3 or later.
 Color.cc from java.awt.Color is licenced as GPLv2.
-NACL httpd.py, common.js, and Makefile are licensed under a BSD style license.
-Jquery is dual licensed under the MIT and GPLv2 license.
+NACL httpd.py, and Makefile are licensed under a BSD style license.
+Jquery is dual licensed under MIT and GPLv2.
 
 For vNES see:
 http://thatsanderskid.com/programming/vnes/index.html
