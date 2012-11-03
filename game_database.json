@@ -2,6 +2,7 @@
 game_database = {
 	"89dcd466e5abf87f88227c28edfa1e4c7e2040d6fb324f0d3c42405f25b97803" : {
 		"name" : "Adventure Island",
+		"file" : "adventure_island.nes",
 		"developer" : "Hudson Soft",
 		"publisher" : "Hudson Soft",
 		"region" : "NTSC",
@@ -16,6 +17,7 @@ game_database = {
 	},
 	"677330f45a1249d24d003792a4674c93f836be57fd18b57125306efe82f3cda8" : {
 		"name" : "Battle Toads",
+		"file" : "battle_toads.nes",
 		"developer" : "Rare",
 		"publisher" : "Tradewest",
 		"region" : "NTSC",
@@ -30,6 +32,7 @@ game_database = {
 	},
 	"3e947ee62ab4c023f7d3cfe14c68c63371333f6c8a94dddf9a1947c55de0af17" : {
 		"name" : "Bionic Commando",
+		"file" : "bionic_commando.nes",
 		"developer" : "Capcom",
 		"publisher" : "Capcom",
 		"region" : "NTSC",
@@ -44,6 +47,7 @@ game_database = {
 	},
 	"4e779fb0a92ea9c85db72cd627f15d9d8569dba955bf38d37e07afe30d21515c" : {
 		"name" : "Castlevania",
+		"file" : "castlevania.nes",
 		"developer" : "Konami",
 		"publisher" : "Konami",
 		"region" : "NTSC",
@@ -58,6 +62,7 @@ game_database = {
 	},
 	"d5d40f35176974454dc47d8cffdbce7689afae49fa3238bbec064ab26ff4f953" : {
 		"name" : "Contra",
+		"file" : "contra.nes",
 		"developer" : "Konami",
 		"publisher" : "Konami",
 		"region" : "NTSC",
@@ -72,6 +77,7 @@ game_database = {
 	},
 	"27b5a635df33ed57ed339dfc7fd62fc603b39c1d1603adb5cdc3562a0b0d555b" : {
 		"name" : "Mega Man 2",
+		"file" : "mega_man_2.nes",
 		"developer" : "Capcom",
 		"publisher" : "Capcom",
 		"region" : "NTSC",
@@ -87,6 +93,7 @@ game_database = {
 
 	"a5dfd034038280e83a25ebd5422358d3a051188b7d02436b2f76e90403dec2e8" : {
 		"name" : "Ninja Gaiden",
+		"file" : "ninja_gaiden.nes",
 		"developer" : "Tecmo",
 		"publisher" : "Tecmo",
 		"region" : "NTSC",
@@ -101,6 +108,7 @@ game_database = {
 	},
 	"f61548fdf1670cffefcc4f0b7bdcdd9eaba0c226e3b74f8666071496988248de" : {
 		"name" : "Super Mario Bros.",
+		"file" : "super_mario_bros.nes",
 		"developer" : "Nintendo",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",
@@ -115,6 +123,7 @@ game_database = {
 	},
 	"4377a7f5e6eb50bdd2ac6f249bf1a7085500aca8eb41f38545c3a2731c51a579" : {
 		"name" : "Super Mario Bros. 3",
+		"file" : "super_mario_bros_3.nes",
 		"developer" : "Nintendo",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",

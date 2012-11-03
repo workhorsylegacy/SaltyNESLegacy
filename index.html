@@ -56,7 +56,7 @@
 				} else if(message_event.data.split(':')[0] == 'get_gamepad_status') {
 					var status = message_event.data.split(':')[1];
 					if(status == "yes") {
-						$('#gamepad_indicator')[0].style.display = 'inline';
+						$('#gamepad_indicator')[0].style.display = '';
 					} else {
 						$('#gamepad_indicator')[0].style.display = 'none';
 					}
@@ -81,6 +81,10 @@
 					
 					// Get the rom sha256
 					nacl_nes.postMessage('get_sha256');
+			
+					$('#game_selector')[0].style.display = 'none';
+					$('#game_info')[0].style.display = '';
+					$('#top_controls')[0].style.display = '';
 			
 					var debug = $('#debug')[0];
 					debug.innerHTML = message_event.data;
@@ -113,6 +117,12 @@
 				gamepadInterval = setInterval(function() {
 					nacl_nes.postMessage('get_gamepad_status');
 				}, 2000);
+			
+				var game_selector = $('#game_selector')[0];
+				for(var key in game_database) {
+					var game = game_database[key];
+					game_selector.innerHTML += "<a href=\"" + game['name'] + "\" onclick=\"play_game('" + game['file'] + "'); return false;\"><div style=\"float:left; margin: 10px; height: 320px;\">" + game['name'] + "<br /><img src=\"" + game["img"] + "\" width=\"200\" /></div></a>";
+				}
 			}
 
 			function pageDidUnload() {
@@ -155,6 +165,10 @@
 					}
 				});
 			}
+			
+			function play_game(file_name) {
+				load_rom('roms/' + file_name);
+			}
 
 		</script>
 		<div style="float: left;">
@@ -176,7 +190,7 @@
 				<b>Gamepad is connected</b>
 			</p>
 
-			<p>
+			<p id="game_info" style="display: none;">
 				<b>Game:</b><br />
 				Name: <span  id="game_name">...</span><br />
 				Developer: <span  id="game_developer">...</span><br />
@@ -192,32 +206,17 @@
 		</div>
 
 		<div id="listener" style="text-align: center;">
-			<div>
-				<select id="game_selector" disabled="disabled">
-					<option id="none">Select a game to play ...</option>
-					<option id="castlevania_1.nes">Castlevania</option>
-					<option id="contra.nes">Contra</option>
-					<option id="dd.nes">Double Dragon</option>
-					<option id="KidIcaru.nes">Kid Icarus</option>
-					<option id="Kirby's Adventure.nes">Kirby's Adventure</option>
-					<option id="zelda.nes">Legend of Zelda, The</option>
-					<option id="Little Nemo - The Dream Master.nes">Little Nemo - The Dream Master</option>
-					<option id="MEGAMAN2.NES">Mega Man 2</option>
-					<option id="metalgear.nes">Meta Gear</option>
-					<option id="METROID.NES">Metroid</option>
-					<option id="NinjaGa.nes">Ninja Gaiden</option>
-					<option id="PunchOut.nes">Punch Out</option>
-					<option id="Shatterhand.nes">Shatter Hand</option>
-					<option id="Strider.nes">Strider</option>
-					<option id="mario.nes">Super Mario Brothers</option>
-					<option id="smb3.nes">Super Mario Brothers 3</option>
-					<option id="TETRIS.NES">Tetris</option>
-				</select>
+			<div id="top_controls" style="display: none;">
 				<button id="pause" disabled="disabled">Pause</button>
 				zoom: 
 				<button id="zoom_out" disabled="disabled">-</button>
 				<button id="zoom_in" disabled="disabled">+</button>
 			</div>
+
+			<div id="game_selector" style="background-color: #000000;">
+				
+			</div>
+
 			<embed name="nacl_module"
 				id="NaclNesApp"
 				width=256 height=240
@@ -296,30 +295,6 @@
 				}
 
 				return false;
-			});
-
-			// Load a game when one is selected
-			$('#game_selector').change(function() {
-				var id = $(this).find('option:selected').attr('id');
-				if(id == 'none') return;
-
-				$('#pause').attr('disabled', true);
-				$('#pause').text('Pause');
-
-				if(paintInterval != null) {
-					clearInterval(paintInterval);
-					paintInterval = null;
-				}
-
-				if(debugInterval != null) {
-					clearInterval(debugInterval);
-					debugInterval = null;
-				}
-			
-				if(is_running) {
-					nacl_nes.postMessage('quit');
-				}
-				load_rom('roms/' + id);
 			});
 
 			var listener = $('#listener')[0];
