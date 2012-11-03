@@ -1,5 +1,104 @@
 
 game_database = {
+	"89dcd466e5abf87f88227c28edfa1e4c7e2040d6fb324f0d3c42405f25b97803" : {
+		"name" : "Adventure Island",
+		"developer" : "Hudson Soft",
+		"publisher" : "Hudson Soft",
+		"region" : "NTSC",
+		"release_date" : "1988-09",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 3,
+		"prog_rom_pages" : 2,
+		"char_rom_pages" : 8,
+		"link" : "http://en.wikipedia.org/wiki/Adventure_Island_(video_game)",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/3/3c/Adventureisland.jpg"
+	},
+	"677330f45a1249d24d003792a4674c93f836be57fd18b57125306efe82f3cda8" : {
+		"name" : "Battle Toads",
+		"developer" : "Rare",
+		"publisher" : "Tradewest",
+		"region" : "NTSC",
+		"release_date" : "1991-06",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 7,
+		"prog_rom_pages" : 16,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Battle_Toads",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/e/e8/Battletoads_Coverart.png"
+	},
+	"3e947ee62ab4c023f7d3cfe14c68c63371333f6c8a94dddf9a1947c55de0af17" : {
+		"name" : "Bionic Commando",
+		"developer" : "Capcom",
+		"publisher" : "Capcom",
+		"region" : "NTSC",
+		"release_date" : "1988-12",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 16,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Bionic_Commando_%28Nintendo_Entertainment_System%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/1/1e/BionicCommando.jpg"
+	},
+	"4e779fb0a92ea9c85db72cd627f15d9d8569dba955bf38d37e07afe30d21515c" : {
+		"name" : "Castlevania",
+		"developer" : "Konami",
+		"publisher" : "Konami",
+		"region" : "NTSC",
+		"release_date" : "1986-09-26",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 2,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Castlevania_%28video_game%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/2/24/Castlevania_NES_box_art.jpg"
+	},
+	"d5d40f35176974454dc47d8cffdbce7689afae49fa3238bbec064ab26ff4f953" : {
+		"name" : "Contra",
+		"developer" : "Konami",
+		"publisher" : "Konami",
+		"region" : "NTSC",
+		"release_date" : "1988-02",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 2,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Contra_%28video_game%29#Nintendo_Entertainment_System",
+		"img" : ""
+	},
+	"27b5a635df33ed57ed339dfc7fd62fc603b39c1d1603adb5cdc3562a0b0d555b" : {
+		"name" : "Mega Man 2",
+		"developer" : "Capcom",
+		"publisher" : "Capcom",
+		"region" : "NTSC",
+		"release_date" : "1988-12-24",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 16,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Mega_Man_2",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/b/be/Megaman2_box.jpg"
+	},
+
+	"a5dfd034038280e83a25ebd5422358d3a051188b7d02436b2f76e90403dec2e8" : {
+		"name" : "Ninja Gaiden",
+		"developer" : "Tecmo",
+		"publisher" : "Tecmo",
+		"region" : "NTSC",
+		"release_date" : "1988-12",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Ninja_Gaiden_%28Nintendo_Entertainment_System%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/9/9b/Ninja_Gaiden_%28NES%29.jpg"
+	},
 	"f61548fdf1670cffefcc4f0b7bdcdd9eaba0c226e3b74f8666071496988248de" : {
 		"name" : "Super Mario Bros.",
 		"developer" : "Nintendo",
@@ -10,7 +109,9 @@ game_database = {
 		"can_save" : false,
 		"mapper" : 0,
 		"prog_rom_pages" : 2,
-		"char_rom_pages" : 2
+		"char_rom_pages" : 2,
+		"link" : "http://en.wikipedia.org/wiki/Super_Mario_Bros.",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/0/03/Super_Mario_Bros._box.png"
 	},
 	"4377a7f5e6eb50bdd2ac6f249bf1a7085500aca8eb41f38545c3a2731c51a579" : {
 		"name" : "Super Mario Bros. 3",
@@ -22,7 +123,9 @@ game_database = {
 		"can_save" : false,
 		"mapper" : 4,
 		"prog_rom_pages" : 16,
-		"char_rom_pages" : 32
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Super_Mario_Bros._3",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/a/a5/Super_Mario_Bros._3_coverart.png"
 	}
 };
 
