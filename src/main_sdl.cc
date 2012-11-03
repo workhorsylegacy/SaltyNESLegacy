@@ -51,6 +51,7 @@ int main(int argc, char* argv[]) {
 	// Run the emulator
 	vNES vnes;
 	vnes.init(argv[1]);
+	vnes.pre_run_setup();
 	vnes.run();
 
 	// Clanup the SDL resources then exit
