@@ -1,0 +1,29 @@
+
+game_database = {
+	"f61548fdf1670cffefcc4f0b7bdcdd9eaba0c226e3b74f8666071496988248de" : {
+		"name" : "Super Mario Bros.",
+		"developer" : "Nintendo",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1985-11-17",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 0,
+		"prog_rom_pages" : 2,
+		"char_rom_pages" : 2
+	},
+	"4377a7f5e6eb50bdd2ac6f249bf1a7085500aca8eb41f38545c3a2731c51a579" : {
+		"name" : "Super Mario Bros. 3",
+		"developer" : "Nintendo",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1990-02-12",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 16,
+		"char_rom_pages" : 32
+	}
+};
+
+

@@ -168,8 +168,6 @@ instructions and invokes emulation of the PPU and pAPU.
 
 	// Emulates cpu instructions until stopped.
 	 void CPU::emulate(){
-
-
 		// NES Memory
 		// (when memory mappers switch ROM banks
 		// this will be written to, no need to

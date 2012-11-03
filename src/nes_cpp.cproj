@@ -88,5 +88,8 @@
       <Link>index.html</Link>
     </None>
     <None Include="sha256sum.h" />
+    <None Include="..\game_database.json">
+      <Link>game_database.json</Link>
+    </None>
   </ItemGroup>
 </Project>

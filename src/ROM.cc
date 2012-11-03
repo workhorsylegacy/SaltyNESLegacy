@@ -253,7 +253,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		log_to_browser("log: rom::load_from_data");
 
         // Get sha256 of the rom
-        string sha256 = sha256sum(data, length);
+        _sha256 = sha256sum(data, length);
+		log_to_browser("log: rom::sha256sum");
 
         // Read header:
         header = new short[16];
@@ -286,7 +287,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         printf("is_sram_on: %d\n", batteryRam);
         printf("is_trainer_on: %d\n", trainer);
         printf("mapper: %d\n", mapperType);
-        printf("sha256: %s\n", sha256.c_str());
+        printf("sha256: %s\n", _sha256.c_str());
 
         // Battery RAM?
         if (batteryRam) {

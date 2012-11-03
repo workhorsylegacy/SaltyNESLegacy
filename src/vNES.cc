@@ -72,10 +72,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 #endif
 
-    void vNES::run() {
-        // Can start painting:
-        started = true;
-
+    void vNES::pre_run_setup() {
         // Load ROM file:
         if(_rom_data == NULL) {
             log_to_browser("Loading ROM from file.");
@@ -99,6 +96,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             log_to_browser("Loading ROM from data.");
             nes->load_rom_from_data("rom_from_browser.nes", _rom_data, _rom_data_length);
         }
+    }
+
+    void vNES::run() {
+        // Can start painting:
+        started = true;
         
         if (nes->rom->isValid()) {
             // Set some properties:

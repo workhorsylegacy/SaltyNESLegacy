@@ -3,6 +3,7 @@
 	<head>
 		<title>NaclNES</title>
 		<script src="jquery-1.4.4.min.js" type="text/javascript"></script>
+		<script src="game_database.json" type="text/javascript"></script>
 	</head>
 	<body id="bodyId" onunload="pageDidUnload()">
 		<script type="text/javascript">
@@ -33,6 +34,19 @@
 					var debug = $('#debug')[0];
 					debug.innerHTML = 'FPS: ' + vfps + ', VFPS: ' + message_event.data.split(':')[1];
 					vfps = 0;
+				} else if(message_event.data.split(':')[0] == 'get_sha256') {
+					var sha256 = message_event.data.split(':')[1];
+					var has_fields = game_database[sha256] != undefined;
+					var fields = ["name", "developer", "publisher", "region", "release_date", 
+									"number_of_players", "can_save", "mapper"];
+
+					for(i=0; i<fields.length; i++) {
+						var field = fields[i];
+						var value = '?';
+						if(has_fields)
+							value = game_database[sha256][field];
+						$('#game_' + field)[0].innerHTML = value;
+					}
 				} else if(message_event.data.split(':')[0] == 'get_gamepad_status') {
 					var status = message_event.data.split(':')[1];
 					if(status == "yes") {
@@ -59,6 +73,9 @@
 					// Make the pause button clickable
 					$('#pause').attr('disabled', false);
 					
+					// Get the rom sha256
+					nacl_nes.postMessage('get_sha256');
+			
 					var debug = $('#debug')[0];
 					debug.innerHTML = message_event.data;
 				} else {
@@ -135,10 +152,23 @@
 
 		</script>
 		<div style="float: left;">
-			<b>Status:</b><br />
-			<span id="debug">
-			Debug messages will be printed here
-			</span>
+			<p>
+				<b>Status:</b><br />
+				<span id="debug">Debug messages will be printed here</span>
+			</p>
+
+			<p>
+				<b>Game:</b><br />
+				Name: <span  id="game_name">...</span><br />
+				Developer: <span  id="game_developer">...</span><br />
+				Publisher: <span  id="game_publisher">...</span><br />
+				Region: <span  id="game_region">...</span><br />
+				Release date: <span  id="game_release_date">...</span><br />
+				Number of players: <span  id="game_number_of_players">...</span><br />
+				Can save: <span  id="game_can_save">...</span><br />
+				Mapper: <span  id="game_mapper">...</span>
+			</p>
+
 			<p>
 				<b>Controls:</b><br />
 				Enter = Start<br />
@@ -147,6 +177,7 @@
 				X = A<br />
 				Arrow keys for the D-Pad
 			</p>
+
 			<p id="gamepad_indicator" style="display: none;">
 				<b>Gamepad is connected</b>
 			</p>

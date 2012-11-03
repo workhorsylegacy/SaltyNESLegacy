@@ -222,9 +222,15 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 			// Run the ROM
 			vnes = new vNES();
 			vnes->init_data((uint8_t*) rom_data, (size_t)ROM_DATA_LENGTH, this);
-			pthread_create(&thread_, NULL, start_main_loop, this);
+			vnes->pre_run_setup();
 			log_to_browser("running");
+			pthread_create(&thread_, NULL, start_main_loop, this);
 		}
+	} else if(message == "get_sha256") {
+		stringstream out;
+		out << "get_sha256:";
+		out << this->vnes->nes->memMapper->rom->_sha256;
+		log_to_browser(out.str());
 	} else {
 		stringstream out;
 		out << "unknown message:";

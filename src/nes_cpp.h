@@ -1239,6 +1239,7 @@ public:
     bool fourScreen;
     int mapperType;
     string fileName;
+    string _sha256;
     bool enableSave;
     bool valid;
 
@@ -1322,6 +1323,7 @@ public:
 #ifdef NACL
     void init_data(uint8_t* rom_data, size_t length, NaclNes* nacl_nes);
 #endif
+    void pre_run_setup();
     void run();
     void stop();
     void readParams();
