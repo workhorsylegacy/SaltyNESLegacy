@@ -4,6 +4,45 @@
 		<title>NaclNES</title>
 		<script src="jquery-1.4.4.min.js" type="text/javascript"></script>
 		<script src="game_database.json" type="text/javascript"></script>
+		<style>
+			html, body {
+				height: 100%;
+				background-color: #FFFFFF;
+			}
+			
+			nav {
+				float: left;
+				min-height: 100%;
+				width: 200px;
+			}
+			
+			.screen_hidden {
+				background-color: #FFFFFF;
+				width: 10px;
+				height: 10px;
+			}
+			
+			.screen_running {
+				background-color: #000000;
+				width: 256px;
+				height: 240px;
+			}
+			
+			.game_icon {
+				float:left;
+				margin: 10px;
+				padding: 0px;
+				width: 120px;
+				height: 177px;
+			}
+
+			.game_icon img {
+				width: 100px;
+				height: 137px;
+				margin: 0 auto;
+				padding: 0px;
+			}
+		</style>
 	</head>
 	<body id="bodyId" onunload="pageDidUnload()">
 		<script type="text/javascript">
@@ -35,24 +74,7 @@
 					debug.innerHTML = 'FPS: ' + vfps + ', VFPS: ' + message_event.data.split(':')[1];
 					vfps = 0;
 				} else if(message_event.data.split(':')[0] == 'get_sha256') {
-					// Fill in the info for this game
-					var sha256 = message_event.data.split(':')[1];
-					var has_fields = game_database[sha256] != undefined;
-					var fields = ["name", "developer", "publisher", "region", "release_date", 
-									"number_of_players", "can_save", "mapper"];
-					for(i=0; i<fields.length; i++) {
-						var field = fields[i];
-						var value = '?';
-						if(has_fields)
-							value = game_database[sha256][field];
-						$('#game_' + field)[0].innerHTML = value;
-					}
-
-					// Fill in the image and link to wikipedia
-					if(has_fields) {
-						$('#game_link')[0].innerHTML = "<a href=\"" + game_database[sha256]['link'] + "\">Wikipedia</a>";
-						$('#game_img')[0].innerHTML = "<img src=\"" + game_database[sha256]['img'] + "\" width=\"200\"/>";
-					}
+					// FIXME: remove this
 				} else if(message_event.data.split(':')[0] == 'get_gamepad_status') {
 					var status = message_event.data.split(':')[1];
 					if(status == "yes") {
@@ -81,9 +103,9 @@
 					
 					// Get the rom sha256
 					nacl_nes.postMessage('get_sha256');
-			
-					$('#game_selector')[0].style.display = 'none';
-					$('#game_info')[0].style.display = '';
+
+					$('#game_info')[0].style.display = 'none';
+					$('#NaclNesApp')[0].className = 'screen_running';
 					$('#top_controls')[0].style.display = '';
 			
 					var debug = $('#debug')[0];
@@ -109,19 +131,20 @@
 
 			function handleLoadEnd() {
 				nacl_nes = $('#NaclNesApp')[0];
-			
-				$('#game_selector').attr('disabled', false);
+
 				var debug = $('#debug')[0];
 				debug.innerHTML = 'Loaded';
 			
+				// Start getting the gamepad status
 				gamepadInterval = setInterval(function() {
 					nacl_nes.postMessage('get_gamepad_status');
 				}, 2000);
-			
+
+				// Load all the games into the selector
 				var game_selector = $('#game_selector')[0];
 				for(var key in game_database) {
 					var game = game_database[key];
-					game_selector.innerHTML += "<a href=\"" + game['name'] + "\" onclick=\"play_game('" + game['file'] + "'); return false;\"><div style=\"float:left; margin: 10px; height: 320px;\">" + game['name'] + "<br /><img src=\"" + game["img"] + "\" width=\"200\" /></div></a>";
+					game_selector.innerHTML += "<a href=\"" + game['name'] + "\" onclick=\"show_game_info('" + key + "'); return false;\"><div class=\"game_icon\"><img src=\"" + game["img"] + "\" /><br />" + game['name'] + "</div></a>";
 				}
 			}
 
@@ -165,13 +188,53 @@
 					}
 				});
 			}
+
+			function show_game_info(sha256) {
+				$('#game_selector')[0].style.display = 'none';
+				$('#game_info')[0].style.display = '';
+
+				// Fill in the info for this game
+				var has_fields = game_database[sha256] != undefined;
+				var fields = ["name", "developer", "publisher", "region", "release_date", 
+								"number_of_players", "can_save", "mapper", "char_rom_pages", "prog_rom_pages"];
+				for(i=0; i<fields.length; i++) {
+					var field = fields[i];
+					var value = '?';
+					if(has_fields)
+						value = game_database[sha256][field];
+					$('#game_' + field)[0].innerHTML = value;
+				}
+
+				// Fill in the image and link to wikipedia
+				if(has_fields) {
+					$('#game_bread_crumb')[0].innerHTML = game_database[sha256]['name'];
+					$('#game_link')[0].innerHTML = "<a href=\"" + game_database[sha256]['link'] + "\">Wikipedia</a>";
+					$('#game_img')[0].innerHTML = "<img src=\"" + game_database[sha256]['img'] + "\" width=\"200\"/>";
+					$('#game_play_button').unbind('click');
+					$('#game_play_button').click(function() {
+						play_game(game_database[sha256]['file']);
+					});
+				}
+			}
+
+			function show_games() {
+				var fields = ["name", "developer", "publisher", "region", "release_date", 
+								"number_of_players", "can_save", "mapper", "char_rom_pages", "prog_rom_pages", 
+								"bread_crumb", "link", "img"];
+				for(i=0; i<fields.length; i++) {
+					$('#game_' + fields[i])[0].innerHTML = '';
+				}
+
+				$('#game_selector')[0].style.display = '';
+				$('#game_info')[0].style.display = 'none';
+			}
 			
 			function play_game(file_name) {
 				load_rom('roms/' + file_name);
 			}
 
 		</script>
-		<div style="float: left;">
+		<nav>
 			<p>
 				<b>Status:</b><br />
 				<span id="debug">Debug messages will be printed here</span>
@@ -183,27 +246,13 @@
 				Ctrl = Select<br />
 				Z = B<br />
 				X = A<br />
-				Arrow keys for the D-Pad
+				Arrow keys = D-Pad
 			</p>
 
 			<p id="gamepad_indicator" style="display: none;">
 				<b>Gamepad is connected</b>
 			</p>
-
-			<p id="game_info" style="display: none;">
-				<b>Game:</b><br />
-				Name: <span  id="game_name">...</span><br />
-				Developer: <span  id="game_developer">...</span><br />
-				Publisher: <span  id="game_publisher">...</span><br />
-				Region: <span  id="game_region">...</span><br />
-				Release date: <span  id="game_release_date">...</span><br />
-				Number of players: <span  id="game_number_of_players">...</span><br />
-				Can save: <span  id="game_can_save">...</span><br />
-				Mapper: <span  id="game_mapper">...</span><br />
-				Link: <span  id="game_link">...</span><br />
-				Image: <br /><span  id="game_img">...</span>
-			</p>
-		</div>
+		</nav>
 
 		<div id="listener" style="text-align: center;">
 			<div id="top_controls" style="display: none;">
@@ -214,13 +263,28 @@
 			</div>
 
 			<div id="game_selector" style="background-color: #000000;">
-				
+			</div>
+
+			<div id="game_info" style="text-align: left; display: none;">
+				<a href="back" onclick="show_games(); return false;">Games</a>  &gt;  <span  id="game_bread_crumb">...</span>
+				<h2><span  id="game_name">...</span></h2>
+				<button id="game_play_button" style="float: right; width: 100px; height: 50px; margin: 100px;">Play</button>
+				<span  id="game_img">...</span><br />
+				Developer: <span  id="game_developer">...</span><br />
+				Publisher: <span  id="game_publisher">...</span><br />
+				Region: <span  id="game_region">...</span><br />
+				Release date: <span  id="game_release_date">...</span><br />
+				Number of players: <span  id="game_number_of_players">...</span><br />
+				Can save: <span  id="game_can_save">...</span><br />
+				Prog ROM pages: <span  id="game_prog_rom_pages">...</span><br />
+				Char ROM pages: <span  id="game_char_rom_pages">...</span><br />
+				Mapper: <span  id="game_mapper">...</span><br />
+				Link: <span  id="game_link">...</span><br />
 			</div>
 
 			<embed name="nacl_module"
 				id="NaclNesApp"
-				width=256 height=240
-				style="background-color: #000000;"
+				class="screen_hidden"
 				src="newlib/nacl_nes.nmf"
 				type="application/x-nacl" />
 		</div>
