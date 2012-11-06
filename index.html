@@ -36,6 +36,10 @@
 				height: 177px;
 			}
 
+			.broken {
+				background-color: #FF0000;
+			}
+
 			.game_icon img {
 				width: 100px;
 				height: 137px;
@@ -144,7 +148,8 @@
 				var game_selector = $('#game_selector')[0];
 				for(var key in game_database) {
 					var game = game_database[key];
-					game_selector.innerHTML += "<a href=\"" + game['name'] + "\" onclick=\"show_game_info('" + key + "'); return false;\"><div class=\"game_icon\"><img src=\"" + game["img"] + "\" /><br />" + game['name'] + "</div></a>";
+					var icon_class = game['is_broken'] ? 'game_icon broken' : 'game_icon';
+					game_selector.innerHTML += "<a href=\"" + game['name'] + "\" onclick=\"show_game_info('" + key + "'); return false;\"><div class=\"" + icon_class + "\"><img src=\"" + game["img"] + "\" /><br />" + game['name'] + "</div></a>";
 				}
 			}
 
@@ -218,6 +223,7 @@
 			}
 
 			function show_games() {
+				// Empty the fields fow showing a game
 				var fields = ["name", "developer", "publisher", "region", "release_date", 
 								"number_of_players", "can_save", "mapper", "char_rom_pages", "prog_rom_pages", 
 								"bread_crumb", "link", "img"];
@@ -225,6 +231,7 @@
 					$('#game_' + fields[i])[0].innerHTML = '';
 				}
 
+				// Show all the games
 				$('#game_selector')[0].style.display = '';
 				$('#game_info')[0].style.display = 'none';
 			}

@@ -13,7 +13,8 @@ game_database = {
 		"prog_rom_pages" : 2,
 		"char_rom_pages" : 8,
 		"link" : "http://en.wikipedia.org/wiki/Adventure_Island_(video_game)",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/3/3c/Adventureisland.jpg"
+		"img" : "http://upload.wikimedia.org/wikipedia/en/3/3c/Adventureisland.jpg",
+		"is_broken" : false
 	},
 	"677330f45a1249d24d003792a4674c93f836be57fd18b57125306efe82f3cda8" : {
 		"name" : "Battle Toads",
@@ -28,7 +29,8 @@ game_database = {
 		"prog_rom_pages" : 16,
 		"char_rom_pages" : 0,
 		"link" : "http://en.wikipedia.org/wiki/Battle_Toads",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/e/e8/Battletoads_Coverart.png"
+		"img" : "http://upload.wikimedia.org/wikipedia/en/e/e8/Battletoads_Coverart.png",
+		"is_broken" : false
 	},
 	"3e947ee62ab4c023f7d3cfe14c68c63371333f6c8a94dddf9a1947c55de0af17" : {
 		"name" : "Bionic Commando",
@@ -43,7 +45,24 @@ game_database = {
 		"prog_rom_pages" : 16,
 		"char_rom_pages" : 0,
 		"link" : "http://en.wikipedia.org/wiki/Bionic_Commando_%28Nintendo_Entertainment_System%29",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/1/1e/BionicCommando.jpg"
+		"img" : "http://upload.wikimedia.org/wikipedia/en/1/1e/BionicCommando.jpg",
+		"is_broken" : false
+	},
+	"00b2c4b4caf3f1e78ec8e4ce93d43fff55db0451f28016119b468ce302fc63e6" : {
+		"name" : "Bubble Bobble",
+		"file" : "bubble_bobble.nes",
+		"developer" : "Taito",
+		"publisher" : "Taito",
+		"region" : "NTSC",
+		"release_date" : "1986",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 65,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "",
+		"img" : "",
+		"is_broken" : false
 	},
 	"4e779fb0a92ea9c85db72cd627f15d9d8569dba955bf38d37e07afe30d21515c" : {
 		"name" : "Castlevania",
@@ -58,7 +77,8 @@ game_database = {
 		"prog_rom_pages" : 8,
 		"char_rom_pages" : 0,
 		"link" : "http://en.wikipedia.org/wiki/Castlevania_%28video_game%29",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/2/24/Castlevania_NES_box_art.jpg"
+		"img" : "http://upload.wikimedia.org/wikipedia/en/2/24/Castlevania_NES_box_art.jpg",
+		"is_broken" : false
 	},
 	"d5d40f35176974454dc47d8cffdbce7689afae49fa3238bbec064ab26ff4f953" : {
 		"name" : "Contra",
@@ -73,7 +93,88 @@ game_database = {
 		"prog_rom_pages" : 8,
 		"char_rom_pages" : 0,
 		"link" : "http://en.wikipedia.org/wiki/Contra_%28video_game%29#Nintendo_Entertainment_System",
-		"img" : ""
+		"img" : "",
+		"is_broken" : false
+	},
+	"eb04309bd8be3d768d8b7fcba82244f4672efc9a9fdf5906661d6ac07a31f016" : {
+		"name" : "Excite Bike",
+		"file" : "excite_bike.nes",
+		"developer" : "Nintendo RES1",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1984-11-30",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 0,
+		"prog_rom_pages" : 1,
+		"char_rom_pages" : 2,
+		"link" : "http://en.wikipedia.org/wiki/Excite_bike",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/f/f8/Excitebike_cover.jpg",
+		"is_broken" : false
+	},
+	"979247b30dc94a8e305b430725376a47d3db265e7ff45b271368c300b493f8c0" : {
+		"name" : "Kirby's Adventure",
+		"file" : "kirby's_adventure.nes",
+		"developer" : "HAL Laboratory",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1993-03-26",
+		"number_of_players" : 1,
+		"can_save" : true,
+		"mapper" : 4,
+		"prog_rom_pages" : 32,
+		"char_rom_pages" : 64,
+		"link" : "http://en.wikipedia.org/wiki/Kirbys_adventure",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/a/ae/Kirby%27s_Adventure_Coverart.png",
+		"is_broken" : true
+	},
+	"6d9958dc0d3b72baa852d6fcd74fcba94e6e8b1ebdd00ef9c0437fa9da0a3ab3" : {
+		"name" : "Little Nemo: The Dream Master",
+		"file" : "little_nemo.nes",
+		"developer" : "Capcom",
+		"publisher" : "Capcom",
+		"region" : "NTSC",
+		"release_date" : "1990-09",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Little_Nemo:_The_Dream_Master",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/0/0b/Littlenemocover.png",
+		"is_broken" : true
+	},
+	"8f72dc2e98572eb4ba7c3a902bca5f69c448fc4391837e5f8f0d4556280440ac" : {
+		"name" : "The Legend of Zelda",
+		"file" : "legend_of_zelda.nes",
+		"developer" : "Nintendo EAD",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1986-02-21",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/The_Legend_of_Zelda_%28video_game%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/4/41/Legend_of_zelda_cover_%28with_cartridge%29_gold.png",
+		"is_broken" : true
+	},
+	"1c8885892051d79db757746e2281f417cd5b156a86988b0010ad95d7bd4276c5" : {
+		"name" : "Mega Man 1",
+		"file" : "mega_man.nes",
+		"developer" : "Capcom",
+		"publisher" : "Capcom",
+		"region" : "NTSC",
+		"release_date" : "1987-12",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 66,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Mega_Man_%28video_game%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/a/a7/Megaman_nes_pal.jpg",
+		"is_broken" : false
 	},
 	"27b5a635df33ed57ed339dfc7fd62fc603b39c1d1603adb5cdc3562a0b0d555b" : {
 		"name" : "Mega Man 2",
@@ -88,9 +189,59 @@ game_database = {
 		"prog_rom_pages" : 16,
 		"char_rom_pages" : 0,
 		"link" : "http://en.wikipedia.org/wiki/Mega_Man_2",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/b/be/Megaman2_box.jpg"
+		"img" : "http://upload.wikimedia.org/wikipedia/en/b/be/Megaman2_box.jpg",
+		"is_broken" : false
+	},
+	"eddbe571cf0a201ba9d090fbace9843c9c9dd4053051649f2575b088752f4675" : {
+		"name" : "Mega Man 3",
+		"file" : "mega_man_3.nes",
+		"developer" : "Capcom",
+		"publisher" : "Capcom",
+		"region" : "NTSC",
+		"release_date" : "1990-09-28",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 16,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Mega_Man_3",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/4/49/Megaman3_box.jpg",
+		"is_broken" : false
 	},
 
+	"16becd6a0ad1821111521a5f74f4c0df5c6fca8a51d2d737009d47c38ce9643e" : {
+		"name" : "Metal Gear",
+		"file" : "metal_gear.nes",
+		"developer" : "Konami",
+		"publisher" : "Ultra Games",
+		"region" : "NTSC",
+		"release_date" : "1988-06",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 2,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Metal_Gear_%28video_game%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/b/bd/Metal_Gear_cover.jpg",
+		"is_broken" : false
+	},
+
+	"c5eea06e1e1128b576bd789f1a4f63bb154d6d31579c2f319382fb77a72d34a6" : {
+		"name" : "Metroid",
+		"file" : "metroid.nes",
+		"developer" : "Nintendo R&D1",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1986-08-06",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Metroid_%28video_game%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/5/5d/Metroid_boxart.jpg",
+		"is_broken" : false
+	},
 	"a5dfd034038280e83a25ebd5422358d3a051188b7d02436b2f76e90403dec2e8" : {
 		"name" : "Ninja Gaiden",
 		"file" : "ninja_gaiden.nes",
@@ -104,7 +255,72 @@ game_database = {
 		"prog_rom_pages" : 8,
 		"char_rom_pages" : 32,
 		"link" : "http://en.wikipedia.org/wiki/Ninja_Gaiden_%28Nintendo_Entertainment_System%29",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/9/9b/Ninja_Gaiden_%28NES%29.jpg"
+		"img" : "http://upload.wikimedia.org/wikipedia/en/9/9b/Ninja_Gaiden_%28NES%29.jpg",
+		"is_broken" : false
+	},
+	"93f93d55eccb53a580e2f0031ea9563c01dcfecd0231a3e7e3119ead986d88f1" : {
+		"name" : "Ninja Gaiden 2",
+		"file" : "ninja_gaiden_2.nes",
+		"developer" : "Tecmo",
+		"publisher" : "Tecmo",
+		"region" : "NTSC",
+		"release_date" : "1990-04-06",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Ninja_Gaiden_II:_The_Dark_Sword_of_Chaos",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/6/66/Ninja_Gaiden_II-_The_Dark_Sword_of_Chaos_boxart.jpg",
+		"is_broken" : true
+	},
+	"68777c762b122a99eeb7c9adeea77f64b40a53a710f002c0e8e4e666db1481c5" : {
+		"name" : "Punch Out",
+		"file" : "punch_out.nes",
+		"developer" : "Nintendo R&D3",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1987-10",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 9,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Punch-Out!!_%28NES%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/3/3d/Punch-out_mrdream_boxart.PNG",
+		"is_broken" : false
+	},
+	"8afaa5e4cdf76989b5b337828163500e80bf184590a34ec150a73aa544cff78d" : {
+		"name" : "Shatter Hand",
+		"file" : "shatter_hand.nes",
+		"developer" : "Natsume",
+		"publisher" : "Jaleco",
+		"region" : "NTSC",
+		"release_date" : "1991-10-26",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Shatterhand",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/7/7a/Shatterhand_cover.jpg",
+		"is_broken" : false
+	},
+	"79b26b55f9da654efda520481b0401e4679408652445427f238318eb599fe992" : {
+		"name" : "River City Ransom",
+		"file" : "river_city_ransom.nes",
+		"developer" : "Technōs Japan",
+		"publisher" : "Technōs Japan",
+		"region" : "NTSC",
+		"release_date" : "1989-04-25",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/River_City_Ransom",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/4/46/River_City_Ransom-front.jpg",
+		"is_broken" : true
 	},
 	"f61548fdf1670cffefcc4f0b7bdcdd9eaba0c226e3b74f8666071496988248de" : {
 		"name" : "Super Mario Bros.",
@@ -119,7 +335,8 @@ game_database = {
 		"prog_rom_pages" : 2,
 		"char_rom_pages" : 2,
 		"link" : "http://en.wikipedia.org/wiki/Super_Mario_Bros.",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/0/03/Super_Mario_Bros._box.png"
+		"img" : "http://upload.wikimedia.org/wikipedia/en/0/03/Super_Mario_Bros._box.png",
+		"is_broken" : false
 	},
 	"4377a7f5e6eb50bdd2ac6f249bf1a7085500aca8eb41f38545c3a2731c51a579" : {
 		"name" : "Super Mario Bros. 3",
@@ -134,7 +351,8 @@ game_database = {
 		"prog_rom_pages" : 16,
 		"char_rom_pages" : 32,
 		"link" : "http://en.wikipedia.org/wiki/Super_Mario_Bros._3",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/a/a5/Super_Mario_Bros._3_coverart.png"
+		"img" : "http://upload.wikimedia.org/wikipedia/en/a/a5/Super_Mario_Bros._3_coverart.png",
+		"is_broken" : true
 	}
 };
 
