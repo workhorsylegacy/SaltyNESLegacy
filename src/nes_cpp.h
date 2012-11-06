@@ -80,6 +80,7 @@ class CPU;
 class CpuInfo;
 class FileLoader;
 class KbInputHandler;
+class Logger;
 class Mapper001;
 class Mapper002;
 class Mapper003;
@@ -595,6 +596,20 @@ public:
      void reset();
 };
 
+class Logger {
+	static string _file_name;
+	static ofstream* _log;
+	static size_t _length;
+	static size_t _log_number;
+	static bool _is_on;
+
+public:
+	static void init(string file_name);
+	static void create_log_file();
+	static void write(string message);
+	static void flush();
+};
+
 class Memory {
 public:
 	NES* nes;
@@ -664,7 +679,7 @@ public:
     void load1kVromBank(int bank1k, int address);
     void load2kVromBank(int bank2k, int address);
     void load8kRomBank(int bank8k, int address);
-     void clockIrqCounter();
+     virtual void clockIrqCounter();
      void latchAccess(int address);
      int syncV();
      int syncH(int scanline);

@@ -214,6 +214,8 @@ instructions and invokes emulation of the PPU and pAPU.
 		bool asApplet = Globals::appletMode;
 		stopRunning = false;
 
+		//int _counter = 0;
+
 		while(!stopRunning){
 			
 			// Sleep a second if we are paused
@@ -273,6 +275,36 @@ instructions and invokes emulation of the PPU and pAPU.
 
 			short z = mmap->load(REG_PC+1);
 			opinf = (*opdata)[z];
+			/*
+			stringstream out;
+			if((opinf&0xFF) <= 0xF) {
+				out << _counter << " op: 0x0" << hex << (opinf&0xFF);
+			} else {
+				out << _counter << " op: 0x" << hex << (opinf&0xFF);
+			}
+			// CPU Registers:
+			out << dec;
+			out << "\ta:" << REG_ACC;
+			out << "\tx:" << REG_X;
+			out << "\ty:" << REG_Y;
+			out << "\tst:" << REG_STATUS;
+			out << "\tpc:" << REG_PC;
+			out << "\tsp:" << REG_SP;
+
+			// Status flags:
+			out << " status: ";
+			out << F_CARRY;
+			out << F_ZERO;
+			out << F_INTERRUPT;
+			out << F_DECIMAL;
+			out << F_BRK;
+			out << F_NOTUSED;
+			out << F_OVERFLOW;
+			out << F_SIGN;
+			out << "\n";
+			Logger::write(out.str());
+			Logger::flush();
+			*/
 			cycleCount = (opinf>>24);
 			cycleAdd = 0;
 
@@ -1249,6 +1281,7 @@ instructions and invokes emulation of the PPU and pAPU.
 				papu->clockFrameCounter(cycleCount);
 			}
 			
+			//_counter++;
 		} // End of run loop.
 
 		// Save registers:

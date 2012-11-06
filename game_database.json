@@ -112,6 +112,22 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/f/f8/Excitebike_cover.jpg",
 		"is_broken" : false
 	},
+	"33406ecbc6863c07f8cbca1b635fcd440352d63cf1e5335016e3ce9d0335c84c" : {
+		"name" : "Hammerin' Harry",
+		"file" : "hammerin'_harry.nes",
+		"developer" : "Irem",
+		"publisher" : "Irem",
+		"region" : "NTSC",
+		"release_date" : "1990",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Hammerin%27_Harry",
+		"img" : "",
+		"is_broken" : false
+	},
 	"979247b30dc94a8e305b430725376a47d3db265e7ff45b271368c300b493f8c0" : {
 		"name" : "Kirby's Adventure",
 		"file" : "kirby's_adventure.nes",
@@ -142,7 +158,7 @@ game_database = {
 		"char_rom_pages" : 32,
 		"link" : "http://en.wikipedia.org/wiki/Little_Nemo:_The_Dream_Master",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/0/0b/Littlenemocover.png",
-		"is_broken" : true
+		"is_broken" : false
 	},
 	"8f72dc2e98572eb4ba7c3a902bca5f69c448fc4391837e5f8f0d4556280440ac" : {
 		"name" : "The Legend of Zelda",
@@ -208,7 +224,6 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/4/49/Megaman3_box.jpg",
 		"is_broken" : false
 	},
-
 	"16becd6a0ad1821111521a5f74f4c0df5c6fca8a51d2d737009d47c38ce9643e" : {
 		"name" : "Metal Gear",
 		"file" : "metal_gear.nes",
@@ -225,7 +240,22 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/b/bd/Metal_Gear_cover.jpg",
 		"is_broken" : false
 	},
-
+	"0c38fe5bf1d049b868f4d746cf804b18852ad8b2724c58603bed85e22418c0d6" : {
+		"name" : "Metal Storm",
+		"file" : "metal_storm.nes",
+		"developer" : "Irem",
+		"publisher" : "Irem",
+		"region" : "NTSC",
+		"release_date" : "1991-02",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 64,
+		"link" : "http://en.wikipedia.org/wiki/Metal_Storm_%28video_game%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/0/0c/Metal_Storm.jpg",
+		"is_broken" : false
+	},
 	"c5eea06e1e1128b576bd789f1a4f63bb154d6d31579c2f319382fb77a72d34a6" : {
 		"name" : "Metroid",
 		"file" : "metroid.nes",
@@ -272,7 +302,7 @@ game_database = {
 		"char_rom_pages" : 32,
 		"link" : "http://en.wikipedia.org/wiki/Ninja_Gaiden_II:_The_Dark_Sword_of_Chaos",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/6/66/Ninja_Gaiden_II-_The_Dark_Sword_of_Chaos_boxart.jpg",
-		"is_broken" : true
+		"is_broken" : false
 	},
 	"68777c762b122a99eeb7c9adeea77f64b40a53a710f002c0e8e4e666db1481c5" : {
 		"name" : "Punch Out",
@@ -288,7 +318,7 @@ game_database = {
 		"char_rom_pages" : 32,
 		"link" : "http://en.wikipedia.org/wiki/Punch-Out!!_%28NES%29",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/3/3d/Punch-out_mrdream_boxart.PNG",
-		"is_broken" : false
+		"is_broken" : true
 	},
 	"8afaa5e4cdf76989b5b337828163500e80bf184590a34ec150a73aa544cff78d" : {
 		"name" : "Shatter Hand",
@@ -352,7 +382,7 @@ game_database = {
 		"char_rom_pages" : 32,
 		"link" : "http://en.wikipedia.org/wiki/Super_Mario_Bros._3",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/a/a5/Super_Mario_Bros._3_coverart.png",
-		"is_broken" : true
+		"is_broken" : false
 	}
 };
 

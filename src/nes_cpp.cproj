@@ -26,7 +26,7 @@
         <Lib>rt</Lib>
       </Libs>
     </Libs>
-    <Commandlineparameters>../../../roms/example.nes</Commandlineparameters>
+    <Commandlineparameters>../../../roms/little_nemo.nes</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
@@ -71,6 +71,7 @@
     <Compile Include="NaclNes.cc" />
     <Compile Include="main_sdl.cc" />
     <Compile Include="sha256sum.cc" />
+    <Compile Include="Logger.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Color.h" />

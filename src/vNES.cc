@@ -43,6 +43,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef SDL
     void vNES::init(string rom_name) {
+        //Logger::init("logs/log");
         started = false;
         _rom_name = rom_name;
         initKeyCodes();

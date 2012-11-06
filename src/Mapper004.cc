@@ -114,7 +114,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     void Mapper004::executeCommand(int cmd, int arg) {
-
         if (cmd == CMD_SEL_2_1K_VROM_0000) {
 
             // Select 2 1KB VROM pages at 0x0000:
