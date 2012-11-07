@@ -1,5 +1,5 @@
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
 #ifdef SDL
     SDL_Surface* Globals::sdl_screen = NULL;

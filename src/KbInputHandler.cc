@@ -1,5 +1,5 @@
 /*
-C++NES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
+SaltyNES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
 vNES Copyright (c) 2006-2011 Jamie Sanders
 
 This program is free software: you can redistribute it and/or modify it under
@@ -16,7 +16,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
 
      KbInputHandler::KbInputHandler(NES* nes, int id) {
@@ -57,14 +57,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #ifdef NACL
-        (*s)[(*m)[KbInputHandler::KEY_B]] = this->nes->_nacl_nes->_button_b_down;
-        (*s)[(*m)[KbInputHandler::KEY_A]] = this->nes->_nacl_nes->_button_a_down;
-        (*s)[(*m)[KbInputHandler::KEY_START]] = this->nes->_nacl_nes->_button_start_down;
-        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = this->nes->_nacl_nes->_button_select_down;
-        (*s)[(*m)[KbInputHandler::KEY_UP]] = this->nes->_nacl_nes->_button_up_down;
-        (*s)[(*m)[KbInputHandler::KEY_DOWN]] = this->nes->_nacl_nes->_button_down_down;
-        (*s)[(*m)[KbInputHandler::KEY_RIGHT]] = this->nes->_nacl_nes->_button_right_down;
-        (*s)[(*m)[KbInputHandler::KEY_LEFT]] = this->nes->_nacl_nes->_button_left_down;
+        (*s)[(*m)[KbInputHandler::KEY_B]] = this->nes->_salty_nes->_button_b_down;
+        (*s)[(*m)[KbInputHandler::KEY_A]] = this->nes->_salty_nes->_button_a_down;
+        (*s)[(*m)[KbInputHandler::KEY_START]] = this->nes->_salty_nes->_button_start_down;
+        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = this->nes->_salty_nes->_button_select_down;
+        (*s)[(*m)[KbInputHandler::KEY_UP]] = this->nes->_salty_nes->_button_up_down;
+        (*s)[(*m)[KbInputHandler::KEY_DOWN]] = this->nes->_salty_nes->_button_down_down;
+        (*s)[(*m)[KbInputHandler::KEY_RIGHT]] = this->nes->_salty_nes->_button_right_down;
+        (*s)[(*m)[KbInputHandler::KEY_LEFT]] = this->nes->_salty_nes->_button_left_down;
 #endif
 
         // Can't hold both left & right or up & down at same time:

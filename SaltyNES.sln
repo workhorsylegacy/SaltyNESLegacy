@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{2857B73E-F847-4B02-9238-064979017E93}") = "nes_cpp", "src\nes_cpp.cproj", "{361BF6B2-534B-4E22-BCF9-367136CE5D3A}"
+Project("{2857B73E-F847-4B02-9238-064979017E93}") = "SaltyNES", "src\SaltyNES.cproj", "{361BF6B2-534B-4E22-BCF9-367136CE5D3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +15,6 @@ Global
 		{361BF6B2-534B-4E22-BCF9-367136CE5D3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = src\nes_cpp.cproj
+		StartupItem = src\SaltyNES.cproj
 	EndGlobalSection
 EndGlobal

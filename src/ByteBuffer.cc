@@ -1,5 +1,5 @@
 /*
-C++NES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
+SaltyNES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
 vNES Copyright (c) 2006-2011 Jamie Sanders
 
 This program is free software: you can redistribute it and/or modify it under
@@ -16,7 +16,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
 
 

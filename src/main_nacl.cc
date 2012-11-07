@@ -3,19 +3,19 @@
 
 #include <ppapi/cpp/module.h>
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
 // The Module class.  The browser calls the CreateInstance() method to create
 // an instance of your NaCl module on the web page.  The browser creates a new
 // instance for each <embed> tag with type="application/x-nacl".
-class NaclNesModule : public pp::Module {
+class SaltyNESModule : public pp::Module {
 	public:
-	NaclNesModule() : pp::Module() {}
-	virtual ~NaclNesModule() {}
+	SaltyNESModule() : pp::Module() {}
+	virtual ~SaltyNESModule() {}
 
-	// Create and return a NaclNesInstance object.
+	// Create and return a SaltyNESInstance object.
 	virtual pp::Instance* CreateInstance(PP_Instance instance) {
-		return new NaclNes(instance);
+		return new SaltyNES(instance);
 	}
 };
 
@@ -26,7 +26,7 @@ class NaclNesModule : public pp::Module {
 // point for your NaCl module with the browser.
 namespace pp {
 	Module* CreateModule() {
-		return new NaclNesModule();
+		return new SaltyNESModule();
 	}
 }
 

@@ -1,5 +1,5 @@
 /*
-C++NES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
+SaltyNES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -15,14 +15,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifdef SDL
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	printf("%s\n", "");
-	printf("%s\n", "C++NES: A Port of vNES from Java to C++");
-	printf("%s\n", "C++NES 2.14 (C) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>");
+	printf("%s\n", "SaltyNES is a browser based NES emulator derived from vNES.");
+	printf("%s\n", "SaltyNES (C) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>");
 	printf("%s\n", "vNES 2.14 (C) 2006-2011 Jamie Sanders thatsanderskid.com");
 	printf("%s\n", "Use of this program subject to GNU GPL, Version 3.");
 	printf("%s\n", "");

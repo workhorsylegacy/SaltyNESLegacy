@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>NaclNES</title>
+		<title>SaltyNES</title>
 		<script src="jquery-1.4.4.min.js" type="text/javascript"></script>
 		<script src="game_database.json" type="text/javascript"></script>
 		<style>
@@ -50,7 +50,7 @@
 	</head>
 	<body id="bodyId" onunload="pageDidUnload()">
 		<script type="text/javascript">
-			var nacl_nes = null;
+			var salty_nes = null;
 			var is_running = false;
 			var paintInterval = null;
 			var debugInterval = null;
@@ -92,24 +92,24 @@
 					// FIXME: Paint calls should happen automatically inside the nexe.
 					var fps = 60.0;
 					paintInterval = setInterval(function() {
-						nacl_nes.postMessage('paint');
+						salty_nes.postMessage('paint');
 						vfps += 1;
 					}, 1000.0 / fps);
 
 					// Have the FPS sent to us every second
 					// FIXME: This should just be sent from the nexe directly
 					debugInterval = setInterval(function() {
-						nacl_nes.postMessage('get_fps');
+						salty_nes.postMessage('get_fps');
 					}, 1000);
 			
 					// Make the pause button clickable
 					$('#pause').attr('disabled', false);
 					
 					// Get the rom sha256
-					nacl_nes.postMessage('get_sha256');
+					salty_nes.postMessage('get_sha256');
 
 					$('#game_info')[0].style.display = 'none';
-					$('#NaclNesApp')[0].className = 'screen_running';
+					$('#SaltyNESApp')[0].className = 'screen_running';
 					$('#top_controls')[0].style.display = '';
 			
 					var debug = $('#debug')[0];
@@ -134,14 +134,14 @@
 			}
 
 			function handleLoadEnd() {
-				nacl_nes = $('#NaclNesApp')[0];
+				salty_nes = $('#SaltyNESApp')[0];
 
 				var debug = $('#debug')[0];
 				debug.innerHTML = 'Loaded';
 			
 				// Start getting the gamepad status
 				gamepadInterval = setInterval(function() {
-					nacl_nes.postMessage('get_gamepad_status');
+					salty_nes.postMessage('get_gamepad_status');
 				}, 2000);
 
 				// Load all the games into the selector
@@ -188,8 +188,8 @@
 						}
 
 						// Send the rom to the nexe
-						nacl_nes.postMessage('load_rom:' + rom_data);
-						nacl_nes.postMessage('zoom:' + zoom);
+						salty_nes.postMessage('load_rom:' + rom_data);
+						salty_nes.postMessage('zoom:' + zoom);
 					}
 				});
 			}
@@ -290,9 +290,9 @@
 			</div>
 
 			<embed name="nacl_module"
-				id="NaclNesApp"
+				id="SaltyNESApp"
 				class="screen_hidden"
-				src="newlib/nacl_nes.nmf"
+				src="newlib/salty_nes.nmf"
 				type="application/x-nacl" />
 		</div>
 
@@ -304,7 +304,7 @@
 					return true;
 			
 				if(!is_running) return false;
-				nacl_nes.postMessage('button_down:' + event.which);
+				salty_nes.postMessage('button_down:' + event.which);
 				return false;
 			});
 
@@ -315,7 +315,7 @@
 					return true;
 			
 				if(!is_running) return false;
-				nacl_nes.postMessage('button_up:' + event.which);
+				salty_nes.postMessage('button_up:' + event.which);
 				return false;
 			});
 
@@ -327,11 +327,11 @@
 				$('#zoom_in').attr('disabled', zoom == max_zoom);
 				$('#zoom_out').attr('disabled', zoom == 1);
 
-				$('#NaclNesApp').width(256 * zoom);
-				$('#NaclNesApp').height(240 * zoom);
+				$('#SaltyNESApp').width(256 * zoom);
+				$('#SaltyNESApp').height(240 * zoom);
 
 				if(is_running)
-					nacl_nes.postMessage('zoom:' + zoom);
+					salty_nes.postMessage('zoom:' + zoom);
 
 				return false;
 			});
@@ -344,11 +344,11 @@
 				$('#zoom_in').attr('disabled', zoom == max_zoom);
 				$('#zoom_out').attr('disabled', zoom == 1);
 			
-				$('#NaclNesApp').width(256 * zoom);
-				$('#NaclNesApp').height(240 * zoom);
+				$('#SaltyNESApp').width(256 * zoom);
+				$('#SaltyNESApp').height(240 * zoom);
 
 				if(is_running)
-					nacl_nes.postMessage('zoom:' + zoom);
+					salty_nes.postMessage('zoom:' + zoom);
 
 				return false;
 			});
@@ -357,7 +357,7 @@
 			$('#pause').click(function() {
 				if(!is_running) return false;
 
-				nacl_nes.postMessage('pause');
+				salty_nes.postMessage('pause');
 				var pause = $('#pause');
 				if(pause.text() == 'Pause') {
 					pause.text('Unpause');

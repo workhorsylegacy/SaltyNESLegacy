@@ -5,7 +5,7 @@ import os
 
 def clean():
 	"""Removes any files and directories generated when building."""
-	rmfile('main')
+	rmfile('saltynes')
 	rmdir_and_children('build')
 	rmdir_and_children('src/bin')
 	rmdir_and_children('glibc')
@@ -56,12 +56,12 @@ def _build():
 
 	# Link all the objects into the program
 	object_files = [s + '.o' for s in code_files]
-	c_build_program('main', object_files, ['-lSDL', '-lpthread', '-lrt', '-DSDL=true'])
+	c_build_program('saltynes', object_files, ['-lSDL', '-lpthread', '-lrt', '-DSDL=true'])
 
 	# Run the program
 	cd('..')
-	mvfile('build/main', 'main')
-	print('Run the program like this:\n./main roms/example.nes')
+	mvfile('build/saltynes', 'saltynes')
+	print('Run the program like this:\n./saltynes roms/example.nes')
 
 
 

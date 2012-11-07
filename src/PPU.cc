@@ -1,5 +1,5 @@
 /*
-C++NES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
+SaltyNES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
 vNES Copyright (c) 2006-2011 Jamie Sanders
 
 This program is free software: you can redistribute it and/or modify it under
@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
 	vector<int>* PPU::get_screen_buffer() {
 		return _screen_buffer;
@@ -425,7 +425,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 			int color32;
 			int zoomed_x = 0, zoomed_y = 0;
 			int zoom = _zoom;
-			uint32_t* pixel_bits = nes->_nacl_nes->LockPixels();
+			uint32_t* pixel_bits = nes->_salty_nes->LockPixels();
 			
 			if(is_safe_to_paint()) {
 				// Each column
@@ -450,7 +450,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 				}
 			}
 			
-			nes->_nacl_nes->UnlockPixels();
+			nes->_salty_nes->UnlockPixels();
 #endif
 #ifdef SDL
 		// Lock the screen, if needed
@@ -519,7 +519,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		if(_ticks_since_second >= 1000000.0) {
 			printf("FPS: %d\n", frameCounter);
 #ifdef NACL
-			this->nes->_nacl_nes->set_fps(frameCounter);
+			this->nes->_salty_nes->set_fps(frameCounter);
 #endif
 			_ticks_since_second = 0;
 			frameCounter = 0;
@@ -2082,7 +2082,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef NACL
 	bool PPU::is_safe_to_paint() {
-		return nes->_nacl_nes->width() * nes->_nacl_nes->height() == 
+		return nes->_salty_nes->width() * nes->_salty_nes->height() == 
 		(_zoom * 256) * (_zoom * 240);
 	}
 #endif

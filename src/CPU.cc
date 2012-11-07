@@ -1,5 +1,5 @@
 /*
-C++NES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
+SaltyNES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
 vNES Copyright (c) 2006-2011 Jamie Sanders
 
 This program is free software: you can redistribute it and/or modify it under
@@ -21,7 +21,7 @@ emulator. During emulation, this is run in a loop that decodes and executes
 instructions and invokes emulation of the PPU and pAPU.
 */
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
 	// Constructor:
 	 CPU::CPU(NES* nes){

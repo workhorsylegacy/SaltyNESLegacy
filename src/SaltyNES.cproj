@@ -68,14 +68,13 @@
     <Compile Include="Tile.cc" />
     <Compile Include="vNES.cc" />
     <Compile Include="main_nacl.cc" />
-    <Compile Include="NaclNes.cc" />
     <Compile Include="main_sdl.cc" />
     <Compile Include="sha256sum.cc" />
     <Compile Include="Logger.cc" />
+    <Compile Include="SaltyNES.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Color.h" />
-    <None Include="nes_cpp.h" />
     <None Include="..\rscript">
       <Link>rscript</Link>
     </None>
@@ -92,5 +91,6 @@
     <None Include="..\game_database.json">
       <Link>game_database.json</Link>
     </None>
+    <None Include="SaltyNES.h" />
   </ItemGroup>
 </Project>

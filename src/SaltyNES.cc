@@ -19,18 +19,18 @@
 #include "ppapi/cpp/var.h"
 #include "ppapi/cpp/var_array_buffer.h"
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
 using namespace std;
 
 // Globals
-NaclNes* NaclNes::g_nacl_nes = NULL;
+SaltyNES* SaltyNES::g_salty_nes = NULL;
 const int kPthreadMutexSuccess = 0;
 
 // This is called by the browser when the 2D context has been flushed to the
 // browser window.
 void FlushCallback(void* data, int32_t result) {
-	static_cast<NaclNes*>(data)->set_flush_pending(false);
+	static_cast<SaltyNES*>(data)->set_flush_pending(false);
 }
 
 
@@ -58,13 +58,13 @@ public:
 
 // A small helper RAII class used to acquire and release the pixel lock.
 class ScopedPixelLock {
-	NaclNes* image_owner_;	// Weak reference.
+	SaltyNES* image_owner_;	// Weak reference.
 	uint32_t* pixels_;	// Weak reference.
 
 	ScopedPixelLock();	// Not implemented, do not use.
 
 public:
-	explicit ScopedPixelLock(NaclNes* image_owner) : 
+	explicit ScopedPixelLock(SaltyNES* image_owner) : 
 		image_owner_(image_owner), 
 		pixels_(image_owner->LockPixels()) {
 	}
@@ -79,7 +79,7 @@ public:
 	}
 };
 
-NaclNes::NaclNes(PP_Instance instance)
+SaltyNES::SaltyNES(PP_Instance instance)
 		: pp::Instance(instance),
 			graphics_2d_context_(NULL),
 			pixel_buffer_(NULL),
@@ -89,8 +89,8 @@ NaclNes::NaclNes(PP_Instance instance)
 	pthread_mutex_init(&pixel_buffer_mutex_, NULL);
 	vnes = NULL;
 
-	if(NaclNes::g_nacl_nes == NULL)
-		NaclNes::g_nacl_nes = this;
+	if(SaltyNES::g_salty_nes == NULL)
+		SaltyNES::g_salty_nes = this;
 
 	_is_gamepad_connected = false;
 	_is_gamepad_used = false;
@@ -111,7 +111,7 @@ NaclNes::NaclNes(PP_Instance instance)
 	assert(gamepad_);
 }
 
-NaclNes::~NaclNes() {
+SaltyNES::~SaltyNES() {
 	quit_ = true;
 	if (thread_) {
 		if(vnes)
@@ -123,7 +123,7 @@ NaclNes::~NaclNes() {
 	pthread_mutex_destroy(&pixel_buffer_mutex_);
 }
 
-void NaclNes::DidChangeView(const pp::View& view) {
+void SaltyNES::DidChangeView(const pp::View& view) {
 	pp::Rect position = view.GetRect();
 	if (pixel_buffer_ && position.size() == pixel_buffer_->size())
 		return;	// Size didn't change, no need to update anything.
@@ -144,11 +144,11 @@ void NaclNes::DidChangeView(const pp::View& view) {
 	}
 }
 
-bool NaclNes::Init(uint32_t argc, const char* argn[], const char* argv[]) {
+bool SaltyNES::Init(uint32_t argc, const char* argn[], const char* argv[]) {
 	return true;
 }
 
-void NaclNes::HandleMessage(const pp::Var& var_message) {
+void SaltyNES::HandleMessage(const pp::Var& var_message) {
 	string message;
 	if(var_message.is_string())
 		message = var_message.AsString();
@@ -240,7 +240,7 @@ void NaclNes::HandleMessage(const pp::Var& var_message) {
 
 }
 
-uint32_t* NaclNes::LockPixels() {
+uint32_t* SaltyNES::LockPixels() {
 	void* pixels = NULL;
 	// Do not use a ScopedMutexLock here, since the lock needs to be held until
 	// the matching UnlockPixels() call.
@@ -252,11 +252,11 @@ uint32_t* NaclNes::LockPixels() {
 	return reinterpret_cast<uint32_t*>(pixels);
 }
 
-void NaclNes::UnlockPixels() const {
+void SaltyNES::UnlockPixels() const {
 	pthread_mutex_unlock(&pixel_buffer_mutex_);
 }
 
-void NaclNes::Paint() {
+void SaltyNES::Paint() {
 	ScopedMutexLock scoped_mutex(&pixel_buffer_mutex_);
 	if (!scoped_mutex.is_valid()) {
 		return;
@@ -267,7 +267,7 @@ void NaclNes::Paint() {
 	FlushPixelBuffer();
 }
 
-void NaclNes::update_gamepad() {
+void SaltyNES::update_gamepad() {
 	// Get current gamepad data.
 	PP_GamepadsSampleData gamepad_data;
 	gamepad_->Sample(pp_instance(), &gamepad_data);
@@ -305,7 +305,7 @@ void NaclNes::update_gamepad() {
 	}
 }
 
-void NaclNes::CreateContext(const pp::Size& size) {
+void SaltyNES::CreateContext(const pp::Size& size) {
 	ScopedMutexLock scoped_mutex(&pixel_buffer_mutex_);
 	if (!scoped_mutex.is_valid()) {
 		return;
@@ -318,7 +318,7 @@ void NaclNes::CreateContext(const pp::Size& size) {
 	}
 }
 
-void NaclNes::DestroyContext() {
+void SaltyNES::DestroyContext() {
 	ScopedMutexLock scoped_mutex(&pixel_buffer_mutex_);
 	if (!scoped_mutex.is_valid()) {
 		return;
@@ -328,7 +328,7 @@ void NaclNes::DestroyContext() {
 	delete_n_null(graphics_2d_context_);
 }
 
-void NaclNes::FlushPixelBuffer() {
+void SaltyNES::FlushPixelBuffer() {
 	if (!IsContextValid())
 		return;
 	// Note that the pixel lock is held while the buffer is copied into the
@@ -340,15 +340,15 @@ void NaclNes::FlushPixelBuffer() {
 	graphics_2d_context_->Flush(pp::CompletionCallback(&FlushCallback, this));
 }
 
-void* NaclNes::start_main_loop(void* param) {
+void* SaltyNES::start_main_loop(void* param) {
 	log_to_browser("start_main_loop");
 
-	NaclNes* nacl_nes = reinterpret_cast<NaclNes*>(param);
-	nacl_nes->vnes->run();
+	SaltyNES* salty_nes = reinterpret_cast<SaltyNES*>(param);
+	salty_nes->vnes->run();
 	return 0;
 }
 
-void NaclNes::log(string message) {
+void SaltyNES::log(string message) {
 	PostMessage(message);
 }
 

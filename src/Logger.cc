@@ -1,5 +1,5 @@
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
 #include <iostream>
 #include <fstream>

@@ -1,5 +1,5 @@
 /*
-C++NES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
+SaltyNES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
 vNES Copyright (c) 2006-2011 Jamie Sanders
 
 This program is free software: you can redistribute it and/or modify it under
@@ -99,7 +99,7 @@ class ROM;
 class Tile;
 class vNES;
 #ifdef NACL
-class NaclNes;
+class SaltyNES;
 #endif
 
 // Interfaces
@@ -823,7 +823,7 @@ public:
 class NES {
 public:
 #ifdef NACL
-    NaclNes* _nacl_nes;
+    SaltyNES* _salty_nes;
 #endif
      bool _is_paused;
      CPU* cpu;
@@ -844,7 +844,7 @@ public:
      NES();
 #endif
 #ifdef NACL
-     NES(NaclNes* nacl_nes);
+     NES(SaltyNES* salty_nes);
 #endif
      ~NES();
      bool stateLoad(ByteBuffer* buf);
@@ -1336,7 +1336,7 @@ public:
     void init(string rom_name);
 #endif
 #ifdef NACL
-    void init_data(uint8_t* rom_data, size_t length, NaclNes* nacl_nes);
+    void init_data(uint8_t* rom_data, size_t length, SaltyNES* salty_nes);
 #endif
     void pre_run_setup();
     void run();
@@ -1346,7 +1346,7 @@ public:
 };
 
 #ifdef NACL
-class NaclNes : public pp::Instance {
+class SaltyNES : public pp::Instance {
 	mutable pthread_mutex_t pixel_buffer_mutex_;
 	pp::Graphics2D* graphics_2d_context_;
 	pp::ImageData* pixel_buffer_;
@@ -1370,11 +1370,11 @@ class NaclNes : public pp::Instance {
 	}
 
 public:
-	static NaclNes* g_nacl_nes;
+	static SaltyNES* g_salty_nes;
 	vNES* vnes;
 	
-	explicit NaclNes(PP_Instance instance);
-	virtual ~NaclNes();
+	explicit SaltyNES(PP_Instance instance);
+	virtual ~SaltyNES();
 
 	bool _is_gamepad_connected;
 	bool _is_gamepad_used;
@@ -1582,8 +1582,8 @@ inline void log_to_browser(string message) {
 	fflush(stdout);
 	
 #ifdef NACL
-	if(NaclNes::g_nacl_nes != NULL)
-		NaclNes::g_nacl_nes->log(message);
+	if(SaltyNES::g_salty_nes != NULL)
+		SaltyNES::g_salty_nes->log(message);
 #endif
 }
 

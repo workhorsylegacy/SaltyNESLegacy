@@ -1,5 +1,5 @@
 
-#include "nes_cpp.h"
+#include "SaltyNES.h"
 
     // Opdata array:
      vector<int>* CpuInfo::opdata = NULL;
