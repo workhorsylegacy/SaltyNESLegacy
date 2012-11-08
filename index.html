@@ -123,8 +123,8 @@
 					salty_nes.postMessage('get_sha256');
 
 					$('#game_info')[0].style.display = 'none';
-					$('#SaltyNESApp')[0].className = 'screen_running';
 					$('#top_controls')[0].style.display = '';
+					show_screen();
 			
 					var debug = $('#debug')[0];
 					debug.innerHTML = message_event.data;
@@ -237,8 +237,8 @@
 			function show_game_info(sha256) {
 				$('#game_selector')[0].style.display = 'none';
 				$('#game_info')[0].style.display = '';
-				$('#SaltyNESApp')[0].className = 'screen_hidden';
 				$('#top_controls')[0].style.display = 'none';
+				hide_screen();
 
 				// Quit running any existing game
 				if(is_running)
@@ -283,8 +283,8 @@
 				// Show all the games
 				$('#game_selector')[0].style.display = '';
 				$('#game_info')[0].style.display = 'none';
-				$('#SaltyNESApp')[0].className = 'screen_hidden';
 				$('#top_controls')[0].style.display = 'none';
+				hide_screen();
 			
 				// Quit running any existing game
 				if(is_running)
@@ -337,6 +337,18 @@
 				update_breadcrumbs();
 			}
 
+			function hide_screen() {
+				$('#SaltyNESApp')[0].className = 'screen_hidden';
+				$('#SaltyNESApp').width(10);
+				$('#SaltyNESApp').height(10);
+			}
+			
+			function show_screen() {
+				$('#SaltyNESApp')[0].className = 'screen_running';
+				$('#SaltyNESApp').width(256 * zoom);
+				$('#SaltyNESApp').height(240 * zoom);
+			}
+			
 		</script>
 		<nav>
 			<span style="font-size: 1.7em;">SaltyNES</span> is a NES emulator in the browser.
