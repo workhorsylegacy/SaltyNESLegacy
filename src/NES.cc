@@ -209,6 +209,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      void NES::stopEmulation() {
         _isRunning = false;
+        cpu->stop();
 
         if (Globals::enableSound && papu->isRunning()) {
             papu->stop();

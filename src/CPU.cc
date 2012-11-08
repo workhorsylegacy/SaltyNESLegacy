@@ -166,6 +166,10 @@ instructions and invokes emulation of the PPU and pAPU.
 		emulate();
 	}
 
+	 void CPU::stop() {
+		stopRunning = true;
+	}
+
 	// Emulates cpu instructions until stopped.
 	 void CPU::emulate(){
 		// NES Memory

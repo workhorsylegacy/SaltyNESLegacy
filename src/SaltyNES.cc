@@ -85,7 +85,8 @@ SaltyNES::SaltyNES(PP_Instance instance)
 			pixel_buffer_(NULL),
 			flush_pending_(false),
 			quit_(false),
-			thread_(0) {
+			thread_(0),
+			thread_is_running_(false) {
 	pthread_mutex_init(&pixel_buffer_mutex_, NULL);
 	vnes = NULL;
 
@@ -113,11 +114,16 @@ SaltyNES::SaltyNES(PP_Instance instance)
 
 SaltyNES::~SaltyNES() {
 	quit_ = true;
-	if (thread_) {
-		if(vnes)
-			vnes->stop();
-		pthread_join(thread_, NULL);
+
+	if(vnes) {
+		vnes->stop();
+		if(thread_is_running_) {
+			pthread_join(thread_, NULL);
+			thread_is_running_ = false;
+		}
+		delete_n_null(vnes);
 	}
+	
 	DestroyContext();
 	delete_n_null(pixel_buffer_);
 	pthread_mutex_destroy(&pixel_buffer_mutex_);
@@ -153,6 +159,49 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 	if(var_message.is_string())
 		message = var_message.AsString();
 
+	// Handle messages that work with vnes running or not
+	if(message.find("load_rom:") == 0) {
+		// Convert the rom data to bytes
+		size_t sep_pos = message.find_first_of(":");
+		string rom_string = message.substr(sep_pos + 1);
+		const size_t ROM_DATA_LENGTH = rom_string.length()/2;
+		uint8_t* rom_data = new uint8_t[ROM_DATA_LENGTH]();
+		size_t j = 0;
+		for(size_t i=0; i<rom_string.length(); i+=2) {
+			rom_data[j] = string_to_byte(rom_string[i], rom_string[i+1]);
+			j++;
+		}
+
+		// Make sure the ROM is valid
+		if(rom_data[0] != 'N' || rom_data[1] != 'E' || rom_data[2] != 'S' || rom_data[3] != 0x1A) {
+			log_to_browser("Invalid ROM file!");
+		} else {
+			// Stop any previously running NES
+			if(vnes) {
+				vnes->stop();
+				if(thread_) {
+					pthread_join(thread_, NULL);
+					thread_is_running_ = false;
+				}
+				delete_n_null(vnes);
+			}
+
+			// Run the ROM
+			vnes = new vNES();
+			vnes->init_data((uint8_t*) rom_data, (size_t)ROM_DATA_LENGTH, this);
+			vnes->pre_run_setup();
+			log_to_browser("running");
+			pthread_create(&thread_, NULL, start_main_loop, this);
+			thread_is_running_ = true;
+		}
+		
+		return;
+	}
+
+	// Just return if any messages require vnes, but it is not running
+	if(vnes == NULL) return;
+
+	// Handle messages that require vnes running
 	if(message == "paint") {
 		if(!vnes->nes->_is_paused)
 			Paint();
@@ -196,36 +245,17 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		out << "get_gamepad_status:";
 		out << (_is_gamepad_connected ? "yes" : "no");
 		log_to_browser(out.str());
-	} else if(message.find("load_rom:") == 0) {
-		// Convert the rom data to bytes
-		size_t sep_pos = message.find_first_of(":");
-		string rom_string = message.substr(sep_pos + 1);
-		const size_t ROM_DATA_LENGTH = rom_string.length()/2;
-		uint8_t* rom_data = new uint8_t[ROM_DATA_LENGTH]();
-		size_t j = 0;
-		for(size_t i=0; i<rom_string.length(); i+=2) {
-			rom_data[j] = string_to_byte(rom_string[i], rom_string[i+1]);
-			j++;
-		}
-
-		// Make sure the ROM is valid
-		if(rom_data[0] != 'N' || rom_data[1] != 'E' || rom_data[2] != 'S' || rom_data[3] != 0x1A) {
-			log_to_browser("Invalid ROM file!");
-		} else {
-			// Stop any previously running NES
-			if(vnes != NULL) {
-				vnes->stop();
+	} else if(message == "quit") {
+		if(vnes != NULL) {
+			vnes->stop();
+			if(thread_is_running_) {
 				pthread_join(thread_, NULL);
-				delete_n_null(vnes);
+				thread_is_running_ = false;
 			}
-
-			// Run the ROM
-			vnes = new vNES();
-			vnes->init_data((uint8_t*) rom_data, (size_t)ROM_DATA_LENGTH, this);
-			vnes->pre_run_setup();
-			log_to_browser("running");
-			pthread_create(&thread_, NULL, start_main_loop, this);
+			delete_n_null(vnes);
 		}
+		log_to_browser("quit");
+		
 	} else if(message == "get_sha256") {
 		stringstream out;
 		out << "get_sha256:";

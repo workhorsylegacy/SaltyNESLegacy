@@ -128,6 +128,16 @@
 			
 					var debug = $('#debug')[0];
 					debug.innerHTML = message_event.data;
+				} else if(message_event.data == 'quit') {
+					is_running = false;
+					if(paintInterval) {
+						clearInterval(paintInterval);
+						paintInterval = null;
+					}
+					if(debugInterval) {
+						clearInterval(debugInterval);
+						debugInterval = null;
+					}
 				} else {
 					var debug = $('#debug')[0];
 					debug.innerHTML = message_event.data;
@@ -171,7 +181,20 @@
 			}
 
 			function pageDidUnload() {
-				clearInterval(paintInterval);
+				if(paintInterval) {
+					clearInterval(paintInterval);
+					paintInterval = null;
+				}
+
+				if(debugInterval) {
+					clearInterval(debugInterval);
+					debugInterval = null;
+				}
+
+				if(gamepadInterval) {
+					clearInterval(gamepadInterval);
+					gamepadInterval = null;
+				}
 			}
 
 			function load_rom(rom_url) {
@@ -217,6 +240,10 @@
 				$('#SaltyNESApp')[0].className = 'screen_hidden';
 				$('#top_controls')[0].style.display = 'none';
 
+				// Quit running any existing game
+				if(is_running)
+					salty_nes.postMessage('quit');
+			
 				// Add the game info to the breadcrumbs
 				add_breadcrumb({'title' : game_database[sha256]['name'], 'link' : "show_game_info('" + sha256 + "'); return false;"});
 				update_breadcrumbs();
@@ -258,6 +285,10 @@
 				$('#game_info')[0].style.display = 'none';
 				$('#SaltyNESApp')[0].className = 'screen_hidden';
 				$('#top_controls')[0].style.display = 'none';
+			
+				// Quit running any existing game
+				if(is_running)
+					salty_nes.postMessage('quit');
 			}
 			
 			function play_game(file_name) {

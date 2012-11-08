@@ -454,6 +454,7 @@ public:
 	 void stateSave(ByteBuffer* buf);
 	 void reset();
 	 void run();
+	 void stop();
 	 void emulate();
 	 int load(int addr);
 	 int load16bit(int addr);
@@ -1355,6 +1356,7 @@ class SaltyNES : public pp::Instance {
 	bool quit_;
 	uint32_t _fps;
 	pthread_t thread_;
+	bool thread_is_running_;
 
 	// Create and initialize the 2D context used for drawing.
 	void CreateContext(const pp::Size& size);
