@@ -196,6 +196,23 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		}
 		
 		return;
+		
+	} else if(message == "get_gamepad_status") {
+		// Get current gamepad data.
+		PP_GamepadsSampleData gamepad_data;
+		gamepad_->Sample(pp_instance(), &gamepad_data);
+		_is_gamepad_connected = false;
+		for(size_t i=0; i<gamepad_data.length; ++i) {
+			if(gamepad_data.items[i].connected)
+				_is_gamepad_connected = true;
+		}
+	
+		// Tell the browser if the gamepad is connected or not
+		stringstream out;
+		out << "get_gamepad_status:";
+		out << (_is_gamepad_connected ? "yes" : "no");
+		log_to_browser(out.str());
+		return;
 	}
 
 	// Just return if any messages require vnes, but it is not running
@@ -229,21 +246,6 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		stringstream out;
 		out << "get_fps:";
 		out << get_fps();
-		log_to_browser(out.str());
-	} else if(message == "get_gamepad_status") {
-		// Get current gamepad data.
-		PP_GamepadsSampleData gamepad_data;
-		gamepad_->Sample(pp_instance(), &gamepad_data);
-		_is_gamepad_connected = false;
-		for(size_t i=0; i<gamepad_data.length; ++i) {
-			if(gamepad_data.items[i].connected)
-				_is_gamepad_connected = true;
-		}
-	
-		// Tell the browser if the gamepad is connected or not
-		stringstream out;
-		out << "get_gamepad_status:";
-		out << (_is_gamepad_connected ? "yes" : "no");
 		log_to_browser(out.str());
 	} else if(message == "quit") {
 		if(vnes != NULL) {
