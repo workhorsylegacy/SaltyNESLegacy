@@ -208,6 +208,7 @@
 				$('#game_selector')[0].style.display = 'none';
 				$('#game_info')[0].style.display = '';
 				$('#SaltyNESApp')[0].className = 'screen_hidden';
+				$('#top_controls')[0].style.display = 'none';
 
 				// Add the game info to the breadcrumbs
 				add_breadcrumb({'title' : game_database[sha256]['name'], 'link' : "show_game_info('" + sha256 + "'); return false;"});
@@ -249,6 +250,7 @@
 				$('#game_selector')[0].style.display = '';
 				$('#game_info')[0].style.display = 'none';
 				$('#SaltyNESApp')[0].className = 'screen_hidden';
+				$('#top_controls')[0].style.display = 'none';
 			}
 			
 			function play_game(file_name) {
