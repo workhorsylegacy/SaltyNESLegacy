@@ -2,7 +2,12 @@
 <html>
 	<head>
 		<title>SaltyNES - A NES emulator in the browser.</title>
-		<script src="jquery-1.4.4.min.js" type="text/javascript"></script>
+		<script src="jquery-1.8.2.min.js" type="text/javascript"></script>
+		<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/sha256.js"></script>
+		<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/core-min.js"></script>
+		<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-utf16-min.js"></script>
+		<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>
+
 		<script src="game_database.json" type="text/javascript"></script>
 		<style>
 			html, body {
@@ -346,11 +351,73 @@
 				$('#SaltyNESApp').width(2);
 				$('#SaltyNESApp').height(2);
 			}
-			
+
 			function show_screen() {
 				$('#SaltyNESApp')[0].className = 'screen_running';
 				$('#SaltyNESApp').width(256 * zoom);
 				$('#SaltyNESApp').height(240 * zoom);
+			}
+
+			function dragEnter(event) {
+				event.stopPropagation();
+				event.preventDefault();
+			}
+
+			function dragExit(event) {
+				event.stopPropagation();
+				event.preventDefault();
+			}
+
+			function dragOver(event) {
+				event.stopPropagation();
+				event.preventDefault();
+			}
+
+			function drop(event) {
+				event.stopPropagation();
+				event.preventDefault();
+			
+				var files = event.dataTransfer.files;
+				if(files.length > 0)
+					handleFiles(files);
+			}
+			
+
+			function handleFiles(files) {
+				//var file = files[0];
+			
+				$('#droplabel')[0].innerHTML = '';//file.name;
+			
+				// Read the files
+				for(i=0; i<files.length; i++) {
+					var reader = new FileReader();
+					reader.onprogress = handleReaderProgress;
+					reader.onloadend = handleReaderLoadEnd;
+					reader.readAsDataURL(files[i]);
+				}
+			}
+
+			function handleReaderProgress(event) {
+				if(event.lengthComputable) {
+					var loaded = (event.loaded / event.total);
+				}
+			}
+
+			function handleReaderLoadEnd(event) {
+				// Convert the game from data uri to binary
+				var header = event.target.result.split(',')[0];
+				var mime_type = header.split(':')[1].split(';')[0];
+				var data = event.target.result.slice(header.length+1);
+				data = CryptoJS.enc.Base64.parse(data);
+			
+				// Get the sha256 of the data
+				var sha256 = CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex);
+
+				// Save the game in the localstore
+				localStorage[game_database[sha256]['name']] = data;
+				var message = "Loaded '" + game_database[sha256]['name'] + "', ";
+			
+				$('#droplabel')[0].innerHTML += message;
 			}
 			
 		</script>
@@ -374,7 +441,7 @@
 				<b>Gamepad is connected</b>
 			</p>
 		</nav>
-
+		
 		<div id="listener" style="overflow: auto; text-align: center;">
 			<div id="nacl_not_enabled" style="overflow: auto; clear: both; text-align: left; margin: 40px;">
 				<p>
@@ -387,6 +454,10 @@
 			<div id="breadcrumbs_div" style="overflow: auto; clear: both; float: left;">
 			</div>
 
+			<div id="dropbox" style="overflow: auto; clear: both; height: 200px; border: 1px solid red;">
+				<span id="droplabel">Drop games here ...</span>
+			</div>
+		
 			<div id="top_controls" style="overflow: auto; clear: both; display: none;">
 				<button id="pause" disabled="disabled">Pause</button>
 				zoom: 
@@ -501,6 +572,19 @@
 			
 			$('#zoom_in').attr('disabled', zoom == max_zoom);
 			$('#zoom_out').attr('disabled', zoom == 1);
+
+			$(document).ready(function() {
+				var dropbox = $('#dropbox')[0];
+			
+				// init event handlers
+				dropbox.addEventListener("dragenter", dragEnter, false);
+				dropbox.addEventListener("dragexit", dragExit, false);
+				dropbox.addEventListener("dragover", dragOver, false);
+				dropbox.addEventListener("drop", drop, false);
+			
+				// init the widgets
+				//$("#progressbar").progressbar();
+			});
 		</script>
 	</body>
 </html>
