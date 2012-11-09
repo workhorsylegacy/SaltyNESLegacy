@@ -19,8 +19,8 @@
 			
 			.screen_hidden {
 				background-color: #FFFFFF;
-				width: 10px;
-				height: 10px;
+				width: 2px;
+				height: 2px;
 			}
 			
 			.screen_running {
@@ -157,6 +157,10 @@
 				debug.innerHTML = 'Loading ' + progress.toFixed(2) + '% ...';
 			}
 
+			function handleLoadStart(event) {
+				$('#nacl_not_enabled')[0].style.display = 'none';
+			}
+			
 			function handleLoadEnd() {
 				salty_nes = $('#SaltyNESApp')[0];
 
@@ -339,8 +343,8 @@
 
 			function hide_screen() {
 				$('#SaltyNESApp')[0].className = 'screen_hidden';
-				$('#SaltyNESApp').width(10);
-				$('#SaltyNESApp').height(10);
+				$('#SaltyNESApp').width(2);
+				$('#SaltyNESApp').height(2);
 			}
 			
 			function show_screen() {
@@ -372,6 +376,14 @@
 		</nav>
 
 		<div id="listener" style="overflow: auto; text-align: center;">
+			<div id="nacl_not_enabled" style="overflow: auto; clear: both; text-align: left; margin: 40px;">
+				<p>
+					SaltyNES requires Google Native Client to run. Native Client is not enabled. Visit the page 
+					<span style="font-family: courier;">"chrome://flags"</span> and enable it.
+				</p>
+				<img src="enable_nacl.png" />
+			</div>
+			
 			<div id="breadcrumbs_div" style="overflow: auto; clear: both; float: left;">
 			</div>
 
@@ -401,7 +413,7 @@
 				Mapper: <span  id="game_mapper">...</span><br />
 				Link: <span  id="game_link">...</span><br />
 			</div>
-
+		
 			<embed name="nacl_module"
 				id="SaltyNESApp"
 				class="screen_hidden"
@@ -482,6 +494,7 @@
 			});
 
 			var listener = $('#listener')[0];
+			listener.addEventListener('loadstart', handleLoadStart, true);
 			listener.addEventListener('loadend', handleLoadEnd, true);
 			listener.addEventListener('progress', handleProgress, true);
 			listener.addEventListener('message', handleMessage, true);
