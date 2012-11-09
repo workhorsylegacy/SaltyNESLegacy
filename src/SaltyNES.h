@@ -36,6 +36,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <math.h>
 
 #include "Color.h"
+#include "base64.h"
 
 #ifdef NACL
 	#include "ppapi/c/ppb_gamepad.h"

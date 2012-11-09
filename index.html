@@ -73,19 +73,6 @@
 			var max_zoom = 4;
 			var breadcrumbs = [];
 
-			function stringToBytes(str) {
-				var retval = new Array();
-				for(var j=0; j < str.length; j++) {
-					var result = 0;
-					for(var i=j + 1; i>j; i--) {
-						result = result * 256 + (str.charCodeAt(i-1) & 0xff);
-					}
-
-					retval.push(result);
-				}
-				return retval;
-			}
-
 			function handleMessage(message_event) {
 				if(message_event.data.split(':')[0] == 'get_fps') {
 					var debug = $('#debug')[0];
@@ -180,12 +167,20 @@
 					salty_nes.postMessage('get_gamepad_status');
 				}, 2000);
 			
+				load_game_selector();
+			}
+			
+			function load_game_selector() {
 				// Load all the games into the selector
 				var game_selector = $('#game_selector')[0];
-				for(var key in game_database) {
-					var game = game_database[key];
-					var icon_class = game['is_broken'] ? 'game_icon broken' : 'game_icon';
-					game_selector.innerHTML += "<a href=\"" + game['name'] + "\" onclick=\"show_game_info('" + key + "'); return false;\"><div class=\"" + icon_class + "\"><img src=\"" + game["img"] + "\" /><br />" + game['name'] + "</div></a>";
+				game_selector.innerHTML = '';
+			
+				for(var key in localStorage) {
+					if(game_database[key] != undefined) {
+						var game = game_database[key];
+						var icon_class = game['is_broken'] ? 'game_icon broken' : 'game_icon';
+						game_selector.innerHTML += "<a href=\"" + game['name'] + "\" onclick=\"show_game_info('" + key + "'); return false;\"><div class=\"" + icon_class + "\"><img src=\"" + game["img"] + "\" /><br />" + game['name'] + "</div></a>";
+					}
 				}
 			}
 
@@ -206,41 +201,10 @@
 				}
 			}
 
-			function load_rom(rom_url) {
-				$.ajax({
-					url: rom_url,
-					xhr: function() {
-						var xhr = $.ajaxSettings.xhr();
-						if(typeof xhr.overrideMimeType !== 'undefined') {
-							// Download as binary
-							xhr.overrideMimeType('text/plain; charset=x-user-defined');
-						}
-						return xhr;
-					},
-					complete: function(xhr, status) {
-						// Make sure the rom file exists
-						if(status != 'success') {
-							var debug = $('#debug')[0];
-							debug.innerHTML = 'Failed to download ROM file!';
-							return;
-						}
-
-						// Convert the rom to a string of bytes
-						// like: [255, 12] == "FF0C"
-						var response = stringToBytes(xhr.responseText);
-						var rom_data = "";
-						for(var i=0; i<response.length; i++) {
-							var byte = response[i].toString(16).toUpperCase();
-							if(byte.length == 1)
-								byte = "0" + byte;
-							rom_data += byte;
-						}
-
-						// Send the rom to the nexe
-						salty_nes.postMessage('load_rom:' + rom_data);
-						salty_nes.postMessage('zoom:' + zoom);
-					}
-				});
+			function load_rom(sha256) {
+				// Send the rom to the nexe
+				salty_nes.postMessage('load_rom:' + localStorage[sha256]);
+				salty_nes.postMessage('zoom:' + zoom);
 			}
 
 			function show_game_info(sha256) {
@@ -275,7 +239,7 @@
 					$('#game_img')[0].innerHTML = "<img src=\"" + game_database[sha256]['img'] + "\" width=\"200\"/>";
 					$('#game_play_button').unbind('click');
 					$('#game_play_button').click(function() {
-						play_game(game_database[sha256]['file']);
+						load_rom(sha256);
 					});
 				}
 			}
@@ -298,10 +262,6 @@
 				// Quit running any existing game
 				if(is_running)
 					salty_nes.postMessage('quit');
-			}
-			
-			function play_game(file_name) {
-				load_rom('roms/' + file_name);
 			}
 			
 			function add_breadcrumb(breadcrumb) {
@@ -407,17 +367,19 @@
 				// Convert the game from data uri to binary
 				var header = event.target.result.split(',')[0];
 				var mime_type = header.split(':')[1].split(';')[0];
-				var data = event.target.result.slice(header.length+1);
-				data = CryptoJS.enc.Base64.parse(data);
+				var base64 = event.target.result.slice(header.length+1);
+				var data = CryptoJS.enc.Base64.parse(base64);
 			
 				// Get the sha256 of the data
 				var sha256 = CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex);
 
-				// Save the game in the localstore
-				localStorage[game_database[sha256]['name']] = data;
+				// Save the base64ed game in the localStorage
+				localStorage[sha256] = base64;
 				var message = "Loaded '" + game_database[sha256]['name'] + "', ";
 			
 				$('#droplabel')[0].innerHTML += message;
+			
+				load_game_selector();
 			}
 			
 		</script>
@@ -455,7 +417,7 @@
 			</div>
 
 			<div id="dropbox" style="overflow: auto; clear: both; height: 200px; border: 1px solid red;">
-				<span id="droplabel">Drop games here ...</span>
+				<span id="droplabel">Drop games here to save in database ...</span>
 			</div>
 		
 			<div id="top_controls" style="overflow: auto; clear: both; display: none;">

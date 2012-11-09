@@ -161,16 +161,10 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 
 	// Handle messages that work with vnes running or not
 	if(message.find("load_rom:") == 0) {
-		// Convert the rom data to bytes
+		// Convert the rom from base64 to bytes
 		size_t sep_pos = message.find_first_of(":");
-		string rom_string = message.substr(sep_pos + 1);
-		const size_t ROM_DATA_LENGTH = rom_string.length()/2;
-		uint8_t* rom_data = new uint8_t[ROM_DATA_LENGTH]();
-		size_t j = 0;
-		for(size_t i=0; i<rom_string.length(); i+=2) {
-			rom_data[j] = string_to_byte(rom_string[i], rom_string[i+1]);
-			j++;
-		}
+		string rom_base64 = message.substr(sep_pos + 1);
+		string rom_data = base64_decode(rom_base64);
 
 		// Make sure the ROM is valid
 		if(rom_data[0] != 'N' || rom_data[1] != 'E' || rom_data[2] != 'S' || rom_data[3] != 0x1A) {
@@ -188,7 +182,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 
 			// Run the ROM
 			vnes = new vNES();
-			vnes->init_data((uint8_t*) rom_data, (size_t)ROM_DATA_LENGTH, this);
+			vnes->init_data((uint8_t*) rom_data.c_str(), (size_t)rom_data.length(), this);
 			vnes->pre_run_setup();
 			log_to_browser("running");
 			pthread_create(&thread_, NULL, start_main_loop, this);

@@ -33,6 +33,7 @@ VALID_TOOLCHAINS:=newlib glibc
 TOOLCHAIN?=newlib
 
 SALTY_NES_CXX:= \
+src/base64.cc \
 src/ByteBuffer.cc \
 src/CPU.cc \
 src/ChannelDM.cc \

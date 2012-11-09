@@ -2,7 +2,6 @@
 game_database = {
 	"89dcd466e5abf87f88227c28edfa1e4c7e2040d6fb324f0d3c42405f25b97803" : {
 		"name" : "Adventure Island",
-		"file" : "adventure_island.nes",
 		"developer" : "Hudson Soft",
 		"publisher" : "Hudson Soft",
 		"region" : "NTSC",
@@ -18,7 +17,6 @@ game_database = {
 	},
 	"677330f45a1249d24d003792a4674c93f836be57fd18b57125306efe82f3cda8" : {
 		"name" : "Battle Toads",
-		"file" : "battle_toads.nes",
 		"developer" : "Rare",
 		"publisher" : "Tradewest",
 		"region" : "NTSC",
@@ -34,7 +32,6 @@ game_database = {
 	},
 	"3e947ee62ab4c023f7d3cfe14c68c63371333f6c8a94dddf9a1947c55de0af17" : {
 		"name" : "Bionic Commando",
-		"file" : "bionic_commando.nes",
 		"developer" : "Capcom",
 		"publisher" : "Capcom",
 		"region" : "NTSC",
@@ -50,7 +47,6 @@ game_database = {
 	},
 	"00b2c4b4caf3f1e78ec8e4ce93d43fff55db0451f28016119b468ce302fc63e6" : {
 		"name" : "Bubble Bobble",
-		"file" : "bubble_bobble.nes",
 		"developer" : "Taito",
 		"publisher" : "Taito",
 		"region" : "NTSC",
@@ -66,7 +62,6 @@ game_database = {
 	},
 	"4e779fb0a92ea9c85db72cd627f15d9d8569dba955bf38d37e07afe30d21515c" : {
 		"name" : "Castlevania",
-		"file" : "castlevania.nes",
 		"developer" : "Konami",
 		"publisher" : "Konami",
 		"region" : "NTSC",
@@ -82,7 +77,6 @@ game_database = {
 	},
 	"d5d40f35176974454dc47d8cffdbce7689afae49fa3238bbec064ab26ff4f953" : {
 		"name" : "Contra",
-		"file" : "contra.nes",
 		"developer" : "Konami",
 		"publisher" : "Konami",
 		"region" : "NTSC",
@@ -98,7 +92,6 @@ game_database = {
 	},
 	"eb04309bd8be3d768d8b7fcba82244f4672efc9a9fdf5906661d6ac07a31f016" : {
 		"name" : "Excite Bike",
-		"file" : "excite_bike.nes",
 		"developer" : "Nintendo RES1",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",
@@ -114,7 +107,6 @@ game_database = {
 	},
 	"33406ecbc6863c07f8cbca1b635fcd440352d63cf1e5335016e3ce9d0335c84c" : {
 		"name" : "Hammerin' Harry",
-		"file" : "hammerin'_harry.nes",
 		"developer" : "Irem",
 		"publisher" : "Irem",
 		"region" : "NTSC",
@@ -130,7 +122,6 @@ game_database = {
 	},
 	"979247b30dc94a8e305b430725376a47d3db265e7ff45b271368c300b493f8c0" : {
 		"name" : "Kirby's Adventure",
-		"file" : "kirby's_adventure.nes",
 		"developer" : "HAL Laboratory",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",
@@ -146,7 +137,6 @@ game_database = {
 	},
 	"6d9958dc0d3b72baa852d6fcd74fcba94e6e8b1ebdd00ef9c0437fa9da0a3ab3" : {
 		"name" : "Little Nemo: The Dream Master",
-		"file" : "little_nemo.nes",
 		"developer" : "Capcom",
 		"publisher" : "Capcom",
 		"region" : "NTSC",
@@ -162,7 +152,6 @@ game_database = {
 	},
 	"8f72dc2e98572eb4ba7c3a902bca5f69c448fc4391837e5f8f0d4556280440ac" : {
 		"name" : "The Legend of Zelda",
-		"file" : "legend_of_zelda.nes",
 		"developer" : "Nintendo EAD",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",
@@ -178,7 +167,6 @@ game_database = {
 	},
 	"1c8885892051d79db757746e2281f417cd5b156a86988b0010ad95d7bd4276c5" : {
 		"name" : "Mega Man 1",
-		"file" : "mega_man.nes",
 		"developer" : "Capcom",
 		"publisher" : "Capcom",
 		"region" : "NTSC",
@@ -194,7 +182,6 @@ game_database = {
 	},
 	"27b5a635df33ed57ed339dfc7fd62fc603b39c1d1603adb5cdc3562a0b0d555b" : {
 		"name" : "Mega Man 2",
-		"file" : "mega_man_2.nes",
 		"developer" : "Capcom",
 		"publisher" : "Capcom",
 		"region" : "NTSC",
@@ -210,7 +197,6 @@ game_database = {
 	},
 	"eddbe571cf0a201ba9d090fbace9843c9c9dd4053051649f2575b088752f4675" : {
 		"name" : "Mega Man 3",
-		"file" : "mega_man_3.nes",
 		"developer" : "Capcom",
 		"publisher" : "Capcom",
 		"region" : "NTSC",
@@ -226,7 +212,6 @@ game_database = {
 	},
 	"16becd6a0ad1821111521a5f74f4c0df5c6fca8a51d2d737009d47c38ce9643e" : {
 		"name" : "Metal Gear",
-		"file" : "metal_gear.nes",
 		"developer" : "Konami",
 		"publisher" : "Ultra Games",
 		"region" : "NTSC",
@@ -242,7 +227,6 @@ game_database = {
 	},
 	"0c38fe5bf1d049b868f4d746cf804b18852ad8b2724c58603bed85e22418c0d6" : {
 		"name" : "Metal Storm",
-		"file" : "metal_storm.nes",
 		"developer" : "Irem",
 		"publisher" : "Irem",
 		"region" : "NTSC",
@@ -258,7 +242,6 @@ game_database = {
 	},
 	"c5eea06e1e1128b576bd789f1a4f63bb154d6d31579c2f319382fb77a72d34a6" : {
 		"name" : "Metroid",
-		"file" : "metroid.nes",
 		"developer" : "Nintendo R&D1",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",
@@ -274,7 +257,6 @@ game_database = {
 	},
 	"a5dfd034038280e83a25ebd5422358d3a051188b7d02436b2f76e90403dec2e8" : {
 		"name" : "Ninja Gaiden",
-		"file" : "ninja_gaiden.nes",
 		"developer" : "Tecmo",
 		"publisher" : "Tecmo",
 		"region" : "NTSC",
@@ -290,7 +272,6 @@ game_database = {
 	},
 	"93f93d55eccb53a580e2f0031ea9563c01dcfecd0231a3e7e3119ead986d88f1" : {
 		"name" : "Ninja Gaiden 2",
-		"file" : "ninja_gaiden_2.nes",
 		"developer" : "Tecmo",
 		"publisher" : "Tecmo",
 		"region" : "NTSC",
@@ -306,7 +287,6 @@ game_database = {
 	},
 	"68777c762b122a99eeb7c9adeea77f64b40a53a710f002c0e8e4e666db1481c5" : {
 		"name" : "Punch Out",
-		"file" : "punch_out.nes",
 		"developer" : "Nintendo R&D3",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",
@@ -322,7 +302,6 @@ game_database = {
 	},
 	"8afaa5e4cdf76989b5b337828163500e80bf184590a34ec150a73aa544cff78d" : {
 		"name" : "Shatter Hand",
-		"file" : "shatter_hand.nes",
 		"developer" : "Natsume",
 		"publisher" : "Jaleco",
 		"region" : "NTSC",
@@ -338,7 +317,6 @@ game_database = {
 	},
 	"79b26b55f9da654efda520481b0401e4679408652445427f238318eb599fe992" : {
 		"name" : "River City Ransom",
-		"file" : "river_city_ransom.nes",
 		"developer" : "Technōs Japan",
 		"publisher" : "Technōs Japan",
 		"region" : "NTSC",
@@ -354,7 +332,6 @@ game_database = {
 	},
 	"f61548fdf1670cffefcc4f0b7bdcdd9eaba0c226e3b74f8666071496988248de" : {
 		"name" : "Super Mario Bros.",
-		"file" : "super_mario_bros.nes",
 		"developer" : "Nintendo",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",
@@ -370,7 +347,6 @@ game_database = {
 	},
 	"4377a7f5e6eb50bdd2ac6f249bf1a7085500aca8eb41f38545c3a2731c51a579" : {
 		"name" : "Super Mario Bros. 3",
-		"file" : "super_mario_bros_3.nes",
 		"developer" : "Nintendo",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",

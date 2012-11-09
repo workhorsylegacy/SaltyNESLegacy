@@ -72,6 +72,7 @@
     <Compile Include="sha256sum.cc" />
     <Compile Include="Logger.cc" />
     <Compile Include="SaltyNES.cc" />
+    <Compile Include="base64.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Color.h" />
@@ -92,5 +93,6 @@
       <Link>game_database.json</Link>
     </None>
     <None Include="SaltyNES.h" />
+    <None Include="base64.h" />
   </ItemGroup>
 </Project>
