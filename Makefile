@@ -230,7 +230,7 @@ LAUNCH_NEXE: CHECK_FOR_CHROME all
 
 
 clean:
-	rm -f 'main'
+	rm -f 'saltynes'
 	rm -rf -f 'build'
 	rm -rf -f 'src/bin'
 	rm -rf -f 'glibc'
