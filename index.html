@@ -83,7 +83,7 @@
 			var salty_nes = null;
 			var is_running = false;
 			var paintInterval = null;
-			var debugInterval = null;
+			var fpsInterval = null;
 			var gamepadInterval = null;
 			var vfps = 0;
 			var zoom = 1;
@@ -116,8 +116,8 @@
 			
 			function handleMessage(message_event) {
 				if(message_event.data.split(':')[0] == 'get_fps') {
-					var debug = $('#debug')[0];
-					debug.innerHTML = 'FPS: ' + vfps + ', VFPS: ' + message_event.data.split(':')[1];
+					var fpsdebug = $('#fpsdebug')[0];
+					fpsdebug.innerHTML = 'FPS: ' + vfps + ', VFPS: ' + message_event.data.split(':')[1];
 					vfps = 0;
 				} else if(message_event.data.split(':')[0] == 'get_sha256') {
 					// FIXME: remove this
@@ -145,7 +145,7 @@
 
 					// Have the FPS sent to us every second
 					// FIXME: This should just be sent from the nexe directly
-					debugInterval = setInterval(function() {
+					fpsInterval = setInterval(function() {
 						salty_nes.postMessage('get_fps');
 					}, 1000);
 			
@@ -160,17 +160,20 @@
 					show_screen();
 			
 					var debug = $('#debug')[0];
-					debug.innerHTML = message_event.data;
+					debug.innerHTML = 'Running';
 				} else if(message_event.data == 'quit') {
 					is_running = false;
 					if(paintInterval) {
 						clearInterval(paintInterval);
 						paintInterval = null;
 					}
-					if(debugInterval) {
-						clearInterval(debugInterval);
-						debugInterval = null;
+					if(fpsInterval) {
+						clearInterval(fpsInterval);
+						fpsInterval = null;
 					}
+			
+					var debug = $('#debug')[0];
+					debug.innerHTML = 'Ready';
 				} else {
 					var debug = $('#debug')[0];
 					debug.innerHTML = message_event.data;
@@ -201,7 +204,7 @@
 				update_breadcrumbs();
 			
 				var debug = $('#debug')[0];
-				debug.innerHTML = 'Loaded';
+				debug.innerHTML = 'Ready';
 			
 				// Start getting the gamepad status
 				gamepadInterval = setInterval(function() {
@@ -249,9 +252,9 @@
 					paintInterval = null;
 				}
 
-				if(debugInterval) {
-					clearInterval(debugInterval);
-					debugInterval = null;
+				if(fpsInterval) {
+					clearInterval(fpsInterval);
+					fpsInterval = null;
 				}
 
 				if(gamepadInterval) {
@@ -586,6 +589,7 @@
 				zoom: 
 				<button id="zoom_out" disabled="disabled">-</button>
 				<button id="zoom_in" disabled="disabled">+</button>
+				<span id="fpsdebug"></span>
 			</div>
 
 			<div id="game_selector" style="overflow: auto; clear: both;">
