@@ -112,7 +112,6 @@
 			};
 			request.onsuccess = function(event) {
 				db = request.result;
-				load_game_library();
 			};
 			
 			function handleMessage(message_event) {
@@ -125,9 +124,9 @@
 				} else if(message_event.data.split(':')[0] == 'get_gamepad_status') {
 					var status = message_event.data.split(':')[1];
 					if(status == "yes") {
-						$('#gamepad_indicator')[0].style.display = '';
+						$('#gamepad_indicator').show();
 					} else {
-						$('#gamepad_indicator')[0].style.display = 'none';
+						$('#gamepad_indicator').hide();
 					}
 				} else if(message_event.data == 'running') {
 					is_running = true;
@@ -156,8 +155,8 @@
 					// Get the rom sha256
 					salty_nes.postMessage('get_sha256');
 
-					$('#game_info')[0].style.display = 'none';
-					$('#top_controls')[0].style.display = '';
+					$('#game_info').hide();
+					$('#top_controls').show();
 					show_screen();
 			
 					var debug = $('#debug')[0];
@@ -192,13 +191,13 @@
 			}
 
 			function handleLoadStart(event) {
-				$('#nacl_not_enabled')[0].style.display = 'none';
+				$('#nacl_not_enabled').hide();
 			}
 			
 			function handleLoadEnd() {
 				salty_nes = $('#SaltyNESApp')[0];
 
-				add_breadcrumb({'title' : 'Home', 'link' : "show_games(); return false;"});
+				add_breadcrumb({'title' : 'Home', 'link' : "show_home(); return false;"});
 				update_breadcrumbs();
 			
 				var debug = $('#debug')[0];
@@ -213,42 +212,33 @@
 			function load_game_library() {
 				// Get all the existing links in the library
 				var game_library = $('#game_library');
-				var links = {};
-				var ls = game_library.find('a')
-				for(i=0; i<ls.length; i++) {
-					var link = ls[i];
-					links[link.id] = link;
-				}
 			
 				// Load all the new games into the selector
 				var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
 				var index = objectStore.index('name');
-				var is_empty = true;
+				var is_first_icon = true;
 				index.openCursor().onsuccess = function(event) {
 					var cursor = event.target.result;
 					if(cursor) {
-						is_empty = false;
+						if(is_first_icon) {
+							game_library[0].innerHTML = '';
+							is_first_icon = false;
+						}
 						var game = cursor.value;
 			
-						// Check if the game is already in the selector
-						var is_already_loaded = (links[game.sha256] != undefined);
-			
-						if(!is_already_loaded) {
-							var link_text = "";
-							if(game.img != "") {
-								var icon_class = game['is_broken'] ? 'game_icon broken' : 'game_icon';
-								link_text = "<a id=\"" + game.sha256 + "\" href=\"" + game.name + "\" onclick=\"show_game_info('" + game.sha256 + "'); return false;\"><div class=\"" + icon_class + "\"><img src=\"" + game.img + "\" /><br />" + game.name + "</div></a>";
-							} else {
-								link_text = "<a id=\"" + game.sha256 + "\" href=\"" + game.name + "\" onclick=\"show_game_info('" + game.sha256 + "'); return false;\"><div class=\"game_icon_none\"><div>Unknown Game</div>" + game.name + "</div></a>";
-							}
-							game_library[0].innerHTML += link_text;
+						// Put the icon in the selector
+						var link_text = "";
+						if(game.img != "") {
+							var icon_class = game['is_broken'] ? 'game_icon broken' : 'game_icon';
+							link_text = "<a id=\"" + game.sha256 + "\" href=\"" + game.name + "\" onclick=\"show_game_info('" + game.sha256 + "'); return false;\"><div class=\"" + icon_class + "\"><img src=\"" + game.img + "\" /><br />" + game.name + "</div></a>";
+						} else {
+							link_text = "<a id=\"" + game.sha256 + "\" href=\"" + game.name + "\" onclick=\"show_game_info('" + game.sha256 + "'); return false;\"><div class=\"game_icon_none\"><div>Unknown Game</div>" + game.name + "</div></a>";
 						}
+						game_library[0].innerHTML += link_text;
 			
 						cursor.continue();
 					} else {
-						if(is_empty) {
-							game_library[0].innerHTML = "<p>There are no games in your library.</p>";
-						}
+
 					}
 				};
 			}
@@ -282,9 +272,12 @@
 			}
 
 			function show_game_info(sha256) {
-				$('#game_selector')[0].style.display = 'none';
-				$('#game_info')[0].style.display = '';
-				$('#top_controls')[0].style.display = 'none';
+				$('#game_selector').hide();
+				$('#game_info').show();
+				$('#top_controls').hide();
+				$('#game_drop').hide();
+				$('#game_library').hide();
+				$('#home_controls').hide();
 				hide_screen();
 
 				// Quit running any existing game
@@ -323,7 +316,7 @@
 				};
 			}
 
-			function show_games() {
+			function show_home() {
 				// Empty the fields fow showing a game
 				var fields = ["name", "developer", "publisher", "region", "release_date", 
 								"number_of_players", "can_save", "mapper", "char_rom_pages", "prog_rom_pages", 
@@ -333,9 +326,48 @@
 				}
 
 				// Show all the games
-				$('#game_selector')[0].style.display = '';
-				$('#game_info')[0].style.display = 'none';
-				$('#top_controls')[0].style.display = 'none';
+				$('#game_selector').show();
+				$('#game_info').hide();
+				$('#top_controls').hide();
+				$('#game_drop').hide();
+				$('#game_library').hide();
+				$('#home_controls').show();
+				hide_screen();
+			
+				// Quit running any existing game
+				if(is_running)
+					salty_nes.postMessage('quit');
+			}
+			
+			function show_library() {
+				add_breadcrumb({'title' : 'My Library', 'link' : "show_library(); return false;"});
+				update_breadcrumbs();
+			
+				$('#game_selector').show();
+				$('#game_info').hide();
+				$('#top_controls').hide();
+				$('#game_drop').hide();
+				$('#game_library').show();
+				$('#home_controls').hide();
+				hide_screen();
+			
+				// Quit running any existing game
+				if(is_running)
+					salty_nes.postMessage('quit');
+			
+				load_game_library();
+			}
+			
+			function show_drop() {
+				add_breadcrumb({'title' : 'Add to Library', 'link' : "show_drop(); return false;"});
+				update_breadcrumbs();
+
+				$('#game_selector').show();
+				$('#game_info').hide();
+				$('#top_controls').hide();
+				$('#game_drop').show();
+				$('#game_library').hide();
+				$('#home_controls').hide();
 				hide_screen();
 			
 				// Quit running any existing game
@@ -423,6 +455,8 @@
 			
 
 			function handleFiles(files) {
+				$('#game_drop_loading').show();
+			
 				// Read the files
 				for(i=0; i<files.length; i++) {
 					var file_name = files[i].name;
@@ -478,9 +512,9 @@
 								var next = readers.pop();
 								next['reader'].readAsDataURL(next['file']);
 							}
-				
-							// Show all the games
-							load_game_library();
+			
+							if(readers.length == 0)
+								$('#game_drop_loading').hide();
 						};
 			
 						request.onerror = function(event) {
@@ -489,6 +523,9 @@
 								var next = readers.pop();
 								next['reader'].readAsDataURL(next['file']);
 							}
+			
+							if(readers.length == 0)
+								$('#game_drop_loading').hide();
 						};
 					};
 
@@ -545,15 +582,25 @@
 				<button id="zoom_in" disabled="disabled">+</button>
 			</div>
 
-			<div id="game_selector" style="overflow: auto; clear: both; border: 10px solid black;">
-				<div id="game_library_controls" style="overflow: auto; clear: both; text-align: left; border: 10px solid blue;">
-					<a href="" onclick="$('#game_drop').toggle(); return false;">Add games</a>
+			<div id="game_selector" style="overflow: auto; clear: both;">
+				<div id="home_controls" style="overflow: auto; clear: both;">
+					<a href="Add to Library" onclick="show_drop(); return false;">
+						<div style="overflow: auto; width: 49%; height: 100px; float: left; border: 1px solid black;">
+						Add to Library
+						</div>
+					</a>
+					<a href="My Library" onclick="show_library(); return false;">
+						<div style="overflow: auto; width: 49%; height: 100px; float: left; border: 1px solid black;">
+						My Library
+						</div>
+					</a>
 				</div>
-				<div id="game_drop" style="overflow: auto; clear: both; height: 150px; border: 10px solid red; display: none;">
+				<div id="game_drop" style="overflow: auto; clear: both; height: 170px; border: 10px solid green; display: none;">
 					<p>Drop games here to save in your library.</p>
+					<img id="game_drop_loading" style="display: none;" src="loading.gif" />
 				</div>
-				<div id="game_library" style="overflow: auto; clear: both; min-height: 200px; border: 10px solid green;">
-					
+				<div id="game_library" style="overflow: auto; clear: both; min-height: 200px; display: none;">
+					<p>There are no games in your library.</p>
 				</div>
 			</div>
 
