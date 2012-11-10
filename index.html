@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>SaltyNES - A NES emulator in the browser.</title>
+		<title>SaltyNES - A NES emulator in the browser</title>
 		<script src="jquery-1.8.2.min.js" type="text/javascript"></script>
 		<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/sha256.js"></script>
 		<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/core-min.js"></script>
@@ -313,10 +313,14 @@
 					$('#game_play_button').click(function() {
 						load_rom(sha256);
 					});
+			
+					document.title = game.name + ' - SaltyNES';
 				};
 			}
 
 			function show_home() {
+				document.title = 'SaltyNES - A NES emulator in the browser'
+
 				// Empty the fields fow showing a game
 				var fields = ["name", "developer", "publisher", "region", "release_date", 
 								"number_of_players", "can_save", "mapper", "char_rom_pages", "prog_rom_pages", 
@@ -340,6 +344,7 @@
 			}
 			
 			function show_library() {
+				document.title = 'My Library - SaltyNES';
 				add_breadcrumb({'title' : 'My Library', 'link' : "show_library(); return false;"});
 				update_breadcrumbs();
 			
@@ -359,6 +364,7 @@
 			}
 			
 			function show_drop() {
+				document.title = 'Add to Library - SaltyNES';
 				add_breadcrumb({'title' : 'Add to Library', 'link' : "show_drop(); return false;"});
 				update_breadcrumbs();
 
