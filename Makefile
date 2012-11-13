@@ -32,6 +32,14 @@ NACL_LDFLAGS:=-g -pthread -lppapi_cpp -lppapi
 VALID_TOOLCHAINS:=newlib glibc
 TOOLCHAIN?=newlib
 
+#
+# Alias for standard commands
+#
+CP:=python $(NACL_SDK_ROOT)/tools/oshelpers.py cp
+MKDIR:=python $(NACL_SDK_ROOT)/tools/oshelpers.py mkdir
+MV:=python $(NACL_SDK_ROOT)/tools/oshelpers.py mv
+RM:=python $(NACL_SDK_ROOT)/tools/oshelpers.py rm
+
 SALTY_NES_CXX:= \
 src/base64.cc \
 src/ByteBuffer.cc \
@@ -75,16 +83,8 @@ SALTY_NES_LDFLAGS:=$(NACL_LDFLAGS)
 # Default target
 #
 all: newlib/salty_nes.nmf glibc/salty_nes.nmf
-	rm -f ~/Desktop/nacl_stdout.log
-	rm -f ~/Desktop/nacl_stderr.log
-
-#
-# Alias for standard commands
-#
-CP:=python $(NACL_SDK_ROOT)/tools/oshelpers.py cp
-MKDIR:=python $(NACL_SDK_ROOT)/tools/oshelpers.py mkdir
-MV:=python $(NACL_SDK_ROOT)/tools/oshelpers.py mv
-
+	$(RM) -f ~/Desktop/nacl_stdout.log
+	$(RM) -f ~/Desktop/nacl_stderr.log
 
 #
 # Verify we selected a valid toolchain for this example
@@ -230,11 +230,11 @@ LAUNCH_NEXE: CHECK_FOR_CHROME all
 
 
 clean:
-	rm -f 'saltynes'
-	rm -rf -f 'build'
-	rm -rf -f 'src/bin'
-	rm -rf -f 'glibc'
-	rm -rf -f 'newlib'
+	$(RM) -f 'saltynes'
+	$(RM) -rf -f 'build'
+	$(RM) -rf -f 'src/bin'
+	$(RM) -rf -f 'glibc'
+	$(RM) -rf -f 'newlib'
 
 strip:
 	$(NEWLIB_STRIP32) newlib/salty_nes_x86_32.nexe
