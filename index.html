@@ -9,6 +9,7 @@
 		<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>
 
 		<script src="game_database.json" type="text/javascript"></script>
+		<script src="gamepad_database.json" type="text/javascript"></script>
 		<style>
 			html, body {
 				height: 100%;
@@ -90,6 +91,7 @@
 			var max_zoom = 4;
 			var breadcrumbs = [];
 			var readers = [];
+			var gamepad_id = null;
 
 			// Setup indexDB
 			window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
@@ -115,6 +117,9 @@
 			};
 			
 			function handleMessage(message_event) {
+				if(message_event.data == null)
+					return;
+			
 				if(message_event.data.split(':')[0] == 'get_fps') {
 					var fpsdebug = $('#fpsdebug')[0];
 					fpsdebug.innerHTML = 'FPS: ' + vfps + ', VFPS: ' + message_event.data.split(':')[1];
@@ -123,10 +128,27 @@
 					// FIXME: remove this
 				} else if(message_event.data.split(':')[0] == 'get_gamepad_status') {
 					var status = message_event.data.split(':')[1];
+					var new_gamepad_id = message_event.data.split(':')[2];
 					if(status == "yes") {
 						$('#gamepad_indicator').show();
 					} else {
 						$('#gamepad_indicator').hide();
+					}
+			
+					// Update the key bindings if this is a new gamepad
+					if(is_running && new_gamepad_id && new_gamepad_id != gamepad_id) {
+						var buttons = null;
+						//if(new_gamepad_id in gamepad_database) {
+							buttons = gamepad_database[new_gamepad_id]['default_buttons'];
+						//} else {
+						//	buttons = gamepad_database['default']['buttons'];
+						//}
+						for(var key in buttons) {
+							for(var i=0; i<buttons[key].length; i++) {
+								salty_nes.postMessage('set_input_' + key + ':' + buttons[key][i]);
+							}
+						}
+						gamepad_id = new_gamepad_id;
 					}
 				} else if(message_event.data == 'running') {
 					is_running = true;
@@ -646,7 +668,7 @@
 					return true;
 			
 				if(!is_running) return false;
-				salty_nes.postMessage('button_down:' + event.which);
+				salty_nes.postMessage('key_down:' + event.which);
 				return false;
 			});
 
@@ -657,7 +679,7 @@
 					return true;
 			
 				if(!is_running) return false;
-				salty_nes.postMessage('button_up:' + event.which);
+				salty_nes.postMessage('key_up:' + event.which);
 				return false;
 			});
 

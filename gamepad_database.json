@@ -1,0 +1,22 @@
+
+gamepad_database = {
+	"045e028e" : {
+		"vendor" : "Microsoft",
+		"name" : "Xbox 360 Standard Wired Gamepad",
+		"default_buttons" : {
+			"up" : ["axes-1", 12],
+			"down" : ["axes+1", 13],
+			"right" : ["axes+0", 15],
+			"left" : ["axes-0", 14],
+			"select" : [8],
+			"start" : [9],
+			"home" : [16],
+			"b" : [2],
+			"a" : [0]
+		}
+	}
+};
+
+
+
+

@@ -26,6 +26,9 @@ using namespace std;
 // Globals
 SaltyNES* SaltyNES::g_salty_nes = NULL;
 const int kPthreadMutexSuccess = 0;
+const float SaltyNES::AXES_DEAD_ZONE = 0.2;
+const string SaltyNES::KEYS[] = { "up", "down", "right", "left", "start", "select", "a", "b" };
+const size_t SaltyNES::KEYS_LENGTH = 8;
 
 // This is called by the browser when the 2D context has been flushed to the
 // browser window.
@@ -96,14 +99,15 @@ SaltyNES::SaltyNES(PP_Instance instance)
 	_is_gamepad_connected = false;
 	_is_gamepad_used = false;
 	_is_keyboard_used = false;
-	_button_b_down = false;
-	_button_a_down = false;
-	_button_start_down = false;
-	_button_select_down = false;
-	_button_up_down = false;
-	_button_down_down = false;
-	_button_left_down = false;
-	_button_right_down = false;
+
+	_is_input_pressed["up"] = false;
+	_is_input_pressed["down"] = false;
+	_is_input_pressed["right"] = false;
+	_is_input_pressed["left"] = false;
+	_is_input_pressed["start"] = false;
+	_is_input_pressed["select"] = false;
+	_is_input_pressed["a"] = false;
+	_is_input_pressed["b"] = false;
 
 	pp::Module* module = pp::Module::Get();
 	assert(module);
@@ -205,6 +209,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		stringstream out;
 		out << "get_gamepad_status:";
 		out << (_is_gamepad_connected ? "yes" : "no");
+		out << ":" << _gamepad_vendor_id << _gamepad_product_id;
 		log_to_browser(out.str());
 		return;
 	}
@@ -224,23 +229,48 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		string str_zoom = message.substr(sep_pos + 1);
 		istringstream ( str_zoom ) >> zoom;
 		vnes->nes->ppu->_zoom = zoom;
-	} else if(message.find("button_down:") == 0) {
+	} else if(message.find("key_down:") == 0) {
 		size_t sep_pos = message.find_first_of(":");
 		int32_t button = 0;
 		string str_button = message.substr(sep_pos + 1);
 		istringstream ( str_button ) >> button;
-		button_down(button);
-	} else if(message.find("button_up:") == 0) {
+		key_down(button);
+	} else if(message.find("key_up:") == 0) {
 		size_t sep_pos = message.find_first_of(":");
 		int32_t button = 0;
 		string str_button = message.substr(sep_pos + 1);
 		istringstream ( str_button ) >> button;
-		button_up(button);
+		key_up(button);
 	} else if(message == "get_fps") {
 		stringstream out;
 		out << "get_fps:";
 		out << get_fps();
 		log_to_browser(out.str());
+	} else if(message.find("set_input_") == 0) {
+		size_t sep_pos = message.find_first_of(":");
+		size_t axes_pos = message.find("axes");
+		size_t sign_pos = message.find_first_of("+-");
+		string input = message.substr(10, sep_pos-10);
+
+		// Axes
+		if(axes_pos != string::npos && sign_pos != string::npos) {
+			string str_axes = message.substr(sign_pos + 1);
+			string sign = message.substr(sign_pos, 1);
+			size_t axes = 0;
+			istringstream ( str_axes ) >> axes;
+			
+			if(sign == "+") {
+				_input_map_axes_pos[input].push_back(axes);
+			} else if(sign == "-") {
+				_input_map_axes_neg[input].push_back(axes);
+			}
+		// Button
+		} else {
+			string str_button = message.substr(sep_pos + 1);
+			int button = 0;
+			istringstream ( str_button ) >> button;
+			_input_map_button[input].push_back(button);
+		}
 	} else if(message == "quit") {
 		if(vnes != NULL) {
 			vnes->stop();
@@ -306,27 +336,58 @@ void SaltyNES::update_gamepad() {
 
 		// Check if we are switching to the gamepad from the keyboard
 		for(size_t j=0; j<pad.buttons_length; ++j) {
-			if(pad.buttons[j])
-				_is_gamepad_used = true;
-				_is_keyboard_used = false;
-		}
-		for(size_t j=0; j<pad.axes_length; ++j) {
-			if(pad.axes[j] != 0) {
+			if(pad.buttons[j]) {
 				_is_gamepad_used = true;
 				_is_keyboard_used = false;
 			}
 		}
+		for(size_t j=0; j<pad.axes_length; ++j) {
+			if(pad.axes[j] > AXES_DEAD_ZONE || pad.axes[j] < -AXES_DEAD_ZONE) {
+				_is_gamepad_used = true;
+				_is_keyboard_used = false;
+			}
+		}
+		
+		// Get the vendor, and product id
+		if(_is_gamepad_used) {
+			char id[128];
+			for(int k=0; k<128; ++k) {
+				id[k] = pad.id[k];
+			}
+			string sid = id;
+			size_t vendor_pos = sid.find("Vendor: ");
+			size_t product_pos = sid.find("Product: ");
+			_gamepad_vendor_id = sid.substr(vendor_pos + strlen("Vendor: "), 4);
+			_gamepad_product_id = sid.substr(product_pos + strlen("Product: "), 4);
+		}
 
 		// Get the key states
 		if(_is_gamepad_used) {
-			_button_b_down = pad.buttons[0] > 0;
-			_button_a_down = pad.buttons[1] > 0;
-			_button_start_down = pad.buttons[9] > 0;
-			_button_select_down = pad.buttons[8] > 0;
-			_button_up_down = pad.axes[1] < 0;
-			_button_down_down = pad.axes[1] > 0;
-			_button_left_down = pad.axes[0] < 0;
-			_button_right_down = pad.axes[0] > 0;
+			for(size_t j=0; j<KEYS_LENGTH; ++j) {
+				string key = KEYS[j];
+				_is_input_pressed[key] = false;
+				// Button
+				for(size_t k=0; k<_input_map_button[key].size(); ++k) {
+					size_t number = _input_map_button[key][k];
+					if(pad.buttons[number] > 0) {
+						_is_input_pressed[key] = true;
+					}
+				}
+				// Positive Axes
+				for(size_t k=0; k<_input_map_axes_pos[key].size(); ++k) {
+					size_t number = _input_map_axes_pos[key][k];
+					if(pad.axes[number] > AXES_DEAD_ZONE) {
+						_is_input_pressed[key] = true;
+					}
+				}
+				// Negative Axes
+				for(size_t k=0; k<_input_map_axes_neg[key].size(); ++k) {
+					size_t number = _input_map_axes_neg[key][k];
+					if(pad.axes[number] < -AXES_DEAD_ZONE) {
+						_is_input_pressed[key] = true;
+					}
+				}
+			}
 		}
 	}
 }

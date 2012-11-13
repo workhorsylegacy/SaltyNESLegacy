@@ -46,25 +46,25 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         int32_t numberOfKeys;
         uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
 
-        (*s)[(*m)[KbInputHandler::KEY_B]] =      keystate[SDLK_z];
-        (*s)[(*m)[KbInputHandler::KEY_A]] =      keystate[SDLK_x];
-        (*s)[(*m)[KbInputHandler::KEY_START]] =  keystate[SDLK_RETURN];
-        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
         (*s)[(*m)[KbInputHandler::KEY_UP]] =     keystate[SDLK_UP];
         (*s)[(*m)[KbInputHandler::KEY_DOWN]] =   keystate[SDLK_DOWN];
         (*s)[(*m)[KbInputHandler::KEY_RIGHT]] =  keystate[SDLK_RIGHT];
         (*s)[(*m)[KbInputHandler::KEY_LEFT]] =   keystate[SDLK_LEFT];
+        (*s)[(*m)[KbInputHandler::KEY_START]] =  keystate[SDLK_RETURN];
+        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
+        (*s)[(*m)[KbInputHandler::KEY_B]] =      keystate[SDLK_z];
+        (*s)[(*m)[KbInputHandler::KEY_A]] =      keystate[SDLK_x];
 #endif
 
 #ifdef NACL
-        (*s)[(*m)[KbInputHandler::KEY_B]] = this->nes->_salty_nes->_button_b_down;
-        (*s)[(*m)[KbInputHandler::KEY_A]] = this->nes->_salty_nes->_button_a_down;
-        (*s)[(*m)[KbInputHandler::KEY_START]] = this->nes->_salty_nes->_button_start_down;
-        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = this->nes->_salty_nes->_button_select_down;
-        (*s)[(*m)[KbInputHandler::KEY_UP]] = this->nes->_salty_nes->_button_up_down;
-        (*s)[(*m)[KbInputHandler::KEY_DOWN]] = this->nes->_salty_nes->_button_down_down;
-        (*s)[(*m)[KbInputHandler::KEY_RIGHT]] = this->nes->_salty_nes->_button_right_down;
-        (*s)[(*m)[KbInputHandler::KEY_LEFT]] = this->nes->_salty_nes->_button_left_down;
+        (*s)[(*m)[KbInputHandler::KEY_UP]] = this->nes->_salty_nes->_is_input_pressed["up"];
+        (*s)[(*m)[KbInputHandler::KEY_DOWN]] = this->nes->_salty_nes->_is_input_pressed["down"];
+        (*s)[(*m)[KbInputHandler::KEY_RIGHT]] = this->nes->_salty_nes->_is_input_pressed["right"];
+        (*s)[(*m)[KbInputHandler::KEY_LEFT]] = this->nes->_salty_nes->_is_input_pressed["left"];
+        (*s)[(*m)[KbInputHandler::KEY_START]] = this->nes->_salty_nes->_is_input_pressed["start"];
+        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = this->nes->_salty_nes->_is_input_pressed["select"];
+        (*s)[(*m)[KbInputHandler::KEY_B]] = this->nes->_salty_nes->_is_input_pressed["b"];
+        (*s)[(*m)[KbInputHandler::KEY_A]] = this->nes->_salty_nes->_is_input_pressed["a"];
 #endif
 
         // Can't hold both left & right or up & down at same time:

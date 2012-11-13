@@ -24,6 +24,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	bool Parameters::fps = false;
 	bool Parameters::timeemulation = true;
 	bool Parameters::showsoundbuffer = false;
+///*
 	string Parameters::p1_up = "VK_UP";
 	string Parameters::p1_down = "VK_DOWN";
 	string Parameters::p1_left = "VK_LEFT";
@@ -41,3 +42,4 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 	string Parameters::p2_b = "VK_NUMPAD9";
 	string Parameters::p2_start = "VK_NUMPAD1";
 	string Parameters::p2_select = "VK_NUMPAD3";
+//*/
