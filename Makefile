@@ -29,7 +29,7 @@ NACL_LDFLAGS:=-g -pthread -lppapi_cpp -lppapi
 #
 # Project Settings
 #
-VALID_TOOLCHAINS:=newlib glibc
+VALID_TOOLCHAINS:=newlib #glibc
 TOOLCHAIN?=newlib
 
 #
@@ -82,7 +82,7 @@ SALTY_NES_LDFLAGS:=$(NACL_LDFLAGS)
 #
 # Default target
 #
-all: newlib/salty_nes.nmf glibc/salty_nes.nmf
+all: newlib/salty_nes.nmf #glibc/salty_nes.nmf
 	$(RM) -f ~/Desktop/nacl_stdout.log
 	$(RM) -f ~/Desktop/nacl_stderr.log
 
@@ -133,12 +133,12 @@ NEWLIB_DUMP?=$(TC_PATH)/$(OSNAME)_x86_newlib/x86_64-nacl/bin/objdump
 NEWLIB_STRIP32?=$(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-strip
 NEWLIB_STRIP64?=$(TC_PATH)/$(OSNAME)_x86_newlib/bin/x86_64-nacl-strip
 
-GLIBC_CC?=$(TC_PATH)/$(OSNAME)_x86_glibc/bin/i686-nacl-gcc -c
-GLIBC_CXX?=$(TC_PATH)/$(OSNAME)_x86_glibc/bin/i686-nacl-g++ -c
-GLIBC_LINK?=$(TC_PATH)/$(OSNAME)_x86_glibc/bin/i686-nacl-g++ -Wl,-as-needed
-GLIBC_DUMP?=$(TC_PATH)/$(OSNAME)_x86_glibc/x86_64-nacl/bin/objdump
-GLIBC_PATHS:=-L $(TC_PATH)/$(OSNAME)_x86_glibc/x86_64-nacl/lib32
-GLIBC_PATHS+=-L $(TC_PATH)/$(OSNAME)_x86_glibc/x86_64-nacl/lib
+#GLIBC_CC?=$(TC_PATH)/$(OSNAME)_x86_glibc/bin/i686-nacl-gcc -c
+#GLIBC_CXX?=$(TC_PATH)/$(OSNAME)_x86_glibc/bin/i686-nacl-g++ -c
+#GLIBC_LINK?=$(TC_PATH)/$(OSNAME)_x86_glibc/bin/i686-nacl-g++ -Wl,-as-needed
+#GLIBC_DUMP?=$(TC_PATH)/$(OSNAME)_x86_glibc/x86_64-nacl/bin/objdump
+#GLIBC_PATHS:=-L $(TC_PATH)/$(OSNAME)_x86_glibc/x86_64-nacl/lib32
+#GLIBC_PATHS+=-L $(TC_PATH)/$(OSNAME)_x86_glibc/x86_64-nacl/lib
 
 
 
@@ -195,28 +195,29 @@ newlib/salty_nes.nmf : $(NEWLIB_NMF)
 #
 # Rules for glibc toolchain
 #
-glibc:
-	$(MKDIR) glibc
-	$(MKDIR) glibc/src
-
-GLIBC_SALTY_NES_x86_32_CXX_O:=$(patsubst %.cc, glibc/%_x86_32.o,$(SALTY_NES_CXX))
-$(GLIBC_SALTY_NES_x86_32_CXX_O) : glibc/%_x86_32.o : %.cc $(THIS_MAKE) | glibc
-	$(GLIBC_CXX) -o $@ $< -m32 $(SALTY_NES_CXXFLAGS) -DTCNAME=glibc -DNACL=true
-
-glibc/salty_nes_x86_32.nexe : $(GLIBC_SALTY_NES_x86_32_CXX_O)
-	$(GLIBC_LINK) -o $@ $^ -m32 $(SALTY_NES_LDFLAGS)
-GLIBC_NMF+=glibc/salty_nes_x86_32.nexe 
-
-GLIBC_SALTY_NES_x86_64_CXX_O:=$(patsubst %.cc, glibc/%_x86_64.o,$(SALTY_NES_CXX))
-$(GLIBC_SALTY_NES_x86_64_CXX_O) : glibc/%_x86_64.o : %.cc $(THIS_MAKE) | glibc
-	$(GLIBC_CXX) -o $@ $< -m64 $(SALTY_NES_CXXFLAGS) -DTCNAME=glibc -DNACL=true
-
-glibc/salty_nes_x86_64.nexe : $(GLIBC_SALTY_NES_x86_64_CXX_O)
-	$(GLIBC_LINK) -o $@ $^ -m64 $(SALTY_NES_LDFLAGS)
-GLIBC_NMF+=glibc/salty_nes_x86_64.nexe 
-
-glibc/salty_nes.nmf : $(GLIBC_NMF)
-	$(NMF) -D $(GLIBC_DUMP) -o $@ $(GLIBC_PATHS) $^ -t glibc -s glibc $(GLIBC_REMAP)
+#
+#glibc:
+#	$(MKDIR) glibc
+#	$(MKDIR) glibc/src
+#
+#GLIBC_SALTY_NES_x86_32_CXX_O:=$(patsubst %.cc, glibc/%_x86_32.o,$(SALTY_NES_CXX))
+#$(GLIBC_SALTY_NES_x86_32_CXX_O) : glibc/%_x86_32.o : %.cc $(THIS_MAKE) | glibc
+#	$(GLIBC_CXX) -o $@ $< -m32 $(SALTY_NES_CXXFLAGS) -DTCNAME=glibc -DNACL=true
+#
+#glibc/salty_nes_x86_32.nexe : $(GLIBC_SALTY_NES_x86_32_CXX_O)
+#	$(GLIBC_LINK) -o $@ $^ -m32 $(SALTY_NES_LDFLAGS)
+#GLIBC_NMF+=glibc/salty_nes_x86_32.nexe 
+#
+#GLIBC_SALTY_NES_x86_64_CXX_O:=$(patsubst %.cc, glibc/%_x86_64.o,$(SALTY_NES_CXX))
+#$(GLIBC_SALTY_NES_x86_64_CXX_O) : glibc/%_x86_64.o : %.cc $(THIS_MAKE) | glibc
+#	$(GLIBC_CXX) -o $@ $< -m64 $(SALTY_NES_CXXFLAGS) -DTCNAME=glibc -DNACL=true
+#
+#glibc/salty_nes_x86_64.nexe : $(GLIBC_SALTY_NES_x86_64_CXX_O)
+#	$(GLIBC_LINK) -o $@ $^ -m64 $(SALTY_NES_LDFLAGS)
+#GLIBC_NMF+=glibc/salty_nes_x86_64.nexe 
+#
+#glibc/salty_nes.nmf : $(GLIBC_NMF)
+#	$(NMF) -D $(GLIBC_DUMP) -o $@ $(GLIBC_PATHS) $^ -t glibc -s glibc $(GLIBC_REMAP)
 
 
 
@@ -233,7 +234,7 @@ clean:
 	$(RM) -f 'saltynes'
 	$(RM) -rf -f 'build'
 	$(RM) -rf -f 'src/bin'
-	$(RM) -rf -f 'glibc'
+	#$(RM) -rf -f 'glibc'
 	$(RM) -rf -f 'newlib'
 
 strip:
