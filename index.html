@@ -138,11 +138,11 @@
 					// Update the key bindings if this is a new gamepad
 					if(is_running && new_gamepad_id && new_gamepad_id != gamepad_id) {
 						var buttons = null;
-						//if(new_gamepad_id in gamepad_database) {
-							buttons = gamepad_database[new_gamepad_id]['default_buttons'];
-						//} else {
-						//	buttons = gamepad_database['default']['buttons'];
-						//}
+						if(new_gamepad_id in gamepad_database) {
+							buttons = gamepad_database[new_gamepad_id]['input_map'];
+						} else {
+							buttons = gamepad_database['unknown']['input_map'];
+						}
 						for(var key in buttons) {
 							for(var i=0; i<buttons[key].length; i++) {
 								salty_nes.postMessage('set_input_' + key + ':' + buttons[key][i]);

@@ -3,7 +3,7 @@ gamepad_database = {
 	"045e028e" : {
 		"vendor" : "Microsoft",
 		"name" : "Xbox 360 Standard Wired Gamepad",
-		"default_buttons" : {
+		"input_map" : {
 			"up" : ["axes-1", 12],
 			"down" : ["axes+1", 13],
 			"right" : ["axes+0", 15],
@@ -18,7 +18,7 @@ gamepad_database = {
 	"046dc216" : {
 		"vendor" : "Logitech",
 		"name" : "Logitech Dual Action",
-		"default_buttons" : {
+		"input_map" : {
 			"up" : ["axes-5", "axes-1"],
 			"down" : ["axes+5", "axes+1"],
 			"right" : ["axes+4", "axes+0"],
@@ -33,7 +33,7 @@ gamepad_database = {
 	"17810a9a" : {
 		"vendor" : "raphnet.net",
 		"name" : "raphnet.net GC/N64_USB",
-		"default_buttons" : {
+		"input_map" : {
 			"up" : ["axes-1", 8],
 			"down" : ["axes+1", 9],
 			"right" : ["axes+0", 10],
@@ -44,7 +44,22 @@ gamepad_database = {
 			"b" : [3],
 			"a" : [4]
 		}
-	}
+	},
+	"unknown" : {
+		"vendor" : "Unknown",
+		"name" : "Unknown",
+		"input_map" : {
+			"up" : ["axes-1", 12],
+			"down" : ["axes+1", 13],
+			"right" : ["axes+0", 15],
+			"left" : ["axes-0", 14],
+			"select" : [8],
+			"start" : [9],
+			"home" : [4],
+			"b" : [0],
+			"a" : [1]
+		}
+	},
 };
 
 
