@@ -355,9 +355,6 @@ void SaltyNES::update_gamepad() {
 				id[k] = pad.id[k];
 			}
 			string sid = id;
-			stringstream out;
-			out << "id: " << sid;
-			log_to_browser(out.str().c_str());
 			size_t vendor_pos = sid.find("Vendor: ");
 			size_t product_pos = sid.find("Product: ");
 			_gamepad_vendor_id = sid.substr(vendor_pos + strlen("Vendor: "), 4);

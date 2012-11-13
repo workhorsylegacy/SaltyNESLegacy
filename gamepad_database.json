@@ -29,6 +29,21 @@ gamepad_database = {
 			"b" : [0],
 			"a" : [1]
 		}
+	},
+	"17810a9a" : {
+		"vendor" : "raphnet.net",
+		"name" : "raphnet.net GC/N64_USB",
+		"default_buttons" : {
+			"up" : ["axes-1", 8],
+			"down" : ["axes+1", 9],
+			"right" : ["axes+0", 10],
+			"left" : ["axes-0", 11],
+			"select" : [1],
+			"start" : [0],
+			"home" : [7],
+			"b" : [3],
+			"a" : [4]
+		}
 	}
 };
 
