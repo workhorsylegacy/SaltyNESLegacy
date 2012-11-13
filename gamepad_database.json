@@ -14,6 +14,21 @@ gamepad_database = {
 			"b" : [2],
 			"a" : [0]
 		}
+	},
+	"046dc216" : {
+		"vendor" : "Logitech",
+		"name" : "Logitech Dual Action",
+		"default_buttons" : {
+			"up" : ["axes-5", "axes-1"],
+			"down" : ["axes+5", "axes+1"],
+			"right" : ["axes+4", "axes+0"],
+			"left" : ["axes-4", "axes-0"],
+			"select" : [8],
+			"start" : [9],
+			"home" : [4],
+			"b" : [0],
+			"a" : [1]
+		}
 	}
 };
 
