@@ -91,13 +91,13 @@
     <None Include="sha256sum.h" />
     <None Include="SaltyNES.h" />
     <None Include="base64.h" />
-    <None Include="..\js\game_database.json">
+    <None Include="..\static\game_database.json">
       <Link>game_database.json</Link>
     </None>
-    <None Include="..\js\gamepad_database.json">
+    <None Include="..\static\gamepad_database.json">
       <Link>gamepad_database.json</Link>
     </None>
-    <None Include="..\js\SaltyNES.js">
+    <None Include="..\static\SaltyNES.js">
       <Link>SaltyNES.js</Link>
     </None>
   </ItemGroup>
