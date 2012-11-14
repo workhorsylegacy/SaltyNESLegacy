@@ -89,12 +89,15 @@
       <Link>index.html</Link>
     </None>
     <None Include="sha256sum.h" />
-    <None Include="..\game_database.json">
-      <Link>game_database.json</Link>
-    </None>
     <None Include="SaltyNES.h" />
     <None Include="base64.h" />
-    <None Include="..\SaltyNES.js">
+    <None Include="..\js\game_database.json">
+      <Link>game_database.json</Link>
+    </None>
+    <None Include="..\js\gamepad_database.json">
+      <Link>gamepad_database.json</Link>
+    </None>
+    <None Include="..\js\SaltyNES.js">
       <Link>SaltyNES.js</Link>
     </None>
   </ItemGroup>
