@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "SaltyNES",
+  "description": "A NES emulator in the browser.",
+  "version": "0.1",
+  "icons": {
+    "16": "saltynes_icon_16.jpg",
+    "128": "saltynes_icon_128.jpg"
+  },
+  "app": {
+    "launch": {
+      "local_path": "index.html"
+    }
+  }
+}
+

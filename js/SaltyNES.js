@@ -15,45 +15,47 @@ var readers = [];
 var gamepad_id = null;
 
 function add_breadcrumb(breadcrumb) {
-	// Just return if the last breadcrumb is the same is the one to add
+	// Just return if the last breadcrumb is the same as the one to add
 	if(breadcrumbs.length > 0 && breadcrumb['title'] == breadcrumbs[breadcrumbs.length-1]['title']) {
 		return;
 	}
 
-	// Add the breadcrumb
-	breadcrumb['link'] = "remove_breadcrumbs_after('" + breadcrumb['title'] + "'); " + breadcrumb['link'];
+	var sep = '';
+	if(breadcrumbs.length > 0)
+		sep = '&nbsp;&nbsp;&gt;&nbsp;&nbsp;';
+
+	// Create the breadcrumb
+	var id = 'breadcrumb_' + breadcrumbs.length;
+	var title = breadcrumb['title'];
+	var before = function() { remove_breadcrumbs_after(id); };
+	var after = breadcrumb['onclick'];
+	breadcrumb['id'] = id;
+	breadcrumb['element'] = $('<span id="' + id + '">' + sep + '<a href="' + title + '" \>' + title + '</a></span>');
+	breadcrumb['element'].click(function(event) {
+		before();
+		after();
+		event.preventDefault();
+	});
+	
+	// Add it to the others
 	breadcrumbs.push(breadcrumb);
+	$('#breadcrumbs_div').append(breadcrumb['element']);
 }
 
-function update_breadcrumbs() {
-	var breadcrumbs_div = $('#breadcrumbs_div')[0];
-
-	breadcrumbs_div.innerHTML = "";
-	for(var i=0; i<breadcrumbs.length; i++) {
-		var title = breadcrumbs[i]['title'];
-		var link = breadcrumbs[i]['link'];
-		breadcrumbs_div.innerHTML += "<a href=\"#\" onclick=\"" + link + "\">" + title + "</a>";
-		if(breadcrumbs.length > i+1)
-			breadcrumbs_div.innerHTML += "&nbsp;&nbsp;&gt;&nbsp;&nbsp;";
-	}
-}
-
-function remove_breadcrumbs_after(title) {
+function remove_breadcrumbs_after(id) {
 	// Get the pisition of the current crumb
-	var count = 0;
-	for(i=0; i< breadcrumbs.length; i++) {
-		if(breadcrumbs[i]['title'] == title) {
-			count = breadcrumbs.length - (i + 1);
-		}
+	var position = 0;
+	var children = $('#breadcrumbs_div').children();
+	for(i=0; i<children.length; i++) {
+		if(children[i].id == id)
+			position = i;
 	}
-
+	
 	// Pop off the crumbs that are after
-	for(i=0; i < count; i++) {
+	for(i=children.length-1; i>position; i--) {
+		breadcrumbs[i]['element'].remove();
 		breadcrumbs.pop();
 	}
-
-	// Draw the new breadcrumbs
-	update_breadcrumbs();
 }
 
 function setup_indexeddb() {
@@ -98,14 +100,18 @@ function load_game_library() {
 			var game = cursor.value;
 
 			// Put the icon in the selector
-			var link_text = "";
+			var element = null;
 			if(game.img != "") {
 				var icon_class = game['is_broken'] ? 'game_icon broken' : 'game_icon';
-				link_text = "<a id=\"" + game.sha256 + "\" href=\"" + game.name + "\" onclick=\"show_game_info('" + game.sha256 + "'); return false;\"><div class=\"" + icon_class + "\"><img src=\"" + game.img + "\" /><br />" + game.name + "</div></a>";
+				element = $('<a id="' + game.sha256 + '" href="' + game.name + '"><div class="' + icon_class + '"><img src="' + game.img + '" /><br />' + game.name + '</div></a>');
 			} else {
-				link_text = "<a id=\"" + game.sha256 + "\" href=\"" + game.name + "\" onclick=\"show_game_info('" + game.sha256 + "'); return false;\"><div class=\"game_icon_none\"><div>Unknown Game</div>" + game.name + "</div></a>";
+				element = $('<a id="' + game.sha256 + '" href="' + game.name + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name + '</div></a>');
 			}
-			game_library[0].innerHTML += link_text;
+			game_library.append(element);
+			element.click(function(event) {
+				show_game_info(game.sha256);
+				event.preventDefault();
+			});
 
 			cursor.continue();
 		} else {
@@ -144,8 +150,7 @@ function show_game_info(sha256) {
 	request.onsuccess = function(event) {
 		var game = request.result;
 		// Add the game info to the breadcrumbs
-		add_breadcrumb({'title' : game.name, 'link' : "show_game_info('" + sha256 + "'); return false;"});
-		update_breadcrumbs();
+		add_breadcrumb({'title' : game.name, 'onclick' : function() { show_game_info(sha256); }});
 
 		// Fill in the info for this game
 		var fields = ["name", "developer", "publisher", "region", "release_date", 
@@ -199,8 +204,7 @@ function show_home() {
 
 function show_library() {
 	document.title = 'My Library - SaltyNES';
-	add_breadcrumb({'title' : 'My Library', 'link' : "show_library(); return false;"});
-	update_breadcrumbs();
+	add_breadcrumb({'title' : 'My Library', 'onclick' : function() { show_library(); }});
 
 	$('#game_selector').show();
 	$('#game_info').hide();
@@ -219,8 +223,7 @@ function show_library() {
 
 function show_drop() {
 	document.title = 'Add to Library - SaltyNES';
-	add_breadcrumb({'title' : 'Add to Library', 'link' : "show_drop(); return false;"});
-	update_breadcrumbs();
+	add_breadcrumb({'title' : 'Add to Library', 'onclick' : function() { show_drop(); }});
 
 	$('#game_selector').show();
 	$('#game_info').hide();
@@ -483,8 +486,7 @@ function handleNaclMessage(message_event) {
 		is_running = true;
 
 		// Add the game info to the breadcrumbs
-		add_breadcrumb({'title' : 'Play', 'link' : "return false;"});
-		update_breadcrumbs();
+		add_breadcrumb({'title' : 'Play', 'onclick' : function() { }});
 
 		// Repaint the screen
 		// FIXME: Paint calls should happen automatically inside the nexe.
@@ -551,8 +553,7 @@ function handleNaclLoadStart(event) {
 function handleNaclLoadEnd() {
 	salty_nes = $('#SaltyNESApp')[0];
 
-	add_breadcrumb({'title' : 'Home', 'link' : "show_home(); return false;"});
-	update_breadcrumbs();
+	add_breadcrumb({'title' : 'Home', 'onclick' : function() { show_home(); }});
 
 	// Start getting the gamepad status
 	gamepadInterval = setInterval(function() {
@@ -587,6 +588,17 @@ $(document).ready(function() {
 	
 	// Pause when the button is clicked
 	$('#pause').click(handlePauseClick);
+
+	// Setup home links
+	$('#lnk_add_to_library').click(function(event) {
+		show_drop();
+		event.preventDefault();
+	});
+
+	$('#lnk_my_library').click(function(event) {
+		show_library();
+		event.preventDefault();
+	});
 
 	// Setup NACL loader
 	var listener = $('#listener')[0];
