@@ -514,6 +514,8 @@ function handleNaclMessage(message_event) {
 
 		var debug = $('#debug')[0];
 		debug.innerHTML = 'Running';
+		salty_nes.postMessage('setFrequency:440');
+		salty_nes.postMessage('playSound');
 	} else if(message_event.data == 'quit') {
 		is_running = false;
 		if(paintInterval) {

@@ -27,6 +27,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <limits>
 #include <string>
 #include <cstring>
 #include <cerrno>
@@ -40,6 +41,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef NACL
 	#include "ppapi/c/ppb_gamepad.h"
+	#include "ppapi/cpp/audio.h"
 	#include "ppapi/cpp/graphics_2d.h"
 	#include "ppapi/cpp/image_data.h"
 	#include "ppapi/cpp/instance.h"
@@ -1375,7 +1377,11 @@ class SaltyNES : public pp::Instance {
 public:
 	static SaltyNES* g_salty_nes;
 	vNES* vnes;
-	
+	pp::Audio audio_;
+	double frequency_;
+	double theta_;
+	uint32_t sample_frame_count_;
+
 	explicit SaltyNES(PP_Instance instance);
 	virtual ~SaltyNES();
 
@@ -1398,6 +1404,8 @@ public:
 	virtual void HandleMessage(const pp::Var& var_message);
 
 	uint32_t* LockPixels();
+	void SetFrequency(double frequency);
+	double GetFrequency() const;
 	void UnlockPixels() const;
 	void Paint();
 	void update_gamepad();

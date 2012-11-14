@@ -36,6 +36,28 @@ void FlushCallback(void* data, int32_t result) {
 	static_cast<SaltyNES*>(data)->set_flush_pending(false);
 }
 
+void AudioCallback(void* samples, uint32_t buffer_size, void* data) {
+	SaltyNES* salty_nes = reinterpret_cast<SaltyNES*>(data);
+	PAPU* papu = salty_nes->vnes->nes->papu;
+
+	if(!papu->ready_for_buffer_write)
+		return;
+
+	const uint32_t channels = 2;
+	int16_t* buff = reinterpret_cast<int16_t*>(samples);
+
+	// Make sure we can't write outside the buffer.
+	assert(buffer_size >= (sizeof(*buff) * channels * salty_nes->sample_frame_count_));
+
+	size_t mix_len = buffer_size > ((size_t) papu->bufferIndex) ? ((size_t) papu->bufferIndex) : buffer_size;
+	for(size_t i=0; i<mix_len/2; i++) {
+		buff[i] = (*papu->sampleBuffer)[i];
+	}
+
+	papu->ready_for_buffer_write = false;
+	papu->bufferIndex = 0;
+}
+
 
 // A small helper RAII class that implementes a scoped pthread_mutex lock.
 class ScopedMutexLock {
@@ -155,6 +177,27 @@ void SaltyNES::DidChangeView(const pp::View& view) {
 }
 
 bool SaltyNES::Init(uint32_t argc, const char* argn[], const char* argv[]) {
+	// Ask the device for an appropriate sample count size.
+	const uint32_t desired_sample_frame_count = 2048; // Same as PAPU::bufferSize
+	sample_frame_count_ = pp::AudioConfig::RecommendSampleFrameCount(
+		this,
+		PP_AUDIOSAMPLERATE_44100,
+		desired_sample_frame_count
+	);
+	
+	pp::AudioConfig config(
+		this,
+		PP_AUDIOSAMPLERATE_44100,
+		sample_frame_count_
+	);
+	
+	audio_ = pp::Audio(
+		this,
+		config,
+		AudioCallback,
+		this
+	);
+
 	return true;
 }
 
@@ -281,12 +324,21 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 			delete_n_null(vnes);
 		}
 		log_to_browser("quit");
-		
 	} else if(message == "get_sha256") {
 		stringstream out;
 		out << "get_sha256:";
 		out << this->vnes->nes->memMapper->rom->_sha256;
 		log_to_browser(out.str());
+	} else if(message == "playSound") {
+		audio_.StartPlayback();
+	} else if(message == "stopSound") {
+		audio_.StopPlayback();
+	} else if(message.find("setFrequency") == 0) {
+		size_t sep_pos = message.find_first_of(':');
+		string string_value = message.substr(sep_pos + 1);
+		double value;
+		istringstream ( string_value ) >> value;
+		SetFrequency(value);
 	} else {
 		stringstream out;
 		out << "unknown message:";
@@ -294,6 +346,14 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		log_to_browser(out.str());
 	}
 
+}
+
+void SaltyNES::SetFrequency(double frequency) {
+	frequency_ = frequency;
+}
+
+double SaltyNES::GetFrequency() const {
+	return frequency_;
 }
 
 uint32_t* SaltyNES::LockPixels() {
