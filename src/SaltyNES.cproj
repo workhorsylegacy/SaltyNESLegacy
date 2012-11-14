@@ -94,5 +94,8 @@
     </None>
     <None Include="SaltyNES.h" />
     <None Include="base64.h" />
+    <None Include="..\SaltyNES.js">
+      <Link>SaltyNES.js</Link>
+    </None>
   </ItemGroup>
 </Project>
