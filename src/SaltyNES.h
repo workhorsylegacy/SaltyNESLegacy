@@ -1031,6 +1031,7 @@ public:
 class PPU {
 public:
      NES* nes;
+     static const size_t UNDER_SCAN;
      int _zoom;
      struct timeval _frame_start;
      struct timeval _frame_end;

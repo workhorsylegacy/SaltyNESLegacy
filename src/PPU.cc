@@ -17,6 +17,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SaltyNES.h"
 
+	const size_t PPU::UNDER_SCAN = 8;
+
 	vector<int>* PPU::get_screen_buffer() {
 		return _screen_buffer;
 	}
@@ -429,9 +431,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 			
 			if(is_safe_to_paint()) {
 				// Each column
-				for(int y=0; y<240; ++y) {
+				for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
 					// Each row
-					for(int x=0; x<256; ++x) {
+					for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
 						color32 = (*buffer)[x + (y * (256))];
 						b = (color32 >> 16) & 0x000000FF;
 						g = (color32 >> 8) & 0x000000FF;
@@ -464,8 +466,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		int color;
 		int color32;
 		int* pixels = (int*) Globals::sdl_screen->pixels;
-		for(size_t y=0; y<240; ++y) {
-			for(size_t x=0; x<256; ++x) {
+		for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
+			for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
 				color32 = (*buffer)[x + (y * (256))];
 				b = (color32 >> 16) & 0x000000FF;
 				g = (color32 >> 8) & 0x000000FF;
