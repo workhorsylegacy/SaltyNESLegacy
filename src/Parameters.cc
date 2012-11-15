@@ -16,14 +16,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "SaltyNES.h"
-
-	bool Parameters::scale = false;
-	bool Parameters::sound = true;
-	bool Parameters::stereo = false;
-	bool Parameters::scanlines = false;
-	bool Parameters::fps = false;
-	bool Parameters::timeemulation = true;
-	bool Parameters::showsoundbuffer = false;
 ///*
 	string Parameters::p1_up = "VK_UP";
 	string Parameters::p1_down = "VK_DOWN";

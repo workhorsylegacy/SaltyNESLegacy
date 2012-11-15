@@ -215,7 +215,6 @@ instructions and invokes emulation of the PPU and pAPU.
 
 		bool palEmu = Globals::palEmulation;
 		bool emulateSound = Globals::enableSound;
-		bool asApplet = Globals::appletMode;
 		stopRunning = false;
 
 		//int _counter = 0;
@@ -1276,10 +1275,8 @@ instructions and invokes emulation of the PPU and pAPU.
 				}
 			}
 
-			if(asApplet){			
-				ppu->cycles = cycleCount*3;
-				ppu->emulateCycles();			
-			}
+			ppu->cycles = cycleCount*3;
+			ppu->emulateCycles();
 			
 			if(emulateSound){
 				papu->clockFrameCounter(cycleCount);

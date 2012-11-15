@@ -17,7 +17,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SaltyNES.h"
 
-     bool Misc::debug = Globals::debug;
      vector<float>* Misc::_rnd = NULL;
      int Misc::nextRnd = 0;
      float Misc::rndret = 0;

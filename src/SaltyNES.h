@@ -116,13 +116,6 @@ class IPapuChannel {
 
 class Parameters {
 public:
-	static bool scale;
-	static bool sound;
-	static bool stereo;
-	static bool scanlines;
-	static bool fps;
-	static bool timeemulation;
-	static bool showsoundbuffer;
 	static string p1_up;
 	static string p1_down;
 	static string p1_left;
@@ -148,7 +141,7 @@ public:
 #ifdef SDL
     static SDL_Surface* sdl_screen;
 #endif
-    static NES* nes;
+    //static NES* nes;
     static double CPU_FREQ_NTSC;
     static double CPU_FREQ_PAL;
     static int preferredFrameRate;
@@ -158,15 +151,9 @@ public:
     // What value to flush memory with on power-up:
     static short memoryFlushValue;
 
-    static const bool debug;
-    static const bool fsdebug;
-
-    static bool appletMode;
     static bool disableSprites;
-    static bool timeEmulation;
     static bool palEmulation;
     static bool enableSound;
-    static bool focused;
 
     static std::map<string, uint32_t> keycodes; //Java key codes
     static std::map<string, string> controls; //vNES controls codes
@@ -174,7 +161,6 @@ public:
 
 class ByteBuffer {
 public:
-     static const bool debug = false;
      static const int BO_BIG_ENDIAN = 0;
      static const int BO_LITTLE_ENDIAN = 1;
      
@@ -789,7 +775,6 @@ public:
 
 class Misc {
 public:
-     static bool debug;
      static vector<float>* _rnd;
      static int nextRnd;
      static float rndret;
@@ -1041,9 +1026,6 @@ public:
      Memory* sprMem;
     // Rendering Options:
     bool showSpr0Hit;
-    bool showSoundBuffer;
-    bool clipTVcolumn;
-    bool clipTVrow;
     // Control Flags Register 1:
      int f_nmiOnVblank;    // NMI on VBlank. 0=disable, 1=enable
      int f_spriteSize;     // Sprite size. 0=8x8, 1=8x16
@@ -1320,13 +1302,6 @@ public:
 
 class vNES {
 public:
-    bool scale;
-    bool scanlines;
-    bool sound;
-    bool fps;
-    bool stereo;
-    bool timeemulation;
-    bool showsoundbuffer;
     int samplerate;
     int progress;
     NES* nes;

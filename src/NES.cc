@@ -27,7 +27,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
         this->_is_paused = false;
 		this->_isRunning = false;
-        Globals::nes = this;
 
         // Create memory:
         cpuMem = new Memory(this, 0x10000);	// Main memory (internal to CPU)

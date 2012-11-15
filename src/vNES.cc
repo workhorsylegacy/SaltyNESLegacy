@@ -19,13 +19,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SaltyNES.h"
 
     vNES::vNES() {
-        scale = false;
-        scanlines = false;
-        sound = false;
-        fps = false;
-        stereo = false;
-        timeemulation = false;
-        showsoundbuffer = false;
         samplerate = 0;
         progress = 0;
         nes = NULL;
@@ -68,7 +61,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
         nes = new NES(salty_nes);
-        nes->enableSound(sound);
+        nes->enableSound(true);
         nes->reset();
     }
 #endif
@@ -104,10 +97,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         started = true;
         
         if (nes->rom->isValid()) {
-            // Set some properties:
-            Globals::timeEmulation = timeemulation;
-            nes->ppu->showSoundBuffer = showsoundbuffer;
-
             // Start emulation:
             //System.out.println("vNES is now starting the processor.");
             nes->getCpu()->run();
@@ -128,14 +117,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     void vNES::readParams() {
-        scale = Parameters::scale;
-        sound = Parameters::sound;
-        stereo = Parameters::stereo;
-        scanlines = Parameters::scanlines;
-        fps = Parameters::fps;
-        timeemulation = Parameters::timeemulation;
-        showsoundbuffer = Parameters::showsoundbuffer;
-
         /* Controller Setup for Player 1 */
         Globals::controls["p1_up"] = Parameters::p1_up;
         Globals::controls["p1_down"] = Parameters::p1_down;

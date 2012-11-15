@@ -53,9 +53,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
          // Rendering Options:
          showSpr0Hit = false;
-         showSoundBuffer = false;
-         clipTVcolumn = true;
-         clipTVrow = false;
 
          // Control Flags Register 1:
          f_nmiOnVblank = 0;
@@ -404,10 +401,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		vector<int>* buffer = this->get_screen_buffer();
 
         // Start VBlank period:
-        // Do VBlank.
-        if (Globals::debug) {
-//            Globals::println("VBlank occurs!");
-        }
 
         // Do NMI:
         nes->getCpu()->requestIrq(CPU::IRQ_NMI);
@@ -716,37 +709,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
                 for (int i = 0; i < 240; i++) {
                     (*buffer)[(i << 8) + spr0HitX] = 0x55FF55;
-                }
-            }
-        }
-
-        // This is a bit lazy..
-        // if either the sprites or the background should be clipped,
-        // both are clipped after rendering is finished.
-        if (clipTVcolumn || f_bgClipping == 0 || f_spClipping == 0) {
-            // Clip left 8-pixels column:
-            for (int y = 0; y < 240; y++) {
-                for (int x = 0; x < 8; x++) {
-                    (*buffer)[(y << 8) + x] = 0;
-                }
-            }
-        }
-
-        if (clipTVcolumn) {
-            // Clip right 8-pixels column too:
-            for (int y = 0; y < 240; y++) {
-                for (int x = 0; x < 8; x++) {
-                    (*buffer)[(y << 8) + 255 - x] = 0;
-                }
-            }
-        }
-
-        // Clip top and bottom 8 pixels:
-        if (clipTVrow) {
-            for (int y = 0; y < 8; y++) {
-                for (int x = 0; x < 256; x++) {
-                    (*buffer)[(y << 8) + x] = 0;
-                    (*buffer)[((239 - y) << 8) + x] = 0;
                 }
             }
         }
@@ -1131,10 +1093,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             if (address < (int) vramMirrorTable->size()) {
                 writeMem((*vramMirrorTable)[address], value);
             } else {
-                if (Globals::debug) {
-                    //System.out.println("Invalid VRAM address: "+Misc.hex16(address));
-                    nes->getCpu()->setCrashed(true);
-                }
+                //System.out.println("Invalid VRAM address: "+Misc.hex16(address));
+                nes->getCpu()->setCrashed(true);
             }
 
         }
