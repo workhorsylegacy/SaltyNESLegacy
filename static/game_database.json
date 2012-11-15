@@ -75,6 +75,21 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/2/24/Castlevania_NES_box_art.jpg",
 		"is_broken" : false
 	},
+	"366bfec7490d1db1c05d882b6d21125d2d6828a49d61292da5609abecee24b48" : {
+		"name" : "Castlevania III: Dracula's Curse",
+		"developer" : "Konami",
+		"publisher" : "Konami",
+		"region" : "NTSC",
+		"release_date" : "1990-09-01",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 5,
+		"prog_rom_pages" : 16,
+		"char_rom_pages" : 64,
+		"link" : "http://en.wikipedia.org/wiki/Castlevania_III:_Dracula%27s_Curse",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/a/aa/Cv3_na_box.jpg",
+		"is_broken" : true
+	},
 	"d5d40f35176974454dc47d8cffdbce7689afae49fa3238bbec064ab26ff4f953" : {
 		"name" : "Contra",
 		"developer" : "Konami",
@@ -87,6 +102,36 @@ game_database = {
 		"prog_rom_pages" : 8,
 		"char_rom_pages" : 0,
 		"link" : "http://en.wikipedia.org/wiki/Contra_%28video_game%29#Nintendo_Entertainment_System",
+		"img" : "",
+		"is_broken" : false
+	},
+	"eaeef33de58b18f3dcfa283c48c1fba7b70b3e522c84dee000cc8c1110156982" : {
+		"name" : "Double Dragon",
+		"developer" : "Technōs Japan",
+		"publisher" : "Taito Corporation",
+		"region" : "NTSC",
+		"release_date" : "",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Double_Dragon",
+		"img" : "",
+		"is_broken" : false
+	},
+	"8375a95fdf5b72c88d841922e676cea31ef7f560d91d62cb3abe4f7dc896d403" : {
+		"name" : "Elevator Action",
+		"developer" : "Taito",
+		"publisher" : "Taito",
+		"region" : "NTSC",
+		"release_date" : "",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 0,
+		"prog_rom_pages" : 2,
+		"char_rom_pages" : 2,
+		"link" : "http://en.wikipedia.org/wiki/Elevator_Action",
 		"img" : "",
 		"is_broken" : false
 	},
@@ -105,6 +150,21 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/f/f8/Excitebike_cover.jpg",
 		"is_broken" : false
 	},
+	"fbcce8592d855f371cb8d1408f8bdeacad070705e2a7873947449333df0682c5" : {
+		"name" : "Gradius",
+		"developer" : "Konami",
+		"publisher" : "Konami",
+		"region" : "NTSC",
+		"release_date" : "",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 3,
+		"prog_rom_pages" : 2,
+		"char_rom_pages" : 8,
+		"link" : "http://en.wikipedia.org/wiki/Gradius_%28video_game%29",
+		"img" : "",
+		"is_broken" : false
+	},
 	"33406ecbc6863c07f8cbca1b635fcd440352d63cf1e5335016e3ce9d0335c84c" : {
 		"name" : "Hammerin' Harry",
 		"developer" : "Irem",
@@ -118,6 +178,21 @@ game_database = {
 		"char_rom_pages" : 32,
 		"link" : "http://en.wikipedia.org/wiki/Hammerin%27_Harry",
 		"img" : "",
+		"is_broken" : false
+	},
+	"89d92e35fe564d8123b37edbe4c5198d5b00bfb9a1b4f1a262b000c7ef420b6e" : {
+		"name" : "Kid Icarus",
+		"developer" : "Nintendo R&D1",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1986-12-19",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Kid_Icarus",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/b/b1/Kid_Icarus_NES_box_art.png",
 		"is_broken" : false
 	},
 	"979247b30dc94a8e305b430725376a47d3db265e7ff45b271368c300b493f8c0" : {
@@ -135,21 +210,6 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/a/ae/Kirby%27s_Adventure_Coverart.png",
 		"is_broken" : true
 	},
-	"6d9958dc0d3b72baa852d6fcd74fcba94e6e8b1ebdd00ef9c0437fa9da0a3ab3" : {
-		"name" : "Little Nemo: The Dream Master",
-		"developer" : "Capcom",
-		"publisher" : "Capcom",
-		"region" : "NTSC",
-		"release_date" : "1990-09",
-		"number_of_players" : 1,
-		"can_save" : false,
-		"mapper" : 4,
-		"prog_rom_pages" : 8,
-		"char_rom_pages" : 32,
-		"link" : "http://en.wikipedia.org/wiki/Little_Nemo:_The_Dream_Master",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/0/0b/Littlenemocover.png",
-		"is_broken" : false
-	},
 	"8f72dc2e98572eb4ba7c3a902bca5f69c448fc4391837e5f8f0d4556280440ac" : {
 		"name" : "The Legend of Zelda",
 		"developer" : "Nintendo EAD",
@@ -165,8 +225,23 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/4/41/Legend_of_zelda_cover_%28with_cartridge%29_gold.png",
 		"is_broken" : true
 	},
+	"6d9958dc0d3b72baa852d6fcd74fcba94e6e8b1ebdd00ef9c0437fa9da0a3ab3" : {
+		"name" : "Little Nemo: The Dream Master",
+		"developer" : "Capcom",
+		"publisher" : "Capcom",
+		"region" : "NTSC",
+		"release_date" : "1990-09",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Little_Nemo:_The_Dream_Master",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/0/0b/Littlenemocover.png",
+		"is_broken" : false
+	},
 	"1c8885892051d79db757746e2281f417cd5b156a86988b0010ad95d7bd4276c5" : {
-		"name" : "Mega Man 1",
+		"name" : "Mega Man",
 		"developer" : "Capcom",
 		"publisher" : "Capcom",
 		"region" : "NTSC",
@@ -271,7 +346,7 @@ game_database = {
 		"is_broken" : false
 	},
 	"93f93d55eccb53a580e2f0031ea9563c01dcfecd0231a3e7e3119ead986d88f1" : {
-		"name" : "Ninja Gaiden 2",
+		"name" : "Ninja Gaiden II: The Dark Sword of Chaos",
 		"developer" : "Tecmo",
 		"publisher" : "Tecmo",
 		"region" : "NTSC",
@@ -300,6 +375,21 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/3/3d/Punch-out_mrdream_boxart.PNG",
 		"is_broken" : true
 	},
+	"79b26b55f9da654efda520481b0401e4679408652445427f238318eb599fe992" : {
+		"name" : "River City Ransom",
+		"developer" : "Technōs Japan",
+		"publisher" : "Technōs Japan",
+		"region" : "NTSC",
+		"release_date" : "1989-04-25",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/River_City_Ransom",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/4/46/River_City_Ransom-front.jpg",
+		"is_broken" : true
+	},
 	"8afaa5e4cdf76989b5b337828163500e80bf184590a34ec150a73aa544cff78d" : {
 		"name" : "Shatter Hand",
 		"developer" : "Natsume",
@@ -315,20 +405,20 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/7/7a/Shatterhand_cover.jpg",
 		"is_broken" : false
 	},
-	"79b26b55f9da654efda520481b0401e4679408652445427f238318eb599fe992" : {
-		"name" : "River City Ransom",
-		"developer" : "Technōs Japan",
-		"publisher" : "Technōs Japan",
+	"cab2a0af4dcb0cd88d972b1e3c247af616e47a8685790c0973c82eb2ad600506" : {
+		"name" : "Strider",
+		"developer" : "Capcom",
+		"publisher" : "Capcom",
 		"region" : "NTSC",
-		"release_date" : "1989-04-25",
+		"release_date" : "1989-7",
 		"number_of_players" : 1,
 		"can_save" : false,
-		"mapper" : 4,
-		"prog_rom_pages" : 8,
-		"char_rom_pages" : 32,
-		"link" : "http://en.wikipedia.org/wiki/River_City_Ransom",
-		"img" : "http://upload.wikimedia.org/wikipedia/en/4/46/River_City_Ransom-front.jpg",
-		"is_broken" : true
+		"mapper" : 1,
+		"prog_rom_pages" : 16,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Strider_%28NES_video_game%29",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/2/22/Strider_NES_cover.jpg",
+		"is_broken" : false
 	},
 	"f61548fdf1670cffefcc4f0b7bdcdd9eaba0c226e3b74f8666071496988248de" : {
 		"name" : "Super Mario Bros.",
@@ -359,6 +449,21 @@ game_database = {
 		"link" : "http://en.wikipedia.org/wiki/Super_Mario_Bros._3",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/a/a5/Super_Mario_Bros._3_coverart.png",
 		"is_broken" : false
+	},
+	"b548117a91d769834cb3a49178247d1b4f84e2f13bdbbf23d4173124ab6661cf" : {
+		"name" : "Tetris",
+		"developer" : "",
+		"publisher" : "",
+		"region" : "NTSC",
+		"release_date" : "1986",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 65,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Tetris",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/8/8d/NES_Tetris_Box_Front.jpg",
+		"is_broken" : true
 	}
 };
 
