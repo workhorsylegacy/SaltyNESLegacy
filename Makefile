@@ -83,6 +83,8 @@ SALTY_NES_LDFLAGS:=$(NACL_LDFLAGS)
 # Default target
 #
 all: newlib/salty_nes.nmf #glibc/salty_nes.nmf
+	$(NEWLIB_STRIP32) newlib/salty_nes_x86_32.nexe
+	$(NEWLIB_STRIP64) newlib/salty_nes_x86_64.nexe
 	$(RM) -f ~/Desktop/nacl_stdout.log
 	$(RM) -f ~/Desktop/nacl_stderr.log
 
