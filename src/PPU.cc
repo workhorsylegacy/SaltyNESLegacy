@@ -422,7 +422,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		nes->papu->writeBuffer();
 #ifdef NACL
 //		log_to_browser("startVBlank");
-			uint8_t a = 0, r = 0, g = 0, b = 0;
+			uint8_t a = 255, r = 0, g = 0, b = 0;
 			int color;
 			int color32;
 			int zoomed_x = 0, zoomed_y = 0;
