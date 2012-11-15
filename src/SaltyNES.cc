@@ -176,7 +176,7 @@ void SaltyNES::DidChangeView(const pp::View& view) {
 	if (graphics_2d_context_ != NULL) {
 		pixel_buffer_ = new pp::ImageData(
 			this,
-			PP_IMAGEDATAFORMAT_BGRA_PREMUL,
+			PP_IMAGEDATAFORMAT_RGBA_PREMUL,
 			graphics_2d_context_->size(),
 			false
 		);

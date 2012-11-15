@@ -422,8 +422,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		nes->papu->writeBuffer();
 #ifdef NACL
 //		log_to_browser("startVBlank");
-			uint8_t a = 255, r = 0, g = 0, b = 0;
-			int color;
 			int color32;
 			int zoomed_x = 0, zoomed_y = 0;
 			int zoom = _zoom;
@@ -435,17 +433,14 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 					// Each row
 					for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
 						color32 = (*buffer)[x + (y * (256))];
-						b = (color32 >> 16) & 0x000000FF;
-						g = (color32 >> 8) & 0x000000FF;
-						r = (color32 >> 0) & 0x000000FF;
-						color = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+						color32 |= (0xFF << 24); // Add full alpha
 						
 						// Each pixel zoomed
 						for(int y_offset=0; y_offset<zoom; ++y_offset) {
 							zoomed_y = (y * zoom) + y_offset;
 							for(int x_offset=0; x_offset<zoom; ++x_offset) {
 								zoomed_x = (x * zoom) + x_offset;
-								pixel_bits[zoomed_x + (zoomed_y * (256 * zoom))] = color;
+								pixel_bits[zoomed_x + (zoomed_y * (256 * zoom))] = color32;
 							}
 						}
 					}
