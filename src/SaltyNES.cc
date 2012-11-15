@@ -39,12 +39,17 @@ void FlushCallback(void* data, int32_t result) {
 void AudioCallback(void* samples, uint32_t buffer_size, void* data) {
 	SaltyNES* salty_nes = reinterpret_cast<SaltyNES*>(data);
 	PAPU* papu = salty_nes->vnes->nes->papu;
+	uint8_t* buff = reinterpret_cast<uint8_t*>(samples);
 
-	if(papu == NULL || !papu->ready_for_buffer_write)
+	// If there is no sound, just play zero
+	if(salty_nes->vnes->nes->_is_paused || papu == NULL || !papu->ready_for_buffer_write) {
+		for(size_t i=0; i<buffer_size; i++) {
+			buff[i] = 0;
+		}
 		return;
+	}
 
 	const uint32_t channels = papu->stereo ? 2 : 1;
-	uint8_t* buff = reinterpret_cast<uint8_t*>(samples);
 
 	// Make sure we can't write outside the buffer.
 	assert(buffer_size >= (sizeof(*buff) * channels * salty_nes->sample_frame_count_));
