@@ -32,9 +32,9 @@ function add_breadcrumb(breadcrumb) {
 	breadcrumb['id'] = id;
 	breadcrumb['element'] = $('<span id="' + id + '">' + sep + '<a href="' + title + '" \>' + title + '</a></span>');
 	breadcrumb['element'].click(function(event) {
+		event.preventDefault();
 		before();
 		after();
-		event.preventDefault();
 	});
 	
 	// Add it to the others
@@ -109,8 +109,8 @@ function load_game_library() {
 			}
 			game_library.append(element);
 			element.click(function(event) {
-				show_game_info(game.sha256);
 				event.preventDefault();
+				show_game_info(game.sha256);
 			});
 
 			cursor.continue();
@@ -591,13 +591,13 @@ $(document).ready(function() {
 
 	// Setup home links
 	$('#lnk_add_to_library').click(function(event) {
-		show_drop();
 		event.preventDefault();
+		show_drop();
 	});
 
 	$('#lnk_my_library').click(function(event) {
-		show_library();
 		event.preventDefault();
+		show_library();
 	});
 
 	// Setup NACL loader
