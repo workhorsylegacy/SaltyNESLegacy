@@ -40,17 +40,17 @@ void AudioCallback(void* samples, uint32_t buffer_size, void* data) {
 	SaltyNES* salty_nes = reinterpret_cast<SaltyNES*>(data);
 	PAPU* papu = salty_nes->vnes->nes->papu;
 
-	if(!papu->ready_for_buffer_write)
+	if(papu == NULL || !papu->ready_for_buffer_write)
 		return;
 
-	const uint32_t channels = 2;
-	int16_t* buff = reinterpret_cast<int16_t*>(samples);
+	const uint32_t channels = papu->stereo ? 2 : 1;
+	uint8_t* buff = reinterpret_cast<uint8_t*>(samples);
 
 	// Make sure we can't write outside the buffer.
 	assert(buffer_size >= (sizeof(*buff) * channels * salty_nes->sample_frame_count_));
 
 	size_t mix_len = buffer_size > ((size_t) papu->bufferIndex) ? ((size_t) papu->bufferIndex) : buffer_size;
-	for(size_t i=0; i<mix_len/2; i++) {
+	for(size_t i=0; i<mix_len; i++) {
 		buff[i] = (*papu->sampleBuffer)[i];
 	}
 
@@ -136,6 +136,8 @@ SaltyNES::SaltyNES(PP_Instance instance)
 	gamepad_ = static_cast<const PPB_Gamepad*>(
 		module->GetBrowserInterface(PPB_GAMEPAD_INTERFACE));
 	assert(gamepad_);
+	
+	frequency_ = 440;
 }
 
 SaltyNES::~SaltyNES() {
@@ -233,6 +235,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 			vnes->pre_run_setup();
 			log_to_browser("running");
 			pthread_create(&thread_, NULL, start_main_loop, this);
+			audio_.StartPlayback();
 			thread_is_running_ = true;
 		}
 		
@@ -316,6 +319,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		}
 	} else if(message == "quit") {
 		if(vnes != NULL) {
+			audio_.StopPlayback();
 			vnes->stop();
 			if(thread_is_running_) {
 				pthread_join(thread_, NULL);
@@ -329,16 +333,6 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		out << "get_sha256:";
 		out << this->vnes->nes->memMapper->rom->_sha256;
 		log_to_browser(out.str());
-	} else if(message == "playSound") {
-		audio_.StartPlayback();
-	} else if(message == "stopSound") {
-		audio_.StopPlayback();
-	} else if(message.find("setFrequency") == 0) {
-		size_t sep_pos = message.find_first_of(':');
-		string string_value = message.substr(sep_pos + 1);
-		double value;
-		istringstream ( string_value ) >> value;
-		SetFrequency(value);
 	} else {
 		stringstream out;
 		out << "unknown message:";
@@ -346,14 +340,6 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		log_to_browser(out.str());
 	}
 
-}
-
-void SaltyNES::SetFrequency(double frequency) {
-	frequency_ = frequency;
-}
-
-double SaltyNES::GetFrequency() const {
-	return frequency_;
 }
 
 uint32_t* SaltyNES::LockPixels() {

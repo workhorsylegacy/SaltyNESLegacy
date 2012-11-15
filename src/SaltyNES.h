@@ -1404,8 +1404,6 @@ public:
 	virtual void HandleMessage(const pp::Var& var_message);
 
 	uint32_t* LockPixels();
-	void SetFrequency(double frequency);
-	double GetFrequency() const;
 	void UnlockPixels() const;
 	void Paint();
 	void update_gamepad();
