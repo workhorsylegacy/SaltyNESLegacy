@@ -15,6 +15,51 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/3/3c/Adventureisland.jpg",
 		"is_broken" : false
 	},
+	"10dd53fd62c95e77856b09c693b3bdd14b62a89988902eea111257cafe9b8acc" : {
+		"name" : "Adventure Island II",
+		"developer" : "Now Production",
+		"publisher" : "Hudson Soft",
+		"region" : "NTSC",
+		"release_date" : "1991-02",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Adventure_Island_II",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/2/2c/Adventure_Island_2_box_art.jpg",
+		"is_broken" : false
+	},
+	"062c6849425a176774e23461293acef9493dfc40522d7bab304df1b8ee6ee892" : {
+		"name" : "Adventure Island III",
+		"developer" : "Now Production",
+		"publisher" : "Hudson Soft",
+		"region" : "NTSC",
+		"release_date" : "1992-09",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Adventure_Island_3",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/c/cf/Adventure_Island_3_Boxart.jpg",
+		"is_broken" : false
+	},
+	"c47bc4ca0c9c3a4670e6d626b42760f0e48022390589c0b1187504f5dd038483" : {
+		"name" : "Bad Dudes",
+		"developer" : "Data East",
+		"publisher" : "Data East",
+		"region" : "NTSC",
+		"release_date" : "",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Bad_Dudes",
+		"img" : "",
+		"is_broken" : false
+	},
 	"677330f45a1249d24d003792a4674c93f836be57fd18b57125306efe82f3cda8" : {
 		"name" : "Battle Toads",
 		"developer" : "Rare",
@@ -165,6 +210,21 @@ game_database = {
 		"img" : "",
 		"is_broken" : false
 	},
+	"3559e6b601f756792401d6272b9d2afa94f3f01bab5ad728100c232f773e4f59" : {
+		"name" : "Gyruss",
+		"developer" : "Konami",
+		"publisher" : "Konami",
+		"region" : "NTSC",
+		"release_date" : "1988",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 2,
+		"char_rom_pages" : 8,
+		"link" : "http://en.wikipedia.org/wiki/Gyruss",
+		"img" : "",
+		"is_broken" : false
+	},
 	"33406ecbc6863c07f8cbca1b635fcd440352d63cf1e5335016e3ce9d0335c84c" : {
 		"name" : "Hammerin' Harry",
 		"developer" : "Irem",
@@ -223,6 +283,21 @@ game_database = {
 		"char_rom_pages" : 0,
 		"link" : "http://en.wikipedia.org/wiki/The_Legend_of_Zelda_%28video_game%29",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/4/41/Legend_of_zelda_cover_%28with_cartridge%29_gold.png",
+		"is_broken" : true
+	},
+	"ab528c5df91b2443c3265b6f5204cc6c5f0022175eeabe9e8059d075a5dd3637" : {
+		"name" : "The Legend of Zelda II: The Adventure of Link",
+		"developer" : "Nintendo EAD",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1987-01-14",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 28,
+		"link" : "http://en.wikipedia.org/wiki/The_Legend_of_Zelda_2",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/f/fd/Zelda_II_The_Adventure_of_Link_box.jpg",
 		"is_broken" : true
 	},
 	"6d9958dc0d3b72baa852d6fcd74fcba94e6e8b1ebdd00ef9c0437fa9da0a3ab3" : {
