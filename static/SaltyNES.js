@@ -58,7 +58,7 @@ function remove_breadcrumbs_after(id) {
 	}
 }
 
-function setup_indexeddb() {
+function setup_indexeddb(success_cb) {
 	// Setup IndexedDB
 	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 	window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
@@ -79,7 +79,18 @@ function setup_indexeddb() {
 	};
 	request.onsuccess = function(event) {
 		db = request.result;
+		make_sure_indexeddb_works(success_cb);
 	};
+}
+
+function make_sure_indexeddb_works(success_cb) {
+	// Make sure we can really access the database
+	try {
+		db.transaction(['games'], 'readwrite').objectStore('games');
+		success_cb();
+	} catch(err) {
+		alert('Failed to connect to IndexedDB. This is usually caused by your browser being out-of-date.');
+	}
 }
 
 function load_game_library() {
@@ -565,10 +576,7 @@ function handleNaclLoadEnd() {
 	$('#game_selector').show();
 }
 
-$(document).ready(function() {
-	// Setup IndexedDB
-	setup_indexeddb();
-
+function handleSetup() {
 	// Setup game drag and drop
 	var game_drop = $('#game_drop')[0];
 	game_drop.addEventListener("dragenter", handleLibraryDragEnter, true);
@@ -606,5 +614,11 @@ $(document).ready(function() {
 	listener.addEventListener('loadend', handleNaclLoadEnd, true);
 	listener.addEventListener('progress', handleNaclProgress, true);
 	listener.addEventListener('message', handleNaclMessage, true);
+}
+
+$(document).ready(function() {
+	// Setup IndexedDB
+	setup_indexeddb(handleSetup);
 });
+
 
