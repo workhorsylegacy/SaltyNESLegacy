@@ -15,28 +15,27 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Mapper009 extends MapperDefault {
+#include "SaltyNES.h"
 
-    int latchLo;
-    int latchHi;
-    int latchLoVal1;
-    int latchLoVal2;
-    int latchHiVal1;
-    int latchHiVal2;
+    void Mapper009::init(NES* nes) {
+        this->base_init(nes);
 
-    public void init(NES nes) {
+        latchLo = 0;
+        latchHi = 0;
+        latchLoVal1 = 0;
+        latchLoVal2 = 0;
+        latchHiVal1 = 0;
+        latchHiVal2 = 0;
 
-        super.init(nes);
         reset();
-
     }
 
-    public void write(int address, short value) {
+    void Mapper009::write(int address, short value) {
 
         if (address < 0x8000) {
 
             // Handle normally.
-            super.write(address, value);
+            this->base_write(address, value);
 
         } else {
 
@@ -98,12 +97,12 @@ public class Mapper009 extends MapperDefault {
                     if ((value & 0x1) == 0) {
 
                         // Vertical mirroring
-                        nes.getPpu().setMirroring(ROM.VERTICAL_MIRRORING);
+                        nes->getPpu()->setMirroring(ROM::VERTICAL_MIRRORING);
 
                     } else {
 
                         // Horizontal mirroring
-                        nes.getPpu().setMirroring(ROM.HORIZONTAL_MIRRORING);
+                        nes->getPpu()->setMirroring(ROM::HORIZONTAL_MIRRORING);
 
                     }
                     return;
@@ -112,17 +111,17 @@ public class Mapper009 extends MapperDefault {
         }
     }
 
-    public void loadROM(ROM rom) {
+    void Mapper009::loadROM(ROM* rom) {
 
         //System.out.println("Loading ROM.");
 
-        if (!rom.isValid()) {
+        if(!rom->isValid()) {
             //System.out.println("MMC2: Invalid ROM! Unable to load.");
             return;
         }
 
         // Get number of 8K banks:
-        int num_8k_banks = rom.getRomBankCount() * 2;
+        int num_8k_banks = rom->getRomBankCount() * 2;
 
         // Load PRG-ROM:
         load8kRomBank(0, 0x8000);
@@ -137,11 +136,11 @@ public class Mapper009 extends MapperDefault {
         loadBatteryRam();
 
         // Do Reset-Interrupt:
-        nes.getCpu().requestIrq(CPU.IRQ_RESET);
+        nes->getCpu()->requestIrq(CPU::IRQ_RESET);
 
     }
 
-    public void latchAccess(int address) {
+    void Mapper009::latchAccess(int address) {
         if ((address & 0x1FF0) == 0x0FD0 && latchLo != 0xFD) {
             // Set $FD mode
             loadVromBank(latchLoVal1, 0x0000);
@@ -165,42 +164,42 @@ public class Mapper009 extends MapperDefault {
         }
     }
 
-    public void mapperInternalStateLoad(ByteBuffer buf) {
+    void Mapper009::mapperInternalStateLoad(ByteBuffer* buf) {
 
-        super.mapperInternalStateLoad(buf);
+        this->base_mapperInternalStateLoad(buf);
 
         // Check version:
-        if (buf.readByte() == 1) {
+        if(buf->readByte() == 1) {
 
-            latchLo = buf.readByte();
-            latchHi = buf.readByte();
-            latchLoVal1 = buf.readByte();
-            latchLoVal2 = buf.readByte();
-            latchHiVal1 = buf.readByte();
-            latchHiVal2 = buf.readByte();
+            latchLo = buf->readByte();
+            latchHi = buf->readByte();
+            latchLoVal1 = buf->readByte();
+            latchLoVal2 = buf->readByte();
+            latchHiVal1 = buf->readByte();
+            latchHiVal2 = buf->readByte();
 
         }
 
     }
 
-    public void mapperInternalStateSave(ByteBuffer buf) {
+    void Mapper009::mapperInternalStateSave(ByteBuffer* buf) {
 
-        super.mapperInternalStateSave(buf);
+        this->base_mapperInternalStateSave(buf);
 
         // Version:
-        buf.putByte((short) 1);
+        buf->putByte((short) 1);
 
         // State:
-        buf.putByte((byte) latchLo);
-        buf.putByte((byte) latchHi);
-        buf.putByte((byte) latchLoVal1);
-        buf.putByte((byte) latchLoVal2);
-        buf.putByte((byte) latchHiVal1);
-        buf.putByte((byte) latchHiVal2);
+        buf->putByte((int8_t) latchLo);
+        buf->putByte((int8_t) latchHi);
+        buf->putByte((int8_t) latchLoVal1);
+        buf->putByte((int8_t) latchLoVal2);
+        buf->putByte((int8_t) latchHiVal1);
+        buf->putByte((int8_t) latchHiVal2);
 
     }
 
-    public void reset() {
+    void Mapper009::reset() {
 
         // Set latch to $FE mode:
         latchLo = 0xFE;
@@ -211,4 +210,4 @@ public class Mapper009 extends MapperDefault {
         latchHiVal2 = 0;
 
     }
-}
+

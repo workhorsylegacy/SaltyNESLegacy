@@ -89,6 +89,7 @@ class Mapper002;
 class Mapper003;
 class Mapper004;
 class Mapper007;
+class Mapper009;
 class MapperDefault;
 class Memory;
 class Misc;
@@ -768,6 +769,24 @@ public:
     virtual void init(NES* nes);
     virtual short load(int address);
     virtual void write(int address, short value);
+    void mapperInternalStateLoad(ByteBuffer* buf);
+    void mapperInternalStateSave(ByteBuffer* buf);
+    virtual void reset();
+};
+
+class Mapper009 : public MapperDefault {
+public:
+    int latchLo;
+    int latchHi;
+    int latchLoVal1;
+    int latchLoVal2;
+    int latchHiVal1;
+    int latchHiVal2;
+
+    virtual void init(NES* nes);
+    virtual void write(int address, short value);
+    void loadROM(ROM* rom);
+    void latchAccess(int address);
     void mapperInternalStateLoad(ByteBuffer* buf);
     void mapperInternalStateSave(ByteBuffer* buf);
     virtual void reset();

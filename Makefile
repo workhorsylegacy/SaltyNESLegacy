@@ -57,6 +57,7 @@ src/Mapper002.cc \
 src/Mapper003.cc \
 src/Mapper004.cc \
 src/Mapper007.cc \
+src/Mapper009.cc \
 src/MapperDefault.cc \
 src/Memory.cc \
 src/Misc.cc \
