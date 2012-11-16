@@ -157,7 +157,7 @@ function load_game_library() {
 	};
 }
 
-function load_rom(sha256) {
+function show_game_play(sha256) {
 	// Get the game file from the database
 	var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
 	var request = objectStore.get(sha256);
@@ -207,7 +207,7 @@ function show_game_info(sha256) {
 		}
 		$('#game_play_button').unbind('click');
 		$('#game_play_button').click(function() {
-			load_rom(sha256);
+			show_game_play(sha256);
 		});
 
 		document.title = game.name + ' - SaltyNES';
@@ -216,6 +216,7 @@ function show_game_info(sha256) {
 
 function show_home() {
 	document.title = 'SaltyNES - A NES emulator in the browser'
+	add_breadcrumb({'title' : 'Home', 'onclick' : function() { show_home(); }});
 
 	// Empty the fields fow showing a game
 	var fields = ["name", "developer", "publisher", "region", "release_date", 
@@ -590,22 +591,65 @@ function handleNaclLoadStart(event) {
 function handleNaclLoadEnd() {
 	salty_nes = $('#SaltyNESApp')[0];
 
-	add_breadcrumb({'title' : 'Home', 'onclick' : function() { show_home(); }});
+	// Setup IndexedDB
+	setup_indexeddb(handleInitialSetup);
+}
+
+function handleInitialSetup() {
+	// Get the page and sections.
+	var sections = location.hash.split('/');
+	var page = sections.slice(-1)[0];
+	
+	// Add the breadcrumbs
+	if(sections.length > 2 && sections[1] == 'Home')
+		add_breadcrumb({'title' : 'Home', 'onclick' : function() { show_home(); }});
+	if(sections.length > 3 && sections[2] == 'My Library')
+		add_breadcrumb({'title' : 'My Library', 'onclick' : function() { show_library(); }});
+	if(sections.length > 3 && sections[2] == 'Add to Library')
+		add_breadcrumb({'title' : 'Add to Library', 'onclick' : function() { show_drop(); }});
+
+	// Show the page. Use Home as default
+	var is_valid = false;
+	// Home
+	if(page == '' || page == 'Home') {
+		show_home();
+		is_valid = true;
+	// My Library
+	} else if(page == 'My Library') {
+		show_library();
+		is_valid = true;
+	// Add to Library
+	} else if(page == 'Add to Library') {
+		show_drop();
+		is_valid = true;
+	} else {
+		var game_name = sections[3];
+		for(var key in game_database) {
+			if(game_database[key]['name'] == game_name) {
+				var sha256 = key;
+				// Play Game
+				if(page == 'Play') {
+					add_breadcrumb({'title' : game_name, 'onclick' : function() { show_game_info(sha256); }});
+					show_game_play(sha256);
+				// Game info
+				} else {
+					show_game_info(sha256);
+				}
+				is_valid = true;
+			}
+		}
+	}
+
+	if(!is_valid) {
+		alert('Unknown page');
+		return;
+	}
 
 	// Start getting the gamepad status
 	gamepadInterval = setInterval(function() {
 		salty_nes.postMessage('get_gamepad_status');
 	}, 2000);
 
-	// Setup IndexedDB
-	setup_indexeddb(handleSetup);
-
-	var debug = $('#debug')[0];
-	debug.innerHTML = 'Ready';
-	$('#game_selector').show();
-}
-
-function handleSetup() {
 	// Setup game drag and drop
 	var game_drop = $('#game_drop')[0];
 	game_drop.addEventListener("dragenter", handleLibraryDragEnter, true);
@@ -636,6 +680,9 @@ function handleSetup() {
 		event.preventDefault();
 		show_library();
 	});
+	
+	var debug = $('#debug')[0];
+	debug.innerHTML = 'Ready';
 }
 
 $(document).ready(function() {
