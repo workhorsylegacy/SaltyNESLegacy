@@ -571,6 +571,9 @@ function handleNaclLoadEnd() {
 		salty_nes.postMessage('get_gamepad_status');
 	}, 2000);
 
+	// Setup IndexedDB
+	setup_indexeddb(handleSetup);
+
 	var debug = $('#debug')[0];
 	debug.innerHTML = 'Ready';
 	$('#game_selector').show();
@@ -607,18 +610,15 @@ function handleSetup() {
 		event.preventDefault();
 		show_library();
 	});
+}
 
+$(document).ready(function() {
 	// Setup NACL loader
 	var listener = $('#listener')[0];
 	listener.addEventListener('loadstart', handleNaclLoadStart, true);
 	listener.addEventListener('loadend', handleNaclLoadEnd, true);
 	listener.addEventListener('progress', handleNaclProgress, true);
 	listener.addEventListener('message', handleNaclMessage, true);
-}
-
-$(document).ready(function() {
-	// Setup IndexedDB
-	setup_indexeddb(handleSetup);
 });
 
 

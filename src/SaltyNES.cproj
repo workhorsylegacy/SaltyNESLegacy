@@ -73,6 +73,7 @@
     <Compile Include="Logger.cc" />
     <Compile Include="SaltyNES.cc" />
     <Compile Include="base64.cc" />
+    <Compile Include="Mapper009.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Color.h" />
