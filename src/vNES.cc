@@ -45,7 +45,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
         nes = new NES();
-        nes->enableSound(sound);
+        nes->enableSound(true);
         nes->reset();
     }
 #endif

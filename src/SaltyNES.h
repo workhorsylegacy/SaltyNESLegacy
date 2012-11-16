@@ -23,6 +23,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <unistd.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -108,6 +109,8 @@ class SaltyNES;
 
 // Interfaces
 class IPapuChannel {
+public:
+     virtual ~IPapuChannel() { };
      virtual void writeReg(int address, int value) = 0;
      virtual void setEnabled(bool value) = 0;
      virtual bool isEnabled() = 0;
@@ -269,7 +272,7 @@ public:
     int data;
 
     ChannelDM(PAPU* papu);
-    ~ChannelDM();
+    virtual ~ChannelDM();
     void clockDmc();
      void endOfSample();
      void nextSample();
@@ -307,7 +310,7 @@ public:
      int tmp;
 
      ChannelNoise(PAPU* papu);
-     ~ChannelNoise();
+     virtual ~ChannelNoise();
      void clockLengthCounter();
      void clockEnvDecay();
      void updateSampleValue();
@@ -351,7 +354,7 @@ public:
     int vol;
 
      ChannelSquare(PAPU* papu, bool square1);
-     ~ChannelSquare();
+     virtual ~ChannelSquare();
      void clockLengthCounter();
      void clockEnvDecay();
      void clockSweep();
@@ -381,7 +384,7 @@ public:
     int tmp;
 
      ChannelTriangle(PAPU* papu);
-     ~ChannelTriangle();
+     virtual ~ChannelTriangle();
      void clockLengthCounter();
      void clockLinearCounter();
      int getLengthStatus();
@@ -641,7 +644,7 @@ public:
     int tmp;
 
      MapperDefault();
-     ~MapperDefault();
+     virtual ~MapperDefault();
      virtual void write(int address, short value);
      virtual void init(NES* nes);
      void base_init(NES* nes);     
