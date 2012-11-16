@@ -14,15 +14,37 @@ var breadcrumbs = [];
 var readers = [];
 var gamepad_id = null;
 
+function update_location_hash() {
+	// Update the hash
+	location.hash = '';
+	for(var i=0; i<breadcrumbs.length; i++) {
+		location.hash += '/' + breadcrumbs[i]['title'];
+	}
+}
+
+function get_location_path(last_link) {
+	var link = '#';
+	for(var i=0; i<breadcrumbs.length; i++) {
+		link += '/' + breadcrumbs[i]['title'];
+	}
+	link += '/' + last_link;
+	
+	return link;
+}
+
 function add_breadcrumb(breadcrumb) {
 	// Just return if the last breadcrumb is the same as the one to add
 	if(breadcrumbs.length > 0 && breadcrumb['title'] == breadcrumbs[breadcrumbs.length-1]['title']) {
 		return;
 	}
 
+	// Create the separator between the links
 	var sep = '';
 	if(breadcrumbs.length > 0)
 		sep = '&nbsp;&nbsp;&gt;&nbsp;&nbsp;';
+
+	// Create the links
+	var link = get_location_path(breadcrumb['title']);
 
 	// Create the breadcrumb
 	var id = 'breadcrumb_' + breadcrumbs.length;
@@ -30,7 +52,7 @@ function add_breadcrumb(breadcrumb) {
 	var before = function() { remove_breadcrumbs_after(id); };
 	var after = breadcrumb['onclick'];
 	breadcrumb['id'] = id;
-	breadcrumb['element'] = $('<span id="' + id + '">' + sep + '<a href="' + title + '" \>' + title + '</a></span>');
+	breadcrumb['element'] = $('<span id="' + id + '">' + sep + '<a href="' + link + '" \>' + title + '</a></span>');
 	breadcrumb['element'].click(function(event) {
 		event.preventDefault();
 		before();
@@ -40,6 +62,8 @@ function add_breadcrumb(breadcrumb) {
 	// Add it to the others
 	breadcrumbs.push(breadcrumb);
 	$('#breadcrumbs_div').append(breadcrumb['element']);
+	
+	update_location_hash();
 }
 
 function remove_breadcrumbs_after(id) {
@@ -56,6 +80,8 @@ function remove_breadcrumbs_after(id) {
 		breadcrumbs[i]['element'].remove();
 		breadcrumbs.pop();
 	}
+	
+	update_location_hash();
 }
 
 function setup_indexeddb(success_cb) {
@@ -114,9 +140,9 @@ function load_game_library() {
 			var element = null;
 			if(game.img != "") {
 				var icon_class = game['is_broken'] ? 'game_icon broken' : 'game_icon';
-				element = $('<a id="' + game.sha256 + '" href="' + game.name + '"><div class="' + icon_class + '"><img src="' + game.img + '" /><br />' + game.name + '</div></a>');
+				element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="' + icon_class + '"><img src="' + game.img + '" /><br />' + game.name + '</div></a>');
 			} else {
-				element = $('<a id="' + game.sha256 + '" href="' + game.name + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name + '</div></a>');
+				element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name + '</div></a>');
 			}
 			game_library.append(element);
 			element.click(function(event) {
