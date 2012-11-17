@@ -788,8 +788,8 @@ public:
 
     virtual void init(NES* nes);
     virtual void write(int address, short value);
-    void loadROM(ROM* rom);
-    void latchAccess(int address);
+    virtual void loadROM(ROM* rom);
+    virtual void latchAccess(int address);
     void mapperInternalStateLoad(ByteBuffer* buf);
     void mapperInternalStateSave(ByteBuffer* buf);
     virtual void reset();
