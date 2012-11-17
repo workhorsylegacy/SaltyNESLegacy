@@ -423,38 +423,6 @@ function handleKeyUp(event) {
 	return false;
 }
 
-function handleZoomInClick() {
-	if(zoom < max_zoom)
-		zoom += 1;
-
-	$('#zoom_in').attr('disabled', zoom == max_zoom);
-	$('#zoom_out').attr('disabled', zoom == 1);
-
-	$('#SaltyNESApp').width(256 * zoom);
-	$('#SaltyNESApp').height(240 * zoom);
-
-	if(is_running)
-		salty_nes.postMessage('zoom:' + zoom);
-
-	return false;
-}
-
-function handleZoomOutClick() {
-	if(zoom > 1)
-		zoom -= 1;
-
-	$('#zoom_in').attr('disabled', zoom == max_zoom);
-	$('#zoom_out').attr('disabled', zoom == 1);
-
-	$('#SaltyNESApp').width(256 * zoom);
-	$('#SaltyNESApp').height(240 * zoom);
-
-	if(is_running)
-		salty_nes.postMessage('zoom:' + zoom);
-
-	return false;
-}
-
 function handlePauseClick() {
 	if(!is_running) return false;
 
@@ -549,6 +517,7 @@ function handleNaclMessage(message_event) {
 		$('#game_info').hide();
 		$('#top_controls').show();
 		show_screen();
+		handleWindowResize();
 
 		var debug = $('#debug')[0];
 		debug.innerHTML = 'Running';
@@ -593,6 +562,24 @@ function handleNaclLoadEnd() {
 
 	// Setup IndexedDB
 	setup_indexeddb(handleInitialSetup);
+}
+
+function handleWindowResize() {
+	if(!is_running)
+		return;
+
+	var listener = $('#listener');
+	var div_w = listener.width();
+
+	for(var i=1; i<=max_zoom; i++) {
+		if(256 * i <= div_w) {
+			zoom = i;
+		}
+	}
+
+	$('#SaltyNESApp').width(256 * zoom);
+	$('#SaltyNESApp').height(240 * zoom);
+	salty_nes.postMessage('zoom:' + zoom);
 }
 
 function handleInitialSetup() {
@@ -660,12 +647,6 @@ function handleInitialSetup() {
 	// Send all key down events to the NACL app
 	$('#bodyId').keydown(handleKeyDown);
 	$('#bodyId').keyup(handleKeyUp);
-
-	// Setup zoom
-	$('#zoom_in').click(handleZoomInClick);
-	$('#zoom_out').click(handleZoomOutClick);
-	$('#zoom_in').attr('disabled', zoom == max_zoom);
-	$('#zoom_out').attr('disabled', zoom == 1);
 	
 	// Pause when the button is clicked
 	$('#pause').click(handlePauseClick);
@@ -681,6 +662,9 @@ function handleInitialSetup() {
 		show_library();
 	});
 	
+	// Automatically resize the screen to be as big as it can be
+	$(window).resize(handleWindowResize);
+	
 	var debug = $('#debug')[0];
 	debug.innerHTML = 'Ready';
 }
@@ -693,5 +677,4 @@ $(document).ready(function() {
 	listener.addEventListener('progress', handleNaclProgress, true);
 	listener.addEventListener('message', handleNaclMessage, true);
 });
-
 
