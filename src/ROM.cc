@@ -530,12 +530,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void ROM::loadBatteryRam() {
-/*
         if (batteryRam) {
             try {
                 saveRam = new vector<short>(0x2000);
                 saveRamUpToDate = true;
-
+/*
                 // Get hex-encoded memory string from user:
                 string encodedData = JOptionPane.showInputDialog("Returning players insert Save Code here.");
                 if (encodedData == NULL) {
@@ -560,13 +559,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 if (nes->getMemoryMapper() != NULL) {
                     nes->getMemoryMapper().loadBatteryRam();
                 }
-
-            } catch (Exception e) {
+*/
+            } catch (exception& e) {
                 //System.out.println("Unable to get battery RAM from user.");
                 failedSaveFile = true;
             }
         }
-*/
     }
 
      void ROM::writeBatteryRam(int address, short value) {

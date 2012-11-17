@@ -26,7 +26,7 @@
         <Lib>rt</Lib>
       </Libs>
     </Libs>
-    <Commandlineparameters>../../../roms/little_nemo.nes</Commandlineparameters>
+    <Commandlineparameters>../../../roms/example.nes</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>

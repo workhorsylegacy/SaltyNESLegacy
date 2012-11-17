@@ -271,7 +271,7 @@ game_database = {
 		"is_broken" : true
 	},
 	"8f72dc2e98572eb4ba7c3a902bca5f69c448fc4391837e5f8f0d4556280440ac" : {
-		"name" : "The Legend of Zelda",
+		"name" : "Legend of Zelda",
 		"developer" : "Nintendo EAD",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",
@@ -286,7 +286,7 @@ game_database = {
 		"is_broken" : true
 	},
 	"ab528c5df91b2443c3265b6f5204cc6c5f0022175eeabe9e8059d075a5dd3637" : {
-		"name" : "The Legend of Zelda II: The Adventure of Link",
+		"name" : "Legend of Zelda II: The Adventure of Link",
 		"developer" : "Nintendo EAD",
 		"publisher" : "Nintendo",
 		"region" : "NTSC",
