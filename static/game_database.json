@@ -120,6 +120,21 @@ game_database = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/2/24/Castlevania_NES_box_art.jpg",
 		"is_broken" : false
 	},
+	"3599113d953ae8056b5a3ef986b31e90a1467085bd95d5cf70d1b1d529bab04c" : {
+		"name" : "Castlevania II: Simon's Quest",
+		"developer" : "Konami",
+		"publisher" : "Konami",
+		"region" : "NTSC",
+		"release_date" : "1987-08-28",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 65,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 16,
+		"link" : "http://en.wikipedia.org/wiki/Castlevania_II:_Simon%27s_Quest",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/7/79/Cv2_nes.jpg",
+		"is_broken" : true
+	},
 	"366bfec7490d1db1c05d882b6d21125d2d6828a49d61292da5609abecee24b48" : {
 		"name" : "Castlevania III: Dracula's Curse",
 		"developer" : "Konami",
@@ -463,6 +478,21 @@ game_database = {
 		"char_rom_pages" : 32,
 		"link" : "http://en.wikipedia.org/wiki/River_City_Ransom",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/4/46/River_City_Ransom-front.jpg",
+		"is_broken" : true
+	},
+	"62fa16d99ae8e835aadf32ef731dd45e350f4996921b48aae966c494e93e4e3a" : {
+		"name" : "R.C. Pro-AM",
+		"developer" : "Rare",
+		"publisher" : "Nintendo",
+		"region" : "NTSC",
+		"release_date" : "1988-02",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 2,
+		"char_rom_pages" : 8,
+		"link" : "http://en.wikipedia.org/wiki/R.C._Pro-Am",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/4/46/RC_Pro_Am_cover.jpg",
 		"is_broken" : true
 	},
 	"8afaa5e4cdf76989b5b337828163500e80bf184590a34ec150a73aa544cff78d" : {
