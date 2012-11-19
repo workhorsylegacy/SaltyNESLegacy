@@ -283,7 +283,7 @@ game_database = {
 		"char_rom_pages" : 64,
 		"link" : "http://en.wikipedia.org/wiki/Kirbys_adventure",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/a/ae/Kirby%27s_Adventure_Coverart.png",
-		"is_broken" : true
+		"is_broken" : false
 	},
 	"8f72dc2e98572eb4ba7c3a902bca5f69c448fc4391837e5f8f0d4556280440ac" : {
 		"name" : "Legend of Zelda",
@@ -298,7 +298,7 @@ game_database = {
 		"char_rom_pages" : 0,
 		"link" : "http://en.wikipedia.org/wiki/The_Legend_of_Zelda_%28video_game%29",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/4/41/Legend_of_zelda_cover_%28with_cartridge%29_gold.png",
-		"is_broken" : true
+		"is_broken" : false
 	},
 	"ab528c5df91b2443c3265b6f5204cc6c5f0022175eeabe9e8059d075a5dd3637" : {
 		"name" : "Legend of Zelda II: The Adventure of Link",

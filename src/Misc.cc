@@ -97,3 +97,33 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         return rndret;
     }
+
+	string Misc::from_vector_to_hex_string(vector<short>* data) {
+		const size_t BYTE_LEN = 4;
+		stringstream out;
+		for(size_t i=0; i<data->size(); i++) {
+			out << std::hex << setfill('0') << std::setw(BYTE_LEN) << (uint16_t) (*data)[i];
+		}
+		return out.str();
+	}
+	
+	vector<short>* Misc::from_hex_string_to_vector(string data) {
+		const size_t BYTE_LEN = 4;
+		const size_t VECTOR_SIZE = data.length() / BYTE_LEN;
+		vector<short>* retval = new vector<short>(VECTOR_SIZE);
+
+		uint16_t value = 0;
+		stringstream in;
+		size_t j = 0;
+		for(size_t i=0; i<VECTOR_SIZE; i++) {
+			in.clear();
+			in << std::hex << data.substr(j, BYTE_LEN);
+			in >> value;
+			(*retval)[i] = value;
+			j += BYTE_LEN;
+		}
+		
+		return retval;
+	}
+	
+	

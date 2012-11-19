@@ -163,7 +163,8 @@ function show_game_play(sha256) {
 	var request = objectStore.get(sha256);
 	request.onsuccess = function(event) {
 		// Send the rom to the nexes
-		salty_nes.postMessage('load_rom:' + request.result.data);
+		var game = request.result;
+		salty_nes.postMessage('load_rom:' + game.save + ' rom:' + game.data);
 		salty_nes.postMessage('zoom:' + zoom);
 	};
 }
@@ -364,6 +365,7 @@ function handleLibraryFiles(files) {
 			}
 			game['sha256'] = sha256;
 			game['data'] = base64;
+			game['save'] = '';
 
 			var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
 			var request = objectStore.add(game);
@@ -534,6 +536,31 @@ function handleNaclMessage(message_event) {
 
 		var debug = $('#debug')[0];
 		debug.innerHTML = 'Ready';
+	} else if(message_event.data.split(':')[0] == 'save') {
+		var sha256 = message_event.data.split('save:')[1].split(' data:')[0];
+		var save = message_event.data.split(' data:')[1];
+
+		var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
+		var request = objectStore.get(sha256);
+		request.onsuccess = function(event) {
+			var game = request.result;
+			game['sha256'] = sha256;
+			game['save'] = save;
+			
+			var objectStore2 = db.transaction(['games'], 'readwrite').objectStore('games');
+			var request2 = objectStore2.put(game);
+			request2.onsuccess = function(event) {
+				var game2 = request2.result;
+			}
+			request2.onerror = function(event) {
+				alert('Failed to store game save. Error ' + event.target.errorCode);
+			};
+			
+			
+		}
+		request.onerror = function(event) {
+			alert('Failed to store game save. Error ' + event.target.errorCode);
+		};
 	} else {
 		var debug = $('#debug')[0];
 		debug.innerHTML = message_event.data;

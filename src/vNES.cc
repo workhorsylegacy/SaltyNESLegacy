@@ -66,7 +66,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 #endif
 
-    void vNES::pre_run_setup() {
+    void vNES::pre_run_setup(vector<short>* save_ram) {
         // Load ROM file:
         if(_rom_data == NULL) {
             log_to_browser("Loading ROM from file.");
@@ -83,12 +83,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 			assert(length > 0);
 			uint8_t* bdata = new uint8_t[length];
 			reader.read((char*)bdata, length);
-			nes->load_rom_from_data(_rom_name.c_str(), bdata, length);
+			nes->load_rom_from_data(_rom_name.c_str(), bdata, length, save_ram);
 			delete_n_null_array(bdata);
 			reader.close();
         } else {
             log_to_browser("Loading ROM from data.");
-            nes->load_rom_from_data("rom_from_browser.nes", _rom_data, _rom_data_length);
+            nes->load_rom_from_data("rom_from_browser.nes", _rom_data, _rom_data_length, save_ram);
         }
     }
 

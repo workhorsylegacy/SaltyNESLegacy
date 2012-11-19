@@ -19,6 +19,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace std;
 
+
 int main(int argc, char* argv[]) {
 	printf("%s\n", "");
 	printf("%s\n", "SaltyNES is a browser based NES emulator derived from vNES.");
@@ -51,7 +52,7 @@ int main(int argc, char* argv[]) {
 	// Run the emulator
 	vNES vnes;
 	vnes.init(argv[1]);
-	vnes.pre_run_setup();
+	vnes.pre_run_setup(NULL);
 	vnes.run();
 
 	// Clanup the SDL resources then exit

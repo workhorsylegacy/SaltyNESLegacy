@@ -277,7 +277,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         return memMapper;
     }
 
-    bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length) {
+    bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<short>* save_ram) {
         // Can't load ROM while still running.
         if (_isRunning) {
             stopEmulation();
@@ -287,7 +287,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             // Load ROM file:
 
             rom = new ROM(this);
-            rom->load_from_data(rom_name, data, length);
+            rom->load_from_data(rom_name, data, length, save_ram);
             
             if (rom->isValid()) {
 

@@ -244,7 +244,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 		return _mapperSupported;
 	}
 
-	void ROM::load_from_data(string file_name, uint8_t* data, size_t length) {
+	void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<short>* save_ram) {
 		fileName = file_name;
 		short* sdata = new short[length];
 		for(size_t i=0; i<length; i++) {
@@ -290,6 +290,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
         printf("sha256: %s\n", _sha256.c_str());
 
         // Battery RAM?
+        saveRam = save_ram;
         if (batteryRam) {
             loadBatteryRam();
         }
@@ -524,43 +525,24 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      vector<short>* ROM::getBatteryRam() {
-
         return saveRam;
-
     }
 
      void ROM::loadBatteryRam() {
-        if (batteryRam) {
+        if(batteryRam) {
             try {
-                saveRam = new vector<short>(0x2000);
                 saveRamUpToDate = true;
-/*
-                // Get hex-encoded memory string from user:
-                string encodedData = JOptionPane.showInputDialog("Returning players insert Save Code here.");
-                if (encodedData == NULL) {
-                    // User cancelled the dialog.
-                    return;
-                }
 
-                // Remove all garbage from encodedData:
-                encodedData = encodedData.replaceAll("[^\\p{XDigit}]", "");
-                if (encodedData.length() != saveRam.length * 2) {
-                    // Either too few or too many digits.
+                if(saveRam == NULL) {
+                    saveRam = new vector<short>(0x2000);
                     return;
-                }
-
-                // Convert hex-encoded memory string to bytes:
-                for (size_t i = 0; i < saveRam->size(); i++) {
-                    string hexByte = encodedData.substring(i * 2, i * 2 + 2);
-                    (*saveRam)[i] = Short.parseShort(hexByte, 16);
                 }
 
                 //System.out.println("Battery RAM loaded.");
-                if (nes->getMemoryMapper() != NULL) {
-                    nes->getMemoryMapper().loadBatteryRam();
+                if(nes->getMemoryMapper() != NULL) {
+                    nes->getMemoryMapper()->loadBatteryRam();
                 }
-*/
-            } catch (exception& e) {
+            } catch(exception& e) {
                 //System.out.println("Unable to get battery RAM from user.");
                 failedSaveFile = true;
             }
@@ -568,7 +550,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
      void ROM::writeBatteryRam(int address, short value) {
-
         if (!failedSaveFile && !batteryRam && enableSave) {
             loadBatteryRam();
         }
@@ -578,39 +559,23 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
             (*saveRam)[address - 0x6000] = value;
             saveRamUpToDate = false;
         }
-
     }
 
      void ROM::closeRom() {
-/*
         if (batteryRam && !saveRamUpToDate) {
             try {
-
-                // Convert bytes to hex-encoded memory string:
-                StringBuilder sb = new StringBuilder(saveRam->size() * 2 + saveRam->size() / 38);
-                for (size_t i = 0; i < saveRam->size(); i++) {
-                    string hexByte = string.format("%02x", (*saveRam)[i] & 0xFF);
-                    if (i % 38 == 0 && i != 0) {
-                        // Put spacing in so that word wrap will work.
-                        sb.append(" ");
-                    }
-                    sb.append(hexByte);
-                }
-                string encodedData = sb.toString();
-
-                // Send hex-encoded memory string to user:
-                JOptionPane.showInputDialog("Save Code for Resuming Game.", encodedData);
+                // Create a message that has the game sha256 and saveram.
+                stringstream out;
+                out << "save:" << _sha256 << " data:";
+                out << Misc::from_vector_to_hex_string(saveRam);
+                log_to_browser(out.str().c_str());
 
                 saveRamUpToDate = true;
                 //System.out.println("Battery RAM sent to user.");
-
             } catch (exception& e) {
-
                 //System.out.println("Trouble sending battery RAM to user.");
-                e.printStackTrace();
-
+                //e.printStackTrace();
             }
         }
-*/
     }
 

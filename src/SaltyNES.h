@@ -22,6 +22,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <vector>
 #include <sstream>
+#include <iomanip>
 #include <fstream>
 #include <unistd.h>
 #include <pthread.h>
@@ -811,6 +812,8 @@ public:
      static vector<int>* resizeArray(vector<int>* array, int newSize);
      static string pad(string str, string padStr, int length);
      static float random();
+     static string from_vector_to_hex_string(vector<short>* data);
+     static vector<short>* from_hex_string_to_vector(string data);
 };
 
 class NameTable {
@@ -875,7 +878,7 @@ public:
      Memory* getSprMemory();
      ROM* getRom();
      MapperDefault* getMemoryMapper();
-     bool load_rom_from_data(string rom_name, uint8_t* data, size_t length);
+     bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<short>* save_ram);
      void reset();
      void enableSound(bool enable);
 //     void setFramerate(int rate);
@@ -1272,7 +1275,7 @@ public:
      string sha256sum(uint8_t* data, size_t length);
      string getmapperName();
      static vector<bool>* getmapperSupported();
-     void load_from_data(string file_name, uint8_t* data, size_t length);
+     void load_from_data(string file_name, uint8_t* data, size_t length, vector<short>* save_ram);
      bool isValid();
      int getRomBankCount();
      int getVromBankCount();
@@ -1340,7 +1343,7 @@ public:
 #ifdef NACL
     void init_data(uint8_t* rom_data, size_t length, SaltyNES* salty_nes);
 #endif
-    void pre_run_setup();
+    void pre_run_setup(vector<short>* save_ram);
     void run();
     void stop();
     void readParams();
