@@ -431,8 +431,8 @@ function handleLibraryFiles(files) {
 }
 
 function handleKeyDown(event) {
-	// Let the browser handle F11 for full screen
-	if(event.which == 122)
+	// Let the browser handle Fn keys
+	if(event.which >= 112 && event.which <= 123)
 		return true;
 
 	if(!is_running) return false;
@@ -441,8 +441,8 @@ function handleKeyDown(event) {
 }
 
 function handleKeyUp(event) {
-	// Let the browser handle F11 for full screen
-	if(event.which == 122)
+	// Let the browser handle Fn keys
+	if(event.which >= 112 && event.which <= 123)
 		return true;
 
 	if(!is_running) return false;
