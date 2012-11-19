@@ -924,6 +924,12 @@ public:
     static const int panning[];
     static const int lengthLookup[];
 
+#ifdef NACL
+    pp::Audio audio_;
+    double frequency_;
+    double theta_;
+    uint32_t sample_frame_count_;
+#endif
     mutable pthread_mutex_t _mutex;
     bool _is_running;
     NES* nes;
@@ -1378,10 +1384,6 @@ class SaltyNES : public pp::Instance {
 public:
 	static SaltyNES* g_salty_nes;
 	vNES* vnes;
-	pp::Audio audio_;
-	double frequency_;
-	double theta_;
-	uint32_t sample_frame_count_;
 
 	explicit SaltyNES(PP_Instance instance);
 	virtual ~SaltyNES();

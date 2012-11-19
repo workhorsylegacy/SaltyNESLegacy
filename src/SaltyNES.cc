@@ -36,34 +36,6 @@ void FlushCallback(void* data, int32_t result) {
 	static_cast<SaltyNES*>(data)->set_flush_pending(false);
 }
 
-void AudioCallback(void* samples, uint32_t buffer_size, void* data) {
-	SaltyNES* salty_nes = reinterpret_cast<SaltyNES*>(data);
-	PAPU* papu = salty_nes->vnes->nes->papu;
-	uint8_t* buff = reinterpret_cast<uint8_t*>(samples);
-
-	// If there is no sound, just play zero
-	if(salty_nes->vnes->nes->_is_paused || papu == NULL || !papu->ready_for_buffer_write) {
-		for(size_t i=0; i<buffer_size; i++) {
-			buff[i] = 0;
-		}
-		return;
-	}
-
-	const uint32_t channels = papu->stereo ? 2 : 1;
-
-	// Make sure we can't write outside the buffer.
-	assert(buffer_size >= (sizeof(*buff) * channels * salty_nes->sample_frame_count_));
-
-	size_t mix_len = buffer_size > ((size_t) papu->bufferIndex) ? ((size_t) papu->bufferIndex) : buffer_size;
-	for(size_t i=0; i<mix_len; i++) {
-		buff[i] = (*papu->sampleBuffer)[i];
-	}
-
-	papu->ready_for_buffer_write = false;
-	papu->bufferIndex = 0;
-}
-
-
 // A small helper RAII class that implementes a scoped pthread_mutex lock.
 class ScopedMutexLock {
 	pthread_mutex_t* mutex_; // Weak reference.
@@ -141,8 +113,6 @@ SaltyNES::SaltyNES(PP_Instance instance)
 	gamepad_ = static_cast<const PPB_Gamepad*>(
 		module->GetBrowserInterface(PPB_GAMEPAD_INTERFACE));
 	assert(gamepad_);
-	
-	frequency_ = 440;
 }
 
 SaltyNES::~SaltyNES() {
@@ -184,27 +154,6 @@ void SaltyNES::DidChangeView(const pp::View& view) {
 }
 
 bool SaltyNES::Init(uint32_t argc, const char* argn[], const char* argv[]) {
-	// Ask the device for an appropriate sample count size.
-	const uint32_t desired_sample_frame_count = 2048; // Same as PAPU::bufferSize
-	sample_frame_count_ = pp::AudioConfig::RecommendSampleFrameCount(
-		this,
-		PP_AUDIOSAMPLERATE_44100,
-		desired_sample_frame_count
-	);
-	
-	pp::AudioConfig config(
-		this,
-		PP_AUDIOSAMPLERATE_44100,
-		sample_frame_count_
-	);
-	
-	audio_ = pp::Audio(
-		this,
-		config,
-		AudioCallback,
-		this
-	);
-
 	return true;
 }
 
@@ -248,7 +197,6 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 			vnes->pre_run_setup(saveRam);
 			log_to_browser("running");
 			pthread_create(&thread_, NULL, start_main_loop, this);
-			audio_.StartPlayback();
 			thread_is_running_ = true;
 		}
 		
@@ -332,7 +280,6 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		}
 	} else if(message == "quit") {
 		if(vnes != NULL) {
-			audio_.StopPlayback();
 			vnes->stop();
 			if(thread_is_running_) {
 				pthread_join(thread_, NULL);

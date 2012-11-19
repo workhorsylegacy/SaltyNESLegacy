@@ -19,7 +19,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SaltyNES.h"
 
 #ifdef SDL
-void fill_audio(void* udata, uint8_t* stream, int len) {
+void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 	PAPU* papu = reinterpret_cast<PAPU*>(udata);
 	
 	if(!papu->ready_for_buffer_write)
@@ -27,6 +27,35 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
 
 	int32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
 	SDL_MixAudio(stream, (uint8_t*)papu->sampleBuffer, mix_len, SDL_MIX_MAXVOLUME);
+	papu->ready_for_buffer_write = false;
+	papu->bufferIndex = 0;
+}
+#endif
+
+#ifdef NACL
+void fill_audio_nacl_cb(void* samples, uint32_t buffer_size, void* data) {
+	SaltyNES* salty_nes = reinterpret_cast<SaltyNES*>(data);
+	PAPU* papu = salty_nes->vnes->nes->papu;
+	uint8_t* buff = reinterpret_cast<uint8_t*>(samples);
+
+	// If there is no sound, just play zero
+	if(salty_nes->vnes->nes->_is_paused || papu == NULL || !papu->ready_for_buffer_write) {
+		for(size_t i=0; i<buffer_size; i++) {
+			buff[i] = 0;
+		}
+		return;
+	}
+
+	const uint32_t channels = papu->stereo ? 2 : 1;
+
+	// Make sure we can't write outside the buffer.
+	assert(buffer_size >= (sizeof(*buff) * channels * papu->sample_frame_count_));
+
+	size_t mix_len = buffer_size > ((size_t) papu->bufferIndex) ? ((size_t) papu->bufferIndex) : buffer_size;
+	for(size_t i=0; i<mix_len; i++) {
+		buff[i] = (*papu->sampleBuffer)[i];
+	}
+
 	papu->ready_for_buffer_write = false;
 	papu->bufferIndex = 0;
 }
@@ -175,7 +204,7 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
 		desiredSpec.format = AUDIO_S16SYS;
 		desiredSpec.channels = 2;
 		desiredSpec.samples = 4096;
-		desiredSpec.callback = fill_audio;
+		desiredSpec.callback = fill_audio_sdl_cb;
 		desiredSpec.userdata = this;
 	
 		SDL_AudioSpec obtainedSpec;
@@ -188,6 +217,31 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
 		cout << "channels: " << (s32) obtainedSpec.channels << endl;
 		cout << "samples: " << obtainedSpec.samples << endl;
 		cout << "callback: " << obtainedSpec.callback << endl;*/
+#endif
+
+#ifdef NACL
+		frequency_ = 440;
+	
+		// Ask the device for an appropriate sample count size.
+		const uint32_t desired_sample_frame_count = 2048; // Same as PAPU::bufferSize
+		sample_frame_count_ = pp::AudioConfig::RecommendSampleFrameCount(
+			this->nes->_salty_nes,
+			PP_AUDIOSAMPLERATE_44100,
+			desired_sample_frame_count
+		);
+		
+		pp::AudioConfig config(
+			this->nes->_salty_nes,
+			PP_AUDIOSAMPLERATE_44100,
+			sample_frame_count_
+		);
+		
+		audio_ = pp::Audio(
+			this->nes->_salty_nes,
+			config,
+			fill_audio_nacl_cb,
+			this->nes->_salty_nes
+		);
 #endif
     }
 
@@ -239,6 +293,10 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
             // Start running the stream
             #ifdef SDL
             SDL_PauseAudio(0);
+            #endif
+            
+            #ifdef NACL
+            audio_.StartPlayback();
             #endif
 
         } catch (exception& e) {
@@ -781,6 +839,9 @@ void fill_audio(void* udata, uint8_t* stream, int len) {
      void PAPU::stop() {
             #ifdef SDL
             SDL_PauseAudio(1);
+            #endif
+            #ifdef NACL
+            audio_.StopPlayback();
             #endif
             _is_running = false;
     }
