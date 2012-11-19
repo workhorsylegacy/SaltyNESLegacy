@@ -205,10 +205,36 @@ function show_game_info(sha256) {
 		} else {
 			$('#game_img')[0].innerHTML = "<div style=\"width: 120px; height: 177px; border: 1px solid black;\">Unknown Game</div>";
 		}
+		
+		// Play button
 		$('#game_play_button').unbind('click');
 		$('#game_play_button').click(function() {
 			show_game_play(sha256);
 		});
+		
+		// Save remove button
+		var lnk_remove_save = $('#lnk_remove_save');
+		lnk_remove_save.unbind('click');
+		lnk_remove_save.click(function() {
+			// Have the user confirm
+			var r = confirm("Remove your save data?");
+			if(r == false) {
+				return;
+			}
+
+			// Remove the save
+			game.save = '';
+			var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
+			objectStore.put(game).onsuccess = function(event) {
+				lnk_remove_save.hide();
+				alert('Save data removed.');
+			};
+		});
+		if(game.save.length > 0) {
+			lnk_remove_save.show();
+		} else {
+			lnk_remove_save.hide();
+		}
 
 		document.title = game.name + ' - SaltyNES';
 	};
