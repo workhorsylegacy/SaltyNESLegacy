@@ -1,6 +1,5 @@
 
 
-
 var db = null;
 var salty_nes = null;
 var is_running = false;
@@ -687,6 +686,35 @@ function handleInitialSetup() {
 	$('#lnk_my_library').click(function(event) {
 		event.preventDefault();
 		show_library();
+	});
+	
+	$('#lnk_remove_data').click(function(event) {
+		event.preventDefault();
+
+		var r = confirm("Remove all your data?");
+		if(r == false) {
+			return;
+		}
+	
+		var ids = [];
+		var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
+		objectStore.index('name').openCursor().onsuccess = function(event) {
+			var cursor = event.target.result;
+			if(cursor) {
+				var game = cursor.value;
+				ids.push(game.sha256);
+
+				cursor.continue();
+			} else {
+				while(ids.length > 0) {
+					var id = ids.pop();
+					objectStore.delete(id).onsuccess = function(event) {
+						//
+					};
+				}
+				alert('Done removing.');
+			}
+		};
 	});
 	
 	// Automatically resize the screen to be as big as it can be
