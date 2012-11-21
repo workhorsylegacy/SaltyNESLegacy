@@ -447,32 +447,32 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      short MapperDefault::joy1Read() {
         short ret = 0;
-        KbInputHandler* in = nes->_joy1;
+        InputHandler* in = nes->_joy1;
 
         switch (joy1StrobeState) {
             case 0:
-                ret = in->getKeyState(KbInputHandler::KEY_A);
+                ret = in->getKeyState(InputHandler::KEY_A);
                 break;
             case 1:
-                ret = in->getKeyState(KbInputHandler::KEY_B);
+                ret = in->getKeyState(InputHandler::KEY_B);
                 break;
             case 2:
-                ret = in->getKeyState(KbInputHandler::KEY_SELECT);
+                ret = in->getKeyState(InputHandler::KEY_SELECT);
                 break;
             case 3:
-                ret = in->getKeyState(KbInputHandler::KEY_START);
+                ret = in->getKeyState(InputHandler::KEY_START);
                 break;
             case 4:
-                ret = in->getKeyState(KbInputHandler::KEY_UP);
+                ret = in->getKeyState(InputHandler::KEY_UP);
                 break;
             case 5:
-                ret = in->getKeyState(KbInputHandler::KEY_DOWN);
+                ret = in->getKeyState(InputHandler::KEY_DOWN);
                 break;
             case 6:
-                ret = in->getKeyState(KbInputHandler::KEY_LEFT);
+                ret = in->getKeyState(InputHandler::KEY_LEFT);
                 break;
             case 7:
-                ret = in->getKeyState(KbInputHandler::KEY_RIGHT);
+                ret = in->getKeyState(InputHandler::KEY_RIGHT);
                 break;
             case 8:
             case 9:
@@ -504,32 +504,32 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
      short MapperDefault::joy2Read() {
         short ret = 0;
-        KbInputHandler* in = nes->_joy2;
+        InputHandler* in = nes->_joy2;
 
         switch (joy2StrobeState) {
             case 0:
-                ret = in->getKeyState(KbInputHandler::KEY_A);
+                ret = in->getKeyState(InputHandler::KEY_A);
                 break;
             case 1:
-                ret = in->getKeyState(KbInputHandler::KEY_B);
+                ret = in->getKeyState(InputHandler::KEY_B);
                 break;
             case 2:
-                ret = in->getKeyState(KbInputHandler::KEY_SELECT);
+                ret = in->getKeyState(InputHandler::KEY_SELECT);
                 break;
             case 3:
-                ret = in->getKeyState(KbInputHandler::KEY_START);
+                ret = in->getKeyState(InputHandler::KEY_START);
                 break;
             case 4:
-                ret = in->getKeyState(KbInputHandler::KEY_UP);
+                ret = in->getKeyState(InputHandler::KEY_UP);
                 break;
             case 5:
-                ret = in->getKeyState(KbInputHandler::KEY_DOWN);
+                ret = in->getKeyState(InputHandler::KEY_DOWN);
                 break;
             case 6:
-                ret = in->getKeyState(KbInputHandler::KEY_LEFT);
+                ret = in->getKeyState(InputHandler::KEY_LEFT);
                 break;
             case 7:
-                ret = in->getKeyState(KbInputHandler::KEY_RIGHT);
+                ret = in->getKeyState(InputHandler::KEY_RIGHT);
                 break;
             case 8:
             case 9:

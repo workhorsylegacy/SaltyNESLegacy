@@ -84,7 +84,7 @@ class ChannelTriangle;
 class CPU;
 class CpuInfo;
 class FileLoader;
-class KbInputHandler;
+class InputHandler;
 class Logger;
 class Mapper001;
 class Mapper002;
@@ -563,8 +563,21 @@ public:
      static void initAddrDesc();
 };
 
-class KbInputHandler {
+class InputHandler {
 public:
+	static const float AXES_DEAD_ZONE;
+	bool _is_gamepad_connected;
+	string _gamepad_vendor_id;
+	string _gamepad_product_id;
+	bool _is_gamepad_used;
+	bool _is_keyboard_used;
+	map<string, bool> _is_input_pressed;
+	map<string, vector<size_t> > _input_map_button;
+	map<string, vector<size_t> > _input_map_axes_pos;
+	map<string, vector<size_t> > _input_map_axes_neg;
+	static const string KEYS[];
+	static const size_t KEYS_LENGTH;
+
     // Joypad keys:
     static const int KEY_A = 0;
     static const int KEY_B = 1;
@@ -578,13 +591,42 @@ public:
     // Key count:
     static const int NUM_KEYS = 8;
 
+	void key_down(int32_t key) {
+		_is_gamepad_used = false;
+		_is_keyboard_used = true;
+		switch(key) {
+			case(38): _is_input_pressed["up"] = true; break; // up = 38
+			case(37): _is_input_pressed["left"] = true; break; // left = 37
+			case(40): _is_input_pressed["down"] = true; break; // down = 40
+			case(39): _is_input_pressed["right"] = true; break; // right = 39
+			case(13): _is_input_pressed["start"] = true; break; // enter = 13
+			case(17): _is_input_pressed["select"] = true; break; // ctrl = 17
+			case(90): _is_input_pressed["b"] = true; break; // z = 90
+			case(88): _is_input_pressed["a"] = true; break; // x = 88
+		}
+	}
+	void key_up(int32_t key) {
+		_is_gamepad_used = false;
+		_is_keyboard_used = true;
+		switch(key) {
+			case(38): _is_input_pressed["up"] = false; break; // up = 38
+			case(37): _is_input_pressed["left"] = false; break; // left = 37
+			case(40): _is_input_pressed["down"] = false; break; // down = 40
+			case(39): _is_input_pressed["right"] = false; break; // right = 39
+			case(13): _is_input_pressed["start"] = false; break; // enter = 13
+			case(17): _is_input_pressed["select"] = false; break; // ctrl = 17
+			case(90): _is_input_pressed["b"] = false; break; // z = 90
+			case(88): _is_input_pressed["a"] = false; break; // x = 88
+		}
+	}
+
     NES* _nes;
     int _id;
     vector<bool> _keys;
     vector<int> _map;
 
-     KbInputHandler(NES* nes, int id);
-     ~KbInputHandler();
+     InputHandler(NES* nes, int id);
+     ~InputHandler();
      short getKeyState(int padKey);
      void mapKey(int padKey, int kbKeycode);
      void poll_for_key_events();
@@ -843,8 +885,8 @@ public:
      CPU* cpu;
      PPU* ppu;
      PAPU* papu;
-     KbInputHandler* _joy1;
-     KbInputHandler* _joy2;
+     InputHandler* _joy1;
+     InputHandler* _joy2;
      Memory* cpuMem;
      Memory* ppuMem;
      Memory* sprMem;
@@ -1388,19 +1430,6 @@ public:
 	explicit SaltyNES(PP_Instance instance);
 	virtual ~SaltyNES();
 
-	static const float AXES_DEAD_ZONE;
-	bool _is_gamepad_connected;
-	string _gamepad_vendor_id;
-	string _gamepad_product_id;
-	bool _is_gamepad_used;
-	bool _is_keyboard_used;
-	map<string, bool> _is_input_pressed;
-	map<string, vector<size_t> > _input_map_button;
-	map<string, vector<size_t> > _input_map_axes_pos;
-	map<string, vector<size_t> > _input_map_axes_neg;
-	static const string KEYS[];
-	static const size_t KEYS_LENGTH;
-
 	static void* start_main_loop(void* param);
 	virtual bool Init(uint32_t argc, const char* argn[], const char* argv[]);
 	virtual void DidChangeView(const pp::View& view);
@@ -1413,35 +1442,6 @@ public:
 
 	bool quit() const {
 		return quit_;
-	}
-
-	void key_down(int32_t key) {
-		_is_gamepad_used = false;
-		_is_keyboard_used = true;
-		switch(key) {
-			case(38): _is_input_pressed["up"] = true; break; // up = 38
-			case(37): _is_input_pressed["left"] = true; break; // left = 37
-			case(40): _is_input_pressed["down"] = true; break; // down = 40
-			case(39): _is_input_pressed["right"] = true; break; // right = 39
-			case(13): _is_input_pressed["start"] = true; break; // enter = 13
-			case(17): _is_input_pressed["select"] = true; break; // ctrl = 17
-			case(90): _is_input_pressed["b"] = true; break; // z = 90
-			case(88): _is_input_pressed["a"] = true; break; // x = 88
-		}
-	}
-	void key_up(int32_t key) {
-		_is_gamepad_used = false;
-		_is_keyboard_used = true;
-		switch(key) {
-			case(38): _is_input_pressed["up"] = false; break; // up = 38
-			case(37): _is_input_pressed["left"] = false; break; // left = 37
-			case(40): _is_input_pressed["down"] = false; break; // down = 40
-			case(39): _is_input_pressed["right"] = false; break; // right = 39
-			case(13): _is_input_pressed["start"] = false; break; // enter = 13
-			case(17): _is_input_pressed["select"] = false; break; // ctrl = 17
-			case(90): _is_input_pressed["b"] = false; break; // z = 90
-			case(88): _is_input_pressed["a"] = false; break; // x = 88
-		}
 	}
 
 	void set_fps(uint32_t value) {

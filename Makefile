@@ -51,7 +51,7 @@ src/ChannelTriangle.cc \
 src/Color.cc \
 src/CpuInfo.cc \
 src/Globals.cc \
-src/KbInputHandler.cc \
+src/InputHandler.cc \
 src/Mapper001.cc \
 src/Mapper002.cc \
 src/Mapper003.cc \

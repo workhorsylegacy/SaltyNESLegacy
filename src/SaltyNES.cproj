@@ -47,7 +47,6 @@
     <Compile Include="CPU.cc" />
     <Compile Include="CpuInfo.cc" />
     <Compile Include="Globals.cc" />
-    <Compile Include="KbInputHandler.cc" />
     <Compile Include="Mapper001.cc" />
     <Compile Include="Mapper002.cc" />
     <Compile Include="Mapper003.cc" />
@@ -74,6 +73,7 @@
     <Compile Include="SaltyNES.cc" />
     <Compile Include="base64.cc" />
     <Compile Include="Mapper009.cc" />
+    <Compile Include="InputHandler.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Color.h" />
