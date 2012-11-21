@@ -578,10 +578,10 @@ public:
     // Key count:
     static const int NUM_KEYS = 8;
 
-    NES* nes;
-    int id;
-    vector<bool>* allKeysState;
-    vector<int>* keyMapping;
+    NES* _nes;
+    int _id;
+    vector<bool> _keys;
+    vector<int> _map;
 
      KbInputHandler(NES* nes, int id);
      ~KbInputHandler();

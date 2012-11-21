@@ -18,72 +18,68 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SaltyNES.h"
 
-
-     KbInputHandler::KbInputHandler(NES* nes, int id) {
-        this->nes = nes;
-        this->id = id;
-        allKeysState = new vector<bool>(255);
-        keyMapping = new vector<int>(KbInputHandler::NUM_KEYS);
-    }
+	KbInputHandler::KbInputHandler(NES* nes, int id) :
+		_nes(nes),
+		_id(id),
+		_keys(255),
+		_map(KbInputHandler::NUM_KEYS) {
+	}
 
      KbInputHandler::~KbInputHandler() {
-        nes = NULL;
+        _nes = NULL;
     }
 
      short KbInputHandler::getKeyState(int padKey) {
-        return (short) ((*allKeysState)[(*keyMapping)[padKey]] ? 0x41 : 0x40);
+        return (short) (_keys[_map[padKey]] ? 0x41 : 0x40);
     }
 
      void KbInputHandler::mapKey(int padKey, int kbKeycode) {
-        (*keyMapping)[padKey] = kbKeycode;
+        _map[padKey] = kbKeycode;
     }
 
      void KbInputHandler::poll_for_key_events() {
-        vector<bool>* s = this->allKeysState;
-        vector<int>* m = this->keyMapping;
-        
 #ifdef SDL
         int32_t numberOfKeys;
         uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
 
-        (*s)[(*m)[KbInputHandler::KEY_UP]] =     keystate[SDLK_UP];
-        (*s)[(*m)[KbInputHandler::KEY_DOWN]] =   keystate[SDLK_DOWN];
-        (*s)[(*m)[KbInputHandler::KEY_RIGHT]] =  keystate[SDLK_RIGHT];
-        (*s)[(*m)[KbInputHandler::KEY_LEFT]] =   keystate[SDLK_LEFT];
-        (*s)[(*m)[KbInputHandler::KEY_START]] =  keystate[SDLK_RETURN];
-        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
-        (*s)[(*m)[KbInputHandler::KEY_B]] =      keystate[SDLK_z];
-        (*s)[(*m)[KbInputHandler::KEY_A]] =      keystate[SDLK_x];
+        _keys[_map[KbInputHandler::KEY_UP]] =     keystate[SDLK_UP];
+        _keys[_map[KbInputHandler::KEY_DOWN]] =   keystate[SDLK_DOWN];
+        _keys[_map[KbInputHandler::KEY_RIGHT]] =  keystate[SDLK_RIGHT];
+        _keys[_map[KbInputHandler::KEY_LEFT]] =   keystate[SDLK_LEFT];
+        _keys[_map[KbInputHandler::KEY_START]] =  keystate[SDLK_RETURN];
+        _keys[_map[KbInputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
+        _keys[_map[KbInputHandler::KEY_B]] =      keystate[SDLK_z];
+        _keys[_map[KbInputHandler::KEY_A]] =      keystate[SDLK_x];
 #endif
 
 #ifdef NACL
-        (*s)[(*m)[KbInputHandler::KEY_UP]] = this->nes->_salty_nes->_is_input_pressed["up"];
-        (*s)[(*m)[KbInputHandler::KEY_DOWN]] = this->nes->_salty_nes->_is_input_pressed["down"];
-        (*s)[(*m)[KbInputHandler::KEY_RIGHT]] = this->nes->_salty_nes->_is_input_pressed["right"];
-        (*s)[(*m)[KbInputHandler::KEY_LEFT]] = this->nes->_salty_nes->_is_input_pressed["left"];
-        (*s)[(*m)[KbInputHandler::KEY_START]] = this->nes->_salty_nes->_is_input_pressed["start"];
-        (*s)[(*m)[KbInputHandler::KEY_SELECT]] = this->nes->_salty_nes->_is_input_pressed["select"];
-        (*s)[(*m)[KbInputHandler::KEY_B]] = this->nes->_salty_nes->_is_input_pressed["b"];
-        (*s)[(*m)[KbInputHandler::KEY_A]] = this->nes->_salty_nes->_is_input_pressed["a"];
+        _keys[_map[KbInputHandler::KEY_UP]] =     this->_nes->_salty_nes->_is_input_pressed["up"];
+        _keys[_map[KbInputHandler::KEY_DOWN]] =   this->_nes->_salty_nes->_is_input_pressed["down"];
+        _keys[_map[KbInputHandler::KEY_RIGHT]] =  this->_nes->_salty_nes->_is_input_pressed["right"];
+        _keys[_map[KbInputHandler::KEY_LEFT]] =   this->_nes->_salty_nes->_is_input_pressed["left"];
+        _keys[_map[KbInputHandler::KEY_START]] =  this->_nes->_salty_nes->_is_input_pressed["start"];
+        _keys[_map[KbInputHandler::KEY_SELECT]] = this->_nes->_salty_nes->_is_input_pressed["select"];
+        _keys[_map[KbInputHandler::KEY_B]] =      this->_nes->_salty_nes->_is_input_pressed["b"];
+        _keys[_map[KbInputHandler::KEY_A]] =      this->_nes->_salty_nes->_is_input_pressed["a"];
 #endif
 
         // Can't hold both left & right or up & down at same time:
-        if ((*s)[(*m)[KbInputHandler::KEY_LEFT]]) {
-            (*s)[(*m)[KbInputHandler::KEY_RIGHT]] = false;
-        } else if ((*s)[(*m)[KbInputHandler::KEY_RIGHT]]) {
-            (*s)[(*m)[KbInputHandler::KEY_LEFT]] = false;
+        if(_keys[_map[KbInputHandler::KEY_LEFT]]) {
+            _keys[_map[KbInputHandler::KEY_RIGHT]] = false;
+        } else if(_keys[_map[KbInputHandler::KEY_RIGHT]]) {
+            _keys[_map[KbInputHandler::KEY_LEFT]] = false;
         }
         
-        if ((*s)[(*m)[KbInputHandler::KEY_UP]]) {
-            (*s)[(*m)[KbInputHandler::KEY_DOWN]] = false;
-        } else if ((*s)[(*m)[KbInputHandler::KEY_DOWN]]) {
-            (*s)[(*m)[KbInputHandler::KEY_UP]] = false;
+        if(_keys[_map[KbInputHandler::KEY_UP]]) {
+            _keys[_map[KbInputHandler::KEY_DOWN]] = false;
+        } else if(_keys[_map[KbInputHandler::KEY_DOWN]]) {
+            _keys[_map[KbInputHandler::KEY_UP]] = false;
         }
     }
 
      void KbInputHandler::reset() {
-        size_t size = allKeysState->size();
-        allKeysState->clear();
-        allKeysState->resize(size);
+        size_t size = _keys.size();
+        _keys.clear();
+        _keys.resize(size);
     }
     
