@@ -620,13 +620,15 @@ public:
 		}
 	}
 
-    NES* _nes;
     int _id;
     vector<bool> _keys;
     vector<int> _map;
 
-     InputHandler(NES* nes, int id);
+     InputHandler(int id);
      ~InputHandler();
+#ifdef NACL
+     void update_gamepad(PP_GamepadsSampleData gamepad_data);
+#endif
      short getKeyState(int padKey);
      void mapKey(int padKey, int kbKeycode);
      void poll_for_key_events();
@@ -897,7 +899,7 @@ public:
     bool _isRunning;
 
 #ifdef SDL
-     NES();
+     NES(InputHandler* joy1, InputHandler* joy2);
 #endif
 #ifdef NACL
      NES(SaltyNES* salty_nes);
@@ -1426,6 +1428,8 @@ class SaltyNES : public pp::Instance {
 public:
 	static SaltyNES* g_salty_nes;
 	vNES* vnes;
+	InputHandler* _joy1;
+	InputHandler* _joy2;
 
 	explicit SaltyNES(PP_Instance instance);
 	virtual ~SaltyNES();
@@ -1438,7 +1442,6 @@ public:
 	uint32_t* LockPixels();
 	void UnlockPixels() const;
 	void Paint();
-	void update_gamepad();
 
 	bool quit() const {
 		return quit_;

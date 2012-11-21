@@ -88,6 +88,8 @@ SaltyNES::SaltyNES(PP_Instance instance)
 			thread_is_running_(false) {
 	pthread_mutex_init(&pixel_buffer_mutex_, NULL);
 	vnes = NULL;
+	_joy1 = new InputHandler(0);
+	_joy2 = new InputHandler(1);
 
 	if(SaltyNES::g_salty_nes == NULL)
 		SaltyNES::g_salty_nes = this;
@@ -187,25 +189,21 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		return;
 		
 	} else if(message == "get_gamepad_status") {
-		if(vnes==NULL || vnes->nes==NULL || vnes->nes->_joy1==NULL)
-			return;
-		InputHandler* joy1 = vnes->nes->_joy1;
-		
 		// Get current gamepad data.
 		PP_GamepadsSampleData gamepad_data;
 		gamepad_->Sample(pp_instance(), &gamepad_data);
 		
-		joy1->_is_gamepad_connected = false;
+		_joy1->_is_gamepad_connected = false;
 		for(size_t i=0; i<gamepad_data.length; ++i) {
 			if(gamepad_data.items[i].connected)
-				joy1->_is_gamepad_connected = true;
+				_joy1->_is_gamepad_connected = true;
 		}
 	
 		// Tell the browser if the gamepad is connected or not
 		stringstream out;
 		out << "get_gamepad_status:";
-		out << (joy1->_is_gamepad_connected ? "yes" : "no");
-		out << ":" << joy1->_gamepad_vendor_id << joy1->_gamepad_product_id;
+		out << (_joy1->_is_gamepad_connected ? "yes" : "no");
+		out << ":" << _joy1->_gamepad_vendor_id << _joy1->_gamepad_product_id;
 		log_to_browser(out.str());
 		return;
 	}
@@ -325,82 +323,12 @@ void SaltyNES::Paint() {
 		return;
 	}
 
-	update_gamepad();
-	
-	FlushPixelBuffer();
-}
-
-void SaltyNES::update_gamepad() {
-	if(vnes==NULL || vnes->nes==NULL || vnes->nes->_joy1==NULL)
-		return;
-
-	// Get current gamepad data.
 	InputHandler* joy1 = vnes->nes->_joy1;
 	PP_GamepadsSampleData gamepad_data;
 	gamepad_->Sample(pp_instance(), &gamepad_data);
+	joy1->update_gamepad(gamepad_data);
 	
-	for(size_t i=0; i<gamepad_data.length; ++i) {
-		PP_GamepadSampleData& pad = gamepad_data.items[i];
-
-		if(!pad.connected)
-			continue;
-
-		// Check if we are switching to the gamepad from the keyboard
-		for(size_t j=0; j<pad.buttons_length; ++j) {
-			if(pad.buttons[j]) {
-				joy1->_is_gamepad_used = true;
-				joy1->_is_keyboard_used = false;
-			}
-		}
-		for(size_t j=0; j<pad.axes_length; ++j) {
-			if(pad.axes[j] > InputHandler::AXES_DEAD_ZONE || pad.axes[j] < -InputHandler::AXES_DEAD_ZONE) {
-				joy1->_is_gamepad_used = true;
-				joy1->_is_keyboard_used = false;
-			}
-		}
-		
-		// Get the vendor, and product id
-		if(joy1->_is_gamepad_used) {
-			char id[128];
-			for(int k=0; k<128; ++k) {
-				id[k] = pad.id[k];
-			}
-			string sid = id;
-			size_t vendor_pos = sid.find("Vendor: ");
-			size_t product_pos = sid.find("Product: ");
-			joy1->_gamepad_vendor_id = sid.substr(vendor_pos + strlen("Vendor: "), 4);
-			joy1->_gamepad_product_id = sid.substr(product_pos + strlen("Product: "), 4);
-		}
-
-		// Get the key states
-		if(joy1->_is_gamepad_used) {
-			for(size_t j=0; j<InputHandler::KEYS_LENGTH; ++j) {
-				string key = InputHandler::KEYS[j];
-				joy1->_is_input_pressed[key] = false;
-				// Button
-				for(size_t k=0; k<joy1->_input_map_button[key].size(); ++k) {
-					size_t number = joy1->_input_map_button[key][k];
-					if(pad.buttons[number] > 0) {
-						joy1->_is_input_pressed[key] = true;
-					}
-				}
-				// Positive Axes
-				for(size_t k=0; k<joy1->_input_map_axes_pos[key].size(); ++k) {
-					size_t number = joy1->_input_map_axes_pos[key][k];
-					if(pad.axes[number] > InputHandler::AXES_DEAD_ZONE) {
-						joy1->_is_input_pressed[key] = true;
-					}
-				}
-				// Negative Axes
-				for(size_t k=0; k<joy1->_input_map_axes_neg[key].size(); ++k) {
-					size_t number = joy1->_input_map_axes_neg[key][k];
-					if(pad.axes[number] < -InputHandler::AXES_DEAD_ZONE) {
-						joy1->_is_input_pressed[key] = true;
-					}
-				}
-			}
-		}
-	}
+	FlushPixelBuffer();
 }
 
 void SaltyNES::CreateContext(const pp::Size& size) {

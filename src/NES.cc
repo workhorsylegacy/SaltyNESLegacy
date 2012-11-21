@@ -19,14 +19,18 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // Creates the NES system.
 #ifdef SDL
-     NES::NES() {
+     NES::NES(InputHandler* joy1, InputHandler* joy2) {
+         _joy1 = joy1;
+         _joy2 = joy2;
 #endif
 #ifdef NACL
      NES::NES(SaltyNES* salty_nes) {
         _salty_nes = salty_nes;
+         _joy1 = salty_nes->_joy1;
+         _joy2 = salty_nes->_joy2;
 #endif
         this->_is_paused = false;
-		this->_isRunning = false;
+        this->_isRunning = false;
 
         // Create memory:
         cpuMem = new Memory(this, 0x10000);	// Main memory (internal to CPU)
@@ -49,9 +53,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
                 papu->writeReg(0x4000 + i, (short) 0);
             }
         }
-
-        this->_joy1 = new InputHandler(this, 0);
-        this->_joy2 = new InputHandler(this, 1);
 
         // Grab Controller Setting for Player 1:
         this->_joy1->mapKey(InputHandler::KEY_A, Globals::keycodes[Globals::controls["p1_a"]]);
