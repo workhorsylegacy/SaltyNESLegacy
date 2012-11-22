@@ -1,6 +1,5 @@
 
 
-var db = null;
 var salty_nes = null;
 var is_running = false;
 var paintInterval = null;
@@ -83,89 +82,40 @@ function remove_breadcrumbs_after(id) {
 	update_location_hash();
 }
 
-function setup_indexeddb(success_cb) {
-	// Setup IndexedDB
-	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-	window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-	window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
-	if(!indexedDB) {
-		alert("This application requires IndexedDB to work.");
-	}
-	
-	// Connect to the database
-	var request = indexedDB.open('SaltyNES', 1);
-	request.onerror = function(event) {
-		alert("This application requires IndexedDB to work.");
-	};
-	request.onupgradeneeded = function(event) {
-		db = event.target.result;
-		var objectStore = db.createObjectStore('games', { keyPath: 'sha256' });
-		objectStore.createIndex('name', 'name', { unique: false });
-	};
-	request.onsuccess = function(event) {
-		db = request.result;
-		make_sure_indexeddb_works(success_cb);
-	};
-}
-
-function make_sure_indexeddb_works(success_cb) {
-	// Make sure we can really access the database
-	try {
-		db.transaction(['games'], 'readwrite').objectStore('games');
-		success_cb();
-	} catch(err) {
-		alert('Failed to connect to IndexedDB. This is usually caused by your browser being out-of-date.');
-	}
-}
-
 function load_game_library() {
 	// Get all the existing links in the library
 	var game_library = $('#game_library');
 
 	// Load all the new games into the selector
-	var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
-	var index = objectStore.index('name');
 	var is_first_icon = true;
-	index.openCursor().onsuccess = function(event) {
-		var cursor = event.target.result;
-		if(cursor) {
-			if(is_first_icon) {
-				game_library[0].innerHTML = '';
-				is_first_icon = false;
-			}
-			var game = cursor.value;
-
-			// Put the icon in the selector
-			var element = null;
-			if(game.img != "") {
-				var icon_class = game['is_broken'] ? 'game_icon broken' : 'game_icon';
-				element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="' + icon_class + '"><img src="' + game.img + '" /><br />' + game.name + '</div></a>');
-			} else {
-				element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name + '</div></a>');
-			}
-			game_library.append(element);
-			element.click(function(event) {
-				event.preventDefault();
-				show_game_info(game.sha256);
-			});
-
-			cursor.continue();
-		} else {
-
+	Games.for_each({ each: function(game) {
+		if(is_first_icon) {
+			game_library[0].innerHTML = '';
+			is_first_icon = false;
 		}
-	};
+
+		// Put the icon in the selector
+		var element = null;
+		if(game.img != "") {
+			var icon_class = game.is_broken ? 'game_icon broken' : 'game_icon';
+			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="' + icon_class + '"><img src="' + game.img + '" /><br />' + game.name + '</div></a>');
+		} else {
+			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name + '</div></a>');
+		}
+		game_library.append(element);
+		element.click(function(event) {
+			event.preventDefault();
+			show_game_info(game.sha256);
+		});
+	}});
 }
 
 function show_game_play(sha256) {
-	// Get the game file from the database
-	var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
-	var request = objectStore.get(sha256);
-	request.onsuccess = function(event) {
-		// Send the rom to the nexes
-		var game = request.result;
-		salty_nes.postMessage('load_rom:' + game.save + ' rom:' + game.data);
+	Games.find_by_id(sha256, function(game) {
+		// Send the rom to the nexe
+		salty_nes.postMessage('load_rom:' + game.save_ram + ' rom:' + game.data);
 		salty_nes.postMessage('zoom:' + zoom);
-	};
+	});
 }
 
 function show_game_info(sha256) {
@@ -182,10 +132,7 @@ function show_game_info(sha256) {
 		salty_nes.postMessage('quit');
 
 	// Get the game info from the database
-	var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
-	var request = objectStore.get(sha256);
-	request.onsuccess = function(event) {
-		var game = request.result;
+	Games.find_by_id(sha256, function(game) {
 		// Add the game info to the breadcrumbs
 		add_breadcrumb({'title' : game.name, 'onclick' : function() { show_game_info(sha256); }});
 
@@ -217,27 +164,25 @@ function show_game_info(sha256) {
 		lnk_remove_save.unbind('click');
 		lnk_remove_save.click(function() {
 			// Have the user confirm
-			var r = confirm("Remove your save data?");
-			if(r == false) {
+			if(!confirm("Remove your save data?")) {
 				return;
 			}
 
 			// Remove the save
-			game.save = '';
-			var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
-			objectStore.put(game).onsuccess = function(event) {
+			game.save_ram = '';
+			game.update(function(game) {
 				lnk_remove_save.hide();
 				alert('Save data removed.');
-			};
+			});
 		});
-		if(game.save.length > 0) {
+		if(game.save_ram.length > 0) {
 			lnk_remove_save.show();
 		} else {
 			lnk_remove_save.hide();
 		}
 
 		document.title = game.name + ' - SaltyNES';
-	};
+	});
 }
 
 function show_home() {
@@ -368,34 +313,14 @@ function handleLibraryFiles(files) {
 			var sha256 = CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex);
 
 			// Save the base64ed game in the database
-			var game = {};
+			var game = new Games(sha256);
 			if(game_database[sha256] != undefined) {
-				game = $.extend({}, game_database[sha256]);
-			} else {
-				game = {
-					"name" : file_name,
-					"developer" : "",
-					"publisher" : "",
-					"region" : "",
-					"release_date" : "",
-					"number_of_players" : 1,
-					"can_save" : false,
-					"mapper" : 0,
-					"prog_rom_pages" : 0,
-					"char_rom_pages" : 0,
-					"link" : "",
-					"img" : "",
-					"is_broken" : false
-				};
+				game.copy_values_from_game(game_database[sha256]);
 			}
-			game['sha256'] = sha256;
-			game['data'] = base64;
-			game['save'] = '';
+			game.data = base64;
 
-			var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
-			var request = objectStore.add(game);
-			request.onsuccess = function(event) {
-				$('#debug')[0].innerHTML = "Loaded '" + game['name'] + "'";
+			game.save({success: function(game) {
+				$('#debug')[0].innerHTML = "Loaded '" + game.name + "'";
 	
 				// Start the next reader, if there is one
 				if(readers.length > 0) {
@@ -405,9 +330,8 @@ function handleLibraryFiles(files) {
 
 				if(readers.length == 0)
 					$('#game_drop_loading').hide();
-			};
-
-			request.onerror = function(event) {
+			}, failure: function(game, error_message) {
+				alert(error_message);
 				// Start the next reader, if there is one
 				if(readers.length > 0) {
 					var next = readers.pop();
@@ -416,8 +340,8 @@ function handleLibraryFiles(files) {
 
 				if(readers.length == 0)
 					$('#game_drop_loading').hide();
-			};
-		};
+			}});
+		}
 
 		// Add this reader to the list of readers
 		readers.push({ 'reader' : reader, 'file' : files[i] });
@@ -563,29 +487,15 @@ function handleNaclMessage(message_event) {
 		debug.innerHTML = 'Ready';
 	} else if(message_event.data.split(':')[0] == 'save') {
 		var sha256 = message_event.data.split('save:')[1].split(' data:')[0];
-		var save = message_event.data.split(' data:')[1];
+		var save_ram = message_event.data.split(' data:')[1];
 
-		var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
-		var request = objectStore.get(sha256);
-		request.onsuccess = function(event) {
-			var game = request.result;
-			game['sha256'] = sha256;
-			game['save'] = save;
-			
-			var objectStore2 = db.transaction(['games'], 'readwrite').objectStore('games');
-			var request2 = objectStore2.put(game);
-			request2.onsuccess = function(event) {
-				var game2 = request2.result;
-			}
-			request2.onerror = function(event) {
-				alert('Failed to store game save. Error ' + event.target.errorCode);
-			};
-			
-			
-		}
-		request.onerror = function(event) {
-			alert('Failed to store game save. Error ' + event.target.errorCode);
-		};
+		Games.find_by_id(sha256, function(game) {
+			game.sha256 = sha256;
+			game.save_ram = save_ram;
+			game.update(function(game) {
+				// Updated successfully
+			});
+		});
 	} else {
 		var debug = $('#debug')[0];
 		debug.innerHTML = message_event.data;
@@ -717,30 +627,27 @@ function handleInitialSetup() {
 	$('#lnk_remove_data').click(function(event) {
 		event.preventDefault();
 
-		var r = confirm("Remove all your data?");
-		if(r == false) {
+		if(!confirm("Remove all your data?")) {
 			return;
 		}
-	
-		var ids = [];
-		var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
-		objectStore.index('name').openCursor().onsuccess = function(event) {
-			var cursor = event.target.result;
-			if(cursor) {
-				var game = cursor.value;
-				ids.push(game.sha256);
 
-				cursor.continue();
-			} else {
-				while(ids.length > 0) {
-					var id = ids.pop();
-					objectStore.delete(id).onsuccess = function(event) {
-						//
-					};
+		var games = [];
+		Games.for_each({
+			each: function(game) {
+				games.push(game);
+			},
+			after: function() {
+				for(var i=0; i<games.length; i++) {
+					games[i].destroy(function() {
+						if(games.length)
+							games.length--;
+	
+						if(games.length == 0)
+							alert('Done removing.');
+					});
 				}
-				alert('Done removing.');
 			}
-		};
+		});
 	});
 	
 	// Automatically resize the screen to be as big as it can be
