@@ -17,40 +17,38 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SaltyNES.h"
 
-     Raster::Raster(vector<int>* data, int w, int h) {
-        this->data = data;
-        width = w;
-        height = h;
-    }
+Raster::Raster(vector<int>* data, int w, int h) {
+	this->data = data;
+	width = w;
+	height = h;
+}
 
-     Raster::Raster(int w, int h) {
-        data = new vector<int>(w * h);
-        width = w;
-        height = h;
-    }
+Raster::Raster(int w, int h) {
+	data = new vector<int>(w * h);
+	width = w;
+	height = h;
+}
 
-     void Raster::drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h) {
+void Raster::drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h) {
+	vector<int>* src = srcRaster->data;
+	int src_index;
+	int dst_index;
+	int tmp;
 
-        vector<int>* src = srcRaster->data;
-        int src_index;
-        int dst_index;
-        int tmp;
+	for(int y = 0; y < h; y++) {
 
-        for (int y = 0; y < h; y++) {
+		src_index = (srcy + y) * srcRaster->width + srcx;
+		dst_index = (dsty + y) * width + dstx;
 
-            src_index = (srcy + y) * srcRaster->width + srcx;
-            dst_index = (dsty + y) * width + dstx;
+		for(int x = 0; x < w; x++) {
 
-            for (int x = 0; x < w; x++) {
+			if((tmp = (*src)[src_index]) != 0) {
+				(*data)[dst_index] = tmp;
+			}
 
-                if ((tmp = (*src)[src_index]) != 0) {
-                    (*data)[dst_index] = tmp;
-                }
+			src_index++;
+			dst_index++;
 
-                src_index++;
-                dst_index++;
-
-            }
-        }
-
-    }
+		}
+	}
+}

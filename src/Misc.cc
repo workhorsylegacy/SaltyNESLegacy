@@ -17,113 +17,109 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SaltyNES.h"
 
-     vector<float>* Misc::_rnd = NULL;
-     int Misc::nextRnd = 0;
-     float Misc::rndret = 0;
+vector<float>* Misc::_rnd = NULL;
+int Misc::nextRnd = 0;
+float Misc::rndret = 0;
 
-	vector<float>* Misc::rnd() {
-		if(_rnd == NULL) {
-			_rnd = new vector<float>(100000);
-			for (size_t i = 0; i < _rnd->size(); i++) {
-	            (*_rnd)[i] = rand_float();
+vector<float>* Misc::rnd() {
+	if(_rnd == NULL) {
+		_rnd = new vector<float>(100000);
+		for(size_t i = 0; i < _rnd->size(); i++) {
+			(*_rnd)[i] = rand_float();
 
-	        }
 		}
-        
-        return _rnd;
 	}
+	return _rnd;
+}
 
-     string Misc::hex8(int i) {
-        string s = intToHexString(i);
-        while (s.length() < 2) {
-            s = "0" + s;
-        }
-        return toUpperCase(s);
-    }
-
-     string Misc::hex16(int i) {
-        string s = intToHexString(i);
-        while (s.length() < 4) {
-            s = "0" + s;
-        }
-        return toUpperCase(s);
-    }
-
-     string Misc::binN(int num, int N) {
-        char* c = new char[N];
-        for (int i = 0; i < N; i++) {
-            c[N - i - 1] = (num & 0x1) == 1 ? '1' : '0';
-            num >>= 1;
-        }
-        return string(c);
-    }
-
-     string Misc::bin8(int num) {
-        return binN(num, 8);
-    }
-
-     string Misc::bin16(int num) {
-        return binN(num, 16);
-    }
-
-     string Misc::binStr(long value, int bitcount) {
-        string ret = "";
-        for (int i = 0; i < bitcount; i++) {
-            ret = ((value & (1 << i)) != 0 ? "1" : "0") + ret;
-        }
-        return ret;
-    }
-
-     vector<int>* Misc::resizeArray(vector<int>* array, int newSize) {
-
-        vector<int>* newArr = new vector<int>(newSize);
-        arraycopy_int(array, 0, newArr, 0, min(newSize, (int)array->size()));
-        return newArr;
-
-    }
-
-     string Misc::pad(string str, string padStr, int length) {
-        while ((int)str.length() < length) {
-            str += padStr;
-        }
-        return str;
-    }
-
-     float Misc::random() {
-        rndret = (*rnd())[nextRnd];
-        nextRnd++;
-        if (nextRnd >= (int) rnd()->size()) {
-            nextRnd = (int) (rand_float() * (rnd()->size() - 1));
-        }
-        return rndret;
-    }
-
-	string Misc::from_vector_to_hex_string(vector<short>* data) {
-		const size_t BYTE_LEN = 4;
-		stringstream out;
-		for(size_t i=0; i<data->size(); i++) {
-			out << std::hex << setfill('0') << std::setw(BYTE_LEN) << (uint16_t) (*data)[i];
-		}
-		return out.str();
+string Misc::hex8(int i) {
+	string s = intToHexString(i);
+	while(s.length() < 2) {
+		s = "0" + s;
 	}
-	
-	vector<short>* Misc::from_hex_string_to_vector(string data) {
-		const size_t BYTE_LEN = 4;
-		const size_t VECTOR_SIZE = data.length() / BYTE_LEN;
-		vector<short>* retval = new vector<short>(VECTOR_SIZE);
+	return toUpperCase(s);
+}
 
-		uint16_t value = 0;
-		stringstream in;
-		size_t j = 0;
-		for(size_t i=0; i<VECTOR_SIZE; i++) {
-			in.clear();
-			in << std::hex << data.substr(j, BYTE_LEN);
-			in >> value;
-			(*retval)[i] = value;
-			j += BYTE_LEN;
-		}
-		
-		return retval;
+string Misc::hex16(int i) {
+	string s = intToHexString(i);
+	while(s.length() < 4) {
+		s = "0" + s;
+	}
+	return toUpperCase(s);
+}
+
+string Misc::binN(int num, int N) {
+	char* c = new char[N];
+	for(int i = 0; i < N; i++) {
+		c[N - i - 1] = (num & 0x1) == 1 ? '1' : '0';
+		num >>= 1;
+	}
+	return string(c);
+}
+
+string Misc::bin8(int num) {
+	return binN(num, 8);
+}
+
+string Misc::bin16(int num) {
+	return binN(num, 16);
+}
+
+string Misc::binStr(long value, int bitcount) {
+	string ret = "";
+	for(int i = 0; i < bitcount; i++) {
+		ret = ((value & (1 << i)) != 0 ? "1" : "0") + ret;
+	}
+	return ret;
+}
+
+vector<int>* Misc::resizeArray(vector<int>* array, int newSize) {
+	vector<int>* newArr = new vector<int>(newSize);
+	arraycopy_int(array, 0, newArr, 0, min(newSize, (int)array->size()));
+	return newArr;
+}
+
+string Misc::pad(string str, string padStr, int length) {
+	while((int)str.length() < length) {
+		str += padStr;
+	}
+	return str;
+}
+
+float Misc::random() {
+	rndret = (*rnd())[nextRnd];
+	nextRnd++;
+	if(nextRnd >= (int) rnd()->size()) {
+		nextRnd = (int) (rand_float() * (rnd()->size() - 1));
+	}
+	return rndret;
+}
+
+string Misc::from_vector_to_hex_string(vector<short>* data) {
+	const size_t BYTE_LEN = 4;
+	stringstream out;
+	for(size_t i=0; i<data->size(); i++) {
+		out << std::hex << setfill('0') << std::setw(BYTE_LEN) << (uint16_t) (*data)[i];
+	}
+	return out.str();
+}
+
+vector<short>* Misc::from_hex_string_to_vector(string data) {
+	const size_t BYTE_LEN = 4;
+	const size_t VECTOR_SIZE = data.length() / BYTE_LEN;
+	vector<short>* retval = new vector<short>(VECTOR_SIZE);
+
+	uint16_t value = 0;
+	stringstream in;
+	size_t j = 0;
+	for(size_t i=0; i<VECTOR_SIZE; i++) {
+		in.clear();
+		in << std::hex << data.substr(j, BYTE_LEN);
+		in >> value;
+		(*retval)[i] = value;
+		j += BYTE_LEN;
 	}
 	
-	
+	return retval;
+}
+

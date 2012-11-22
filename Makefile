@@ -66,7 +66,6 @@ src/NameTable.cc \
 src/PAPU.cc \
 src/PPU.cc \
 src/PaletteTable.cc \
-src/PapuChannel.cc \
 src/Parameters.cc \
 src/ROM.cc \
 src/Raster.cc \

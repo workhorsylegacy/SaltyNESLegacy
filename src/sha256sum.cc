@@ -116,7 +116,7 @@ static inline uint64_t __byteswap64(uint64_t x)
 
 static inline uint32_t _byteswap(uint32_t x)
 {
-        if (!littleEndian)
+        if(!littleEndian)
                 return x;
         else
                 return _BYTESWAP(x);
@@ -124,7 +124,7 @@ static inline uint32_t _byteswap(uint32_t x)
 
 static inline uint64_t _byteswap64(uint64_t x)
 {
-        if (!littleEndian)
+        if(!littleEndian)
                 return x;
         else
                 return _BYTESWAP64(x);
@@ -178,7 +178,7 @@ static void burnStack(int size)
 
         memset(buf, 0, sizeof(buf));
         size -= sizeof(buf);
-        if (size > 0)
+        if(size > 0)
                 burnStack(size);
 }
 
@@ -193,7 +193,7 @@ static void SHA256Guts(SHA256Context * sc, const uint32_t * cbuf)
 
         W = buf;
 
-        for (i = 15; i >= 0; i--) {
+        for(i = 15; i >= 0; i--) {
                 *(W++) = BYTESWAP(*cbuf);
                 cbuf++;
         }
@@ -203,7 +203,7 @@ static void SHA256Guts(SHA256Context * sc, const uint32_t * cbuf)
         W7 = &buf[9];
         W2 = &buf[14];
 
-        for (i = 47; i >= 0; i--) {
+        for(i = 47; i >= 0; i--) {
                 *(W++) = sigma1(*W2) + *(W7++) + sigma0(*W15) + *(W16++);
                 W2++;
                 W15++;
@@ -226,22 +226,22 @@ static void SHA256Guts(SHA256Context * sc, const uint32_t * cbuf)
 #endif                          /* !SHA256_UNROLL */
 
 #if SHA256_UNROLL == 1
-        for (i = 63; i >= 0; i--)
+        for(i = 63; i >= 0; i--)
                 DO_ROUND();
 #elif SHA256_UNROLL == 2
-        for (i = 31; i >= 0; i--) {
+        for(i = 31; i >= 0; i--) {
                 DO_ROUND();
                 DO_ROUND();
         }
 #elif SHA256_UNROLL == 4
-        for (i = 15; i >= 0; i--) {
+        for(i = 15; i >= 0; i--) {
                 DO_ROUND();
                 DO_ROUND();
                 DO_ROUND();
                 DO_ROUND();
         }
 #elif SHA256_UNROLL == 8
-        for (i = 7; i >= 0; i--) {
+        for(i = 7; i >= 0; i--) {
                 DO_ROUND();
                 DO_ROUND();
                 DO_ROUND();
@@ -252,7 +252,7 @@ static void SHA256Guts(SHA256Context * sc, const uint32_t * cbuf)
                 DO_ROUND();
         }
 #elif SHA256_UNROLL == 16
-        for (i = 3; i >= 0; i--) {
+        for(i = 3; i >= 0; i--) {
                 DO_ROUND();
                 DO_ROUND();
                 DO_ROUND();
@@ -271,7 +271,7 @@ static void SHA256Guts(SHA256Context * sc, const uint32_t * cbuf)
                 DO_ROUND();
         }
 #elif SHA256_UNROLL == 32
-        for (i = 1; i >= 0; i--) {
+        for(i = 1; i >= 0; i--) {
                 DO_ROUND();
                 DO_ROUND();
                 DO_ROUND();
@@ -390,11 +390,11 @@ void SHA256Update(SHA256Context * sc, const void *data, uint32_t len)
         uint32_t bytesToCopy;
         int needBurn = 0;
 
-        if (sc->bufferLength) {
+        if(sc->bufferLength) {
                 bufferBytesLeft = 64L - sc->bufferLength;
 
                 bytesToCopy = bufferBytesLeft;
-                if (bytesToCopy > len)
+                if(bytesToCopy > len)
                         bytesToCopy = len;
 
                 memcpy(&sc->buffer.bytes[sc->bufferLength], data, bytesToCopy);
@@ -405,14 +405,14 @@ void SHA256Update(SHA256Context * sc, const void *data, uint32_t len)
                 data = ((uint8_t *) data) + bytesToCopy;
                 len -= bytesToCopy;
 
-                if (sc->bufferLength == 64L) {
+                if(sc->bufferLength == 64L) {
                         SHA256Guts(sc, sc->buffer.words);
                         needBurn = 1;
                         sc->bufferLength = 0L;
                 }
         }
 
-        while (len > 63L) {
+        while(len > 63L) {
                 sc->totalLength += 512L;
 
                 SHA256Guts(sc, (const uint32_t*) data);
@@ -422,7 +422,7 @@ void SHA256Update(SHA256Context * sc, const void *data, uint32_t len)
                 len -= 64L;
         }
 
-        if (len) {
+        if(len) {
                 memcpy(&sc->buffer.bytes[sc->bufferLength], data, len);
 
                 sc->totalLength += len * 8L;
@@ -430,7 +430,7 @@ void SHA256Update(SHA256Context * sc, const void *data, uint32_t len)
                 sc->bufferLength += len;
         }
 
-        if (needBurn)
+        if(needBurn)
                 burnStack(sizeof(uint32_t[74]) + sizeof(uint32_t *[6]) +
                           sizeof(int));
 }
@@ -442,7 +442,7 @@ void SHA256Final(SHA256Context * sc, uint8_t hash[SHA256_HASH_SIZE])
         int i;
 
         bytesToPad = 120L - sc->bufferLength;
-        if (bytesToPad > 64L)
+        if(bytesToPad > 64L)
                 bytesToPad -= 64L;
 
         lengthPad = BYTESWAP64(sc->totalLength);
@@ -450,8 +450,8 @@ void SHA256Final(SHA256Context * sc, uint8_t hash[SHA256_HASH_SIZE])
         SHA256Update(sc, padding, bytesToPad);
         SHA256Update(sc, &lengthPad, 8L);
 
-        if (hash) {
-                for (i = 0; i < SHA256_HASH_WORDS; i++) {
+        if(hash) {
+                for(i = 0; i < SHA256_HASH_WORDS; i++) {
                         *((uint32_t *) hash) = BYTESWAP(sc->hash[i]);
                         hash += 4;
                 }

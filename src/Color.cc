@@ -36,29 +36,29 @@
         float hue, saturation, brightness;
 
         int cmax = (r > g) ? r : g;
-        if (b > cmax) cmax = b;
+        if(b > cmax) cmax = b;
         int cmin = (r < g) ? r : g;
-        if (b < cmin) cmin = b;
+        if(b < cmin) cmin = b;
 
         brightness = ((float) cmax) / 255.0f;
-        if (cmax != 0)
+        if(cmax != 0)
             saturation = ((float) (cmax - cmin)) / ((float) cmax);
         else
             saturation = 0;
-        if (saturation == 0)
+        if(saturation == 0)
             hue = 0;
         else {
             float redc = ((float) (cmax - r)) / ((float) (cmax - cmin));
             float greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
             float bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
-            if (r == cmax)
+            if(r == cmax)
                 hue = bluec - greenc;
-            else if (g == cmax)
+            else if(g == cmax)
                 hue = 2.0f + redc - bluec;
             else
                 hue = 4.0f + greenc - redc;
             hue = hue / 6.0f;
-            if (hue < 0)
+            if(hue < 0)
                 hue = hue + 1.0f;
         }
         hsbvals[0] = hue;
@@ -69,7 +69,7 @@
 
     int Color::HSBtoRGB(float hue, float saturation, float brightness) {
         int r = 0, g = 0, b = 0;
-        if (saturation == 0) {
+        if(saturation == 0) {
             r = g = b = (int) (brightness * 255.0f + 0.5f);
         } else {
             float h = (hue - (float)floor(hue)) * 6.0f;

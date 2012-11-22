@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Initialize SDL
-	if( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
+	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Could not initialize SDL: %s\n", 
 			SDL_GetError());
 		return -1;
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 
 	// Grab a SDL surface from the screen
 	Globals::sdl_screen = SDL_SetVideoMode(256, 240, 32, SDL_SWSURFACE|SDL_ANYFORMAT);
-	if( !Globals::sdl_screen ) {
+	if(!Globals::sdl_screen) {
 		fprintf(stderr, "Couldn't create a surface: %s\n",
 			SDL_GetError());
 		return -1;

@@ -17,86 +17,74 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SaltyNES.h"
 
-     NameTable::NameTable(int width, int height, string name) {
-        this->name = name;
-        this->tile = new vector<short>(width * height);
-        this->attrib = new vector<short>(width * height);
-        this->width = width;
-        this->height = height;
-    }
+NameTable::NameTable(int width, int height, string name) {
+	this->name = name;
+	this->tile = new vector<short>(width * height);
+	this->attrib = new vector<short>(width * height);
+	this->width = width;
+	this->height = height;
+}
 
-    NameTable::~NameTable() {
-        delete_n_null(tile);
-        delete_n_null(attrib);
-    }
+NameTable::~NameTable() {
+	delete_n_null(tile);
+	delete_n_null(attrib);
+}
 
-     short NameTable::getTileIndex(int x, int y) {
+short NameTable::getTileIndex(int x, int y) {
+	return (*tile)[y * width + x];
+}
 
-        return (*tile)[y * width + x];
+short NameTable::getAttrib(int x, int y) {
+	return (*attrib)[y * width + x];
+}
 
-    }
+void NameTable::writeTileIndex(int index, int value) {
+	(*tile)[index] = (short) value;
+}
 
-     short NameTable::getAttrib(int x, int y) {
+void NameTable::writeAttrib(int index, int value) {
+	int basex, basey;
+	int add;
+	int tx, ty;
+	//int attindex;
+	basex = index % 8;
+	basey = index / 8;
+	basex *= 4;
+	basey *= 4;
 
-        return (*attrib)[y * width + x];
+	for(int sqy = 0; sqy < 2; sqy++) {
+		for(int sqx = 0; sqx < 2; sqx++) {
+			add = (value >> (2 * (sqy * 2 + sqx))) & 3;
+			for(int y = 0; y < 2; y++) {
+				for(int x = 0; x < 2; x++) {
+					tx = basex + sqx * 2 + x;
+					ty = basey + sqy * 2 + y;
+					//attindex = ty * width + tx;
+					(*attrib)[ty * width + tx] = (short) ((add << 2) & 12);
+				////System.out.println("x="+tx+" y="+ty+" value="+attrib[ty*width+tx]+" index="+attindex);
+				}
+			}
+		}
+	}
+}
 
-    }
+void NameTable::stateSave(ByteBuffer* buf) {
+	for(int i = 0; i < width * height; i++) {
+		if((*tile)[i] > 255)//System.out.println(">255!!");
+		{
+			buf->putByte((int8_t) (*tile)[i]);
+		}
+	}
+	for(int i = 0; i < width * height; i++) {
+		buf->putByte((int8_t) (*attrib)[i]);
+	}
+}
 
-     void NameTable::writeTileIndex(int index, int value) {
-
-        (*tile)[index] = (short) value;
-
-    }
-
-     void NameTable::writeAttrib(int index, int value) {
-
-        int basex, basey;
-        int add;
-        int tx, ty;
-        //int attindex;
-        basex = index % 8;
-        basey = index / 8;
-        basex *= 4;
-        basey *= 4;
-
-        for (int sqy = 0; sqy < 2; sqy++) {
-            for (int sqx = 0; sqx < 2; sqx++) {
-                add = (value >> (2 * (sqy * 2 + sqx))) & 3;
-                for (int y = 0; y < 2; y++) {
-                    for (int x = 0; x < 2; x++) {
-                        tx = basex + sqx * 2 + x;
-                        ty = basey + sqy * 2 + y;
-                        //attindex = ty * width + tx;
-                        (*attrib)[ty * width + tx] = (short) ((add << 2) & 12);
-                    ////System.out.println("x="+tx+" y="+ty+" value="+attrib[ty*width+tx]+" index="+attindex);
-                    }
-                }
-            }
-        }
-
-    }
-
-     void NameTable::stateSave(ByteBuffer* buf) {
-
-        for (int i = 0; i < width * height; i++) {
-            if ((*tile)[i] > 255)//System.out.println(">255!!");
-            {
-                buf->putByte((int8_t) (*tile)[i]);
-            }
-        }
-        for (int i = 0; i < width * height; i++) {
-            buf->putByte((int8_t) (*attrib)[i]);
-        }
-
-    }
-
-     void NameTable::stateLoad(ByteBuffer* buf) {
-
-        for (int i = 0; i < width * height; i++) {
-            (*tile)[i] = buf->readByte();
-        }
-        for (int i = 0; i < width * height; i++) {
-            (*attrib)[i] = buf->readByte();
-        }
-
-    }
+void NameTable::stateLoad(ByteBuffer* buf) {
+	for(int i = 0; i < width * height; i++) {
+		(*tile)[i] = buf->readByte();
+	}
+	for(int i = 0; i < width * height; i++) {
+		(*attrib)[i] = buf->readByte();
+	}
+}

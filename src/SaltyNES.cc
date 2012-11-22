@@ -46,7 +46,7 @@ public:
 	}
 	
 	~ScopedMutexLock() {
-		if (mutex_)
+		if(mutex_)
 			pthread_mutex_unlock(mutex_);
 	}
 	
@@ -120,7 +120,7 @@ SaltyNES::~SaltyNES() {
 
 void SaltyNES::DidChangeView(const pp::View& view) {
 	pp::Rect position = view.GetRect();
-	if (pixel_buffer_ && position.size() == pixel_buffer_->size())
+	if(pixel_buffer_ && position.size() == pixel_buffer_->size())
 		return;	// Size didn't change, no need to update anything.
 
 	// Create a new device context with the new size.
@@ -129,7 +129,7 @@ void SaltyNES::DidChangeView(const pp::View& view) {
 	// Delete the old pixel buffer and create a new one.
 	ScopedMutexLock scoped_mutex(&pixel_buffer_mutex_);
 	delete_n_null(pixel_buffer_);
-	if (graphics_2d_context_ != NULL) {
+	if(graphics_2d_context_ != NULL) {
 		pixel_buffer_ = new pp::ImageData(
 			this,
 			PP_IMAGEDATAFORMAT_RGBA_PREMUL,
@@ -305,8 +305,8 @@ uint32_t* SaltyNES::LockPixels() {
 	void* pixels = NULL;
 	// Do not use a ScopedMutexLock here, since the lock needs to be held until
 	// the matching UnlockPixels() call.
-	if (pthread_mutex_lock(&pixel_buffer_mutex_) == kPthreadMutexSuccess) {
-		if (pixel_buffer_ != NULL && !pixel_buffer_->is_null()) {
+	if(pthread_mutex_lock(&pixel_buffer_mutex_) == kPthreadMutexSuccess) {
+		if(pixel_buffer_ != NULL && !pixel_buffer_->is_null()) {
 			pixels = pixel_buffer_->data();
 		}
 	}
@@ -319,7 +319,7 @@ void SaltyNES::UnlockPixels() const {
 
 void SaltyNES::Paint() {
 	ScopedMutexLock scoped_mutex(&pixel_buffer_mutex_);
-	if (!scoped_mutex.is_valid()) {
+	if(!scoped_mutex.is_valid()) {
 		return;
 	}
 
@@ -333,34 +333,34 @@ void SaltyNES::Paint() {
 
 void SaltyNES::CreateContext(const pp::Size& size) {
 	ScopedMutexLock scoped_mutex(&pixel_buffer_mutex_);
-	if (!scoped_mutex.is_valid()) {
+	if(!scoped_mutex.is_valid()) {
 		return;
 	}
-	if (IsContextValid())
+	if(IsContextValid())
 		return;
 	graphics_2d_context_ = new pp::Graphics2D(this, size, false);
-	if (!BindGraphics(*graphics_2d_context_)) {
+	if(!BindGraphics(*graphics_2d_context_)) {
 		printf("Couldn't bind the device context\n");
 	}
 }
 
 void SaltyNES::DestroyContext() {
 	ScopedMutexLock scoped_mutex(&pixel_buffer_mutex_);
-	if (!scoped_mutex.is_valid()) {
+	if(!scoped_mutex.is_valid()) {
 		return;
 	}
-	if (!IsContextValid())
+	if(!IsContextValid())
 		return;
 	delete_n_null(graphics_2d_context_);
 }
 
 void SaltyNES::FlushPixelBuffer() {
-	if (!IsContextValid())
+	if(!IsContextValid())
 		return;
 	// Note that the pixel lock is held while the buffer is copied into the
 	// device context and then flushed.
 	graphics_2d_context_->PaintImageData(*pixel_buffer_, pp::Point());
-	if (flush_pending())
+	if(flush_pending())
 		return;
 	set_flush_pending(true);
 	graphics_2d_context_->Flush(pp::CompletionCallback(&FlushCallback, this));

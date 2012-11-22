@@ -59,7 +59,6 @@
     <Compile Include="NES.cc" />
     <Compile Include="PaletteTable.cc" />
     <Compile Include="PAPU.cc" />
-    <Compile Include="PapuChannel.cc" />
     <Compile Include="Parameters.cc" />
     <Compile Include="PPU.cc" />
     <Compile Include="Raster.cc" />

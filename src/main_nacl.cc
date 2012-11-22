@@ -9,7 +9,7 @@
 // an instance of your NaCl module on the web page.  The browser creates a new
 // instance for each <embed> tag with type="application/x-nacl".
 class SaltyNESModule : public pp::Module {
-	public:
+public:
 	SaltyNESModule() : pp::Module() {}
 	virtual ~SaltyNESModule() {}
 

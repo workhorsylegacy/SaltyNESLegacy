@@ -18,38 +18,37 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SaltyNES.h"
 
 
-    void Mapper002::init(NES* nes) {
-        this->base_init(nes);
-    }
+void Mapper002::init(NES* nes) {
+	this->base_init(nes);
+}
 
-    void Mapper002::write(int address, short value) {
-        if (address < 0x8000) {
-            // Let the base mapper take care of it.
-            this->base_write(address, value);
-        } else {
-            // This is a ROM bank select command.
-            // Swap in the given ROM bank at 0x8000:
-            loadRomBank(value, 0x8000);
-        }
-    }
+void Mapper002::write(int address, short value) {
+	if(address < 0x8000) {
+		// Let the base mapper take care of it.
+		this->base_write(address, value);
+	} else {
+		// This is a ROM bank select command.
+		// Swap in the given ROM bank at 0x8000:
+		loadRomBank(value, 0x8000);
+	}
+}
 
-    void Mapper002::loadROM(ROM* rom) {
-        if (!rom->isValid()) {
-            //System.out.println("UNROM: Invalid ROM! Unable to load.");
-            return;
-        }
+void Mapper002::loadROM(ROM* rom) {
+	if(!rom->isValid()) {
+		//System.out.println("UNROM: Invalid ROM! Unable to load.");
+		return;
+	}
 
-        //System.out.println("UNROM: loading ROM..");
+	//System.out.println("UNROM: loading ROM..");
 
-        // Load PRG-ROM:
-        loadRomBank(0, 0x8000);
-        loadRomBank(rom->getRomBankCount() - 1, 0xC000);
+	// Load PRG-ROM:
+	loadRomBank(0, 0x8000);
+	loadRomBank(rom->getRomBankCount() - 1, 0xC000);
 
-        // Load CHR-ROM:
-        loadCHRROM();
+	// Load CHR-ROM:
+	loadCHRROM();
 
-        // Do Reset-Interrupt:
-        //nes.getCpu().doResetInterrupt();
-        nes->getCpu()->requestIrq(CPU::IRQ_RESET);
-
-    }
+	// Do Reset-Interrupt:
+	//nes.getCpu().doResetInterrupt();
+	nes->getCpu()->requestIrq(CPU::IRQ_RESET);
+}
