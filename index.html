@@ -20,7 +20,7 @@
 			
 			nav {
 				float: left;
-				min-height: 100%;
+				min-height: 95%;
 				width: 200px;
 			}
 			
@@ -128,6 +128,31 @@
 			<div id="breadcrumbs_div" style="overflow: auto; clear: both; float: left;">
 			</div>
 		
+			<div id="about" style="text-align: left; padding: 10%; display: none;">
+				<p>
+					SaltyNES is a <a href="http://en.wikipedia.org/wiki/Nintendo_Entertainment_System">NES</a> Emulator.
+					It allows you to play your NES games in a web browser. 
+					<a href="https://developers.google.com/native-client/">Google Native Client</a> 
+					is required to use SaltyNES. Currently the only web browser to support Native Client, is 
+					<a href="http://www.google.com/chrome">Google Chrome</a>. It should run fine on Linux, Mac, and
+					Windows machines with 32bit or 64bit Intel(X86) CPUs.
+				</p>
+				<p>
+					Game ROM files are not provided by SaltyNES, or stored on the SaltyNES servers.
+					Users must use their own ROM files. All ROM files are stored in the user's web browser.
+				</p>
+				<p>
+					SaltyNES is Free Open Source Software, and licensed under the <a href="http://www.gnu.org/licenses/gpl.html">General Public License Version 3</a>.
+					So it can be run offline on your personal computer, or online using your own web server. 
+					It is written in C++, and based on <a href="http://virtualnes.com">vNES</a>, which is written in Java.
+				</p>
+				<p>
+					Development happens over at <a href="http://launchpad.net/SaltyNES">http://launchpad.net/SaltyNES</a>. 
+					The source code for SaltyNES can be found there. Bug reports can also be made, if you 
+					find any problems.
+				</p>
+			</div>
+		
 			<div id="top_controls" style="overflow: auto; clear: both; display: none;">
 				<button id="pause" disabled="disabled">Pause</button>
 				<span id="fpsdebug"></span>
@@ -149,6 +174,11 @@
 					<a id="lnk_remove_data" href="#/Home/Remove Data">
 						<button style="width: 50%; height: 100px; float: left;">
 						Remove Data
+						</button>
+					</a>
+					<a id="lnk_about" href="#/Home/About">
+						<button style="width: 50%; height: 100px; float: left;">
+						About
 						</button>
 					</a>
 				</div>
@@ -187,6 +217,9 @@
 				src="newlib/salty_nes.nmf"
 				type="application/x-nacl" />
 		</div>
+		<footer style="clear: both; text-align: center;">
+			Copyright &copy; 2012 <a href="http://workhorsy.org">Matthew Brennan Jones</a>
+		</footer>
 	</body>
 </html>
 

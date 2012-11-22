@@ -119,6 +119,7 @@ function show_game_play(sha256) {
 }
 
 function show_game_info(sha256) {
+	$('#about').hide();
 	$('#game_selector').hide();
 	$('#game_info').show();
 	$('#top_controls').hide();
@@ -198,6 +199,7 @@ function show_home() {
 	}
 
 	// Show all the games
+	$('#about').hide();
 	$('#game_selector').show();
 	$('#game_info').hide();
 	$('#top_controls').hide();
@@ -211,10 +213,25 @@ function show_home() {
 		salty_nes.postMessage('quit');
 }
 
+function show_about() {
+	document.title = 'About - SaltyNES';
+	add_breadcrumb({'title' : 'About', 'onclick' : function() { show_about(); }});
+	
+	$('#about').show();
+	$('#game_selector').hide();
+	$('#game_info').hide();
+	$('#top_controls').hide();
+	$('#game_drop').hide();
+	$('#game_library').show();
+	$('#home_controls').hide();
+	hide_screen();
+}
+
 function show_library() {
 	document.title = 'My Library - SaltyNES';
 	add_breadcrumb({'title' : 'My Library', 'onclick' : function() { show_library(); }});
 
+	$('#about').hide();
 	$('#game_selector').show();
 	$('#game_info').hide();
 	$('#top_controls').hide();
@@ -234,6 +251,7 @@ function show_drop() {
 	document.title = 'Add to Library - SaltyNES';
 	add_breadcrumb({'title' : 'Add to Library', 'onclick' : function() { show_drop(); }});
 
+	$('#about').hide();
 	$('#game_selector').show();
 	$('#game_info').hide();
 	$('#top_controls').hide();
@@ -571,6 +589,10 @@ function handleInitialSetup() {
 	} else if(page == 'Add to Library') {
 		show_drop();
 		is_valid = true;
+	// About
+	} else if(page == 'About') {
+		show_about();
+		is_valid = true;
 	} else {
 		var game_name = sections[3];
 		for(var key in game_database) {
@@ -648,6 +670,11 @@ function handleInitialSetup() {
 				}
 			}
 		});
+	});
+	
+	$('#lnk_about').click(function(event) {
+		event.preventDefault();
+		show_about();
 	});
 	
 	// Automatically resize the screen to be as big as it can be
