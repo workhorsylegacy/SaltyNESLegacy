@@ -311,10 +311,10 @@ function handleLibraryFiles(files) {
 
 	// Read the files
 	for(i=0; i<files.length; i++) {
-		var file_name = files[i].name;
 		var reader = new FileReader();
+		reader.file_name = files[i].name;
 
-		reader.onprogress = function (event) {
+		reader.onprogress = function(event) {
 			if(event.lengthComputable) {
 				var loaded = (event.loaded / event.total);
 			}
@@ -332,8 +332,12 @@ function handleLibraryFiles(files) {
 
 			// Save the base64ed game in the database
 			var game = new Games(sha256);
+			// Game in database
 			if(game_database[sha256] != undefined) {
 				game.copy_values_from_game(game_database[sha256]);
+			// Game not in database
+			} else {
+				game.name = event.target.file_name;
 			}
 			game.data = base64;
 
@@ -349,7 +353,7 @@ function handleLibraryFiles(files) {
 				if(readers.length == 0)
 					$('#game_drop_loading').hide();
 			}, failure: function(game, error_message) {
-				alert(error_message);
+				alert('Failed to save game. Error code: ' + error_message);
 				// Start the next reader, if there is one
 				if(readers.length > 0) {
 					var next = readers.pop();

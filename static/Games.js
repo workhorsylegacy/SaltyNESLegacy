@@ -70,7 +70,7 @@ Games.prototype = {
 		var hash = {};
 		for(var i=0; i<game_fields.length; i++) {
 			var field = game_fields[i];
-			if(this[field])
+			if(this[field] != undefined)
 				hash[field] = this[field];
 		}
 		return hash;
