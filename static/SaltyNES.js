@@ -309,6 +309,13 @@ function handleLibraryDrop(event) {
 function handleLibraryFiles(files) {
 	$('#game_drop_loading').show();
 
+	function runNextReader() {
+		if(readers.length > 0) {
+			var next = readers.pop();
+			next['reader'].readAsDataURL(next['file']);
+		}
+	}
+
 	// Read the files
 	for(i=0; i<files.length; i++) {
 		var reader = new FileReader();
@@ -345,20 +352,14 @@ function handleLibraryFiles(files) {
 				$('#debug')[0].innerHTML = "Loaded '" + game.name + "'";
 	
 				// Start the next reader, if there is one
-				if(readers.length > 0) {
-					var next = readers.pop();
-					next['reader'].readAsDataURL(next['file']);
-				}
+				runNextReader();
 
 				if(readers.length == 0)
 					$('#game_drop_loading').hide();
 			}, failure: function(game, error_message) {
 				alert('Failed to save game. Error code: ' + error_message);
 				// Start the next reader, if there is one
-				if(readers.length > 0) {
-					var next = readers.pop();
-					next['reader'].readAsDataURL(next['file']);
-				}
+				runNextReader();
 
 				if(readers.length == 0)
 					$('#game_drop_loading').hide();
@@ -370,10 +371,7 @@ function handleLibraryFiles(files) {
 	}
 
 	// Start the first reader
-	if(readers.length > 0) {
-		var next = readers.pop();
-		next['reader'].readAsDataURL(next['file']);
-	}
+	runNextReader();
 }
 
 function handleKeyDown(event) {
