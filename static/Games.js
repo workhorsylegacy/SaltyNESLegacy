@@ -87,7 +87,7 @@ Games.prototype = {
 	save: function(cbs) {
 		var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
 		var game =  this;
-		var request = objectStore.add(this.to_hash());
+		var request = objectStore.add(game.to_hash());
 		request.onsuccess = function(event) {
 			cbs.success(game);
 		};
@@ -100,7 +100,7 @@ Games.prototype = {
 	update: function(cb) {
 		var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
 		var game =  this;
-		var request = objectStore.put(this.to_hash())
+		var request = objectStore.put(game.to_hash())
 		request.onsuccess = function(event) {
 			cb(game);
 		};

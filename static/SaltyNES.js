@@ -357,7 +357,8 @@ function handleLibraryFiles(files) {
 				if(readers.length == 0)
 					$('#game_drop_loading').hide();
 			}, failure: function(game, error_message) {
-				alert('Failed to save game. Error code: ' + error_message);
+				if(error_message != 'Save failed: 4')
+					alert('Failed to save game. Error code: ' + error_message);
 				// Start the next reader, if there is one
 				runNextReader();
 
