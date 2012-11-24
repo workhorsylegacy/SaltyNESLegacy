@@ -7,7 +7,7 @@ var fpsInterval = null;
 var gamepadInterval = null;
 var vfps = 0;
 var zoom = 1;
-var max_zoom = 4;
+var max_zoom = 6;
 var breadcrumbs = [];
 var readers = [];
 var gamepad_id = null;
@@ -269,6 +269,9 @@ function hide_screen() {
 	$('#SaltyNESApp')[0].className = 'screen_hidden';
 	$('#SaltyNESApp').width(2);
 	$('#SaltyNESApp').height(2);
+	
+	$('#viewer').css('top', 0);
+	$('#viewer').css('left', 0);
 }
 
 function show_screen() {
@@ -548,20 +551,57 @@ function handleNaclLoadEnd() {
 }
 
 function handleWindowResize() {
+	if(screen.height != window.outerHeight) {
+		$('#breadcrumbs_div').show();
+		$('#nav').show();
+		$('#footer').show();
+		$('#bodyId').css('background-color', '#FFFFFF');
+	}
+
 	if(!is_running)
 		return;
 
-	var listener = $('#listener');
-	var div_w = listener.width();
-
-	for(var i=1; i<=max_zoom; i++) {
-		if(256 * i <= div_w) {
-			zoom = i;
+	var div_w = 0;
+	var div_h = 0;
+	var salty_nes_app = $('#SaltyNESApp');
+	// Full screen uses the screen size
+	if(screen.height == window.outerHeight) {
+		div_w = screen.width;
+		div_h = screen.height;
+		
+		// Get the largest zoom we can fit
+		for(var i=1; i<=max_zoom; i++) {
+			if(256 * i <= div_w && 240 * i <= div_h) {
+				zoom = i;
+			}
 		}
+
+		$('#breadcrumbs_div').hide();
+		$('#nav').hide();
+		$('#footer').hide();
+		$('#bodyId').css('background-color', '#000000');
+		// FIXME: This is to stop it from hanging off the bottom of the page and 
+		// making the scroll bar show. The top should be zero.
+		$('#viewer').css('top', -5);
+		$('#viewer').css('left', (screen.width/2) - ((256 * zoom)/2));
+	// Not full screen uses the parent container size
+	} else {
+		div_w = $('#listener').width();
+		div_h = $(window).height() - ($('#footer').height() - $('#listener').height());
+		
+		// Get the largest zoom we can fit
+		for(var i=1; i<=max_zoom; i++) {
+			if(256 * i <= div_w && 240 * i <= div_h) {
+				zoom = i;
+			}
+		}
+
+		$('#viewer').css('top', $('#listener').height());
+		$('#viewer').css('left', ($('#listener').width()/2) - ((256 * zoom)/2) + ($('#listener').position().left));
 	}
 
-	$('#SaltyNESApp').width(256 * zoom);
-	$('#SaltyNESApp').height(240 * zoom);
+	salty_nes_app.width(256 * zoom);
+	salty_nes_app.height(240 * zoom);
 	salty_nes.postMessage('zoom:' + zoom);
 }
 
@@ -689,10 +729,10 @@ function handleInitialSetup() {
 
 $(document).ready(function() {
 	// Setup NACL loader
-	var listener = $('#listener')[0];
-	listener.addEventListener('loadstart', handleNaclLoadStart, true);
-	listener.addEventListener('loadend', handleNaclLoadEnd, true);
-	listener.addEventListener('progress', handleNaclProgress, true);
-	listener.addEventListener('message', handleNaclMessage, true);
+	var bodyId = $('#bodyId')[0];
+	bodyId.addEventListener('loadstart', handleNaclLoadStart, true);
+	bodyId.addEventListener('loadend', handleNaclLoadEnd, true);
+	bodyId.addEventListener('progress', handleNaclProgress, true);
+	bodyId.addEventListener('message', handleNaclMessage, true);
 });
 
