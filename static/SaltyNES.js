@@ -310,8 +310,6 @@ function handleLibraryDrop(event) {
 
 
 function handleLibraryFiles(files) {
-	$('#game_drop_loading').show();
-
 	function runNextReader() {
 		if(readers.length > 0) {
 			var next = readers.pop();
@@ -321,6 +319,13 @@ function handleLibraryFiles(files) {
 
 	// Read the files
 	for(i=0; i<files.length; i++) {
+		// Make sure only *.NES files are sent
+		if(!files[i].name.toLowerCase().match(/\.nes$/)) {
+			alert('Only games with a .nes file extension can be used. The file "' + files[i].name + '" is not valid.');
+			continue;
+		}
+		
+		$('#game_drop_loading').show();
 		var reader = new FileReader();
 		reader.file_name = files[i].name;
 
