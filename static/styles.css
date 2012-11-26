@@ -1,0 +1,196 @@
+
+
+html, body {
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	background-color: #FFFFFF;
+	font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+}
+
+nav {
+	padding: 20px;
+	float: left;
+	min-height: 90%;
+	width: 200px;
+}
+
+footer {
+	clear: both;
+	text-align: center;
+}
+
+#content {
+	overflow: auto;
+	text-align: center;
+}
+
+.screen_hidden {
+	background-color: #FFFFFF;
+	width: 2px;
+	height: 2px;
+	margin: 0px;
+	padding: 0px;
+	position: absolute;
+}
+
+.screen_running {
+	background-color: #000000;
+	width: 256px;
+	height: 240px;
+	margin: 0px;
+	padding: 0px;
+	position: absolute;
+}
+
+.game_icon {
+	float: left;
+	margin: 10px;
+	padding: 0px;
+	width: 140px;
+	height: 200px;
+}
+
+.game_icon_none {
+	float: left;
+	margin: 10px;
+	padding: 0px;
+	width: 140px;
+	height: 200px;
+}
+
+.broken {
+	background-color: #EEEEEE;
+}
+
+.broken img {
+	filter: grayscale(100%);
+	-webkit-filter: grayscale(100%);
+}
+
+.game_icon img {
+	width: 100px;
+	height: 137px;
+	margin: 0 auto;
+	padding: 0px;
+}
+
+.game_icon_none div {
+	width: 100px;
+	height: 137px;
+	margin: 0 auto;
+	padding: 0px;
+	text-align: center;
+	border: 1px solid black;
+}
+
+.game_icon_none {
+	border: 2px solid #FFFFFF;
+}
+
+.game_icon_none:hover {
+	border: 2px solid #009900;
+}
+
+.game_icon {
+	border: 2px solid #FFFFFF;
+}
+
+.game_icon:hover {
+	border: 2px solid #009900;
+}
+
+#gamepad_indicator {
+	padding: 10px;
+	text-align: center;
+	border-radius: 15px;
+	background-color: #009900;
+	display: none;
+}
+
+#nacl_not_enabled {
+	overflow: auto;
+	clear: both;
+	text-align: left;
+	margin: 40px;
+}
+
+#breadcrumbs_div {
+	overflow: auto;
+	clear: both;
+	float: left;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+#about {
+	text-align: left;
+	padding: 10%;
+	display: none;
+}
+
+#top_controls {
+	overflow: auto;
+	clear: both;
+	display: none;
+}
+
+#game_selector {
+	overflow: auto;
+	clear: both;
+	display: none;
+}
+
+#home_controls {
+	overflow: auto;
+	clear: both;
+}
+
+#home_controls button {
+	width: 50%;
+	height: 100px;
+	float: left;
+}
+
+#game_drop {
+	overflow: auto;
+	clear: both;
+	height: 170px;
+	border: 10px solid green;
+	display: none;
+}
+
+#game_drop_loading {
+	display: none;
+}
+
+#game_library {
+	overflow: auto;
+	clear: both;
+	min-height: 200px;
+	display: none;
+}
+
+#game_info {
+	overflow: auto;
+	clear: both;
+	text-align: left;
+	display: none;
+}
+
+#game_img {
+	float: left;
+	margin: 10px;
+}
+
+#game_play_button {
+	float: left;
+	width: 150px;
+	height: 100px;
+	margin: 50px;
+}
+
+#lnk_remove_save {
+	display: none;
+}
+

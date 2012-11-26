@@ -106,5 +106,8 @@
     <None Include="..\ChangeLog">
       <Link>ChangeLog</Link>
     </None>
+    <None Include="..\static\styles.css">
+      <Link>styles.css</Link>
+    </None>
   </ItemGroup>
 </Project>
