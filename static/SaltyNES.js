@@ -12,6 +12,13 @@ var breadcrumbs = [];
 var readers = [];
 var gamepad_id = null;
 
+function diff(a, b) {
+	if(a > b)
+		return a - b;
+	else
+		return b - a;
+}
+
 function update_location_hash() {
 	// Update the hash
 	location.hash = '';
@@ -270,8 +277,8 @@ function hide_screen() {
 	$('#SaltyNESApp').width(2);
 	$('#SaltyNESApp').height(2);
 	
-	$('#viewer').css('top', 0);
-	$('#viewer').css('left', 0);
+	$('#SaltyNESApp').css('top', 0);
+	$('#SaltyNESApp').css('left', 0);
 }
 
 function show_screen() {
@@ -557,7 +564,7 @@ function handleNaclLoadEnd() {
 
 function handleWindowResize() {
 	if(screen.height != window.outerHeight) {
-		$('#breadcrumbs_div').show();
+		$('#content').show();
 		$('#nav').show();
 		$('#footer').show();
 		$('#bodyId').css('background-color', '#FFFFFF');
@@ -581,18 +588,16 @@ function handleWindowResize() {
 			}
 		}
 
-		$('#breadcrumbs_div').hide();
+		$('#content').hide();
 		$('#nav').hide();
 		$('#footer').hide();
 		$('#bodyId').css('background-color', '#000000');
-		// FIXME: This is to stop it from hanging off the bottom of the page and 
-		// making the scroll bar show. The top should be zero.
-		$('#viewer').css('top', -5);
-		$('#viewer').css('left', (screen.width/2) - ((256 * zoom)/2));
+		$('#SaltyNESApp').css('top', 0);
+		$('#SaltyNESApp').css('left', (screen.width/2) - ((256 * zoom)/2));
 	// Not full screen uses the parent container size
 	} else {
-		div_w = $('#listener').width();
-		div_h = $(window).height() - ($('#footer').height() - $('#listener').height());
+		div_w = $('#content').width();
+		div_h = $(window).height() - diff($('#footer').height(), $('#content').height());
 		
 		// Get the largest zoom we can fit
 		for(var i=1; i<=max_zoom; i++) {
@@ -601,8 +606,8 @@ function handleWindowResize() {
 			}
 		}
 
-		$('#viewer').css('top', $('#listener').height());
-		$('#viewer').css('left', ($('#listener').width()/2) - ((256 * zoom)/2) + ($('#listener').position().left));
+		$('#SaltyNESApp').css('top', $('#content').height());
+		$('#SaltyNESApp').css('left', ($('#content').width()/2) - ((256 * zoom)/2) + ($('#content').position().left));
 	}
 
 	salty_nes_app.width(256 * zoom);
