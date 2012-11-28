@@ -1,5 +1,6 @@
 
 
+
 var salty_nes = null;
 var is_running = false;
 var paintInterval = null;
@@ -119,9 +120,17 @@ function load_game_library() {
 
 function show_game_play(sha256) {
 	Games.find_by_id(sha256, function(game) {
-		// Send the rom to the nexe
-		salty_nes.postMessage('load_rom:' + game.save_ram + ' rom:' + game.data);
-		salty_nes.postMessage('zoom:' + zoom);
+		Saves.find_by_id(sha256, function(save) {
+			// get the save data with the newest date
+			var save_ram = '';
+			if(save) {
+				save_ram = save.get_newest_save_ram() || '';
+			}
+
+			// Send the rom to the nexe
+			salty_nes.postMessage('load_rom:' + save_ram + ' rom:' + game.data);
+			salty_nes.postMessage('zoom:' + zoom);
+		});
 	});
 }
 
@@ -177,17 +186,20 @@ function show_game_info(sha256) {
 			}
 
 			// Remove the save
-			game.save_ram = '';
-			game.update(function(game) {
-				lnk_remove_save.hide();
-				alert('Save data removed.');
+			Saves.find_by_id(game.sha256, function(save) {
+				save.destroy(function(save) {
+					lnk_remove_save.hide();
+					alert('Save data removed.');
+				});
 			});
 		});
-		if(game.save_ram.length > 0) {
-			lnk_remove_save.show();
-		} else {
-			lnk_remove_save.hide();
-		}
+		Saves.find_by_id(game.sha256, function(save) {
+			if(save != null) {
+				lnk_remove_save.show();
+			} else {
+				lnk_remove_save.hide();
+			}
+		});
 
 		document.title = game.name + ' - SaltyNES';
 	});
@@ -525,12 +537,23 @@ function handleNaclMessage(message_event) {
 		var sha256 = message_event.data.split('save:')[1].split(' data:')[0];
 		var save_ram = message_event.data.split(' data:')[1];
 
-		Games.find_by_id(sha256, function(game) {
-			game.sha256 = sha256;
-			game.save_ram = save_ram;
-			game.update(function(game) {
-				// Updated successfully
-			});
+		Saves.find_by_id(sha256, function(save) {
+			var timestamp = new Date();
+			
+			if(save != null) {
+				save.data[timestamp] = save_ram;
+	
+				save.update({success: function(save) {
+					// Updated successfully
+				}});
+			} else {
+				save = new Saves(sha256);
+				save.data[timestamp] = save_ram;
+	
+				save.save({success: function(save) {
+					// Saved successfully
+				}});
+			}
 		});
 	} else {
 		var debug = $('#debug')[0];
