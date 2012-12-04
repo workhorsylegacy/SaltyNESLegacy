@@ -1,6 +1,5 @@
 
 
-
 var salty_nes = null;
 var is_running = false;
 var paintInterval = null;
@@ -95,8 +94,15 @@ function load_game_library() {
 	var game_library = $('#game_library');
 
 	// Load all the new games into the selector
+	var used_names = {};
 	var is_first_icon = true;
 	Games.for_each({ each: function(game) {
+		// Skip this game if there is one with the same title already
+		if(game.name in used_names)
+			return;
+		used_names[game.name] = null;
+	
+		// Clear the icons if this is the first icon
 		if(is_first_icon) {
 			game_library[0].innerHTML = '';
 			is_first_icon = false;
@@ -106,9 +112,9 @@ function load_game_library() {
 		var element = null;
 		if(game.img != "") {
 			var icon_class = game.is_broken ? 'game_icon broken' : 'game_icon';
-			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="' + icon_class + '"><img src="' + game.img + '" /><br />' + game.name + '</div></a>');
+			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="' + icon_class + '"><img src="' + game.img + '" /><br />' + game.name  + '</div></a>');
 		} else {
-			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name + '</div></a>');
+			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name  + '</div></a>');
 		}
 		game_library.append(element);
 		element.click(function(event) {
@@ -173,7 +179,24 @@ function show_game_info(sha256) {
 		// Play button
 		$('#game_play_button').unbind('click');
 		$('#game_play_button').click(function() {
+			var sha256 = $('#game_version').val();
 			show_game_play(sha256);
+		});
+		
+		// Game versions
+		$('#game_version').empty();
+		Games.for_each({
+			each: function(g) {
+				// FIXME: This should be sorted
+				if(g.name == game.name) {
+					$('#game_version')
+						.append($("<option></option>")
+						.attr("value", g.sha256)
+						.text(g.region + ' ' + g.version));
+				}
+			},
+			after: function() {
+			}
 		});
 		
 		// Save remove button
@@ -683,6 +706,7 @@ function handleInitialSetup() {
 					show_game_info(sha256);
 				}
 				is_valid = true;
+				break;
 			}
 		}
 	}

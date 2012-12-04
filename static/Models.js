@@ -51,6 +51,7 @@ The Games table is structured like so:
 	"sha256" : "sha256 of rom ...",
 	"data" : "rom as stirng",
 	"name" : "name of game",
+	"version" : "version info",
 	"developer" : "company that actually made the game",
 	"publisher" : "company that just published the game",
 	"region" : "",
@@ -67,7 +68,7 @@ The Games table is structured like so:
 */
 
 var game_fields = [
-	'name', 'developer', 'publisher', 'region', 'release_date', 
+	'name', 'version', 'developer', 'publisher', 'region', 'release_date', 
 	'number_of_players', 'can_save', 'mapper', 'prog_rom_pages', 
 	'char_rom_pages', 'link', 'img', 'is_broken', 'sha256', 'data'
 ];
@@ -77,6 +78,7 @@ var Games = function(sha256) {
 		this.sha256 = sha256;
 		this.data = "";
 		this.name = "";
+		this.version = "";
 		this.developer = "";
 		this.publisher = "";
 		this.region = "";
