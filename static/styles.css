@@ -179,15 +179,28 @@ footer {
 }
 
 #game_img {
-	float: left;
 	margin: 10px;
 }
 
-#game_play_button {
+#game_play_info {
+	overflow: auto;
 	float: left;
+	padding: 20px;
+}
+
+#game_play_controls {
+	overflow: auto;
+	float: left;
+	padding: 20px;
+}
+
+#game_play_button {
 	width: 150px;
 	height: 100px;
-	margin: 50px;
+}
+
+#game_play_version {
+	margin-top: 20px;
 }
 
 #lnk_remove_save {

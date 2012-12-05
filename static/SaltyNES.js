@@ -19,6 +19,19 @@ function diff(a, b) {
 		return b - a;
 }
 
+
+function get_keys(obj) {
+	var keys = [];
+
+	for(var key in obj) {
+		if(obj.hasOwnProperty(key)) {
+			keys.push(key);
+		}
+	}
+
+	return keys;
+}
+
 function update_location_hash() {
 	// Update the hash
 	location.hash = '';
@@ -150,6 +163,10 @@ function show_game_info(sha256) {
 	$('#home_controls').hide();
 	hide_screen();
 
+	// Disable the controls
+	$('#game_play_button').attr('disabled', 'disabled');
+	$('#game_play_version').attr('disabled', 'disabled');
+
 	// Quit running any existing game
 	if(is_running)
 		salty_nes.postMessage('quit');
@@ -179,23 +196,38 @@ function show_game_info(sha256) {
 		// Play button
 		$('#game_play_button').unbind('click');
 		$('#game_play_button').click(function() {
-			var sha256 = $('#game_version').val();
+			var sha256 = $('#game_play_version').val();
 			show_game_play(sha256);
 		});
 		
 		// Game versions
-		$('#game_version').empty();
+		$('#game_play_version').empty();
+		var versions = {};
 		Games.for_each({
 			each: function(g) {
-				// FIXME: This should be sorted
 				if(g.name == game.name) {
-					$('#game_version')
-						.append($("<option></option>")
-						.attr("value", g.sha256)
-						.text(g.region + ' ' + g.version));
+					versions[g.region + ' ' + g.version] = g.sha256;
 				}
 			},
 			after: function() {
+				// Sort then and put them in the select
+				var keys = get_keys(versions).sort();
+				for(var i=0; i<keys.length; i++) {
+					var key = keys[i];
+					$('#game_play_version')
+						.append($("<option></option>")
+						.attr("value", versions[key])
+						.text(key));
+				}
+				
+				// Set the selected option
+				$('#game_play_version option').filter(function() {
+					return this.text == 'USA Good';
+				}).attr('selected', true);
+				
+				// Enable the controls
+				$('#game_play_button').removeAttr('disabled');
+				$('#game_play_version').removeAttr('disabled');
 			}
 		});
 		
