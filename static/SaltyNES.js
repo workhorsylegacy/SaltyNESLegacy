@@ -121,11 +121,18 @@ function load_game_library() {
 			is_first_icon = false;
 		}
 
+		var is_broken = false;
+		var img = null;
+		if(game.name in game_meta_data) {
+			is_broken = game_meta_data[game.name]['is_broken'];
+			img = game_meta_data[game.name]['img'];
+		}
+
 		// Put the icon in the selector
 		var element = null;
-		if(game.img != "") {
-			var icon_class = game.is_broken ? 'game_icon broken' : 'game_icon';
-			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="' + icon_class + '"><img src="' + game.img + '" /><br />' + game.name  + '</div></a>');
+		if(img) {
+			var icon_class = is_broken ? 'game_icon broken' : 'game_icon';
+			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="' + icon_class + '"><img src="' + img + '" /><br />' + game.name  + '</div></a>');
 		} else {
 			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name  + '</div></a>');
 		}
@@ -176,19 +183,34 @@ function show_game_info(sha256) {
 		// Add the game info to the breadcrumbs
 		add_breadcrumb({'title' : game.name, 'onclick' : function() { show_game_info(sha256); }});
 
-		// Fill in the info for this game
-		var fields = ["name", "developer", "publisher", "region", "release_date", 
-						"number_of_players", "can_save", "mapper", "char_rom_pages", "prog_rom_pages"];
+		// Fill in name and region
+		$('#game_name')[0].innerHTML = game.name;
+		$('#game_region')[0].innerHTML = game.region;
+
+		// Fill in other info
+		fields = ["developer", "publisher", "release_date", "number_of_players", 
+				"can_save", "mapper", "prog_rom_pages", "char_rom_pages", 
+				"link", "img"];
 		for(i=0; i<fields.length; i++) {
 			var field = fields[i];
-			var value = game[field];
+			var value = '...';
+			if(game.name in game_meta_data)
+				value = game_meta_data[game.name][field];
 			$('#game_' + field)[0].innerHTML = value;
 		}
 
+		// Get link and img
+		var link = '';
+		var img = null;
+		if(game.name in game_meta_data) {
+			link = game_meta_data[game.name]['link'];
+			img = game_meta_data[game.name]['img'];
+		}
+
 		// Fill in the image and link to wikipedia
-		$('#game_link')[0].innerHTML = "<a href=\"" + game.link + "\">Wikipedia</a>";
-		if(game.img) {
-			$('#game_img')[0].innerHTML = "<img src=\"" + game.img + "\" width=\"200\"/>";
+		$('#game_link')[0].innerHTML = "<a href=\"" + link + "\">Wikipedia</a>";
+		if(img) {
+			$('#game_img')[0].innerHTML = "<img src=\"" + img + "\" width=\"200\"/>";
 		} else {
 			$('#game_img')[0].innerHTML = "<div style=\"width: 120px; height: 177px; border: 1px solid black;\">Unknown Game</div>";
 		}
@@ -222,7 +244,7 @@ function show_game_info(sha256) {
 				
 				// Set the selected option
 				$('#game_play_version option').filter(function() {
-					return this.text == 'USA Good';
+					return this.text == 'USA Verified Good Dump';
 				}).attr('selected', true);
 				
 				// Enable the controls
@@ -265,9 +287,7 @@ function show_home() {
 	add_breadcrumb({'title' : 'Home', 'onclick' : function() { show_home(); }});
 
 	// Empty the fields fow showing a game
-	var fields = ["name", "developer", "publisher", "region", "release_date", 
-					"number_of_players", "can_save", "mapper", "char_rom_pages", "prog_rom_pages", 
-					"link", "img"];
+	var fields = ["name", "region"];
 	for(i=0; i<fields.length; i++) {
 		$('#game_' + fields[i])[0].innerHTML = '';
 	}

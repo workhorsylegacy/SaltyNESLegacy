@@ -52,25 +52,13 @@ The Games table is structured like so:
 	"data" : "rom as stirng",
 	"name" : "name of game",
 	"version" : "version info",
-	"developer" : "company that actually made the game",
-	"publisher" : "company that just published the game",
 	"region" : "",
-	"release_date" : "",
-	"number_of_players" : "",
-	"can_save" : "supports saving",
-	"mapper" : "int for the cartridge mapper",
-	"prog_rom_pages" : "number of program rom pages in the cartridge",
-	"char_rom_pages" : "number of character rom pages in the cartridge",
-	"link" : "http link to info on the game",
-	"img" : "http link to picture of box",
-	"is_broken" : "bool if it works or not",
 };
 */
 
 var game_fields = [
-	'name', 'version', 'developer', 'publisher', 'region', 'release_date', 
-	'number_of_players', 'can_save', 'mapper', 'prog_rom_pages', 
-	'char_rom_pages', 'link', 'img', 'is_broken', 'sha256', 'data'
+	'name', 'version', 'region', 
+	'sha256', 'data'
 ];
 
 // Create class
@@ -79,18 +67,7 @@ var Games = function(sha256) {
 		this.data = "";
 		this.name = "";
 		this.version = "";
-		this.developer = "";
-		this.publisher = "";
 		this.region = "";
-		this.release_date = "";
-		this.number_of_players = 1;
-		this.can_save = false;
-		this.mapper = 0;
-		this.prog_rom_pages = 0;
-		this.char_rom_pages = 0;
-		this.link = "";
-		this.img = "";
-		this.is_broken = false;
 };
 
 // Add instance methods

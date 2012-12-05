@@ -109,5 +109,8 @@
     <None Include="..\static\Models.js">
       <Link>Models.js</Link>
     </None>
+    <None Include="..\static\game_meta_data.json">
+      <Link>game_meta_data.json</Link>
+    </None>
   </ItemGroup>
 </Project>
