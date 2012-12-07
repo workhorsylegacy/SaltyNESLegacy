@@ -246,7 +246,7 @@ game_meta_data = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/a/ae/Kirby%27s_Adventure_Coverart.png",
 		"is_broken" : false
 	},
-	"Legend of Zelda" : {
+	"Legend of Zelda, The" : {
 		"developer" : "Nintendo EAD",
 		"publisher" : "Nintendo",
 		"release_date" : "1986-02-21",
@@ -259,7 +259,7 @@ game_meta_data = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/4/41/Legend_of_zelda_cover_%28with_cartridge%29_gold.png",
 		"is_broken" : false
 	},
-	"Legend of Zelda II: The Adventure of Link" : {
+	"Zelda II - The Adventure of Link" : {
 		"developer" : "Nintendo EAD",
 		"publisher" : "Nintendo",
 		"release_date" : "1987-01-14",
@@ -272,7 +272,7 @@ game_meta_data = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/f/fd/Zelda_II_The_Adventure_of_Link_box.jpg",
 		"is_broken" : true
 	},
-	"Little Nemo: The Dream Master" : {
+	"Little Nemo - The Dream Master" : {
 		"developer" : "Capcom",
 		"publisher" : "Capcom",
 		"release_date" : "1990-09",
@@ -465,6 +465,19 @@ game_meta_data = {
 		"char_rom_pages" : 2,
 		"link" : "http://en.wikipedia.org/wiki/Super_Mario_Bros.",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/0/03/Super_Mario_Bros._box.png",
+		"is_broken" : false
+	},
+	"Super Mario Bros. 2" : {
+		"developer" : "Nintendo",
+		"publisher" : "Nintendo",
+		"release_date" : "1988-09-03",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 4,
+		"prog_rom_pages" : 16,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/Super_Mario_Bros._2",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/0/00/Super_Mario_Bros_2.jpg",
 		"is_broken" : false
 	},
 	"Super Mario Bros. 3" : {
