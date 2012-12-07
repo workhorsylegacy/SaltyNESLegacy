@@ -173,6 +173,8 @@ function show_game_info(sha256) {
 	// Disable the controls
 	$('#game_play_button').attr('disabled', 'disabled');
 	$('#game_play_version').attr('disabled', 'disabled');
+	$('#game_play_save_span').hide();
+	$('#lnk_remove_save').hide();
 
 	// Quit running any existing game
 	if(is_running)
@@ -202,9 +204,11 @@ function show_game_info(sha256) {
 		// Get link and img
 		var link = '';
 		var img = null;
+		var can_save = false;
 		if(game.name in game_meta_data) {
 			link = game_meta_data[game.name]['link'];
 			img = game_meta_data[game.name]['img'];
+			can_save = game_meta_data[game.name]['can_save'];
 		}
 
 		// Fill in the image and link to wikipedia
@@ -225,10 +229,15 @@ function show_game_info(sha256) {
 		// Game versions
 		$('#game_play_version').empty();
 		var versions = {};
+		var counter = 1;
 		Games.for_each({
 			each: function(g) {
 				if(g.name == game.name) {
-					versions[g.region + ' ' + g.version] = g.sha256;
+					var key = g.region + ' ' + g.version;
+					if(key == ' ')
+						key = 'Unknown ' + counter;
+					versions[key] = g.sha256;
+					counter++;
 				}
 			},
 			after: function() {
@@ -266,15 +275,32 @@ function show_game_info(sha256) {
 			Saves.find_by_id(game.sha256, function(save) {
 				save.destroy(function(save) {
 					lnk_remove_save.hide();
+					$('#game_play_save')
+						.find('option')
+						.remove();
+					$('#game_play_save_span').hide();
 					alert('Save data removed.');
 				});
 			});
 		});
 		Saves.find_by_id(game.sha256, function(save) {
 			if(save != null) {
+				$('#game_play_save')
+					.find('option')
+					.remove();
+				var keys = Object.keys(save.data);
+				for(var i=keys.length-1; i>=0; --i) {
+					var key = keys[i];
+					$('#game_play_save')
+						.append($("<option></option>")
+						.attr("value", save.data[key])
+						.text(key));
+				}
 				lnk_remove_save.show();
+				$('#game_play_save_span').show();
 			} else {
 				lnk_remove_save.hide();
+				$('#game_play_save_span').hide();
 			}
 		});
 
