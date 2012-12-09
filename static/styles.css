@@ -194,7 +194,7 @@ footer {
 	padding: 20px;
 }
 
-#game_play_button {
+#game_play_button button {
 	width: 150px;
 	height: 100px;
 }

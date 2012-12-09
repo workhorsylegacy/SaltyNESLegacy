@@ -474,7 +474,7 @@ game_meta_data = {
 		"number_of_players" : 2,
 		"can_save" : false,
 		"mapper" : 4,
-		"prog_rom_pages" : 16,
+		"prog_rom_pages" : 8,
 		"char_rom_pages" : 32,
 		"link" : "http://en.wikipedia.org/wiki/Super_Mario_Bros._2",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/0/00/Super_Mario_Bros_2.jpg",

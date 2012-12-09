@@ -157,6 +157,12 @@ Games.find_by_id = function(id, cb) {
 	var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
 	var request = objectStore.get(id);
 	request.onsuccess = function(event) {
+		// Call the cb with null if nothing was found
+		if(request.result == null) {
+			cb(null)
+			return;
+		}
+		
 		var hash = request.result;
 		var game = new Games(hash.sha256);
 		game.copy_values_from_game(hash);

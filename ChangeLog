@@ -3,3 +3,5 @@
 	* Fixed Bug #1081980: 'Move the game database code to an ORM'.
 	* Fixed Bug #1082033: 'Add an about page'.
 	* Fixed Bug #1082555: 'Make full screen work with F11'.
+	* Fixed Bug #1081095: 'Cleanup the routing and breadcrumbs'.
+

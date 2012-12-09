@@ -2,13 +2,13 @@
 
 var salty_nes = null;
 var is_running = false;
+var is_initialized = false;
 var paintInterval = null;
 var fpsInterval = null;
 var gamepadInterval = null;
 var vfps = 0;
 var zoom = 1;
 var max_zoom = 6;
-var breadcrumbs = [];
 var readers = [];
 var gamepad_id = null;
 
@@ -18,7 +18,6 @@ function diff(a, b) {
 	else
 		return b - a;
 }
-
 
 function get_keys(obj) {
 	var keys = [];
@@ -32,74 +31,8 @@ function get_keys(obj) {
 	return keys;
 }
 
-function update_location_hash() {
-	// Update the hash
-	location.hash = '';
-	for(var i=0; i<breadcrumbs.length; i++) {
-		location.hash += '/' + breadcrumbs[i]['title'];
-	}
-}
-
-function get_location_path(last_link) {
-	var link = '#';
-	for(var i=0; i<breadcrumbs.length; i++) {
-		link += '/' + breadcrumbs[i]['title'];
-	}
-	link += '/' + last_link;
-	
-	return link;
-}
-
-function add_breadcrumb(breadcrumb) {
-	// Just return if the last breadcrumb is the same as the one to add
-	if(breadcrumbs.length > 0 && breadcrumb['title'] == breadcrumbs[breadcrumbs.length-1]['title']) {
-		return;
-	}
-
-	// Create the separator between the links
-	var sep = '';
-	if(breadcrumbs.length > 0)
-		sep = '&nbsp;&nbsp;&gt;&nbsp;&nbsp;';
-
-	// Create the links
-	var link = get_location_path(breadcrumb['title']);
-
-	// Create the breadcrumb
-	var id = 'breadcrumb_' + breadcrumbs.length;
-	var title = breadcrumb['title'];
-	var before = function() { remove_breadcrumbs_after(id); };
-	var after = breadcrumb['onclick'];
-	breadcrumb['id'] = id;
-	breadcrumb['element'] = $('<span id="' + id + '">' + sep + '<a href="' + link + '" \>' + title + '</a></span>');
-	breadcrumb['element'].click(function(event) {
-		event.preventDefault();
-		before();
-		after();
-	});
-	
-	// Add it to the others
-	breadcrumbs.push(breadcrumb);
-	$('#breadcrumbs_div').append(breadcrumb['element']);
-	
-	update_location_hash();
-}
-
-function remove_breadcrumbs_after(id) {
-	// Get the pisition of the current crumb
-	var position = 0;
-	var children = $('#breadcrumbs_div').children();
-	for(i=0; i<children.length; i++) {
-		if(children[i].id == id)
-			position = i;
-	}
-	
-	// Pop off the crumbs that are after
-	for(i=children.length-1; i>position; i--) {
-		breadcrumbs[i]['element'].remove();
-		breadcrumbs.pop();
-	}
-	
-	update_location_hash();
+function get_location_path(name) {
+	return location.hash + '/' + name;
 }
 
 function load_game_library() {
@@ -137,30 +70,24 @@ function load_game_library() {
 			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name  + '</div></a>');
 		}
 		game_library.append(element);
-		element.click(function(event) {
-			event.preventDefault();
-			show_game_info(game.sha256);
-		});
 	}});
 }
 
-function show_game_play(sha256) {
-	Games.find_by_id(sha256, function(game) {
-		Saves.find_by_id(sha256, function(save) {
-			// get the save data with the newest date
-			var save_ram = '';
-			if(save) {
-				save_ram = save.get_newest_save_ram() || '';
-			}
+function show_game_play(game) {
+	Saves.find_by_id(game.sha256, function(save) {
+		// get the save data with the newest date
+		var save_ram = '';
+		if(save) {
+			save_ram = save.get_newest_save_ram() || '';
+		}
 
-			// Send the rom to the nexe
-			salty_nes.postMessage('load_rom:' + save_ram + ' rom:' + game.data);
-			salty_nes.postMessage('zoom:' + zoom);
-		});
+		// Send the rom to the nexe
+		salty_nes.postMessage('load_rom:' + save_ram + ' rom:' + game.data);
+		salty_nes.postMessage('zoom:' + zoom);
 	});
 }
 
-function show_game_info(sha256) {
+function show_game_info(game) {
 	$('#about').hide();
 	$('#game_selector').hide();
 	$('#game_info').show();
@@ -180,139 +107,136 @@ function show_game_info(sha256) {
 	if(is_running)
 		salty_nes.postMessage('quit');
 
-	// Get the game info from the database
-	Games.find_by_id(sha256, function(game) {
-		// Add the game info to the breadcrumbs
-		add_breadcrumb({'title' : game.name, 'onclick' : function() { show_game_info(sha256); }});
+	// Fill in name and region
+	$('#game_name')[0].innerHTML = game.name;
+	$('#game_region')[0].innerHTML = game.region;
 
-		// Fill in name and region
-		$('#game_name')[0].innerHTML = game.name;
-		$('#game_region')[0].innerHTML = game.region;
+	// Fill in other info
+	fields = ["developer", "publisher", "release_date", "number_of_players", 
+			"can_save", "mapper", "prog_rom_pages", "char_rom_pages", 
+			"link", "img"];
+	for(i=0; i<fields.length; i++) {
+		var field = fields[i];
+		var value = '...';
+		if(game.name in game_meta_data)
+			value = game_meta_data[game.name][field];
+		$('#game_' + field)[0].innerHTML = value;
+	}
 
-		// Fill in other info
-		fields = ["developer", "publisher", "release_date", "number_of_players", 
-				"can_save", "mapper", "prog_rom_pages", "char_rom_pages", 
-				"link", "img"];
-		for(i=0; i<fields.length; i++) {
-			var field = fields[i];
-			var value = '...';
-			if(game.name in game_meta_data)
-				value = game_meta_data[game.name][field];
-			$('#game_' + field)[0].innerHTML = value;
-		}
+	// Get link and img
+	var link = '';
+	var img = null;
+	var can_save = false;
+	if(game.name in game_meta_data) {
+		link = game_meta_data[game.name]['link'];
+		img = game_meta_data[game.name]['img'];
+		can_save = game_meta_data[game.name]['can_save'];
+	}
 
-		// Get link and img
-		var link = '';
-		var img = null;
-		var can_save = false;
-		if(game.name in game_meta_data) {
-			link = game_meta_data[game.name]['link'];
-			img = game_meta_data[game.name]['img'];
-			can_save = game_meta_data[game.name]['can_save'];
-		}
+	// Fill in the image and link to wikipedia
+	$('#game_link')[0].innerHTML = "<a href=\"" + link + "\">Wikipedia</a>";
+	if(img) {
+		$('#game_img')[0].innerHTML = "<img src=\"" + img + "\" width=\"200\"/>";
+	} else {
+		$('#game_img')[0].innerHTML = "<div style=\"width: 120px; height: 177px; border: 1px solid black;\">Unknown Game</div>";
+	}
 
-		// Fill in the image and link to wikipedia
-		$('#game_link')[0].innerHTML = "<a href=\"" + link + "\">Wikipedia</a>";
-		if(img) {
-			$('#game_img')[0].innerHTML = "<img src=\"" + img + "\" width=\"200\"/>";
-		} else {
-			$('#game_img')[0].innerHTML = "<div style=\"width: 120px; height: 177px; border: 1px solid black;\">Unknown Game</div>";
-		}
-		
-		// Play button
-		$('#game_play_button').unbind('click');
-		$('#game_play_button').click(function() {
-			var sha256 = $('#game_play_version').val();
-			show_game_play(sha256);
-		});
-		
-		// Game versions
-		$('#game_play_version').empty();
-		var versions = {};
-		var counter = 1;
-		Games.for_each({
-			each: function(g) {
-				if(g.name == game.name) {
-					var key = g.region + ' ' + g.version;
-					if(key == ' ')
-						key = 'Unknown ' + counter;
-					versions[key] = g.sha256;
-					counter++;
-				}
-			},
-			after: function() {
-				// Sort then and put them in the select
-				var keys = get_keys(versions).sort();
-				for(var i=0; i<keys.length; i++) {
-					var key = keys[i];
-					$('#game_play_version')
-						.append($("<option></option>")
-						.attr("value", versions[key])
-						.text(key));
-				}
-				
-				// Set the selected option
-				$('#game_play_version option').filter(function() {
-					return this.text == 'USA Verified Good Dump';
-				}).attr('selected', true);
-				
-				// Enable the controls
-				$('#game_play_button').removeAttr('disabled');
-				$('#game_play_version').removeAttr('disabled');
+	// Game versions
+	$('#game_play_version').empty();
+	var versions = {};
+	var counter = 1;
+	Games.for_each({
+		each: function(g) {
+			if(g.name == game.name) {
+				var key = g.region + ' ' + g.version;
+				if(key == ' ')
+					key = 'Unknown ' + counter;
+				versions[key] = g.sha256;
+				counter++;
 			}
-		});
-		
-		// Save remove button
-		var lnk_remove_save = $('#lnk_remove_save');
-		lnk_remove_save.unbind('click');
-		lnk_remove_save.click(function() {
-			// Have the user confirm
-			if(!confirm("Remove your save data?")) {
-				return;
+		},
+		after: function() {
+			// Sort then and put them in the select
+			var keys = get_keys(versions).sort();
+			for(var i=0; i<keys.length; i++) {
+				var key = keys[i];
+				$('#game_play_version')
+					.append($("<option></option>")
+					.attr("value", versions[key])
+					.text(key));
 			}
 
-			// Remove the save
-			Saves.find_by_id(game.sha256, function(save) {
-				save.destroy(function(save) {
-					lnk_remove_save.hide();
-					$('#game_play_save')
-						.find('option')
-						.remove();
-					$('#game_play_save_span').hide();
-					alert('Save data removed.');
-				});
+			// Set the selected option
+			$('#game_play_version option').filter(function() {
+				return this.text == 'USA Verified Good Dump';
+			}).attr('selected', true);
+
+			// Update the play button when the select changes
+			$('#game_play_version').unbind('change');
+			$('#game_play_version').change(function() {
+				var href = '#/Home/My Library/' + game.name + '/?Play=' + $('#game_play_version').val();
+				$('#game_play_button').attr('href', href);
 			});
-		});
+
+			// Play button initial value
+			var href = '#/Home/My Library/' + game.name + '/?Play=' + $('#game_play_version').val();
+			$('#game_play_button').attr('href', href);
+
+			// Enable the controls
+			$('#game_play_button').removeAttr('disabled');
+			$('#game_play_version').removeAttr('disabled');
+		}
+	});
+	
+	// Save remove button
+	var lnk_remove_save = $('#lnk_remove_save');
+	lnk_remove_save.unbind('click');
+	lnk_remove_save.click(function() {
+		// Have the user confirm
+		if(!confirm("Remove your save data?")) {
+			return;
+		}
+
+		// Remove the save
 		Saves.find_by_id(game.sha256, function(save) {
-			if(save != null) {
+			save.destroy(function(save) {
+				lnk_remove_save.hide();
 				$('#game_play_save')
 					.find('option')
 					.remove();
-				var keys = Object.keys(save.data);
-				for(var i=keys.length-1; i>=0; --i) {
-					var key = keys[i];
-					$('#game_play_save')
-						.append($("<option></option>")
-						.attr("value", save.data[key])
-						.text(key));
-				}
-				lnk_remove_save.show();
-				$('#game_play_save_span').show();
-			} else {
-				lnk_remove_save.hide();
 				$('#game_play_save_span').hide();
-			}
+				alert('Save data removed.');
+			});
 		});
-
-		document.title = game.name + ' - SaltyNES';
 	});
+	Saves.find_by_id(game.sha256, function(save) {
+		if(save != null) {
+			$('#game_play_save')
+				.find('option')
+				.remove();
+			var keys = Object.keys(save.data);
+			for(var i=keys.length-1; i>=0; --i) {
+				var key = keys[i];
+				$('#game_play_save')
+					.append($("<option></option>")
+					.attr("value", save.data[key])
+					.text(key));
+			}
+			lnk_remove_save.show();
+			$('#game_play_save_span').show();
+		} else {
+			lnk_remove_save.hide();
+			$('#game_play_save_span').hide();
+		}
+	});
+
+	document.title = game.name + ' - SaltyNES';
 }
 
 function show_home() {
 	document.title = 'SaltyNES - A NES emulator in the browser'
-	add_breadcrumb({'title' : 'Home', 'onclick' : function() { show_home(); }});
 
-	// Empty the fields fow showing a game
+	// Empty the fields for showing a game
 	var fields = ["name", "region"];
 	for(i=0; i<fields.length; i++) {
 		$('#game_' + fields[i])[0].innerHTML = '';
@@ -335,7 +259,6 @@ function show_home() {
 
 function show_about() {
 	document.title = 'About - SaltyNES';
-	add_breadcrumb({'title' : 'About', 'onclick' : function() { show_about(); }});
 	
 	$('#about').show();
 	$('#game_selector').hide();
@@ -349,7 +272,6 @@ function show_about() {
 
 function show_library() {
 	document.title = 'My Library - SaltyNES';
-	add_breadcrumb({'title' : 'My Library', 'onclick' : function() { show_library(); }});
 
 	$('#about').hide();
 	$('#game_selector').show();
@@ -369,7 +291,6 @@ function show_library() {
 
 function show_drop() {
 	document.title = 'Add to Library - SaltyNES';
-	add_breadcrumb({'title' : 'Add to Library', 'onclick' : function() { show_drop(); }});
 
 	$('#about').hide();
 	$('#game_selector').show();
@@ -591,9 +512,6 @@ function handleNaclMessage(message_event) {
 	} else if(message_event.data == 'running') {
 		is_running = true;
 
-		// Add the game info to the breadcrumbs
-		add_breadcrumb({'title' : 'Play', 'onclick' : function() { }});
-
 		// Repaint the screen
 		// FIXME: Paint calls should happen automatically inside the nexe.
 		var fps = 60.0;
@@ -683,7 +601,7 @@ function handleNaclLoadEnd() {
 	salty_nes = $('#SaltyNESApp')[0];
 
 	// Setup IndexedDB
-	setup_indexeddb(handleInitialSetup);
+	setup_indexeddb(handleHashChange);
 }
 
 function handleWindowResize() {
@@ -739,58 +657,149 @@ function handleWindowResize() {
 	salty_nes.postMessage('zoom:' + zoom);
 }
 
-function handleInitialSetup() {
-	// Get the page and sections.
-	var sections = location.hash.split('/');
-	var page = sections.slice(-1)[0];
-	
-	// Add the breadcrumbs
-	if(sections.length > 2 && sections[1] == 'Home')
-		add_breadcrumb({'title' : 'Home', 'onclick' : function() { show_home(); }});
-	if(sections.length > 3 && sections[2] == 'My Library')
-		add_breadcrumb({'title' : 'My Library', 'onclick' : function() { show_library(); }});
-	if(sections.length > 3 && sections[2] == 'Add to Library')
-		add_breadcrumb({'title' : 'Add to Library', 'onclick' : function() { show_drop(); }});
+function handleHashChange() {
+	// Set the default hash
+	if(location.hash == '') {
+		location.hash = '#/Home';
+		return;
+	}
 
-	// Show the page. Use Home as default
-	var is_valid = false;
-	// Home
-	if(page == '' || page == 'Home') {
-		show_home();
-		is_valid = true;
-	// My Library
-	} else if(page == 'My Library') {
-		show_library();
-		is_valid = true;
-	// Add to Library
-	} else if(page == 'Add to Library') {
-		show_drop();
-		is_valid = true;
-	// About
-	} else if(page == 'About') {
-		show_about();
-		is_valid = true;
-	} else {
-		var game_name = sections[3];
-		for(var key in game_database) {
-			if(game_database[key]['name'] == game_name) {
-				var sha256 = key;
-				// Play Game
-				if(page == 'Play') {
-					add_breadcrumb({'title' : game_name, 'onclick' : function() { show_game_info(sha256); }});
-					show_game_play(sha256);
-				// Game info
-				} else {
-					show_game_info(sha256);
-				}
-				is_valid = true;
-				break;
-			}
+	// Get the page and sections
+	var before = location.hash.split('#/')[1].split('?')[0];
+	var after = '';
+	if(location.hash.indexOf('?') != -1)
+		after = location.hash.split('?')[1];
+	var sha256 = null;
+	if(location.hash.indexOf('?Play=') != -1) {
+		sha256 = location.hash.split('?Play=')[1];
+	}
+	var page = before.slice(-1)[0];
+
+	// HTTP Path
+	var sections = [];
+	var parts = before.split('/');
+	for(var i=0; i<parts.length; ++i) {
+		var part = parts[i];
+		if(part.length > 0) {
+			sections.push({ 'key': part, 'value': part });
 		}
 	}
 
-	if(!is_valid) {
-		alert('Unknown page');
+	// HTTP Get parameters
+	var parts = after.split(';');
+	var is_first_get_param = true;
+	for(var i=0; i<parts.length; ++i) {
+		var part = parts[i].split('=');
+		if(part.length == 2) {
+			var value = '';
+			if(is_first_get_param)
+				value = '?';
+			value += part[0] + '=' + part[1];
+			sections.push({ 'key': part[0], 'value': value });
+			is_first_get_param = false;
+		}
+	}
+
+	// Add the breadcrumbs
+	var default_sep = "&nbsp;&nbsp;>&nbsp;&nbsp;";
+	var tail = '#';
+	$('#breadcrumbs_div').empty();
+	for(var i=0; i<sections.length; ++i) {
+		var section = sections[i];
+		var sep = '';
+		if(i != sections.length-1)
+			sep = default_sep;
+		var element = $('<span><a href="' + tail + '/' + section['value'] + '" \>' + section['key'] + '</a>' + sep + '</span>');
+		$('#breadcrumbs_div').append(element);
+		tail += '/' + section['key'];
+	}
+
+	// Show the page. Use Home as default
+	var route = location.hash.split('?')[0];
+	// Home
+	if(route == '#/Home') {
+		show_home();
+	// My Library
+	} else if(route == '#/Home/My Library') {
+		show_library();
+	// Add to Library
+	} else if(route == '#/Home/Add to Library') {
+		show_drop();
+	// About
+	} else if(route == '#/Home/About') {
+		show_about();
+	// Remove Data
+	} else if(route == '#/Home/Remove Data') {
+		if(!confirm("Remove all your data?")) {
+			location.hash = '#/Home';
+			return;
+		}
+
+		var games = [];
+		Games.for_each({
+			each: function(game) {
+				games.push(game);
+			},
+			after: function() {
+				for(var i=0; i<games.length; i++) {
+					games[i].destroy(function() {
+						if(games.length)
+							games.length--;
+	
+						if(games.length == 0)
+							alert('Done removing.');
+					});
+				}
+				location.hash = '#/Home';
+			}
+		});
+	// Play game
+	} else if(route.indexOf('#/Home/My Library/') == 0 && sha256) {
+		var game_name = sections[2]['key'];
+		var is_done = false;
+		Games.for_each({
+			each: function(game) {
+				if(is_done) return;
+	
+				if(game.name==game_name && game.sha256==sha256) {
+					show_game_play(game);
+					is_done = true;
+				}
+			},
+			after: function() {
+				if(!is_done) {
+					alert('Unknown game: ' + game_name);
+					location.hash = '#/Home';
+				}
+			}
+		});
+	// Show game info
+	} else if(route.indexOf('#/Home/My Library/') == 0) {
+		var game_name = sections[2]['key'];
+		var is_done = false;
+		Games.for_each({
+			each: function(game) {
+				if(is_done) return;
+	
+				if(game.name == game_name) {
+					show_game_info(game);
+					is_done = true;
+				}
+			},
+			after: function() {
+				if(!is_done) {
+					alert('Unknown game: ' + game_name);
+					location.hash = '#/Home';
+				}
+			}
+		});
+	// Unknown page
+	} else {
+		alert('Unknown page: ' + route);
+		location.hash = '#/Home';
+	}
+
+	if(is_initialized) {
 		return;
 	}
 
@@ -813,53 +822,12 @@ function handleInitialSetup() {
 	// Pause when the button is clicked
 	$('#pause').click(handlePauseClick);
 
-	// Setup home links
-	$('#lnk_add_to_library').click(function(event) {
-		event.preventDefault();
-		show_drop();
-	});
-
-	$('#lnk_my_library').click(function(event) {
-		event.preventDefault();
-		show_library();
-	});
-	
-	$('#lnk_remove_data').click(function(event) {
-		event.preventDefault();
-
-		if(!confirm("Remove all your data?")) {
-			return;
-		}
-
-		var games = [];
-		Games.for_each({
-			each: function(game) {
-				games.push(game);
-			},
-			after: function() {
-				for(var i=0; i<games.length; i++) {
-					games[i].destroy(function() {
-						if(games.length)
-							games.length--;
-	
-						if(games.length == 0)
-							alert('Done removing.');
-					});
-				}
-			}
-		});
-	});
-	
-	$('#lnk_about').click(function(event) {
-		event.preventDefault();
-		show_about();
-	});
-	
 	// Automatically resize the screen to be as big as it can be
 	$(window).resize(handleWindowResize);
 	
 	var debug = $('#debug')[0];
 	debug.innerHTML = 'Ready';
+	is_initialized = true;
 }
 
 $(document).ready(function() {
@@ -869,5 +837,7 @@ $(document).ready(function() {
 	bodyId.addEventListener('loadend', handleNaclLoadEnd, true);
 	bodyId.addEventListener('progress', handleNaclProgress, true);
 	bodyId.addEventListener('message', handleNaclMessage, true);
+
+	$(window).bind('hashchange', handleHashChange);
 });
 
