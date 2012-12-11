@@ -49,9 +49,17 @@ def friendly_size(data_length):
 
 	return retval
 
-def download_file(url, cb):
+def download_file(url, cb_progress, cb_done):
 	chunk_size = 1024
-	response = urlopen(url)
+	response = ''
+	try:
+		response = urlopen(url)
+		if response.code != 200:
+			print('Download failed. Exiting ...')
+			exit()
+	except Exception as e:
+		print('Download failed. Exiting ...')
+		exit()
 	content_length = int(response.headers['Content-Length'])
 	data = b''
 	data_length = 0
@@ -65,7 +73,9 @@ def download_file(url, cb):
 		data_length += len(chunk)
 		percent = round((float(data_length) / content_length)*100, 2)
 
-		cb(chunk, data_length, chunk_size, content_length, percent)
+		cb_progress(chunk, data_length, chunk_size, content_length, percent)
+
+	cb_done(data)
 
 def update():
 	print("Downloading newest Raise version ...")
@@ -77,12 +87,8 @@ def update():
 
 	try:
 		url = 'http://bazaar.launchpad.net/~workhorsy/raise/main/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual'
-		f = open(file_name, 'wb')
 
-		def cb(chunk, data_length, chunk_size, content_length, percent):
-			# Write the next chunk to the file
-			f.write(chunk)
-
+		def cb_progress(chunk, data_length, chunk_size, content_length, percent):
 			# Write the download progress
 			sys.stdout.write("Downloaded {0} of {1} ({2}%)\r".format(friendly_size(data_length), friendly_size(content_length), percent))
 
@@ -92,8 +98,18 @@ def update():
 
 			sys.stdout.flush()
 
+		def cb_done(data):
+			# Make sure the downloaded file is python
+			if not data.startswith("#!/usr/bin/env python"):
+				print('The downloaded update was invalid. Make sure http://launchpad.net can be accessed. Exiting ...')
+				exit()
+
+			# Save the file
+			f = open(file_name, 'wb')
+			f.write(data)
+
 		# Download the file and call the cb after each chunk
-		download_file(url, cb)
+		download_file(url, cb_progress, cb_done)
 
 		# Make the file executable
 		os.chmod(file_name, 0o775 | stat.S_IXOTH)
