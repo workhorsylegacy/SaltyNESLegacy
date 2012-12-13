@@ -4,4 +4,5 @@
 	* Fixed Bug #1082033: 'Add an about page'.
 	* Fixed Bug #1082555: 'Make full screen work with F11'.
 	* Fixed Bug #1081095: 'Cleanup the routing and breadcrumbs'.
+	* Fixed Bug #1084251: 'Selection of games by letter'.
 

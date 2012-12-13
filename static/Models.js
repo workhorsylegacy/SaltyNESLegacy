@@ -2,6 +2,26 @@
 
 var db = null;
 
+function nextLetter(s) {
+	var lower = 'abcdefghijklmnopqrstuvwxyz{';
+	var upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ[';
+	var numbers = '0123456789';
+	var sets = [lower, upper, numbers];
+	
+	for(var i=0; i<sets.length; ++i) {
+		var set = sets[i];
+		if(set.indexOf(s) != -1) {
+			var i = set.indexOf(s);
+			if(i >= set.length-1) {
+				//i = 0;
+			} else {
+				i += 1;
+			}
+			return set[i];
+		}
+	}
+}
+
 function setup_indexeddb(success_cb) {
 	// Setup IndexedDB
 	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
@@ -136,7 +156,24 @@ Games.prototype = {
 Games.for_each = function(cbs) {
 	var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
 	var index = objectStore.index('name');
-	index.openCursor().onsuccess = function(event) {
+	var cursor = null;
+	// Filter by numbers or letter
+	if('letter_filter' in cbs) {
+		// Numbers
+		if(cbs.letter_filter == '#') {
+			cursor = index.openCursor(IDBKeyRange.bound('0', '9', true, false));
+		// Letter
+		} else {
+			var start = cbs.letter_filter;
+			var end = nextLetter(start);
+			cursor = index.openCursor(IDBKeyRange.bound(start, end, false, true));
+		}
+	} else if('name_filter' in cbs) {
+		cursor = index.openCursor(IDBKeyRange.only(cbs.name_filter));
+	} else {
+		cursor = index.openCursor();
+	}
+	cursor.onsuccess = function(event) {
 		var cursor = event.target.result;
 		if(cursor) {
 			var hash = cursor.value;
@@ -150,6 +187,41 @@ Games.for_each = function(cbs) {
 				cbs.after();
 		}
 	};
+}
+
+Games.for_each_with_name = function(name, cbs) {
+	Games.for_each({
+		name_filter: name,
+		each: function(g) {
+			cbs.each(g);
+		},
+		after: function() {
+			cbs.after();
+		}
+	});
+}
+
+Games.for_each_with_letter = function(letter, cbs) {
+	var upper = letter.toUpperCase();
+	var lower = letter.toLowerCase();
+
+	Games.for_each({
+		letter_filter: upper,
+		each: function(g) {
+			cbs.each(g);
+		},
+		after: function() {
+			Games.for_each({
+				letter_filter: lower,
+				each: function(g) {
+					cbs.each(g);
+				},
+				after: function() {
+					cbs.after();
+				}
+			});
+		}
+	});
 }
 
 Games.find_by_id = function(id, cb) {

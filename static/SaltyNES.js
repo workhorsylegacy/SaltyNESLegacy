@@ -35,42 +35,53 @@ function get_location_path(name) {
 	return location.hash + '/' + name;
 }
 
-function load_game_library() {
+function load_game_library(letter, page) {
 	// Get all the existing links in the library
-	var game_library = $('#game_library');
+	var game_library_list = $('#game_library_list');
+	game_library_list[0].innerHTML = '';
 
 	// Load all the new games into the selector
 	var used_names = {};
-	var is_first_icon = true;
-	Games.for_each({ each: function(game) {
-		// Skip this game if there is one with the same title already
-		if(game.name in used_names)
-			return;
-		used_names[game.name] = null;
-	
-		// Clear the icons if this is the first icon
-		if(is_first_icon) {
-			game_library[0].innerHTML = '';
-			is_first_icon = false;
-		}
+	Games.for_each_with_letter(letter, {
+		each: function(game) {
+			if(letter != null) {
+				if(letter == '#' && game.name.match('^[0-9]')) {
+					// Numbers
+				} else if(game.name[0].toUpperCase() == letter) {
+					// Letter
+				} else {
+					return;
+				}
+			}
 
-		var is_broken = false;
-		var img = null;
-		if(game.name in game_meta_data) {
-			is_broken = game_meta_data[game.name]['is_broken'];
-			img = game_meta_data[game.name]['img'];
-		}
+			// Skip this game if there is one with the same title already
+			if(game.name in used_names)
+				return;
+			used_names[game.name] = null;
 
-		// Put the icon in the selector
-		var element = null;
-		if(img) {
-			var icon_class = is_broken ? 'game_icon broken' : 'game_icon';
-			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="' + icon_class + '"><img src="' + img + '" /><br />' + game.name  + '</div></a>');
-		} else {
-			element = $('<a id="' + game.sha256 + '" href="' + get_location_path(game.name) + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name  + '</div></a>');
+			var is_broken = false;
+			var img = null;
+			if(game.name in game_meta_data) {
+				is_broken = game_meta_data[game.name]['is_broken'];
+				img = game_meta_data[game.name]['img'];
+			}
+
+			// Put the icon in the selector
+			var element = null;
+			if(img) {
+				var icon_class = is_broken ? 'game_icon broken' : 'game_icon';
+				element = $('<a id="' + game.sha256 + '" href="#/Home/Games/' + game.name + '"><div class="' + icon_class + '"><img src="' + img + '" /><br />' + game.name  + '</div></a>');
+			} else {
+				element = $('<a id="' + game.sha256 + '" href="#/Home/Games/' + game.name + '"><div class="game_icon_none"><div>Unknown Game</div>' + game.name  + '</div></a>');
+			}
+			game_library_list.append(element);
+		},
+		after: function() {
+			if(game_library_list[0].innerHTML == '') {
+				game_library_list[0].innerHTML = 'There are no games.';
+			}
 		}
-		game_library.append(element);
-	}});
+	});
 }
 
 function show_game_play(game) {
@@ -145,15 +156,13 @@ function show_game_info(game) {
 	$('#game_play_version').empty();
 	var versions = {};
 	var counter = 1;
-	Games.for_each({
+	Games.for_each_with_name(game.name, {
 		each: function(g) {
-			if(g.name == game.name) {
-				var key = g.region + ' ' + g.version;
-				if(key == ' ')
-					key = 'Unknown ' + counter;
-				versions[key] = g.sha256;
-				counter++;
-			}
+			var key = g.region + ' ' + g.version;
+			if(key == ' ')
+				key = 'Unknown ' + counter;
+			versions[key] = g.sha256;
+			counter++;
 		},
 		after: function() {
 			// Sort then and put them in the select
@@ -174,12 +183,12 @@ function show_game_info(game) {
 			// Update the play button when the select changes
 			$('#game_play_version').unbind('change');
 			$('#game_play_version').change(function() {
-				var href = '#/Home/My Library/' + game.name + '/?Play=' + $('#game_play_version').val();
+				var href = '#/Home/Games/' + game.name + '/?Play=' + $('#game_play_version').val();
 				$('#game_play_button').attr('href', href);
 			});
 
 			// Play button initial value
-			var href = '#/Home/My Library/' + game.name + '/?Play=' + $('#game_play_version').val();
+			var href = '#/Home/Games/' + game.name + '/?Play=' + $('#game_play_version').val();
 			$('#game_play_button').attr('href', href);
 
 			// Enable the controls
@@ -270,8 +279,8 @@ function show_about() {
 	hide_screen();
 }
 
-function show_library() {
-	document.title = 'My Library - SaltyNES';
+function show_library_default() {
+	document.title = 'Games - SaltyNES';
 
 	$('#about').hide();
 	$('#game_selector').show();
@@ -286,11 +295,31 @@ function show_library() {
 	if(is_running)
 		salty_nes.postMessage('quit');
 
-	load_game_library();
+	var game_library_list = $('#game_library_list');
+	game_library_list[0].innerHTML = 'Select a letter to list games.';
+}
+
+function show_library_by_letter(letter, page) {
+	document.title = letter + ' Games - SaltyNES';
+
+	$('#about').hide();
+	$('#game_selector').show();
+	$('#game_info').hide();
+	$('#top_controls').hide();
+	$('#game_drop').hide();
+	$('#game_library').show();
+	$('#home_controls').hide();
+	hide_screen();
+
+	// Quit running any existing game
+	if(is_running)
+		salty_nes.postMessage('quit');
+
+	load_game_library(letter, page);
 }
 
 function show_drop() {
-	document.title = 'Add to Library - SaltyNES';
+	document.title = 'Add Games - SaltyNES';
 
 	$('#about').hide();
 	$('#game_selector').show();
@@ -673,7 +702,7 @@ function handleHashChange() {
 	if(location.hash.indexOf('?Play=') != -1) {
 		sha256 = location.hash.split('?Play=')[1];
 	}
-	var page = before.slice(-1)[0];
+	var page = parseInt(location.hash.split('?page=')[1]) || 1;
 
 	// HTTP Path
 	var sections = [];
@@ -719,11 +748,18 @@ function handleHashChange() {
 	// Home
 	if(route == '#/Home') {
 		show_home();
-	// My Library
-	} else if(route == '#/Home/My Library') {
-		show_library();
-	// Add to Library
-	} else if(route == '#/Home/Add to Library') {
+	// All Games with a letter
+	} else if(route.match('^#/Home/Games/[a-z|A-Z]$')) {
+		var letter = sections[2]['key'].toUpperCase();
+		show_library_by_letter(letter, page);
+	// All Games with a number
+	} else if(route.match('^#/Home/Games/#$')) {
+		show_library_by_letter('#', page);
+	// Games Page
+	} else if(route == '#/Home/Games') {
+		show_library_default();
+	// Add Games
+	} else if(route == '#/Home/Add Games') {
 		show_drop();
 	// About
 	} else if(route == '#/Home/About') {
@@ -754,14 +790,14 @@ function handleHashChange() {
 			}
 		});
 	// Play game
-	} else if(route.indexOf('#/Home/My Library/') == 0 && sha256) {
+	} else if(route.indexOf('#/Home/Games/') == 0 && sha256) {
 		var game_name = sections[2]['key'];
 		var is_done = false;
-		Games.for_each({
+		Games.for_each_with_name(game_name, {
 			each: function(game) {
 				if(is_done) return;
 	
-				if(game.name==game_name && game.sha256==sha256) {
+				if(game.sha256==sha256) {
 					show_game_play(game);
 					is_done = true;
 				}
@@ -774,17 +810,15 @@ function handleHashChange() {
 			}
 		});
 	// Show game info
-	} else if(route.indexOf('#/Home/My Library/') == 0) {
+	} else if(route.indexOf('#/Home/Games/') == 0) {
 		var game_name = sections[2]['key'];
 		var is_done = false;
-		Games.for_each({
+		Games.for_each_with_name(game_name, {
 			each: function(game) {
 				if(is_done) return;
-	
-				if(game.name == game_name) {
-					show_game_info(game);
-					is_done = true;
-				}
+
+				show_game_info(game);
+				is_done = true;
 			},
 			after: function() {
 				if(!is_done) {

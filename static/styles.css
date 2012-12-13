@@ -171,6 +171,12 @@ footer {
 	display: none;
 }
 
+#game_library_letters {
+	overflow: auto;
+	clear: both;
+	padding-bottom: 20px;
+}
+
 #game_info {
 	overflow: auto;
 	clear: both;
