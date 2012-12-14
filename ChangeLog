@@ -6,4 +6,5 @@
 	* Fixed Bug #1081095: 'Cleanup the routing and breadcrumbs'.
 	* Fixed Bug #1084251: 'Selection of games by letter'.
 	* Fixed Bug #1081080: 'Make it so games can be added with a file selector too'.
+	* Fixed Bug #1090202: 'Make it show an alert when nacl crashes'.
 

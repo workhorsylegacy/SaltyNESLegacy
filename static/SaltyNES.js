@@ -623,6 +623,10 @@ function handleNaclMessage(message_event) {
 	}
 }
 
+function handleNaclCrash(event) {
+	alert('Native Client crashed. Refresh the page to reload. Sorry, no debug info is yet available.');
+}
+
 function handleNaclProgress(event) {
 	var debug = $('#debug')[0];
 	// Print unknown progress if unknown
@@ -889,6 +893,7 @@ $(document).ready(function() {
 	bodyId.addEventListener('loadend', handleNaclLoadEnd, true);
 	bodyId.addEventListener('progress', handleNaclProgress, true);
 	bodyId.addEventListener('message', handleNaclMessage, true);
+	bodyId.addEventListener('crash', handleNaclCrash, true);
 
 	$(window).bind('hashchange', handleHashChange);
 });
