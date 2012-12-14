@@ -100,9 +100,23 @@
 						<button>About</button>
 					</a>
 				</div>
-				<div id="game_drop">
-					<p>Drop games here to save in your library.</p>
-					<img id="game_drop_loading" src="static/loading.gif" />
+				<div id="game_add">
+					<h2>Add games to your library</h2>
+					<div id="game_add_file">
+						<input id="game_add_file_select" type="file" multiple />
+						<p>Or</p>
+					</div>
+
+					<div id="game_add_drop">
+						<p>Drop games here</p>
+					</div>
+		
+					<div id="game_add_progress">
+						<p>Loading ...</p>
+						<img src="static/loading.gif" />
+						<br />
+						<span id="game_add_status"></span>
+					</div>
 				</div>
 				<div id="game_library">
 					<div id="game_library_letters">

@@ -103,7 +103,7 @@ function show_game_info(game) {
 	$('#game_selector').hide();
 	$('#game_info').show();
 	$('#top_controls').hide();
-	$('#game_drop').hide();
+	$('#game_add').hide();
 	$('#game_library').hide();
 	$('#home_controls').hide();
 	hide_screen();
@@ -256,7 +256,7 @@ function show_home() {
 	$('#game_selector').show();
 	$('#game_info').hide();
 	$('#top_controls').hide();
-	$('#game_drop').hide();
+	$('#game_add').hide();
 	$('#game_library').hide();
 	$('#home_controls').show();
 	hide_screen();
@@ -273,7 +273,7 @@ function show_about() {
 	$('#game_selector').hide();
 	$('#game_info').hide();
 	$('#top_controls').hide();
-	$('#game_drop').hide();
+	$('#game_add').hide();
 	$('#game_library').show();
 	$('#home_controls').hide();
 	hide_screen();
@@ -286,7 +286,7 @@ function show_library_default() {
 	$('#game_selector').show();
 	$('#game_info').hide();
 	$('#top_controls').hide();
-	$('#game_drop').hide();
+	$('#game_add').hide();
 	$('#game_library').show();
 	$('#home_controls').hide();
 	hide_screen();
@@ -306,7 +306,7 @@ function show_library_by_letter(letter, page) {
 	$('#game_selector').show();
 	$('#game_info').hide();
 	$('#top_controls').hide();
-	$('#game_drop').hide();
+	$('#game_add').hide();
 	$('#game_library').show();
 	$('#home_controls').hide();
 	hide_screen();
@@ -325,7 +325,7 @@ function show_drop() {
 	$('#game_selector').show();
 	$('#game_info').hide();
 	$('#top_controls').hide();
-	$('#game_drop').show();
+	$('#game_add').show();
 	$('#game_library').hide();
 	$('#home_controls').hide();
 	hide_screen();
@@ -378,6 +378,10 @@ function handleLibraryDrop(event) {
 		handleLibraryFiles(files);
 }
 
+function handleLibraryFileSelect(event) {
+	if(this.files.length > 0)
+		handleLibraryFiles(this.files);
+}
 
 function handleLibraryFiles(files) {
 	function runNextReader() {
@@ -395,7 +399,9 @@ function handleLibraryFiles(files) {
 			continue;
 		}
 		
-		$('#game_drop_loading').show();
+		$('#game_add_file').hide();
+		$('#game_add_drop').hide();
+		$('#game_add_progress').show();
 		var reader = new FileReader();
 		reader.file_name = files[i].name;
 
@@ -427,21 +433,29 @@ function handleLibraryFiles(files) {
 			game.data = base64;
 
 			game.save({success: function(game) {
-				$('#debug')[0].innerHTML = "Loaded '" + game.name + "'";
-	
+				$('#game_add_status')[0].innerHTML = "Loaded '" + game.name + "'";
+
 				// Start the next reader, if there is one
 				runNextReader();
 
-				if(readers.length == 0)
-					$('#game_drop_loading').hide();
+				if(readers.length == 0) {
+					$('#game_add_file').show();
+					$('#game_add_drop').show();
+					$('#game_add_progress').hide();
+				}
 			}, failure: function(game, error_message) {
+				$('#game_add_status')[0].innerHTML = "Load skipped";
+
 				if(error_message != 'Save failed: 4')
 					alert('Failed to save game. Error code: ' + error_message);
 				// Start the next reader, if there is one
 				runNextReader();
 
-				if(readers.length == 0)
-					$('#game_drop_loading').hide();
+				if(readers.length == 0) {
+					$('#game_add_file').show();
+					$('#game_add_drop').show();
+					$('#game_add_progress').hide();
+				}
 			}});
 		}
 
@@ -843,11 +857,15 @@ function handleHashChange() {
 	}, 2000);
 
 	// Setup game drag and drop
-	var game_drop = $('#game_drop')[0];
-	game_drop.addEventListener("dragenter", handleLibraryDragEnter, true);
-	game_drop.addEventListener("dragexit", handleLibraryDragExit, true);
-	game_drop.addEventListener("dragover", handleLibraryDragOver, true);
-	game_drop.addEventListener("drop", handleLibraryDrop, true);
+	var game_add_drop = $('#game_add_drop')[0];
+	game_add_drop.addEventListener("dragenter", handleLibraryDragEnter, true);
+	game_add_drop.addEventListener("dragexit", handleLibraryDragExit, true);
+	game_add_drop.addEventListener("dragover", handleLibraryDragOver, true);
+	game_add_drop.addEventListener("drop", handleLibraryDrop, true);
+
+	// Setup game file select
+	var game_add_file_select = $('#game_add_file_select')[0];
+	game_add_file_select.addEventListener("change", handleLibraryFileSelect, true);
 
 	// Send all key down events to the NACL app
 	$('#bodyId').keydown(handleKeyDown);

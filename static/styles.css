@@ -152,15 +152,14 @@ footer {
 	float: left;
 }
 
-#game_drop {
+#game_add_drop {
 	overflow: auto;
 	clear: both;
-	height: 170px;
+	height: 100px;
 	border: 10px solid green;
-	display: none;
 }
 
-#game_drop_loading {
+#game_add_progress {
 	display: none;
 }
 
