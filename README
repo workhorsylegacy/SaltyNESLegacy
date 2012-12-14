@@ -10,6 +10,9 @@ NACL httpd.py, and Makefile are licensed under a BSD style license.
 Jquery is dual licensed under MIT and GPLv2.
 CryptoJS is licensed under a BSD style license.
 
+For SaltyNES see:
+http://launchpad.net/saltynes
+
 For vNES see:
 http://thatsanderskid.com/programming/vnes/index.html
 
