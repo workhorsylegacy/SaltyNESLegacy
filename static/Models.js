@@ -1,6 +1,7 @@
 
 
 var db = null;
+var fs = null;
 
 function nextLetter(s) {
 	var lower = 'abcdefghijklmnopqrstuvwxyz{';
@@ -22,6 +23,54 @@ function nextLetter(s) {
 	}
 }
 
+function fs_error_handler(e) {
+	var msg = '';
+
+	switch(e.code) {
+		case FileError.QUOTA_EXCEEDED_ERR:
+			msg = 'QUOTA_EXCEEDED_ERR';
+			break;
+		case FileError.NOT_FOUND_ERR:
+			msg = 'NOT_FOUND_ERR';
+			break;
+		case FileError.SECURITY_ERR:
+			msg = 'SECURITY_ERR';
+			break;
+		case FileError.INVALID_MODIFICATION_ERR:
+			msg = 'INVALID_MODIFICATION_ERR';
+			break;
+		case FileError.INVALID_STATE_ERR:
+			msg = 'INVALID_STATE_ERR';
+			break;
+		default:
+			msg = 'Unknown Error';
+			break;
+	};
+
+	alert('File System Error: ' + msg);
+}
+
+function setup_fs(desired_size, success_cb) {
+	// Setup file system
+	window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+	if(!window.requestFileSystem) {
+		alert("This application requires File System to work.");
+		return;
+	}
+	window.webkitStorageInfo.requestQuota(PERSISTENT, desired_size, function(granted_size) {
+		// Make sure we got the size we want
+		if(granted_size != desired_size) {
+			alert('Failed to get file system size of ' + desired_size + ' bytes. Instead got ' + granted_size + ' bytes.');
+		}
+		window.requestFileSystem(window.PERSISTENT, granted_size, fs_init_handler, fs_error_handler);
+	}, fs_error_handler);
+
+	function fs_init_handler(fs_instance) {
+		fs = fs_instance;
+		success_cb();
+	}
+}
+
 function setup_indexeddb(success_cb) {
 	// Setup IndexedDB
 	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
@@ -29,6 +78,7 @@ function setup_indexeddb(success_cb) {
 	window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
 	if(!indexedDB) {
 		alert("This application requires IndexedDB to work.");
+		return;
 	}
 	
 	// Connect to the database
@@ -65,11 +115,45 @@ function make_sure_indexeddb_works(success_cb) {
 	}
 }
 
+function write_file(file_name, data, mime_type, success_cb) {
+	fs.root.getFile(file_name, {create: true}, function(fileEntry) {
+		// Create a FileWriter object for our FileEntry
+		fileEntry.createWriter(function(fileWriter) {
+	
+			fileWriter.onwriteend = function(e) {
+				success_cb();
+			};
+
+			fileWriter.onerror = function(e) {
+				alert('Write failed: ' + e.toString());
+			};
+
+			// Create a new Blob and write it to the file
+			var blob = new Blob([data], {type: mime_type});
+
+			fileWriter.write(blob);
+		}, fs_error_handler);
+	}, fs_error_handler);
+}
+
+function read_file(file_name, success_cb) {
+	fs.root.getFile(file_name, {}, function(fileEntry) {
+		fileEntry.file(function(file) {
+			var reader = new FileReader();
+
+			reader.onloadend = function(e) {
+				success_cb(this.result);
+			};
+
+			reader.readAsText(file);
+		}, fs_error_handler);
+	}, fs_error_handler);
+}
+
 /*
 The Games table is structured like so:
 "games" = {
 	"sha256" : "sha256 of rom ...",
-	"data" : "rom as stirng",
 	"name" : "name of game",
 	"version" : "version info",
 	"region" : "",
@@ -78,13 +162,12 @@ The Games table is structured like so:
 
 var game_fields = [
 	'name', 'version', 'region', 
-	'sha256', 'data'
+	'sha256'
 ];
 
 // Create class
 var Games = function(sha256) {
 		this.sha256 = sha256;
-		this.data = "";
 		this.name = "";
 		this.version = "";
 		this.region = "";
@@ -110,12 +193,14 @@ Games.prototype = {
 		}
 	},
 
-	save: function(cbs) {
+	save: function(data, cbs) {
 		var objectStore = db.transaction(['games'], 'readwrite').objectStore('games');
 		var game =  this;
 		var request = objectStore.add(game.to_hash());
 		request.onsuccess = function(event) {
-			cbs.success(game);
+			write_file(game.sha256, data, 'text/plain', function() {
+				cbs.success(game);
+			});
 		};
 
 		request.onerror = function(event) {

@@ -93,8 +93,10 @@ function show_game_play(game) {
 		}
 
 		// Send the rom to the nexe
-		salty_nes.postMessage('load_rom:' + save_ram + ' rom:' + game.data);
-		salty_nes.postMessage('zoom:' + zoom);
+		read_file(game.sha256, function(data) {
+			salty_nes.postMessage('load_rom:' + save_ram + ' rom:' + data);
+			salty_nes.postMessage('zoom:' + zoom);
+		});
 	});
 }
 
@@ -430,9 +432,8 @@ function handleLibraryFiles(files) {
 			} else {
 				game.name = event.target.file_name;
 			}
-			game.data = base64;
 
-			game.save({success: function(game) {
+			game.save(base64, {success: function(game) {
 				$('#game_add_status')[0].innerHTML = "Loaded '" + game.name + "'";
 
 				// Start the next reader, if there is one
@@ -648,7 +649,9 @@ function handleNaclLoadEnd() {
 	salty_nes = $('#SaltyNESApp')[0];
 
 	// Setup IndexedDB
-	setup_indexeddb(handleHashChange);
+	setup_indexeddb(function() {
+		setup_fs(5*1024*1024*1024, handleHashChange);
+	});
 }
 
 function handleWindowResize() {
