@@ -11,6 +11,8 @@ var zoom = 1;
 var max_zoom = 6;
 var readers = [];
 var gamepad_id = null;
+var default_language = 'English';
+var default_region = 'USA';
 
 function diff(a, b) {
 	if(a > b)
@@ -113,8 +115,14 @@ function show_game_info(game) {
 	// Disable the controls
 	$('#game_play_button').attr('disabled', 'disabled');
 	$('#game_play_version').attr('disabled', 'disabled');
+	$('#game_play_region').attr('disabled', 'disabled');
+	$('#game_play_language').attr('disabled', 'disabled');
 	$('#game_play_save_span').hide();
 	$('#lnk_remove_save').hide();
+
+	$('#game_play_region').unbind('change');
+	$('#game_play_language').unbind('change');
+	$('#game_play_version').unbind('change');
 
 	// Quit running any existing game
 	if(is_running)
@@ -154,90 +162,148 @@ function show_game_info(game) {
 		$('#game_img')[0].innerHTML = "<div style=\"width: 120px; height: 177px; border: 1px solid black;\">Unknown Game</div>";
 	}
 
-	// Game versions
+	// Game version, region, and language
 	$('#game_play_version').empty();
+	$('#game_play_region').empty();
+	$('#game_play_language').empty();
 	var versions = {};
-	var counter = 1;
+	var regions = {'All' : 1};
+	var languages = {'All' : 1};
+	var games = [];
 	Games.for_each_with_name(game.name, {
 		each: function(g) {
-			var key = g.region + ' ' + g.version;
-			if(key == ' ')
-				key = 'Unknown ' + counter;
-			versions[key] = g.sha256;
-			counter++;
+			versions[g.version] = g.sha256;
+			regions[g.region] += 1;
+			languages[g.language] += 1;
+
+			// Get all the games sorted by version
+			games.push(g);
+			games.sort(function(a, b) {
+				if(a.version < b.version)
+					return -1;
+				if(a.version > b.version)
+					return 1;
+				return 0;
+			});
 		},
 		after: function() {
-			// Sort then and put them in the select
-			var keys = get_keys(versions).sort();
-			for(var i=0; i<keys.length; i++) {
+			function populate_save() {
+				var sha256 = $('#game_play_version').val();
+				$('#game_play_save').empty();
+				Saves.find_by_id(sha256, function(save) {
+					if(save != null) {
+						var keys = Object.keys(save.data);
+						for(var i=keys.length-1; i>=0; --i) {
+							var key = keys[i];
+							$('#game_play_save')
+								.append($("<option></option>")
+								.attr("value", save.data[key])
+								.text(key));
+						}
+						$('#lnk_remove_save').show();
+						$('#game_play_save_span').show();
+					} else {
+						$('#lnk_remove_save').hide();
+						$('#game_play_save_span').hide();
+					}
+
+					// Save remove button
+					var lnk_remove_save = $('#lnk_remove_save');
+					lnk_remove_save.unbind('click');
+					lnk_remove_save.click(function() {
+						// Have the user confirm
+						if(!confirm("Remove your save data?")) {
+							return;
+						}
+
+						// Remove the save
+						Saves.find_by_id(sha256, function(save) {
+							save.destroy(function(save) {
+								lnk_remove_save.hide();
+								$('#game_play_save').empty();
+								$('#game_play_save_span').hide();
+								alert('Save data removed.');
+							});
+						});
+					});
+				});
+			}
+		
+			// Update the version based on the region and language selected
+			function populate_version() {
+				// Populate
+				var region = $('#game_play_region').val();
+				var language = $('#game_play_language').val();
+				$('#game_play_version').empty();
+				for(var i=0; i<games.length; ++i) {
+					var is_region = (region=='All' || region==games[i].region);
+					var is_language = (language=='All' || language==games[i].language);
+					if(is_region && is_language) {
+						$('#game_play_version')
+							.append($("<option></option>")
+							.attr("value", games[i].sha256)
+							.text(games[i].version));
+					}
+				}
+				
+				// Set default good dump version [!]
+				$('#game_play_version option').filter(function() {
+					return this.text.indexOf('[!]') != -1;
+				}).attr('selected', true);
+				
+				// Setup the save buttons
+				//populate_save();
+			}
+
+			// Update the play button based on the version selected
+			function update_play() {
+				var href = '#/Home/Games/' + game.name + '/?Play=' + $('#game_play_version').val();
+				$('#game_play_button').attr('href', href);
+				populate_save();
+			}
+
+			// Populate the regions
+			var keys = get_keys(regions).sort();
+			for(var i=0; i<keys.length; ++i) {
 				var key = keys[i];
-				$('#game_play_version')
+				$('#game_play_region')
 					.append($("<option></option>")
-					.attr("value", versions[key])
+					.attr("value", key)
 					.text(key));
 			}
 
-			// Set the selected option
-			$('#game_play_version option').filter(function() {
-				return this.text == 'USA Verified Good Dump';
+			// Populate the languages
+			var keys = get_keys(languages).sort();
+			for(var i=0; i<keys.length; ++i) {
+				var key = keys[i];
+				$('#game_play_language')
+					.append($("<option></option>")
+					.attr("value", key)
+					.text(key));
+			}
+
+			// Set the default region and language
+			$('#game_play_region option').filter(function() {
+				return this.text == default_region;
+			}).attr('selected', true);
+			$('#game_play_language option').filter(function() {
+				return this.text == default_language;
 			}).attr('selected', true);
 
-			// Update the play button when the select changes
-			$('#game_play_version').unbind('change');
-			$('#game_play_version').change(function() {
-				var href = '#/Home/Games/' + game.name + '/?Play=' + $('#game_play_version').val();
-				$('#game_play_button').attr('href', href);
-			});
+			// Set the initial version
+			populate_version();
+			update_play();
 
-			// Play button initial value
-			var href = '#/Home/Games/' + game.name + '/?Play=' + $('#game_play_version').val();
-			$('#game_play_button').attr('href', href);
+			// Update the version when the region and language change
+			$('#game_play_region').change(populate_version);
+			$('#game_play_language').change(populate_version);
+			$('#game_play_version').change(update_play);
 
 			// Enable the controls
 			$('#game_play_button').removeAttr('disabled');
 			$('#game_play_version').removeAttr('disabled');
-		}
-	});
-	
-	// Save remove button
-	var lnk_remove_save = $('#lnk_remove_save');
-	lnk_remove_save.unbind('click');
-	lnk_remove_save.click(function() {
-		// Have the user confirm
-		if(!confirm("Remove your save data?")) {
-			return;
-		}
-
-		// Remove the save
-		Saves.find_by_id(game.sha256, function(save) {
-			save.destroy(function(save) {
-				lnk_remove_save.hide();
-				$('#game_play_save')
-					.find('option')
-					.remove();
-				$('#game_play_save_span').hide();
-				alert('Save data removed.');
-			});
-		});
-	});
-	Saves.find_by_id(game.sha256, function(save) {
-		if(save != null) {
-			$('#game_play_save')
-				.find('option')
-				.remove();
-			var keys = Object.keys(save.data);
-			for(var i=keys.length-1; i>=0; --i) {
-				var key = keys[i];
-				$('#game_play_save')
-					.append($("<option></option>")
-					.attr("value", save.data[key])
-					.text(key));
-			}
-			lnk_remove_save.show();
-			$('#game_play_save_span').show();
-		} else {
-			lnk_remove_save.hide();
-			$('#game_play_save_span').hide();
+			$('#game_play_region').removeAttr('disabled');
+			$('#game_play_language').removeAttr('disabled');
 		}
 	});
 

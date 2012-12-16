@@ -8,4 +8,5 @@
 	* Fixed Bug #1081080: 'Make it so games can be added with a file selector too'.
 	* Fixed Bug #1090202: 'Make it show an alert when nacl crashes'.
 	* Fixed Bug #1090995: 'Store roms in File System instead of IndexedDB for speed'.
+	* Fixed Bug #1091030: 'Make games sortable by region and language'.
 

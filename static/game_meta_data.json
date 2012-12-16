@@ -1,4 +1,43 @@
 game_meta_data = {
+	"8 Eyes" : {
+		"developer" : "Thinking Rabbit",
+		"publisher" : "Taxan",
+		"release_date" : "1990-01",
+		"number_of_players" : 2,
+		"can_save" : false,
+		"mapper" : 0,
+		"prog_rom_pages" : 0,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/8_Eye%27s",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/7/71/8_eyes_front.jpg",
+		"is_broken" : false
+	},
+	"Abadox" : {
+		"developer" : "Natsume",
+		"publisher" : "Natsume",
+		"release_date" : "1990-03",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 0,
+		"prog_rom_pages" : 0,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/Abadox",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/7/70/Abadox_box_art.jpg",
+		"is_broken" : false
+	},
+	"Adventures of Bayou Billy, The" : {
+		"developer" : "Konami",
+		"publisher" : "Konami",
+		"release_date" : "1989-06",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 0,
+		"prog_rom_pages" : 0,
+		"char_rom_pages" : 0,
+		"link" : "http://en.wikipedia.org/wiki/The_Adventures_of_Bayou_Billy",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/2/23/Bayou_Billy_box.jpg",
+		"is_broken" : false
+	},
 	"Bad Dudes" : {
 		"developer" : "Data East",
 		"publisher" : "Data East",
@@ -220,6 +259,19 @@ game_meta_data = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/c/cf/Adventure_Island_3_Boxart.jpg",
 		"is_broken" : false
 	},
+	"Fester's Quest" : {
+		"developer" : "Sunsoft",
+		"publisher" : "Sunsoft",
+		"release_date" : "1989",
+		"number_of_players" : 1,
+		"can_save" : false,
+		"mapper" : 1,
+		"prog_rom_pages" : 8,
+		"char_rom_pages" : 32,
+		"link" : "http://en.wikipedia.org/wiki/The_Addams_Family_%28video_game_series%29#Fester.27s_Quest",
+		"img" : "http://upload.wikimedia.org/wikipedia/en/d/d5/FestQuest.jpg",
+		"is_broken" : false
+	},
 	"Kid Icarus" : {
 		"developer" : "Nintendo R&D1",
 		"publisher" : "Nintendo",
@@ -376,7 +428,7 @@ game_meta_data = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/9/9b/Ninja_Gaiden_%28NES%29.jpg",
 		"is_broken" : false
 	},
-	"Ninja Gaiden II: The Dark Sword of Chaos" : {
+	"Ninja Gaiden II - The Dark Sword of Chaos" : {
 		"developer" : "Tecmo",
 		"publisher" : "Tecmo",
 		"release_date" : "1990-04-06",
@@ -506,7 +558,7 @@ game_meta_data = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/b/b7/Tmnt-box.jpg",
 		"is_broken" : false
 	},
-	"Teenage Mutant Ninja Turtles 2: The Arcade Game" : {
+	"Teenage Mutant Ninja Turtles II - The Arcade Game" : {
 		"developer" : "Konami",
 		"publisher" : "Ultra Games",
 		"release_date" : "1990-12",
@@ -519,7 +571,7 @@ game_meta_data = {
 		"img" : "http://upload.wikimedia.org/wikipedia/en/b/bc/TMNT2boxNES.jpg",
 		"is_broken" : false
 	},
-	"Teenage Mutant Ninja Turtles 3: The Manhattan Project" : {
+	"Teenage Mutant Ninja Turtles III - The Manhattan Project" : {
 		"developer" : "Konami",
 		"publisher" : "Konami",
 		"release_date" : "1992-02",

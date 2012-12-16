@@ -157,12 +157,13 @@ The Games table is structured like so:
 	"name" : "name of game",
 	"version" : "version info",
 	"region" : "",
+	"language" : ""
 };
 */
 
 var game_fields = [
 	'name', 'version', 'region', 
-	'sha256'
+	'language', 'sha256'
 ];
 
 // Create class
@@ -171,6 +172,7 @@ var Games = function(sha256) {
 		this.name = "";
 		this.version = "";
 		this.region = "";
+		this.language = "";
 };
 
 // Add instance methods
