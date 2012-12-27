@@ -394,24 +394,6 @@ function show_about() {
 		salty_nes.postMessage('quit');
 }
 
-function show_gamepad_config() {
-	document.title = 'Configure Gamepad - SaltyNES';
-	
-	$('#gamepad_config').show();
-	$('#about').hide();
-	$('#game_selector').hide();
-	$('#game_info').hide();
-	$('#top_controls').hide();
-	$('#game_add').hide();
-	$('#game_library').hide();
-	$('#home_controls').hide();
-	hide_screen();
-	
-	// Quit running any existing game
-	if(is_running)
-		salty_nes.postMessage('quit');
-}
-
 function show_library_default() {
 	document.title = 'Games - SaltyNES';
 
@@ -940,9 +922,6 @@ function handleHashChange() {
 	// About
 	} else if(route == '#/Home/About') {
 		show_about();
-	// Configure Gamepad
-	} else if(route == '#/Home/Configure Gamepad') {
-		show_gamepad_config();
 	// Remove Data
 	} else if(route == '#/Home/Remove Data') {
 		if(!confirm("Remove all your data?")) {
@@ -1051,7 +1030,25 @@ function handleHashChange() {
 
 	// Automatically resize the screen to be as big as it can be
 	$(window).resize(handleWindowResize);
-	
+
+	// Show the gamepad config button
+	$('#lnk_gamepad_config').click(function(event) {
+		$('#gamepad_config').show();
+		if(is_running)
+			salty_nes.postMessage('pause');
+
+		return false;
+	});
+
+	// Close the gamepad config dialog
+	$('#gamepad_config_close').click(function(event) {
+		$('#gamepad_config').hide();
+		if(is_running)
+			salty_nes.postMessage('pause');
+
+		return false;
+	});
+
 	var debug = $('#debug')[0];
 	debug.innerHTML = 'Ready';
 	is_initialized = true;

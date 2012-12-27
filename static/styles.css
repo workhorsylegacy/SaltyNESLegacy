@@ -216,16 +216,6 @@ footer {
 	display: none;
 }
 
-#gamepad_config {
-	display: none;
-	overflow: auto;
-	clear: both;
-	border: 1px solid red;
-	padding: 20px;
-	text-align: left;
-	border: 10px solid green;
-}
-
 #gamepad_config td {
 	text-align: center;
 	width: 100px;
@@ -248,4 +238,62 @@ footer {
 
 .gamepad_red {
 	background-color: #ed2b21;
+}
+
+#gamepad_config {
+	display: none;
+	position: fixed;
+
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+
+	font-family: Arial, Helvetica, sans-serif;
+	background: rgba(0, 0, 0, 0.8);
+	z-index: 99999;
+}
+
+#gamepad_config > div {
+	width: 700px;
+	position: relative;
+	margin: 10% auto;
+	padding: 5px 20px 13px 20px;
+
+	border-radius: 10px;
+	background: #fff;
+	background: -moz-linear-gradient(#fff, #999);
+	background: -webkit-linear-gradient(#fff, #999);
+	background: -o-linear-gradient(#fff, #999);
+	
+	-moz-box-shadow: 1px 1px 30px #000;
+	-webkit-box-shadow: 1px 1px 30px #000;
+	box-shadow: 1px 1px 30px #000;
+}
+
+#gamepad_config_close {
+	top: -10px;
+	width: 24px;
+	right: -12px;
+	position: absolute;
+
+	background: #606061;
+	color: #FFFFFF;
+
+	line-height: 25px;
+	text-align: center;
+	text-decoration: none;
+	font-weight: bold;
+
+	-webkit-border-radius: 12px;
+	-moz-border-radius: 12px;
+	border-radius: 12px;
+
+	-moz-box-shadow: 1px 1px 3px #000;
+	-webkit-box-shadow: 1px 1px 3px #000;
+	box-shadow: 1px 1px 3px #000;
+}
+
+#gamepad_config_close:hover {
+	background: #FF0000;
 }
