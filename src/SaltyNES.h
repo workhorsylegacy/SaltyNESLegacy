@@ -577,6 +577,8 @@ public:
 	map<string, vector<size_t> > _input_map_axes_neg;
 	static const string KEYS[];
 	static const size_t KEYS_LENGTH;
+	static bool _is_configuring_gamepad;
+	static string _configuring_gamepad_button;
 
 	// Joypad keys:
 	static const int KEY_A = 0;
@@ -1442,6 +1444,7 @@ public:
 	uint32_t* LockPixels();
 	void UnlockPixels() const;
 	void Paint();
+	void poll_gamepad();
 
 	bool quit() const {
 		return quit_;

@@ -88,17 +88,24 @@ SaltyNES::SaltyNES(PP_Instance instance)
 			thread_is_running_(false) {
 	pthread_mutex_init(&pixel_buffer_mutex_, NULL);
 	vnes = NULL;
+	
+	// Create the gamepads
 	_joy1 = new InputHandler(0);
 	_joy2 = new InputHandler(1);
 
 	if(SaltyNES::g_salty_nes == NULL)
 		SaltyNES::g_salty_nes = this;
 
+	// Setup nacl so it can use gamepads
 	pp::Module* module = pp::Module::Get();
 	assert(module);
 	gamepad_ = static_cast<const PPB_Gamepad*>(
 		module->GetBrowserInterface(PPB_GAMEPAD_INTERFACE));
 	assert(gamepad_);
+	
+	// Poll gamepad 1 to populate its info
+	_joy1->_is_gamepad_used = true;
+	this->poll_gamepad();
 }
 
 SaltyNES::~SaltyNES() {
@@ -187,7 +194,28 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		}
 		
 		return;
+	// Configure gamepad keys start
+	} else if(message == "start_configure_key") {
+		InputHandler::_is_configuring_gamepad = true;
+		InputHandler::_configuring_gamepad_button = "";
+
+		return;
+	// Configure gamepad keys get
+	} else if(message == "get_configure_key") {
+		PP_GamepadsSampleData gamepad_data;
+		gamepad_->Sample(pp_instance(), &gamepad_data);
+		_joy1->update_gamepad(gamepad_data);
 		
+		stringstream out;
+		out << "get_configure_key:" << InputHandler::_configuring_gamepad_button;
+		log_to_browser(out.str());
+
+		return;
+	// Configure gamepad keys end
+	} else if(message == "end_configure_key") {
+		InputHandler::_is_configuring_gamepad = false;
+
+		return;
 	} else if(message == "get_gamepad_status") {
 		// Get current gamepad data.
 		PP_GamepadsSampleData gamepad_data;
@@ -206,6 +234,48 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		out << ":" << _joy1->_gamepad_vendor_id << _joy1->_gamepad_product_id;
 		log_to_browser(out.str());
 		return;
+	} else if(message.find("key_down:") == 0) {
+		size_t sep_pos = message.find_first_of(":");
+		int32_t button = 0;
+		string str_button = message.substr(sep_pos + 1);
+		istringstream(str_button) >> button;
+
+		_joy1->key_down(button);
+		return;
+	} else if(message.find("key_up:") == 0) {
+		size_t sep_pos = message.find_first_of(":");
+		int32_t button = 0;
+		string str_button = message.substr(sep_pos + 1);
+		istringstream(str_button) >> button;
+
+		_joy1->key_up(button);
+		return;
+	} else if(message.find("set_input_") == 0) {
+		size_t sep_pos = message.find_first_of(":");
+		size_t axes_pos = message.find("axes");
+		size_t sign_pos = message.find_first_of("+-");
+		string input = message.substr(10, sep_pos-10);
+
+		// Axes
+		if(axes_pos != string::npos && sign_pos != string::npos) {
+			string str_axes = message.substr(sign_pos + 1);
+			string sign = message.substr(sign_pos, 1);
+			size_t axes = 0;
+			istringstream(str_axes) >> axes;
+			
+			if(sign == "+") {
+				_joy1->_input_map_axes_pos[input].push_back(axes);
+			} else if(sign == "-") {
+				_joy1->_input_map_axes_neg[input].push_back(axes);
+			}
+		// Button
+		} else {
+			string str_button = message.substr(sep_pos + 1);
+			int button = 0;
+			istringstream(str_button) >> button;
+			_joy1->_input_map_button[input].push_back(button);
+		}
+		return;
 	}
 
 	// Just return if any messages require vnes, but it is not running
@@ -223,60 +293,11 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		string str_zoom = message.substr(sep_pos + 1);
 		istringstream(str_zoom) >> zoom;
 		vnes->nes->ppu->_zoom = zoom;
-	} else if(message.find("key_down:") == 0) {
-		size_t sep_pos = message.find_first_of(":");
-		int32_t button = 0;
-		string str_button = message.substr(sep_pos + 1);
-		istringstream(str_button) >> button;
-		
-		if(vnes==NULL || vnes->nes==NULL || vnes->nes->_joy1==NULL)
-			return;
-		InputHandler* joy1 = vnes->nes->_joy1;
-		joy1->key_down(button);
-	} else if(message.find("key_up:") == 0) {
-		size_t sep_pos = message.find_first_of(":");
-		int32_t button = 0;
-		string str_button = message.substr(sep_pos + 1);
-		istringstream(str_button) >> button;
-
-		if(vnes==NULL || vnes->nes==NULL || vnes->nes->_joy1==NULL)
-			return;
-		InputHandler* joy1 = vnes->nes->_joy1;
-		joy1->key_up(button);
 	} else if(message == "get_fps") {
 		stringstream out;
 		out << "get_fps:";
 		out << get_fps();
 		log_to_browser(out.str());
-	} else if(message.find("set_input_") == 0) {
-		size_t sep_pos = message.find_first_of(":");
-		size_t axes_pos = message.find("axes");
-		size_t sign_pos = message.find_first_of("+-");
-		string input = message.substr(10, sep_pos-10);
-
-		if(vnes==NULL || vnes->nes==NULL || vnes->nes->_joy1==NULL)
-			return;
-		InputHandler* joy1 = vnes->nes->_joy1;
-
-		// Axes
-		if(axes_pos != string::npos && sign_pos != string::npos) {
-			string str_axes = message.substr(sign_pos + 1);
-			string sign = message.substr(sign_pos, 1);
-			size_t axes = 0;
-			istringstream(str_axes) >> axes;
-			
-			if(sign == "+") {
-				joy1->_input_map_axes_pos[input].push_back(axes);
-			} else if(sign == "-") {
-				joy1->_input_map_axes_neg[input].push_back(axes);
-			}
-		// Button
-		} else {
-			string str_button = message.substr(sep_pos + 1);
-			int button = 0;
-			istringstream(str_button) >> button;
-			joy1->_input_map_button[input].push_back(button);
-		}
 	} else if(message == "quit") {
 		if(vnes != NULL) {
 			vnes->stop();
@@ -323,12 +344,15 @@ void SaltyNES::Paint() {
 		return;
 	}
 
-	InputHandler* joy1 = vnes->nes->_joy1;
-	PP_GamepadsSampleData gamepad_data;
-	gamepad_->Sample(pp_instance(), &gamepad_data);
-	joy1->update_gamepad(gamepad_data);
+	this->poll_gamepad();
 	
 	FlushPixelBuffer();
+}
+
+void SaltyNES::poll_gamepad() {
+	PP_GamepadsSampleData gamepad_data;
+	gamepad_->Sample(pp_instance(), &gamepad_data);
+	_joy1->update_gamepad(gamepad_data);
 }
 
 void SaltyNES::CreateContext(const pp::Size& size) {

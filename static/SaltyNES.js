@@ -13,6 +13,44 @@ var readers = [];
 var gamepad_id = null;
 var default_language = 'English';
 var default_region = 'USA';
+var configure_key = null;
+var configure_key_counter = 0;
+var configure_key_interval = null;
+
+
+function handle_configure_keys(key_name) {
+	configure_key = key_name;
+
+	// Disable all the config buttons
+	var keys = ['left', 'right', 'up', 'down', 'select', 'start', 'b', 'a', 'home'];
+	for(var i=0; i<keys.length; ++i) {
+		var key = keys[i];
+		$('#button_' + key).attr('disabled', 'disabled');
+	}
+
+	// Have nacl save the next key that is pressed
+	salty_nes.postMessage('start_configure_key');
+
+	// Check to see what key was pressed
+	configure_key_interval = setInterval(function() {
+		salty_nes.postMessage('get_configure_key');
+		configure_key_counter++;
+		if(configure_key_counter == 10 && configure_key_interval) {
+			// Enable all the config buttons
+			var keys = ['left', 'right', 'up', 'down', 'select', 'start', 'b', 'a', 'home'];
+			for(var i=0; i<keys.length; ++i) {
+				var key = keys[i];
+				$('#button_' + key).removeAttr('disabled');
+			}
+	
+			// Stop checking to see which key was pressed
+			clearInterval(configure_key_interval);
+			configure_key_interval = null;
+			configure_key_counter = 0;
+			salty_nes.postMessage('end_configure_key');
+		}
+	}, 500);
+}
 
 function diff(a, b) {
 	if(a > b)
@@ -311,7 +349,7 @@ function show_game_info(game) {
 }
 
 function show_home() {
-	document.title = 'SaltyNES - A NES emulator in the browser'
+	document.title = 'SaltyNES - A NES emulator in the browser';
 
 	// Empty the fields for showing a game
 	var fields = ["name", "region"];
@@ -539,7 +577,6 @@ function handleKeyDown(event) {
 	if(event.which >= 112 && event.which <= 123)
 		return true;
 
-	if(!is_running) return false;
 	salty_nes.postMessage('key_down:' + event.which);
 	return false;
 }
@@ -549,7 +586,6 @@ function handleKeyUp(event) {
 	if(event.which >= 112 && event.which <= 123)
 		return true;
 
-	if(!is_running) return false;
 	salty_nes.postMessage('key_up:' + event.which);
 	return false;
 }
@@ -605,19 +641,41 @@ function handleNaclMessage(message_event) {
 		}
 
 		// Update the key bindings if this is a new gamepad
-		if(is_running && new_gamepad_id && new_gamepad_id != gamepad_id) {
+		if(new_gamepad_id && new_gamepad_id != gamepad_id) {
 			var buttons = null;
 			if(new_gamepad_id in gamepad_database) {
 				buttons = gamepad_database[new_gamepad_id]['input_map'];
 			} else {
-				buttons = gamepad_database['unknown']['input_map'];
+				buttons = gamepad_database['default']['input_map'];
 			}
 			for(var key in buttons) {
+				var keys = [];
 				for(var i=0; i<buttons[key].length; i++) {
+					keys.push(buttons[key][i]);
 					salty_nes.postMessage('set_input_' + key + ':' + buttons[key][i]);
 				}
+				$('#button_' + key + '_value')[0].innerHTML = keys.join(', ');
 			}
 			gamepad_id = new_gamepad_id;
+		}
+	} else if(message_event.data.split(':')[0] == 'get_configure_key') {
+		var key = message_event.data.split(':')[1];
+		if(key != "") {
+			$('#button_' + configure_key + '_value')[0].innerHTML = key;
+			salty_nes.postMessage('set_input_' + configure_key + ':' + key);
+
+			if(configure_key_interval) {
+				// Enable all the config buttons
+				var keys = ['left', 'right', 'up', 'down', 'select', 'start', 'b', 'a', 'home'];
+				for(var i=0; i<keys.length; ++i) {
+					var key = keys[i];
+					$('#button_' + key).removeAttr('disabled');
+				}
+	
+				clearInterval(configure_key_interval);
+				configure_key_interval = null;
+				configure_key_counter = 0;
+			}
 		}
 	} else if(message_event.data == 'running') {
 		is_running = true;
@@ -946,6 +1004,16 @@ function handleHashChange() {
 	
 	// Pause when the button is clicked
 	$('#pause').click(handlePauseClick);
+
+	$('#button_left').click(function(event) { handle_configure_keys('left'); });
+	$('#button_right').click(function(event) { handle_configure_keys('right'); });
+	$('#button_up').click(function(event) { handle_configure_keys('up'); });
+	$('#button_down').click(function(event) { handle_configure_keys('down'); });
+	$('#button_select').click(function(event) { handle_configure_keys('select'); });
+	$('#button_start').click(function(event) { handle_configure_keys('start'); });
+	$('#button_b').click(function(event) { handle_configure_keys('b'); });
+	$('#button_a').click(function(event) { handle_configure_keys('a'); });
+	$('#button_home').click(function(event) { handle_configure_keys('home'); });
 
 	// Automatically resize the screen to be as big as it can be
 	$(window).resize(handleWindowResize);

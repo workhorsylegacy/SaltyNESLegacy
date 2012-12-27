@@ -21,6 +21,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 const float InputHandler::AXES_DEAD_ZONE = 0.2;
 const string InputHandler::KEYS[] = { "up", "down", "right", "left", "start", "select", "a", "b" };
 const size_t InputHandler::KEYS_LENGTH = 8;
+bool InputHandler::_is_configuring_gamepad = false;
+string InputHandler::_configuring_gamepad_button = "";
 
 InputHandler::InputHandler(int id) :
 	_id(id),
@@ -47,69 +49,94 @@ InputHandler::~InputHandler() {
 
 #ifdef NACL
 void InputHandler::update_gamepad(PP_GamepadsSampleData gamepad_data) {
-// Get current gamepad data
-for(size_t i=0; i<gamepad_data.length; ++i) {
-	PP_GamepadSampleData& pad = gamepad_data.items[i];
-
-	if(!pad.connected)
-		continue;
-
-	// Check if we are switching to the gamepad from the keyboard
-	for(size_t j=0; j<pad.buttons_length; ++j) {
-		if(pad.buttons[j]) {
-			_is_gamepad_used = true;
-			_is_keyboard_used = false;
-		}
-	}
-	for(size_t j=0; j<pad.axes_length; ++j) {
-		if(pad.axes[j] > InputHandler::AXES_DEAD_ZONE || pad.axes[j] < -InputHandler::AXES_DEAD_ZONE) {
-			_is_gamepad_used = true;
-			_is_keyboard_used = false;
-		}
-	}
+	// Get current gamepad data
+	for(size_t i=0; i<gamepad_data.length; ++i) {
+		PP_GamepadSampleData& pad = gamepad_data.items[i];
 	
-	// Get the vendor, and product id
-	if(_is_gamepad_used) {
-		char id[128];
-		for(int k=0; k<128; ++k) {
-			id[k] = pad.id[k];
+		if(!pad.connected)
+			continue;
+	
+		// Check if we are switching to the gamepad from the keyboard
+		for(size_t j=0; j<pad.buttons_length; ++j) {
+			if(pad.buttons[j]) {
+				_is_gamepad_used = true;
+				_is_keyboard_used = false;
+			}
 		}
-		string sid = id;
-		size_t vendor_pos = sid.find("Vendor: ");
-		size_t product_pos = sid.find("Product: ");
-		_gamepad_vendor_id = sid.substr(vendor_pos + strlen("Vendor: "), 4);
-		_gamepad_product_id = sid.substr(product_pos + strlen("Product: "), 4);
-	}
+		for(size_t j=0; j<pad.axes_length; ++j) {
+			if(pad.axes[j] > InputHandler::AXES_DEAD_ZONE || pad.axes[j] < -InputHandler::AXES_DEAD_ZONE) {
+				_is_gamepad_used = true;
+				_is_keyboard_used = false;
+			}
+		}
+		
+		// Get the vendor, and product id
+		if(_is_gamepad_used) {
+			char id[128];
+			for(int k=0; k<128; ++k) {
+				id[k] = pad.id[k];
+			}
+			string sid = id;
+			size_t vendor_pos = sid.find("Vendor: ");
+			size_t product_pos = sid.find("Product: ");
+			_gamepad_vendor_id = sid.substr(vendor_pos + strlen("Vendor: "), 4);
+			_gamepad_product_id = sid.substr(product_pos + strlen("Product: "), 4);
+		}
+	
+		// Get the key states
+		if(_is_gamepad_used) {
+			for(size_t j=0; j<InputHandler::KEYS_LENGTH; ++j) {
+				string key = InputHandler::KEYS[j];
+				_is_input_pressed[key] = false;
+				// Button
+				for(size_t k=0; k<_input_map_button[key].size(); ++k) {
+					size_t number = _input_map_button[key][k];
+					if(pad.buttons[number] > 0) {
+						_is_input_pressed[key] = true;
+					}
+				}
+				// Positive Axes
+				for(size_t k=0; k<_input_map_axes_pos[key].size(); ++k) {
+					size_t number = _input_map_axes_pos[key][k];
+					if(pad.axes[number] > InputHandler::AXES_DEAD_ZONE) {
+						_is_input_pressed[key] = true;
+					}
+				}
+				// Negative Axes
+				for(size_t k=0; k<_input_map_axes_neg[key].size(); ++k) {
+					size_t number = _input_map_axes_neg[key][k];
+					if(pad.axes[number] < -InputHandler::AXES_DEAD_ZONE) {
+						_is_input_pressed[key] = true;
+					}
+				}
+			}
+		}
 
-	// Get the key states
-	if(_is_gamepad_used) {
-		for(size_t j=0; j<InputHandler::KEYS_LENGTH; ++j) {
-			string key = InputHandler::KEYS[j];
-			_is_input_pressed[key] = false;
-			// Button
-			for(size_t k=0; k<_input_map_button[key].size(); ++k) {
-				size_t number = _input_map_button[key][k];
-				if(pad.buttons[number] > 0) {
-					_is_input_pressed[key] = true;
+		// If we are configuring the gamepad, save the last key pressed
+		if(_is_configuring_gamepad) {
+			for(size_t j=0; j<pad.buttons_length; ++j) {
+				if(pad.buttons[j]) {
+					stringstream out;
+					out << j;
+					_configuring_gamepad_button = out.str();
+					return;
 				}
 			}
-			// Positive Axes
-			for(size_t k=0; k<_input_map_axes_pos[key].size(); ++k) {
-				size_t number = _input_map_axes_pos[key][k];
-				if(pad.axes[number] > InputHandler::AXES_DEAD_ZONE) {
-					_is_input_pressed[key] = true;
-				}
-			}
-			// Negative Axes
-			for(size_t k=0; k<_input_map_axes_neg[key].size(); ++k) {
-				size_t number = _input_map_axes_neg[key][k];
-				if(pad.axes[number] < -InputHandler::AXES_DEAD_ZONE) {
-					_is_input_pressed[key] = true;
+			for(size_t j=0; j<pad.axes_length; ++j) {
+				if(pad.axes[j] > InputHandler::AXES_DEAD_ZONE) {
+					stringstream out;
+					out << "axes+" << j;
+					_configuring_gamepad_button = out.str();
+					return;
+				} else if(pad.axes[j] < -InputHandler::AXES_DEAD_ZONE) {
+					stringstream out;
+					out << "axes-" << j;
+					_configuring_gamepad_button = out.str();
+					return;
 				}
 			}
 		}
 	}
-}
 }
 #endif
 

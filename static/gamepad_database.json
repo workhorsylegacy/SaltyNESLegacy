@@ -45,7 +45,7 @@ gamepad_database = {
 			"a" : [4]
 		}
 	},
-	"unknown" : {
+	"default" : {
 		"vendor" : "Unknown",
 		"name" : "Unknown",
 		"input_map" : {
