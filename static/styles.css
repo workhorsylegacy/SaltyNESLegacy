@@ -217,8 +217,35 @@ footer {
 }
 
 #gamepad_config {
-	border: 1px solid red;
-	padding: 10px;
+	display: none;
 	overflow: auto;
 	clear: both;
+	border: 1px solid red;
+	padding: 20px;
+	text-align: left;
+	border: 10px solid green;
+}
+
+#gamepad_config td {
+	text-align: center;
+	width: 100px;
+	height: 100px;
+}
+
+.gamepad_grey {
+	background-color: #343b34;
+	color: #ffffff;
+}
+
+.gamepad_black {
+	background-color: #101614;
+	color: #ffffff;
+}
+
+.gamepad_tan {
+	background-color: #d7d5c9;
+}
+
+.gamepad_red {
+	background-color: #ed2b21;
 }

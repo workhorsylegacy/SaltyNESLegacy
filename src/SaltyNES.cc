@@ -194,13 +194,21 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		}
 		
 		return;
-	// Configure gamepad keys start
-	} else if(message == "start_configure_key") {
+	// Start configuring gamepad keys
+	} else if(message.find("start_configure_key:") == 0) {
+		size_t sep_pos = message.find_first_of(":");
+		string button = message.substr(sep_pos + 1);
+
 		InputHandler::_is_configuring_gamepad = true;
 		InputHandler::_configuring_gamepad_button = "";
+		
+		// Remove all the previous keys
+		_joy1->_input_map_button[button].clear();
+		_joy1->_input_map_axes_pos[button].clear();
+		_joy1->_input_map_axes_neg[button].clear();
 
 		return;
-	// Configure gamepad keys get
+	// Get configured gamepad keys
 	} else if(message == "get_configure_key") {
 		PP_GamepadsSampleData gamepad_data;
 		gamepad_->Sample(pp_instance(), &gamepad_data);
@@ -211,7 +219,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		log_to_browser(out.str());
 
 		return;
-	// Configure gamepad keys end
+	// End configuring gamepad keys
 	} else if(message == "end_configure_key") {
 		InputHandler::_is_configuring_gamepad = false;
 
@@ -220,6 +228,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		// Get current gamepad data.
 		PP_GamepadsSampleData gamepad_data;
 		gamepad_->Sample(pp_instance(), &gamepad_data);
+		_joy1->update_gamepad(gamepad_data);
 		
 		_joy1->_is_gamepad_connected = false;
 		for(size_t i=0; i<gamepad_data.length; ++i) {

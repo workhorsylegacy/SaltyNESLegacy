@@ -27,9 +27,10 @@ function handle_configure_keys(key_name) {
 		var key = keys[i];
 		$('#button_' + key).attr('disabled', 'disabled');
 	}
+	$('#gamepad_config_status')[0].innerHTML = 'Press button to use for "' + configure_key + '"';
 
 	// Have nacl save the next key that is pressed
-	salty_nes.postMessage('start_configure_key');
+	salty_nes.postMessage('start_configure_key:' + configure_key);
 
 	// Check to see what key was pressed
 	configure_key_interval = setInterval(function() {
@@ -48,6 +49,7 @@ function handle_configure_keys(key_name) {
 			configure_key_interval = null;
 			configure_key_counter = 0;
 			salty_nes.postMessage('end_configure_key');
+			$('#gamepad_config_status')[0].innerHTML = '';
 		}
 	}, 500);
 }
@@ -141,6 +143,7 @@ function show_game_play(game) {
 }
 
 function show_game_info(game) {
+	$('#gamepad_config').hide();
 	$('#about').hide();
 	$('#game_selector').hide();
 	$('#game_info').show();
@@ -358,6 +361,7 @@ function show_home() {
 	}
 
 	// Show all the games
+	$('#gamepad_config').hide();
 	$('#about').hide();
 	$('#game_selector').show();
 	$('#game_info').hide();
@@ -375,6 +379,7 @@ function show_home() {
 function show_about() {
 	document.title = 'About - SaltyNES';
 	
+	$('#gamepad_config').hide();
 	$('#about').show();
 	$('#game_selector').hide();
 	$('#game_info').hide();
@@ -383,11 +388,34 @@ function show_about() {
 	$('#game_library').show();
 	$('#home_controls').hide();
 	hide_screen();
+	
+	// Quit running any existing game
+	if(is_running)
+		salty_nes.postMessage('quit');
+}
+
+function show_gamepad_config() {
+	document.title = 'Configure Gamepad - SaltyNES';
+	
+	$('#gamepad_config').show();
+	$('#about').hide();
+	$('#game_selector').hide();
+	$('#game_info').hide();
+	$('#top_controls').hide();
+	$('#game_add').hide();
+	$('#game_library').hide();
+	$('#home_controls').hide();
+	hide_screen();
+	
+	// Quit running any existing game
+	if(is_running)
+		salty_nes.postMessage('quit');
 }
 
 function show_library_default() {
 	document.title = 'Games - SaltyNES';
 
+	$('#gamepad_config').hide();
 	$('#about').hide();
 	$('#game_selector').show();
 	$('#game_info').hide();
@@ -408,6 +436,7 @@ function show_library_default() {
 function show_library_by_letter(letter, page) {
 	document.title = letter + ' Games - SaltyNES';
 
+	$('#gamepad_config').hide();
 	$('#about').hide();
 	$('#game_selector').show();
 	$('#game_info').hide();
@@ -427,6 +456,7 @@ function show_library_by_letter(letter, page) {
 function show_drop() {
 	document.title = 'Add Games - SaltyNES';
 
+	$('#gamepad_config').hide();
 	$('#about').hide();
 	$('#game_selector').show();
 	$('#game_info').hide();
@@ -675,6 +705,7 @@ function handleNaclMessage(message_event) {
 				clearInterval(configure_key_interval);
 				configure_key_interval = null;
 				configure_key_counter = 0;
+				$('#gamepad_config_status')[0].innerHTML = '';
 			}
 		}
 	} else if(message_event.data == 'running') {
@@ -909,6 +940,9 @@ function handleHashChange() {
 	// About
 	} else if(route == '#/Home/About') {
 		show_about();
+	// Configure Gamepad
+	} else if(route == '#/Home/Configure Gamepad') {
+		show_gamepad_config();
 	// Remove Data
 	} else if(route == '#/Home/Remove Data') {
 		if(!confirm("Remove all your data?")) {
