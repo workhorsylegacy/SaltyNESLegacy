@@ -3,9 +3,9 @@
 var salty_nes = null;
 var is_running = false;
 var is_initialized = false;
-var paintInterval = null;
-var fpsInterval = null;
-var gamepadInterval = null;
+var paint_interval = null;
+var fps_interval = null;
+var gamepad_interval = null;
 var vfps = 0;
 var zoom = 1;
 var max_zoom = 6;
@@ -17,42 +17,6 @@ var configure_key = null;
 var configure_key_counter = 0;
 var configure_key_interval = null;
 
-
-function handle_configure_keys(key_name) {
-	configure_key = key_name;
-
-	// Disable all the config buttons
-	var keys = ['left', 'right', 'up', 'down', 'select', 'start', 'b', 'a', 'home'];
-	for(var i=0; i<keys.length; ++i) {
-		var key = keys[i];
-		$('#button_' + key).attr('disabled', 'disabled');
-	}
-	$('#gamepad_config_status')[0].innerHTML = 'Press button to use for "' + configure_key + '"';
-
-	// Have nacl save the next key that is pressed
-	salty_nes.postMessage('start_configure_key:' + configure_key);
-
-	// Check to see what key was pressed
-	configure_key_interval = setInterval(function() {
-		salty_nes.postMessage('get_configure_key');
-		configure_key_counter++;
-		if(configure_key_counter == 10 && configure_key_interval) {
-			// Enable all the config buttons
-			var keys = ['left', 'right', 'up', 'down', 'select', 'start', 'b', 'a', 'home'];
-			for(var i=0; i<keys.length; ++i) {
-				var key = keys[i];
-				$('#button_' + key).removeAttr('disabled');
-			}
-	
-			// Stop checking to see which key was pressed
-			clearInterval(configure_key_interval);
-			configure_key_interval = null;
-			configure_key_counter = 0;
-			salty_nes.postMessage('end_configure_key');
-			$('#gamepad_config_status')[0].innerHTML = '';
-		}
-	}, 500);
-}
 
 function diff(a, b) {
 	if(a > b)
@@ -177,7 +141,7 @@ function show_game_info(game) {
 	fields = ["developer", "publisher", "release_date", "number_of_players", 
 			"can_save", "mapper", "prog_rom_pages", "char_rom_pages", 
 			"link", "img"];
-	for(i=0; i<fields.length; i++) {
+	for(i=0; i<fields.length; ++i) {
 		var field = fields[i];
 		var value = '...';
 		if(game.name in game_meta_data)
@@ -356,7 +320,7 @@ function show_home() {
 
 	// Empty the fields for showing a game
 	var fields = ["name", "region"];
-	for(i=0; i<fields.length; i++) {
+	for(i=0; i<fields.length; ++i) {
 		$('#game_' + fields[i])[0].innerHTML = '';
 	}
 
@@ -468,41 +432,77 @@ function show_screen() {
 	$('#SaltyNESApp').height(240 * zoom);
 }
 
-function handleLibraryDragEnter(event) {
+function handle_configure_keys(key_name) {
+	configure_key = key_name;
+
+	// Disable all the config buttons
+	var keys = ['left', 'right', 'up', 'down', 'select', 'start', 'b', 'a', 'home'];
+	for(var i=0; i<keys.length; ++i) {
+		var key = keys[i];
+		$('#button_' + key).attr('disabled', 'disabled');
+	}
+	$('#gamepad_config_status')[0].innerHTML = 'Press button to use for "' + configure_key + '"';
+
+	// Have nacl save the next key that is pressed
+	salty_nes.postMessage('start_configure_key:' + configure_key);
+
+	// Check to see what key was pressed
+	configure_key_interval = setInterval(function() {
+		salty_nes.postMessage('get_configure_key');
+		configure_key_counter++;
+		if(configure_key_counter == 10 && configure_key_interval) {
+			// Enable all the config buttons
+			var keys = ['left', 'right', 'up', 'down', 'select', 'start', 'b', 'a', 'home'];
+			for(var i=0; i<keys.length; ++i) {
+				var key = keys[i];
+				$('#button_' + key).removeAttr('disabled');
+			}
+	
+			// Stop checking to see which key was pressed
+			clearInterval(configure_key_interval);
+			configure_key_interval = null;
+			configure_key_counter = 0;
+			salty_nes.postMessage('end_configure_key');
+			$('#gamepad_config_status')[0].innerHTML = '';
+		}
+	}, 500);
+}
+
+function handle_library_drag_enter(event) {
 	// Do nothing
 	event.stopPropagation();
 	event.preventDefault();
 }
 
-function handleLibraryDragExit(event) {
+function handle_library_drag_exit(event) {
 	// Do nothing
 	event.stopPropagation();
 	event.preventDefault();
 }
 
-function handleLibraryDragOver(event) {
+function handle_library_drag_over(event) {
 	// Do nothing
 	event.stopPropagation();
 	event.preventDefault();
 }
 
-function handleLibraryDrop(event) {
+function handle_library_drop(event) {
 	// Do nothing
 	event.stopPropagation();
 	event.preventDefault();
 
 	var files = event.dataTransfer.files;
 	if(files.length > 0)
-		handleLibraryFiles(files);
+		handle_library_files(files);
 }
 
-function handleLibraryFileSelect(event) {
+function handle_library_file_select(event) {
 	if(this.files.length > 0)
-		handleLibraryFiles(this.files);
+		handle_library_files(this.files);
 }
 
-function handleLibraryFiles(files) {
-	function runNextReader() {
+function handle_library_files(files) {
+	function run_next_reader() {
 		if(readers.length > 0) {
 			var next = readers.pop();
 			next['reader'].readAsDataURL(next['file']);
@@ -510,7 +510,7 @@ function handleLibraryFiles(files) {
 	}
 
 	// Read the files
-	for(i=0; i<files.length; i++) {
+	for(i=0; i<files.length; ++i) {
 		// Make sure only *.NES files are sent
 		if(!files[i].name.toLowerCase().match(/\.nes$/)) {
 			alert('Only games with a .nes file extension can be used. The file "' + files[i].name + '" is not valid.');
@@ -553,7 +553,7 @@ function handleLibraryFiles(files) {
 				$('#game_add_status')[0].innerHTML = "Loaded '" + game.name + "'";
 
 				// Start the next reader, if there is one
-				runNextReader();
+				run_next_reader();
 
 				if(readers.length == 0) {
 					$('#game_add_file').show();
@@ -566,7 +566,7 @@ function handleLibraryFiles(files) {
 				if(error_message != 'Save failed: 4')
 					alert('Failed to save game. Error code: ' + error_message);
 				// Start the next reader, if there is one
-				runNextReader();
+				run_next_reader();
 
 				if(readers.length == 0) {
 					$('#game_add_file').show();
@@ -581,10 +581,10 @@ function handleLibraryFiles(files) {
 	}
 
 	// Start the first reader
-	runNextReader();
+	run_next_reader();
 }
 
-function handleKeyDown(event) {
+function handle_key_down(event) {
 	// Let the browser handle Fn keys
 	if(event.which >= 112 && event.which <= 123)
 		return true;
@@ -593,7 +593,7 @@ function handleKeyDown(event) {
 	return false;
 }
 
-function handleKeyUp(event) {
+function handle_key_up(event) {
 	// Let the browser handle Fn keys
 	if(event.which >= 112 && event.which <= 123)
 		return true;
@@ -602,7 +602,7 @@ function handleKeyUp(event) {
 	return false;
 }
 
-function handlePauseClick() {
+function handle_pause_click() {
 	if(!is_running) return false;
 
 	salty_nes.postMessage('pause');
@@ -616,24 +616,24 @@ function handlePauseClick() {
 	return false;
 }
 
-function handlePageDidUnload() {
-	if(paintInterval) {
-		clearInterval(paintInterval);
-		paintInterval = null;
+function handle_page_did_unload() {
+	if(paint_interval) {
+		clearInterval(paint_interval);
+		paint_interval = null;
 	}
 
-	if(fpsInterval) {
-		clearInterval(fpsInterval);
-		fpsInterval = null;
+	if(fps_interval) {
+		clearInterval(fps_interval);
+		fps_interval = null;
 	}
 
-	if(gamepadInterval) {
-		clearInterval(gamepadInterval);
-		gamepadInterval = null;
+	if(gamepad_interval) {
+		clearInterval(gamepad_interval);
+		gamepad_interval = null;
 	}
 }
 
-function handleNaclMessage(message_event) {
+function handle_nacl_message(message_event) {
 	if(message_event.data == null)
 		return;
 
@@ -641,8 +641,6 @@ function handleNaclMessage(message_event) {
 		var fpsdebug = $('#fpsdebug')[0];
 		fpsdebug.innerHTML = 'FPS: ' + vfps + ', VFPS: ' + message_event.data.split(':')[1];
 		vfps = 0;
-	} else if(message_event.data.split(':')[0] == 'get_sha256') {
-		// FIXME: remove this
 	} else if(message_event.data.split(':')[0] == 'get_gamepad_status') {
 		var status = message_event.data.split(':')[1];
 		var new_gamepad_id = message_event.data.split(':')[2];
@@ -662,7 +660,7 @@ function handleNaclMessage(message_event) {
 			}
 			for(var key in buttons) {
 				var keys = [];
-				for(var i=0; i<buttons[key].length; i++) {
+				for(var i=0; i<buttons[key].length; ++i) {
 					keys.push(buttons[key][i]);
 					salty_nes.postMessage('set_input_' + key + ':' + buttons[key][i]);
 				}
@@ -696,39 +694,36 @@ function handleNaclMessage(message_event) {
 		// Repaint the screen
 		// FIXME: Paint calls should happen automatically inside the nexe.
 		var fps = 60.0;
-		paintInterval = setInterval(function() {
+		paint_interval = setInterval(function() {
 			salty_nes.postMessage('paint');
 			vfps += 1;
 		}, 1000.0 / fps);
 
 		// Have the FPS sent to us every second
 		// FIXME: This should just be sent from the nexe directly
-		fpsInterval = setInterval(function() {
+		fps_interval = setInterval(function() {
 			salty_nes.postMessage('get_fps');
 		}, 1000);
 
 		// Make the pause button clickable
 		$('#pause').attr('disabled', false);
-		
-		// Get the rom sha256
-		salty_nes.postMessage('get_sha256');
 
 		$('#game_info').hide();
 		$('#top_controls').show();
 		show_screen();
-		handleWindowResize();
+		handle_window_resize();
 
 		var debug = $('#debug')[0];
 		debug.innerHTML = 'Running';
 	} else if(message_event.data == 'quit') {
 		is_running = false;
-		if(paintInterval) {
-			clearInterval(paintInterval);
-			paintInterval = null;
+		if(paint_interval) {
+			clearInterval(paint_interval);
+			paint_interval = null;
 		}
-		if(fpsInterval) {
-			clearInterval(fpsInterval);
-			fpsInterval = null;
+		if(fps_interval) {
+			clearInterval(fps_interval);
+			fps_interval = null;
 		}
 
 		var debug = $('#debug')[0];
@@ -761,11 +756,11 @@ function handleNaclMessage(message_event) {
 	}
 }
 
-function handleNaclCrash(event) {
+function handle_nacl_crash(event) {
 	alert('Native Client crashed. Refresh the page to reload. Sorry, no debug info is yet available.');
 }
 
-function handleNaclProgress(event) {
+function handle_nacl_load_progress(event) {
 	var debug = $('#debug')[0];
 	// Print unknown progress if unknown
 	if(!event.lengthComputable || event.total == 0) {
@@ -778,20 +773,20 @@ function handleNaclProgress(event) {
 	debug.innerHTML = 'Loading ' + progress.toFixed(2) + '% ...';
 }
 
-function handleNaclLoadStart(event) {
+function handle_nacl_load_start(event) {
 	$('#nacl_not_enabled').hide();
 }
 
-function handleNaclLoadEnd() {
+function handle_nacl_load_end() {
 	salty_nes = $('#SaltyNESApp')[0];
 
 	// Setup IndexedDB
 	setup_indexeddb(function() {
-		setup_fs(5*1024*1024*1024, handleHashChange);
+		setup_fs(5*1024*1024*1024, handle_hash_change);
 	});
 }
 
-function handleWindowResize() {
+function handle_window_resize() {
 	if(screen.height != window.outerHeight) {
 		$('#content').show();
 		$('#nav').show();
@@ -811,7 +806,7 @@ function handleWindowResize() {
 		div_h = screen.height;
 		
 		// Get the largest zoom we can fit
-		for(var i=1; i<=max_zoom; i++) {
+		for(var i=1; i<=max_zoom; ++i) {
 			if(256 * i <= div_w && 240 * i <= div_h) {
 				zoom = i;
 			}
@@ -829,7 +824,7 @@ function handleWindowResize() {
 		div_h = $(window).height() - diff($('#footer').height(), $('#content').height());
 		
 		// Get the largest zoom we can fit
-		for(var i=1; i<=max_zoom; i++) {
+		for(var i=1; i<=max_zoom; ++i) {
 			if(256 * i <= div_w && 240 * i <= div_h) {
 				zoom = i;
 			}
@@ -844,7 +839,7 @@ function handleWindowResize() {
 	salty_nes.postMessage('zoom:' + zoom);
 }
 
-function handleHashChange() {
+function handle_hash_change() {
 	// Set the default hash
 	if(location.hash == '') {
 		location.hash = '#/Home';
@@ -935,7 +930,7 @@ function handleHashChange() {
 				games.push(game);
 			},
 			after: function() {
-				for(var i=0; i<games.length; i++) {
+				for(var i=0; i<games.length; ++i) {
 					games[i].destroy(function() {
 						if(games.length)
 							games.length--;
@@ -996,27 +991,27 @@ function handleHashChange() {
 	}
 
 	// Start getting the gamepad status
-	gamepadInterval = setInterval(function() {
+	gamepad_interval = setInterval(function() {
 		salty_nes.postMessage('get_gamepad_status');
 	}, 2000);
 
 	// Setup game drag and drop
 	var game_add_drop = $('#game_add_drop')[0];
-	game_add_drop.addEventListener("dragenter", handleLibraryDragEnter, true);
-	game_add_drop.addEventListener("dragexit", handleLibraryDragExit, true);
-	game_add_drop.addEventListener("dragover", handleLibraryDragOver, true);
-	game_add_drop.addEventListener("drop", handleLibraryDrop, true);
+	game_add_drop.addEventListener("dragenter", handle_library_drag_enter, true);
+	game_add_drop.addEventListener("dragexit", handle_library_drag_exit, true);
+	game_add_drop.addEventListener("dragover", handle_library_drag_over, true);
+	game_add_drop.addEventListener("drop", handle_library_drop, true);
 
 	// Setup game file select
 	var game_add_file_select = $('#game_add_file_select')[0];
-	game_add_file_select.addEventListener("change", handleLibraryFileSelect, true);
+	game_add_file_select.addEventListener("change", handle_library_file_select, true);
 
 	// Send all key down events to the NACL app
-	$('#bodyId').keydown(handleKeyDown);
-	$('#bodyId').keyup(handleKeyUp);
+	$('#bodyId').keydown(handle_key_down);
+	$('#bodyId').keyup(handle_key_up);
 	
 	// Pause when the button is clicked
-	$('#pause').click(handlePauseClick);
+	$('#pause').click(handle_pause_click);
 
 	$('#button_left').click(function(event) { handle_configure_keys('left'); });
 	$('#button_right').click(function(event) { handle_configure_keys('right'); });
@@ -1029,7 +1024,7 @@ function handleHashChange() {
 	$('#button_home').click(function(event) { handle_configure_keys('home'); });
 
 	// Automatically resize the screen to be as big as it can be
-	$(window).resize(handleWindowResize);
+	$(window).resize(handle_window_resize);
 
 	// Show the gamepad config button
 	$('#lnk_gamepad_config').click(function(event) {
@@ -1057,12 +1052,12 @@ function handleHashChange() {
 $(document).ready(function() {
 	// Setup NACL loader
 	var bodyId = $('#bodyId')[0];
-	bodyId.addEventListener('loadstart', handleNaclLoadStart, true);
-	bodyId.addEventListener('loadend', handleNaclLoadEnd, true);
-	bodyId.addEventListener('progress', handleNaclProgress, true);
-	bodyId.addEventListener('message', handleNaclMessage, true);
-	bodyId.addEventListener('crash', handleNaclCrash, true);
+	bodyId.addEventListener('loadstart', handle_nacl_load_start, true);
+	bodyId.addEventListener('loadend', handle_nacl_load_end, true);
+	bodyId.addEventListener('progress', handle_nacl_load_progress, true);
+	bodyId.addEventListener('message', handle_nacl_message, true);
+	bodyId.addEventListener('crash', handle_nacl_crash, true);
 
-	$(window).bind('hashchange', handleHashChange);
+	$(window).bind('hashchange', handle_hash_change);
 });
 

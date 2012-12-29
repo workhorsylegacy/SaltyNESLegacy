@@ -317,11 +317,6 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 			delete_n_null(vnes);
 		}
 		log_to_browser("quit");
-	} else if(message == "get_sha256") {
-		stringstream out;
-		out << "get_sha256:";
-		out << this->vnes->nes->memMapper->rom->_sha256;
-		log_to_browser(out.str());
 	} else {
 		stringstream out;
 		out << "unknown message:";

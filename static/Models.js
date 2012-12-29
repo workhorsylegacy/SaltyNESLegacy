@@ -179,7 +179,7 @@ var Games = function(sha256) {
 Games.prototype = {
 	to_hash: function() {
 		var hash = {};
-		for(var i=0; i<game_fields.length; i++) {
+		for(var i=0; i<game_fields.length; ++i) {
 			var field = game_fields[i];
 			if(this[field] != undefined)
 				hash[field] = this[field];
@@ -188,7 +188,7 @@ Games.prototype = {
 	},
 
 	copy_values_from_game: function(game) {
-		for(var i=0; i<game_fields.length; i++) {
+		for(var i=0; i<game_fields.length; ++i) {
 			var field = game_fields[i];
 			if(game[field])
 				this[field] = game[field];
@@ -274,7 +274,7 @@ Games.for_each = function(cbs) {
 				cbs.after();
 		}
 	};
-}
+};
 
 Games.for_each_with_name = function(name, cbs) {
 	Games.for_each({
@@ -286,7 +286,7 @@ Games.for_each_with_name = function(name, cbs) {
 			cbs.after();
 		}
 	});
-}
+};
 
 Games.for_each_with_letter = function(letter, cbs) {
 	var upper = letter.toUpperCase();
@@ -309,7 +309,7 @@ Games.for_each_with_letter = function(letter, cbs) {
 			});
 		}
 	});
-}
+};
 
 Games.find_by_id = function(id, cb) {
 	// Get the game file from the database
@@ -331,7 +331,7 @@ Games.find_by_id = function(id, cb) {
 	request.onerror = function(event) {
 		alert('Games.find_by_id failed. Error ' + event.target.errorCode);
 	};
-}
+};
 
 /*
 The Saves table is structured like so:
@@ -452,7 +452,7 @@ Saves.find_by_id = function(id, cb) {
 	request.onerror = function(event) {
 		alert('Saves.find_by_id failed. Error ' + event.target.errorCode);
 	};
-}
+};
 
 Saves.from_hash = function(hash) {
 	// Get the id and data
@@ -467,4 +467,4 @@ Saves.from_hash = function(hash) {
 	}
 
 	return save;
-}
+};
