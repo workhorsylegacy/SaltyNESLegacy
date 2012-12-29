@@ -616,7 +616,7 @@ function handle_pause_click() {
 	return false;
 }
 
-function handle_page_did_unload() {
+function handle_page_unload(event) {
 	if(paint_interval) {
 		clearInterval(paint_interval);
 		paint_interval = null;
@@ -791,7 +791,7 @@ function handle_window_resize() {
 		$('#content').show();
 		$('#nav').show();
 		$('#footer').show();
-		$('#bodyId').css('background-color', '#FFFFFF');
+		$(document.body).css('background-color', '#FFFFFF');
 	}
 
 	if(!is_running)
@@ -815,7 +815,7 @@ function handle_window_resize() {
 		$('#content').hide();
 		$('#nav').hide();
 		$('#footer').hide();
-		$('#bodyId').css('background-color', '#000000');
+		$(document.body).css('background-color', '#000000');
 		$('#SaltyNESApp').css('top', 0);
 		$('#SaltyNESApp').css('left', (screen.width/2) - ((256 * zoom)/2));
 	// Not full screen uses the parent container size
@@ -1007,8 +1007,8 @@ function handle_hash_change() {
 	game_add_file_select.addEventListener("change", handle_library_file_select, true);
 
 	// Send all key down events to the NACL app
-	$('#bodyId').keydown(handle_key_down);
-	$('#bodyId').keyup(handle_key_up);
+	$(document.body).keydown(handle_key_down);
+	$(document.body).keyup(handle_key_up);
 	
 	// Pause when the button is clicked
 	$('#pause').click(handle_pause_click);
@@ -1051,13 +1051,14 @@ function handle_hash_change() {
 
 $(document).ready(function() {
 	// Setup NACL loader
-	var bodyId = $('#bodyId')[0];
-	bodyId.addEventListener('loadstart', handle_nacl_load_start, true);
-	bodyId.addEventListener('loadend', handle_nacl_load_end, true);
-	bodyId.addEventListener('progress', handle_nacl_load_progress, true);
-	bodyId.addEventListener('message', handle_nacl_message, true);
-	bodyId.addEventListener('crash', handle_nacl_crash, true);
+	document.body.addEventListener('loadstart', handle_nacl_load_start, true);
+	document.body.addEventListener('loadend', handle_nacl_load_end, true);
+	document.body.addEventListener('progress', handle_nacl_load_progress, true);
+	document.body.addEventListener('message', handle_nacl_message, true);
+	document.body.addEventListener('crash', handle_nacl_crash, true);
 
 	$(window).bind('hashchange', handle_hash_change);
+	
+	window.onbeforeunload = handle_page_unload;
 });
 
