@@ -112,5 +112,8 @@
     <None Include="..\static\game_meta_data.json">
       <Link>game_meta_data.json</Link>
     </None>
+    <None Include="..\static\downloader.js">
+      <Link>downloader.js</Link>
+    </None>
   </ItemGroup>
 </Project>

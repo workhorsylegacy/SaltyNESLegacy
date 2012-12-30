@@ -415,6 +415,42 @@ function show_drop() {
 	// Quit running any existing game
 	if(is_running)
 		salty_nes.postMessage('quit');
+
+	// Just return if the game database is already loaded
+	if(typeof game_database !== "undefined") {
+		return;
+	}
+
+	// Load the game database
+	$('#game_add_file').hide();
+	$('#game_add_drop').hide();
+	$('#game_add_progress').show();
+
+	var worker = new Worker('static/downloader.js');
+	worker.onmessage = function(e) {
+		var message = e.data;
+
+		// Database is downloaded
+		if(message == 'downloaded') {
+			read_file('game_database.json', function(data) {
+				eval(data);
+				$('#game_add_file').show();
+				$('#game_add_drop').show();
+				$('#game_add_progress').hide();
+			});
+		// Database download progress
+		} else if(message.split(':')[0] == 'progress') {
+			var progress = message.split(':')[1];
+			$('#game_add_status')[0].innerHTML = 'Loading game database ' + (progress * 100).toFixed(2) + '%';
+		} else {
+			console.log(message);
+		}
+	};
+	worker.postMessage({
+		file_name: 'game_database.json',
+		url: 'game_database.json',
+		mime_type: 'application/json'
+	});
 }
 
 function hide_screen() {
