@@ -23,7 +23,7 @@ TO BUILD SDL VERSION:
 	./raise build
 
 	# Run a NES ROM file
-	./main roms/example.nes
+	./saltynes roms/example.nes
 
 
 TO BUILD NACL VERSION:

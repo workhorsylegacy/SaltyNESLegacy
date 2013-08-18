@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
+# Copyright (c) 2013 Matthew Brennan Jones <mattjones@workhorsy.org>
 # Copyright (c) 2012 The Native Client Authors. All rights reserved .
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -29,7 +29,7 @@ NACL_LDFLAGS:=-g -pthread -lppapi_cpp -lppapi
 #
 # Project Settings
 #
-VALID_TOOLCHAINS:=newlib #glibc
+VALID_TOOLCHAINS:=newlib #glibc pnacl linux
 TOOLCHAIN?=newlib
 
 #
@@ -75,8 +75,10 @@ src/Tile.cc \
 src/main_sdl.cc \
 src/main_nacl.cc \
 src/vNES.cc
+
 SALTY_NES_CXXFLAGS:=$(NACL_CXXFLAGS)
 SALTY_NES_LDFLAGS:=$(NACL_LDFLAGS)
+SALTY_NES_INCLUDE:=-I$(NACL_SDK_ROOT)/include
 
 
 #
@@ -176,7 +178,7 @@ newlib:
 
 NEWLIB_SALTY_NES_x86_32_CXX_O:=$(patsubst %.cc, newlib/%_x86_32.o,$(SALTY_NES_CXX))
 $(NEWLIB_SALTY_NES_x86_32_CXX_O) : newlib/%_x86_32.o : %.cc $(THIS_MAKE) | newlib
-	$(NEWLIB_CXX) -o $@ $< -m32 $(SALTY_NES_CXXFLAGS) -DTCNAME=newlib -DNACL=true
+	$(NEWLIB_CXX) -o $@ $< -m32 $(SALTY_NES_CXXFLAGS) -DTCNAME=newlib -DNACL=true $(SALTY_NES_INCLUDE)
 
 newlib/salty_nes_x86_32.nexe : $(NEWLIB_SALTY_NES_x86_32_CXX_O)
 	$(NEWLIB_LINK) -o $@ $^ -m32 $(SALTY_NES_LDFLAGS)
@@ -184,7 +186,7 @@ NEWLIB_NMF+=newlib/salty_nes_x86_32.nexe
 
 NEWLIB_SALTY_NES_x86_64_CXX_O:=$(patsubst %.cc, newlib/%_x86_64.o,$(SALTY_NES_CXX))
 $(NEWLIB_SALTY_NES_x86_64_CXX_O) : newlib/%_x86_64.o : %.cc $(THIS_MAKE) | newlib
-	$(NEWLIB_CXX) -o $@ $< -m64 $(SALTY_NES_CXXFLAGS) -DTCNAME=newlib -DNACL=true
+	$(NEWLIB_CXX) -o $@ $< -m64 $(SALTY_NES_CXXFLAGS) -DTCNAME=newlib -DNACL=true $(SALTY_NES_INCLUDE)
 
 newlib/salty_nes_x86_64.nexe : $(NEWLIB_SALTY_NES_x86_64_CXX_O)
 	$(NEWLIB_LINK) -o $@ $^ -m64 $(SALTY_NES_LDFLAGS)
