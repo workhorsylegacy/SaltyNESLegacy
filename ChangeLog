@@ -10,4 +10,5 @@
 	* Fixed Bug #1090995: 'Store roms in File System instead of IndexedDB for speed'.
 	* Fixed Bug #1091030: 'Make games sortable by region and language'.
 	* Fixed Bug #1094421: 'The large game database should load asynchronously'.
+	* Fixed Bug #1213609: 'Make game playing screen minimalistic'.
 
