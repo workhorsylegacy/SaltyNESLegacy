@@ -99,6 +99,10 @@ function show_game_play(game) {
 			save_ram = save.get_newest_save_ram() || '';
 		}
 
+		// Setup the back button
+		var href = '#/Home/Games/' + game.name;
+		$('#game_back_button').attr('href', href);
+
 		// Send the rom to the nexe
 		read_file(game.sha256, function(data) {
 			salty_nes.postMessage('load_rom:' + save_ram + ' rom:' + data);
@@ -265,6 +269,7 @@ function show_game_info(game) {
 			function update_play() {
 				var href = '#/Home/Games/' + game.name + '/?Play=' + $('#game_play_version').val();
 				$('#game_play_button').attr('href', href);
+
 				populate_save();
 			}
 
@@ -775,9 +780,6 @@ function handle_nacl_message(message_event) {
 		fps_interval = setInterval(function() {
 			salty_nes.postMessage('get_fps');
 		}, 1000);
-
-		// Make the pause button clickable
-		$('#pause').attr('disabled', false);
 
 		$('#game_info').hide();
 		$('#top_controls').show();
