@@ -499,6 +499,7 @@ function show_screen() {
 			$("#top_controls").fadeOut(1000);
 		}, 3000);
 	});
+	$('#pause').text('Pause');
 	$("#top_controls").show();
 }
 
