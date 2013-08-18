@@ -125,11 +125,6 @@
 				</p>
 			</div>
 
-			<div id="top_controls">
-				<button id="pause" disabled="disabled">Pause</button>
-				<span id="fpsdebug"></span>
-			</div>
-
 			<div id="game_selector">
 				<div id="home_controls">
 					<a id="lnk_add_to_library" href="#/Home/Add Games">
@@ -238,11 +233,18 @@
 			</div>
 		</div>
 
-		<embed name="nacl_module"
-			id="SaltyNESApp"
-			class="screen_hidden"
-			src="newlib/salty_nes.nmf"
-			type="application/x-nacl" />
+		<div style="text-align: center;">
+			<div id="top_controls">
+				<button id="pause" disabled="disabled">Pause</button>
+				<span id="fpsdebug"></span>
+			</div>
+
+			<embed name="nacl_module"
+				id="SaltyNESApp"
+				class="screen_hidden"
+				src="newlib/salty_nes.nmf"
+				type="application/x-nacl" />
+		</div>
 
 		<footer id="footer">
 			Copyright &copy; 2013 <a href="http://workhorsy.org">Matthew Brennan Jones</a>

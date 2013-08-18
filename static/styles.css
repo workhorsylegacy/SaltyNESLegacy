@@ -31,7 +31,6 @@ footer {
 	height: 2px;
 	margin: 0px;
 	padding: 0px;
-	position: absolute;
 }
 
 .screen_running {
@@ -40,7 +39,6 @@ footer {
 	height: 240px;
 	margin: 0px;
 	padding: 0px;
-	position: absolute;
 }
 
 .game_icon {
@@ -132,6 +130,13 @@ footer {
 #top_controls {
 	overflow: auto;
 	clear: both;
+	padding: 10px;
+	margin: 0px;
+	background-color: #000000;
+	color: #FFFFFF;
+	position: absolute;
+	top: 0;
+	left: 0;
 	display: none;
 }
 

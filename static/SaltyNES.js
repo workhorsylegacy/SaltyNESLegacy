@@ -16,6 +16,7 @@ var default_region = 'USA';
 var configure_key = null;
 var configure_key_counter = 0;
 var configure_key_interval = null;
+var control_timeout = null;
 
 
 function diff(a, b) {
@@ -141,7 +142,7 @@ function show_game_info(game) {
 	fields = ["developer", "publisher", "release_date", "number_of_players", 
 			"can_save", "mapper", "prog_rom_pages", "char_rom_pages", 
 			"link", "img"];
-	for(i=0; i<fields.length; ++i) {
+	for(var i=0; i<fields.length; ++i) {
 		var field = fields[i];
 		var value = '...';
 		if(game.name in game_meta_data)
@@ -320,7 +321,7 @@ function show_home() {
 
 	// Empty the fields for showing a game
 	var fields = ["name", "region"];
-	for(i=0; i<fields.length; ++i) {
+	for(var i=0; i<fields.length; ++i) {
 		$('#game_' + fields[i])[0].innerHTML = '';
 	}
 
@@ -454,18 +455,51 @@ function show_drop() {
 }
 
 function hide_screen() {
+	$('#nav').show();
+	$('#footer').show();
+	$('#content').show();
+
 	$('#SaltyNESApp')[0].className = 'screen_hidden';
 	$('#SaltyNESApp').width(2);
 	$('#SaltyNESApp').height(2);
-	
-	$('#SaltyNESApp').css('top', 0);
-	$('#SaltyNESApp').css('left', 0);
+	$(document.body).css('background-color', '#FFFFFF');
+
+	// Cancels and hides top controls
+	$(document.body).off('mousemove');
+	if(control_timeout) {
+		clearTimeout(control_timeout);
+		control_timeout = null;
+	}
+	$("#top_controls").hide();
 }
 
 function show_screen() {
+	$('#nav').hide();
+	$('#footer').hide();
+	$('#content').hide();
+
 	$('#SaltyNESApp')[0].className = 'screen_running';
 	$('#SaltyNESApp').width(256 * zoom);
 	$('#SaltyNESApp').height(240 * zoom);
+	$(document.body).css('background-color', '#000000');
+
+	// Activate top controls
+	$(document.body).mousemove(function() {
+		// Fade in
+		$("#top_controls").fadeIn(1000);
+
+		// Cancel any waiting fade out
+		if(control_timeout) {
+			clearTimeout(control_timeout);
+			control_timeout = null;
+		}
+
+		// Fade out in 3 seconds
+		control_timeout = setTimeout(function() {
+			$("#top_controls").fadeOut(1000);
+		}, 3000);
+	});
+	$("#top_controls").show();
 }
 
 function handle_configure_keys(key_name) {
@@ -546,7 +580,7 @@ function handle_library_files(files) {
 	}
 
 	// Read the files
-	for(i=0; i<files.length; ++i) {
+	for(var i=0; i<files.length; ++i) {
 		// Make sure only *.NES files are sent
 		if(!files[i].name.toLowerCase().match(/\.nes$/)) {
 			alert('Only games with a .nes file extension can be used. The file "' + files[i].name + '" is not valid.');
@@ -822,52 +856,21 @@ function handle_nacl_load_end() {
 	});
 }
 
+// Resizes the game screen to be as big as possible without stretching
 function handle_window_resize() {
-	if(screen.height != window.outerHeight) {
-		$('#content').show();
-		$('#nav').show();
-		$('#footer').show();
-		$(document.body).css('background-color', '#FFFFFF');
-	}
-
+	// Just return if not running
 	if(!is_running)
 		return;
 
-	var div_w = 0;
-	var div_h = 0;
 	var salty_nes_app = $('#SaltyNESApp');
-	// Full screen uses the screen size
-	if(screen.height == window.outerHeight) {
-		div_w = screen.width;
-		div_h = screen.height;
-		
-		// Get the largest zoom we can fit
-		for(var i=1; i<=max_zoom; ++i) {
-			if(256 * i <= div_w && 240 * i <= div_h) {
-				zoom = i;
-			}
-		}
+	var div_w = $(window).width();
+	var div_h = $(window).height();
 
-		$('#content').hide();
-		$('#nav').hide();
-		$('#footer').hide();
-		$(document.body).css('background-color', '#000000');
-		$('#SaltyNESApp').css('top', 0);
-		$('#SaltyNESApp').css('left', (screen.width/2) - ((256 * zoom)/2));
-	// Not full screen uses the parent container size
-	} else {
-		div_w = $('#content').width();
-		div_h = $(window).height() - diff($('#footer').height(), $('#content').height());
-		
-		// Get the largest zoom we can fit
-		for(var i=1; i<=max_zoom; ++i) {
-			if(256 * i <= div_w && 240 * i <= div_h) {
-				zoom = i;
-			}
+	// Get the largest zoom we can fit
+	for(var i=1; i<=max_zoom; ++i) {
+		if(256 * i <= div_w && 240 * i <= div_h) {
+			zoom = i;
 		}
-
-		$('#SaltyNESApp').css('top', $('#content').height());
-		$('#SaltyNESApp').css('left', ($('#content').width()/2) - ((256 * zoom)/2) + ($('#content').position().left));
 	}
 
 	salty_nes_app.width(256 * zoom);
