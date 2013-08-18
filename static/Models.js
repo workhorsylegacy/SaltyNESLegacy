@@ -57,7 +57,7 @@ function setup_fs(desired_size, success_cb) {
 		alert("This application requires File System to work.");
 		return;
 	}
-	window.webkitStorageInfo.requestQuota(PERSISTENT, desired_size, function(granted_size) {
+	navigator.webkitPersistentStorage.requestQuota(desired_size, function(granted_size) {
 		// Make sure we got the size we want
 		if(granted_size != desired_size) {
 			alert('Failed to get file system size of ' + desired_size + ' bytes. Instead got ' + granted_size + ' bytes.');
