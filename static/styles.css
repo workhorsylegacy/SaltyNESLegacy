@@ -111,6 +111,7 @@ footer {
 	clear: both;
 	text-align: left;
 	margin: 40px;
+	display: none;
 }
 
 #breadcrumbs_div {

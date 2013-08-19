@@ -17,6 +17,7 @@ var configure_key = null;
 var configure_key_counter = 0;
 var configure_key_interval = null;
 var control_timeout = null;
+var nacl_not_enabled_timeout = null;
 
 
 function diff(a, b) {
@@ -833,6 +834,10 @@ function handle_nacl_crash(event) {
 	alert('Native Client crashed. Refresh the page to reload. Sorry, no debug info is yet available.');
 }
 
+function handle_nacl_error(event) {
+	alert('Native Client had an error. Refresh the page to reload. Sorry, no debug info is yet available.');
+}
+
 function handle_nacl_load_progress(event) {
 	var debug = $('#debug')[0];
 	// Print unknown progress if unknown
@@ -847,10 +852,12 @@ function handle_nacl_load_progress(event) {
 }
 
 function handle_nacl_load_start(event) {
-	$('#nacl_not_enabled').hide();
+	hide_nacl_not_enabled();
 }
 
 function handle_nacl_load_end() {
+	hide_nacl_not_enabled();
+
 	salty_nes = $('#SaltyNESApp')[0];
 
 	// Setup IndexedDB
@@ -1091,13 +1098,36 @@ function handle_hash_change() {
 	is_initialized = true;
 }
 
+// Set a timeout that will show a nacl not enabled message in 2 seconds
+function show_nacl_not_enabled() {
+	nacl_not_enabled_timeout = setTimeout(function() {
+		$('#nacl_not_enabled').show();
+	}, 2000);
+}
+
+// Cancels the timeout and hides the message that shows that nacl is not enabled
+function hide_nacl_not_enabled() {
+	// Cancel the timeout that shows the message
+	if(nacl_not_enabled_timeout) {
+		clearTimeout(nacl_not_enabled_timeout);
+		nacl_not_enabled_timeout = null;
+	}
+
+	// Make sure the message is hidden
+	$('#nacl_not_enabled').hide();
+}
+
 $(document).ready(function() {
+	show_nacl_not_enabled();
+
 	// Setup NACL loader
-	document.body.addEventListener('loadstart', handle_nacl_load_start, true);
-	document.body.addEventListener('loadend', handle_nacl_load_end, true);
-	document.body.addEventListener('progress', handle_nacl_load_progress, true);
-	document.body.addEventListener('message', handle_nacl_message, true);
-	document.body.addEventListener('crash', handle_nacl_crash, true);
+	var app = $('#SaltyNESApp')[0];
+	app.addEventListener('loadstart', handle_nacl_load_start, true);
+	app.addEventListener('loadend', handle_nacl_load_end, true);
+	app.addEventListener('progress', handle_nacl_load_progress, true);
+	app.addEventListener('message', handle_nacl_message, true);
+	app.addEventListener('crash', handle_nacl_crash, true);
+	app.addEventListener('error', handle_nacl_error, true);
 
 	$(window).bind('hashchange', handle_hash_change);
 	
