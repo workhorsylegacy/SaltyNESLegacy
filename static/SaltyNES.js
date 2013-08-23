@@ -52,15 +52,6 @@ function load_game_library(letter, page) {
 	var used_names = {};
 	Games.for_each_with_letter(letter, {
 		each: function(game) {
-			if(letter != null) {
-				if(letter == '#' && game.name.match('^[0-9]')) {
-					// Numbers
-				} else if(game.name[0].toUpperCase() == letter) {
-					// Letter
-				} else {
-					return;
-				}
-			}
 
 			// Skip this game if there is one with the same title already
 			if(game.name in used_names)
@@ -957,6 +948,9 @@ function handle_hash_change() {
 	// All Games with a number
 	} else if(route.match('^#/Home/Games/#$')) {
 		show_library_by_letter('#', page);
+	// All Games
+	} else if(route.match('^#/Home/Games/All$')) {
+		show_library_by_letter('', page);
 	// Games Page
 	} else if(route == '#/Home/Games') {
 		show_library_default();
