@@ -3,35 +3,37 @@
 
 import os
 
+require_module('C++')
+
 def clean():
 	"""Removes any files and directories generated when building."""
 	rmfile('saltynes')
 	rmdir_and_children('build')
 	rmdir_and_children('src/bin')
-	rmdir_and_children('glibc')
 	rmdir_and_children('newlib')
 
 def _configure():
-	require_programs(['g++'])
+	require_shared_library('libSDL', lambda ver: ver >= (1, 2))
+	#, 'pthread', 'rt'
 
-	require_shared_libraries([
-	'libSDL']) #, 'pthread', 'rt'])
+	cxx = cxx_get_default_compiler()
+	cxx.debug = True
+	cxx.warnings_all = True
+	cxx.warnings_as_errors = True
+	cxx_save_compiler(cxx)
 
-	os.environ['CC'] = 'g++'
-	os.environ['CFLAGS'] = ' -g -O2 -Wall -Wunused -Wextra -Werror'
-
-def build():
-	"""Builds the program. Will only build files that have changed since the last build."""
+def desktop():
+	"""Builds the program for the desktop using SDL. Will only build files that have changed since the last build."""
 	require_not_root()
-	_build()
+	_desktop()
 
-def rebuild():
-	"""Rebuilds the program. Will build all the files. Even if they have not changed since last build."""
+def redesktop():
+	"""Rebuilds the program for the desktop using SDL. Will build all the files. Even if they have not changed since last build."""
 	require_not_root()
 	clean()
-	_build()
+	_desktop()
 
-def _build():
+def _desktop():
 	_configure()
 
 	# Copy the files to the build directory
@@ -48,21 +50,35 @@ def _build():
 	code_files.sort()
 
 	# Build each c++ file into an object
+	parallel_start()
 	for f in code_files:
 		object_name = '{0}.o'.format(f)
 		code_name = 'src/{0}.cc'.format(f)
-		parallel_c_build_object(object_name, [code_name], ['-DSDL=true'])
-	parallel_wait()
+		cxx_build_object(object_name, [code_name], ['-DSDL=true'])
+	parallel_end()
 
 	# Link all the objects into the program
 	object_files = [s + '.o' for s in code_files]
-	c_build_program('saltynes', object_files, ['-lSDL', '-lpthread', '-lrt', '-DSDL=true'])
+	cxx_build_program('saltynes', object_files, ['-lSDL', '-lpthread', '-lrt', '-DSDL=true'])
 
 	# Run the program
 	cd('..')
 	mvfile('build/saltynes', 'saltynes')
 	print('Run the program like this:\n./saltynes roms/example.nes')
 
+def nacl():
+	os.environ['NACL_CXXFLAGS'] = '-O2 -g -pthread -std=gnu++98 -Wno-long-long -Wall -Wswitch-enum -Werror -pedantic'
+	os.environ['NACL_LDFLAGS'] = '-g -pthread -lppapi_cpp -lppapi'
 
+	os.environ['OSNAME'] = sys.platform
+	os.environ['TC_PATH'] = '$(NACL_SDK_ROOT)/toolchain'
+	os.environ['NEWLIB_CC'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-gcc -c'
+	os.environ['NEWLIB_CXX'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-g++ -c'
+	os.environ['NEWLIB_LINK'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-g++ -Wl,-as-needed'
+	os.environ['NEWLIB_DUMP'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/x86_64-nacl/bin/objdump'
+	os.environ['NEWLIB_STRIP32'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-strip'
+	os.environ['NEWLIB_STRIP64'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/x86_64-nacl-strip'
+
+	os.environ['NMF'] = '$(NACL_SDK_ROOT)/tools/create_nmf.py'
 
 

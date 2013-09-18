@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-# This file is part of Raise a small build automation tool.
-# This project is hosted at http://launchpad.net/raise .
-# Copyright (c) 2012, Matthew Brennan Jones <mattjones@workhorsy.org>
+# This file is part of Raise.
+# Raise is a small software build tool that ships with your code.
+# Raise uses a MIT style license, and is hosted at http://launchpad.net/raise .
+# Copyright (c) 2013, Matthew Brennan Jones <mattjones@workhorsy.org>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -32,6 +33,8 @@ if sys.version_info < (3, 0):
 else:
 	import urllib.request
 	globals()['urlopen'] = urllib.request.urlopen
+
+RAISE_ACTUAL_URL = 'http://bazaar.launchpad.net/~workhorsy/raise/main/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual'
 
 def friendly_size(data_length):
 	retval = ''
@@ -86,8 +89,6 @@ def update():
 		file_name = 'raise_actual'
 
 	try:
-		url = 'http://bazaar.launchpad.net/~workhorsy/raise/main/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual'
-
 		def cb_progress(chunk, data_length, chunk_size, content_length, percent):
 			# Write the download progress
 			sys.stdout.write("Downloaded {0} of {1} ({2}%)\r".format(friendly_size(data_length), friendly_size(content_length), percent))
@@ -109,7 +110,7 @@ def update():
 			f.write(data)
 
 		# Download the file and call the cb after each chunk
-		download_file(url, cb_progress, cb_done)
+		download_file(RAISE_ACTUAL_URL, cb_progress, cb_done)
 
 		# Make the file executable
 		os.chmod(file_name, 0o775 | stat.S_IXOTH)
@@ -117,20 +118,23 @@ def update():
 		print(str(e))
 
 if __name__ == '__main__':
-	# Clear the terminal if ran as clear; ./raise
-	os.system('clear')
-
+	# Get the arguments
 	args = str(str.join(' ', sys.argv[1:]))
+
+	# Run update if that is the target
 	if args == 'update':
 		update()
 		exit()
 
+	# Run update if there is no raise_actual file
 	actual = '.raise_actual'
 	if os.path.isfile('raise_actual'):
 		actual = 'raise_actual'
 	elif not os.path.isfile('.raise_actual'):
 		update()
 
-	os.system('./{0} {1}'.format(actual, args))
+	# Have the raise_actual file handle everything else
+	os.system('{0} {1} {2}'.format(sys.executable, actual, args))
+
 
 
