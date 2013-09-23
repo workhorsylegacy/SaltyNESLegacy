@@ -28,13 +28,16 @@
 import os, sys
 import stat
 if sys.version_info < (3, 0):
-	import urllib2
-	globals()['urlopen'] = urllib2.urlopen
+	from urllib2 import urlopen
 else:
-	import urllib.request
-	globals()['urlopen'] = urllib.request.urlopen
+	from urllib.request import urlopen
 
-RAISE_ACTUAL_URL = 'http://bazaar.launchpad.net/~workhorsy/raise/main/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual'
+RAISE_ACTUAL_URLS = {
+	'0.1.0' :   'http://bazaar.launchpad.net/~workhorsy/raise/0.1.0/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual',
+	'0.2.0' :   'http://bazaar.launchpad.net/~workhorsy/raise/0.2.0/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual',
+	'Trunk' : 'http://bazaar.launchpad.net/~workhorsy/raise/main/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual'
+}
+RAISE_ACTUAL_URL = RAISE_ACTUAL_URLS['0.2.0']
 
 def friendly_size(data_length):
 	retval = ''
@@ -101,7 +104,7 @@ def update():
 
 		def cb_done(data):
 			# Make sure the downloaded file is python
-			if not data.startswith("#!/usr/bin/env python"):
+			if not data.decode().startswith("#!/usr/bin/env python"):
 				print('The downloaded update was invalid. Make sure http://launchpad.net can be accessed. Exiting ...')
 				exit()
 
@@ -127,10 +130,15 @@ if __name__ == '__main__':
 		exit()
 
 	# Run update if there is no raise_actual file
-	actual = '.raise_actual'
+	actual = None
 	if os.path.isfile('raise_actual'):
 		actual = 'raise_actual'
-	elif not os.path.isfile('.raise_actual'):
+	elif os.path.isfile('.raise_actual'):
+		actual = '.raise_actual'
+	elif os.path.isfile('../../raise_actual'):
+		actual = '../../raise_actual'
+	else:
+		actual = '.raise_actual'
 		update()
 
 	# Have the raise_actual file handle everything else

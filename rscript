@@ -5,6 +5,7 @@ import os
 
 require_module('C++')
 
+
 def clean():
 	"""Removes any files and directories generated when building."""
 	rmfile('saltynes')
@@ -14,7 +15,6 @@ def clean():
 
 def _configure():
 	require_shared_library('libSDL', lambda ver: ver >= (1, 2))
-	#, 'pthread', 'rt'
 
 	cxx = cxx_get_default_compiler()
 	cxx.debug = True
@@ -42,14 +42,14 @@ def _desktop():
 	cpdir('src', 'build/src')
 	cd('build')
 
-	# Get the names of all the c++ files
+	# Get the names of all the C++ files
 	code_files = []
 	for entry in os.listdir('src'):
 		if entry.lower().endswith('.cc'):
 			code_files.append(entry[:-3])
 	code_files.sort()
 
-	# Build each c++ file into an object
+	# Build each C++ file into an object
 	parallel_start()
 	for f in code_files:
 		object_name = '{0}.o'.format(f)
@@ -67,18 +67,57 @@ def _desktop():
 	print('Run the program like this:\n./saltynes roms/example.nes')
 
 def nacl():
-	os.environ['NACL_CXXFLAGS'] = '-O2 -g -pthread -std=gnu++98 -Wno-long-long -Wall -Wswitch-enum -Werror -pedantic'
-	os.environ['NACL_LDFLAGS'] = '-g -pthread -lppapi_cpp -lppapi'
+	require_not_root()
+	clean()
+	_configure()
 
-	os.environ['OSNAME'] = sys.platform
-	os.environ['TC_PATH'] = '$(NACL_SDK_ROOT)/toolchain'
-	os.environ['NEWLIB_CC'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-gcc -c'
-	os.environ['NEWLIB_CXX'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-g++ -c'
-	os.environ['NEWLIB_LINK'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-g++ -Wl,-as-needed'
-	os.environ['NEWLIB_DUMP'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/x86_64-nacl/bin/objdump'
-	os.environ['NEWLIB_STRIP32'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-strip'
-	os.environ['NEWLIB_STRIP64'] = '$(TC_PATH)/$(OSNAME)_x86_newlib/bin/x86_64-nacl-strip'
+	os.environ['CXXFLAGS'] = '-O2 -g -pthread -std=gnu++98 -Wno-long-long -Wall -Wswitch-enum -Werror -pedantic'
+	os.environ['LDFLAGS'] = '-g -pthread -lppapi_cpp -lppapi'
 
-	os.environ['NMF'] = '$(NACL_SDK_ROOT)/tools/create_nmf.py'
+	os.environ['OSNAME'] = 'linux' #FIXME: should be gotten from the OS
+	os.environ['TC_PATH'] = '${NACL_SDK_ROOT}/toolchain'
+	os.environ['CC'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/i686-nacl-gcc'
+	os.environ['CXX'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/i686-nacl-g++'
+	os.environ['LINK'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/i686-nacl-ld'
+	os.environ['DUMP'] = '${TC_PATH}/${OSNAME}_x86_newlib/x86_64-nacl/bin/objdump'
+	os.environ['STRIP32'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/i686-nacl-strip'
+	os.environ['STRIP64'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/x86_64-nacl-strip'
+	os.environ['NMF'] = '${NACL_SDK_ROOT}/tools/create_nmf.py'
+
+	mkdir('newlib')
+	mkdir('newlib/src')
+
+	# Get the names of all the C++ files
+	code_files = []
+	for entry in os.listdir('src'):
+		if entry.lower().endswith('.cc'):
+			code_files.append(entry[:-3])
+	code_files.sort()
+
+	# Build each C++ file into an object
+	parallel_start()
+	for f in code_files:
+		object_name = 'newlib/src/{0}_x86_32.o'.format(f)
+		code_name = 'src/{0}.cc'.format(f)
+		cxx_build_object(object_name, [code_name], ['-m32 -DTCNAME=newlib -DNACL=true -I${NACL_SDK_ROOT}/include'])
+	parallel_end()
+
+	# Link all the objects into the program
+	object_files = ['newlib/src/{0}_x86_32.o'.format(s) for s in code_files]
+	cxx_link_program(
+		'newlib/salty_nes_x86_32.nexe', 
+		object_files, 
+		['-m32 ${LDFLAGS}'])
+
+	# Build NaCl manifest file
+	_do_on_fail_exit("Building NaCl Manifest 'newlib/salty_nes.nmf'",
+					"Failed to build NaCl Manifest 'newlib/salty_nes.nmf'.",
+				"${NMF} -D ${DUMP} -o newlib/salty_nes.nmf newlib/salty_nes_x86_32.nexe -t newlib -s newlib")
+
+	# Strip the nexe to make it smaller
+	_do_on_fail_exit("Stripping program 'newlib/salty_nes_x86_32.nexe'",
+					"Failed stripping program 'newlib/salty_nes_x86_32.nexe'.",
+				"${STRIP32} newlib/salty_nes_x86_32.nexe")
+
 
 
