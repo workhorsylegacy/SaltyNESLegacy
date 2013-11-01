@@ -17,6 +17,7 @@ def _configure():
 	require_shared_library('libSDL', lambda ver: ver >= (1, 2))
 
 	cxx = cxx_get_default_compiler()
+	cxx.optimize = True
 	cxx.debug = True
 	cxx.warnings_all = True
 	cxx.warnings_as_errors = True
