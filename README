@@ -27,6 +27,8 @@ TO BUILD SDL VERSION:
 
 
 TO BUILD NACL VERSION:
+	# Make sure NaCl version 31 SDK is installed
+
 	# Run the web server
 	python httpd.py
 

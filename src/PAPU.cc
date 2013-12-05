@@ -46,10 +46,10 @@ void fill_audio_nacl_cb(void* samples, uint32_t buffer_size, void* data) {
 		return;
 	}
 
-	const uint32_t channels = papu->stereo ? 2 : 1;
+	//const uint32_t channels = papu->stereo ? 2 : 1;
 
 	// Make sure we can't write outside the buffer.
-	assert(buffer_size >= (sizeof(*buff) * channels * papu->sample_frame_count_));
+	//assert(buffer_size >= (sizeof(*buff) * channels * papu->sample_frame_count_));
 
 	size_t mix_len = buffer_size > ((size_t) papu->bufferIndex) ? ((size_t) papu->bufferIndex) : buffer_size;
 	for(size_t i=0; i<mix_len; i++) {

@@ -281,8 +281,8 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	fourScreen = (header[6] & 8) != 0;
 	mapperType = (header[6] >> 4) | (header[7] & 0xF0);
 
-	printf("prog_rom_pages: %zd\n", romCount);
-	printf("char_rom_pages: %zd\n", vromCount);
+	printf("prog_rom_pages: %lu\n", (unsigned long) romCount);
+	printf("char_rom_pages: %lu\n", (unsigned long) vromCount);
 	printf("mirroring: %d\n", mirroring);
 	printf("is_sram_on: %d\n", batteryRam);
 	printf("is_trainer_on: %d\n", trainer);
