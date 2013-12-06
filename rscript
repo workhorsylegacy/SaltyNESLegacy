@@ -11,7 +11,7 @@ def clean():
 	rmfile('saltynes')
 	rmdir_and_children('build')
 	rmdir_and_children('src/bin')
-	rmdir_and_children('newlib')
+	rmdir_and_children('pnacl')
 
 def _configure():
 	require_shared_library('libSDL', lambda ver: ver >= (1, 2))

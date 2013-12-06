@@ -1,4 +1,5 @@
 *  Release 0.1
+	* Fixed Bug #1213482: 'Make it work with PNaCl'.
 	* Fixed Bug #1081089: 'Cleanup spacing in code'.
 	* Fixed Bug #1081980: 'Move the game database code to an ORM'.
 	* Fixed Bug #1082033: 'Add an about page'.

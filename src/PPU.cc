@@ -239,7 +239,9 @@ void PPU::init() {
 	// Create nametable buffers:
 	nameTable = new vector<NameTable*>(4);
 	for(int i = 0; i < 4; i++) {
-		(*nameTable)[i] = new NameTable(32, 32, "Nt" + i);
+		stringstream name;
+		name << "Nt" << i;
+		(*nameTable)[i] = new NameTable(32, 32, name.str());
 	}
 
 	// Initialize mirroring lookup table:

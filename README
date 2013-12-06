@@ -1,6 +1,6 @@
 SaltyNES is a browser based NES emulator derived from vNES. Because it is
 written in C++, it can be run as a stand-alone SDL application, or 
-in a web browser using Google Native Client.
+in a web browser using Google Portable Native Client.
 
 SaltyNES is licenced as GPLv3 or later.
 sha256sum.cc & sha256sum.h are from ulib and licensed under MIT.
@@ -20,13 +20,13 @@ http://thatsanderskid.com/programming/vnes/index.html
 
 TO BUILD SDL VERSION:
 	# Build the program
-	./raise build
+	./raise desktop
 
 	# Run a NES ROM file
 	./saltynes roms/example.nes
 
 
-TO BUILD NACL VERSION:
+TO BUILD PNACL VERSION:
 	# Make sure NaCl version 31 SDK is installed
 
 	# Run the web server

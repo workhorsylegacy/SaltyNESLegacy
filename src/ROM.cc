@@ -199,7 +199,10 @@ string ROM::getmapperName() {
 		return (*_mapperName)[mapperType];
 	}
 	// else:
-	return "Unknown Mapper, " + mapperType;
+
+	stringstream ss;
+	ss << "Unknown Mapper, " << mapperType;
+	return ss.str();
 }
 
 vector<bool>* ROM::getmapperSupported() {
@@ -446,7 +449,10 @@ string ROM::getMapperName() {
 		return (*_mapperName)[mapperType];
 	}
 	// else:
-	return "Unknown Mapper, " + mapperType;
+
+	stringstream ss;
+	ss << "Unknown Mapper, " << mapperType;
+	return ss.str();
 
 }
 

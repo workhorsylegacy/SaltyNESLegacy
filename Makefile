@@ -35,17 +35,12 @@ TC_PATH := $(abspath $(NACL_SDK_ROOT)/toolchain)
 #
 # Defaults for TOOLS
 #
-NEWLIB_CC64 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/x86_64-nacl-gcc -c #i686-nacl-gcc -c
-NEWLIB_CXX64 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/x86_64-nacl-g++ -c #i686-nacl-g++ -c
-NEWLIB_LINK64 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/x86_64-nacl-g++
-NEWLIB_DUMP64 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/x86_64-nacl-objdump #x86_64-nacl/bin/objdump
-NEWLIB_STRIP64 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/x86_64-nacl-strip #x86_64-nacl-strip
-
-NEWLIB_CC32 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-gcc -c
-NEWLIB_CXX32 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-g++ -c
-NEWLIB_LINK32 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-g++
-NEWLIB_DUMP32 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-objdump
-NEWLIB_STRIP32 ?= $(TC_PATH)/$(OSNAME)_x86_newlib/bin/i686-nacl-strip
+PNACL_CC ?= $(TC_PATH)/$(OSNAME)_pnacl/bin/pnacl-clang -c
+PNACL_CXX ?= $(TC_PATH)/$(OSNAME)_pnacl/bin/pnacl-clang++ -c
+PNACL_LINK ?= $(TC_PATH)/$(OSNAME)_pnacl/bin/pnacl-clang++
+PNACL_DUMP ?= $(TC_PATH)/$(OSNAME)_pnacl/bin/pnacl-objdump
+PNACL_STRIP ?= $(TC_PATH)/$(OSNAME)_pnacl/bin/pnacl-strip
+PNACL_FINALIZE ?= $(TC_PATH)/$(OSNAME)_pnacl/bin/pnacl-finalize
 
 NMF := python $(NACL_SDK_ROOT)/tools/create_nmf.py
 
@@ -53,98 +48,100 @@ NMF := python $(NACL_SDK_ROOT)/tools/create_nmf.py
 # Defaults
 #
 NACL_WARNINGS := -Wno-long-long -Wall -Wswitch-enum -Werror -pedantic
-NACL_DEFINES := -g -DNDEBUG -DNACL=true -DTCNAME=newlib
+NACL_DEFINES := -g -DNDEBUG -DNACL=true -DTCNAME=pnacl
 NACL_CXXFLAGS := -MMD -O2 -pthread -fPIC -std=c++98 $(NACL_DEFINES) $(NACL_WARNINGS)
-NACL_INCLUDES := -I$(NACL_SDK_ROOT)/include -I$(NACL_SDK_ROOT)/include/newlib
+NACL_INCLUDES := -I$(NACL_SDK_ROOT)/include -I$(NACL_SDK_ROOT)/include/pnacl
 NACL_LDFLAGS := -lppapi_cpp -lppapi
 
 
 
 all: clean
 	# Make the dirs
-	$(MKDIR) newlib
-	$(MKDIR) newlib/src
+	$(MKDIR) pnacl
+	$(MKDIR) pnacl/src
 
 	# Build all the object files
-	$(NEWLIB_CXX64) -c -o newlib/src/base64_x86_64.o src/base64.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/ByteBuffer_x86_64.o src/ByteBuffer.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/CPU_x86_64.o src/CPU.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/ChannelDM_x86_64.o src/ChannelDM.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/ChannelNoise_x86_64.o src/ChannelNoise.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/ChannelSquare_x86_64.o src/ChannelSquare.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/ChannelTriangle_x86_64.o src/ChannelTriangle.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Color_x86_64.o src/Color.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/CpuInfo_x86_64.o src/CpuInfo.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Globals_x86_64.o src/Globals.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/InputHandler_x86_64.o src/InputHandler.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Mapper001_x86_64.o src/Mapper001.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Mapper002_x86_64.o src/Mapper002.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Mapper003_x86_64.o src/Mapper003.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Mapper004_x86_64.o src/Mapper004.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Mapper007_x86_64.o src/Mapper007.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Mapper009_x86_64.o src/Mapper009.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/MapperDefault_x86_64.o src/MapperDefault.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Memory_x86_64.o src/Memory.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Misc_x86_64.o src/Misc.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/NES_x86_64.o src/NES.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/NameTable_x86_64.o src/NameTable.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/PAPU_x86_64.o src/PAPU.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/PPU_x86_64.o src/PPU.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/PaletteTable_x86_64.o src/PaletteTable.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Parameters_x86_64.o src/Parameters.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/ROM_x86_64.o src/ROM.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Raster_x86_64.o src/Raster.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/SaltyNES_x86_64.o src/SaltyNES.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/sha256sum_x86_64.o src/sha256sum.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/Tile_x86_64.o src/Tile.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/main_sdl_x86_64.o src/main_sdl.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/main_nacl_x86_64.o src/main_nacl.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(NEWLIB_CXX64) -c -o newlib/src/vNES_x86_64.o src/vNES.cc -m64 $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/base64_pnacl.o src/base64.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/ByteBuffer_pnacl.o src/ByteBuffer.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/CPU_pnacl.o src/CPU.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/ChannelDM_pnacl.o src/ChannelDM.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/ChannelNoise_pnacl.o src/ChannelNoise.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/ChannelSquare_pnacl.o src/ChannelSquare.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/ChannelTriangle_pnacl.o src/ChannelTriangle.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Color_pnacl.o src/Color.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/CpuInfo_pnacl.o src/CpuInfo.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Globals_pnacl.o src/Globals.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/InputHandler_pnacl.o src/InputHandler.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Mapper001_pnacl.o src/Mapper001.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Mapper002_pnacl.o src/Mapper002.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Mapper003_pnacl.o src/Mapper003.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Mapper004_pnacl.o src/Mapper004.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Mapper007_pnacl.o src/Mapper007.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Mapper009_pnacl.o src/Mapper009.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/MapperDefault_pnacl.o src/MapperDefault.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Memory_pnacl.o src/Memory.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Misc_pnacl.o src/Misc.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/NES_pnacl.o src/NES.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/NameTable_pnacl.o src/NameTable.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/PAPU_pnacl.o src/PAPU.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/PPU_pnacl.o src/PPU.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/PaletteTable_pnacl.o src/PaletteTable.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Parameters_pnacl.o src/Parameters.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/ROM_pnacl.o src/ROM.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Raster_pnacl.o src/Raster.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/SaltyNES_pnacl.o src/SaltyNES.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/sha256sum_pnacl.o src/sha256sum.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/Tile_pnacl.o src/Tile.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/main_sdl_pnacl.o src/main_sdl.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/main_nacl_pnacl.o src/main_nacl.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -c -o pnacl/src/vNES_pnacl.o src/vNES.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
 
-	# Build the object into a nexe
-	$(NEWLIB_LINK64) -o newlib/salty_nes_unstripped_x86_64.nexe \
-	newlib/src/base64_x86_64.o \
-	newlib/src/ByteBuffer_x86_64.o \
-	newlib/src/CPU_x86_64.o \
-	newlib/src/ChannelDM_x86_64.o \
-	newlib/src/ChannelNoise_x86_64.o \
-	newlib/src/ChannelSquare_x86_64.o \
-	newlib/src/ChannelTriangle_x86_64.o \
-	newlib/src/Color_x86_64.o \
-	newlib/src/CpuInfo_x86_64.o \
-	newlib/src/Globals_x86_64.o \
-	newlib/src/InputHandler_x86_64.o \
-	newlib/src/Mapper001_x86_64.o \
-	newlib/src/Mapper002_x86_64.o \
-	newlib/src/Mapper003_x86_64.o \
-	newlib/src/Mapper004_x86_64.o \
-	newlib/src/Mapper007_x86_64.o \
-	newlib/src/Mapper009_x86_64.o \
-	newlib/src/MapperDefault_x86_64.o \
-	newlib/src/Memory_x86_64.o \
-	newlib/src/Misc_x86_64.o \
-	newlib/src/NES_x86_64.o \
-	newlib/src/NameTable_x86_64.o \
-	newlib/src/PAPU_x86_64.o \
-	newlib/src/PPU_x86_64.o \
-	newlib/src/PaletteTable_x86_64.o \
-	newlib/src/Parameters_x86_64.o \
-	newlib/src/ROM_x86_64.o \
-	newlib/src/Raster_x86_64.o \
-	newlib/src/SaltyNES_x86_64.o \
-	newlib/src/sha256sum_x86_64.o \
-	newlib/src/Tile_x86_64.o \
-	newlib/src/main_sdl_x86_64.o \
-	newlib/src/main_nacl_x86_64.o \
-	newlib/src/vNES_x86_64.o \
-	-Wl,-as-needed -Wl,-Map,./newlib/salty_nes_x86_64.map \
-	-L$(NACL_SDK_ROOT)/lib/newlib_x86_64/Release $(NACL_LDFLAGS)
+	# Convert the objects into byte code
+	$(PNACL_LINK) -o pnacl/salty_nes_unstripped.bc \
+	./pnacl/src/base64_pnacl.o \
+	./pnacl/src/ByteBuffer_pnacl.o \
+	./pnacl/src/CPU_pnacl.o \
+	./pnacl/src/ChannelDM_pnacl.o \
+	./pnacl/src/ChannelNoise_pnacl.o \
+	./pnacl/src/ChannelSquare_pnacl.o \
+	./pnacl/src/ChannelTriangle_pnacl.o \
+	./pnacl/src/Color_pnacl.o \
+	./pnacl/src/CpuInfo_pnacl.o \
+	./pnacl/src/Globals_pnacl.o \
+	./pnacl/src/InputHandler_pnacl.o \
+	./pnacl/src/Mapper001_pnacl.o \
+	./pnacl/src/Mapper002_pnacl.o \
+	./pnacl/src/Mapper003_pnacl.o \
+	./pnacl/src/Mapper004_pnacl.o \
+	./pnacl/src/Mapper007_pnacl.o \
+	./pnacl/src/Mapper009_pnacl.o \
+	./pnacl/src/MapperDefault_pnacl.o \
+	./pnacl/src/Memory_pnacl.o \
+	./pnacl/src/Misc_pnacl.o \
+	./pnacl/src/NES_pnacl.o \
+	./pnacl/src/NameTable_pnacl.o \
+	./pnacl/src/PAPU_pnacl.o \
+	./pnacl/src/PPU_pnacl.o \
+	./pnacl/src/PaletteTable_pnacl.o \
+	./pnacl/src/Parameters_pnacl.o \
+	./pnacl/src/ROM_pnacl.o \
+	./pnacl/src/Raster_pnacl.o \
+	./pnacl/src/SaltyNES_pnacl.o \
+	./pnacl/src/sha256sum_pnacl.o \
+	./pnacl/src/Tile_pnacl.o \
+	./pnacl/src/main_sdl_pnacl.o \
+	./pnacl/src/main_nacl_pnacl.o \
+	./pnacl/src/vNES_pnacl.o \
+	-L$(NACL_SDK_ROOT)/lib/pnacl/Release $(NACL_LDFLAGS)
 
-	# Strip the nexe to be smaller
-	$(NEWLIB_STRIP64) -o newlib/salty_nes_x86_64.nexe newlib/salty_nes_unstripped_x86_64.nexe
+	# Conver the byte code into a pexe
+	$(PNACL_FINALIZE) -o pnacl/salty_nes_unstripped.pexe pnacl/salty_nes_unstripped.bc
 
-	# Make a NaCl manifest file
-	$(NMF) -o newlib/salty_nes.nmf newlib/salty_nes_x86_64.nexe -s ./newlib
+	# Strip the pexe to be smaller
+	$(PNACL_STRIP) -o pnacl/salty_nes.pexe pnacl/salty_nes_unstripped.pexe
+
+	# Generate the Nacl Manifest
+	$(NMF) -o pnacl/salty_nes.nmf pnacl/salty_nes.pexe -s ./pnacl/Release
 
 	# Remove the log files
 	$(RM) -f ~/Desktop/nacl_stdout.log
@@ -154,6 +151,6 @@ clean:
 	$(RM) -f 'saltynes'
 	$(RM) -rf -f 'build'
 	$(RM) -rf -f 'src/bin'
-	$(RM) -rf -f 'newlib'
+	$(RM) -rf -f 'pnacl'
 
 

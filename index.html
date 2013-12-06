@@ -43,16 +43,10 @@
 		<div id="content">
 			<div id="nacl_not_enabled">
 				<p>
-					Native Client is not enabled. SaltyNES requires 
-					<a href="https://developers.google.com/native-client/">Google Native Client</a> 
-					version 28 or greater.
+					Portable Native Client is not enabled. SaltyNES requires 
+					<a href="https://developers.google.com/native-client/">Google Portable Native Client</a> 
+					version 31 or greater.
 				</p>
-				<p>
-					 Visit the page 
-					<span style="font-family: courier;">"chrome://flags/#enable-nacl"</span> and enable it. This will require
-					you to restart the browser.
-				</p>
-				<img src="static/enable_nacl.png" />
 				<p>
 					More information about the project can be found at 
 					<a href="http://launchpad.net/SaltyNES">http://launchpad.net/SaltyNES</a>.
@@ -108,10 +102,10 @@
 				<p>
 					SaltyNES is a <a href="http://en.wikipedia.org/wiki/Nintendo_Entertainment_System">NES</a> Emulator.
 					It allows you to play your NES games in a web browser. 
-					<a href="https://developers.google.com/native-client/">Google Native Client</a> 
-					is required to use SaltyNES. Currently the only web browser to support Native Client, is 
+					<a href="https://developers.google.com/native-client/">Google Portable Native Client</a> 
+					is required to use SaltyNES. Currently the only web browser to support PNaCl, is 
 					<a href="http://www.google.com/chrome">Google Chrome</a>. It should run fine on Linux, Mac, and
-					Windows machines with 32bit or 64bit Intel(X86) CPUs.
+					Windows machines.
 				</p>
 				<p>
 					Game ROM files are not provided by SaltyNES, or stored on the SaltyNES servers.
@@ -254,12 +248,12 @@
 			<embed name="nacl_module"
 				id="SaltyNESApp"
 				class="screen_hidden"
-				src="newlib/salty_nes.nmf"
-				type="application/x-nacl" />
+				src="pnacl/salty_nes.nmf"
+				type="application/x-pnacl" />
 		</div>
 
 		<footer id="footer">
-			Copyright &copy; 2013 <a href="http://workhorsy.org">Matthew Brennan Jones</a>
+			Copyright &copy; 2012 - 2013 <a href="http://workhorsy.org">Matthew Brennan Jones</a>
 		</footer>
 	</body>
 </html>
