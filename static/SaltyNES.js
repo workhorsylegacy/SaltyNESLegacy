@@ -452,6 +452,7 @@ function show_drop() {
 }
 
 function hide_screen() {
+	$(document.body).css('overflow', 'visible');
 	$('#nav').show();
 	$('#footer').show();
 	$('#content').show();
@@ -471,6 +472,7 @@ function hide_screen() {
 }
 
 function show_screen() {
+	$(document.body).css('overflow', 'hidden');
 	$('#nav').hide();
 	$('#footer').hide();
 	$('#content').hide();

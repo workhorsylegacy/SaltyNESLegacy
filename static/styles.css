@@ -172,16 +172,21 @@ footer {
 }
 
 #game_library {
-	overflow: auto;
+	overflow: hidden;
 	clear: both;
 	min-height: 200px;
 	display: none;
 }
 
 #game_library_letters {
-	overflow: auto;
+	overflow: hidden;
 	clear: both;
 	padding-bottom: 20px;
+}
+
+#game_library_list {
+	overflow: hidden;
+	clear: both;
 }
 
 #game_info {
