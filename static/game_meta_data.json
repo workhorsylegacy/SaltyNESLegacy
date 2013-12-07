@@ -303,7 +303,7 @@ game_meta_data = {
 		"publisher" : "Nintendo",
 		"release_date" : "1986-02-21",
 		"number_of_players" : 1,
-		"can_save" : false,
+		"can_save" : true,
 		"mapper" : 1,
 		"prog_rom_pages" : 8,
 		"char_rom_pages" : 0,
@@ -316,13 +316,13 @@ game_meta_data = {
 		"publisher" : "Nintendo",
 		"release_date" : "1987-01-14",
 		"number_of_players" : 1,
-		"can_save" : false,
+		"can_save" : true,
 		"mapper" : 1,
 		"prog_rom_pages" : 8,
 		"char_rom_pages" : 28,
 		"link" : "http://en.wikipedia.org/wiki/The_Legend_of_Zelda_2",
 		"img" : "http://upload.wikimedia.org/wikipedia/en/f/fd/Zelda_II_The_Adventure_of_Link_box.jpg",
-		"is_broken" : true
+		"is_broken" : false
 	},
 	"Little Nemo - The Dream Master" : {
 		"developer" : "Capcom",
