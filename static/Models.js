@@ -333,6 +333,29 @@ Games.find_by_id = function(id, cb) {
 	};
 };
 
+// FIXME: These functions should not save all the games in an array before deleting.
+Games.destroy_all = function(cb) {
+	var games = [];
+
+	function destroy_cb() {
+		if(games.length) {
+			var game = games.pop();
+			game.destroy(destroy_cb);
+		} else {
+			cb();
+		}
+	}
+
+	Games.for_each({
+		each: function(game) {
+			games.push(game);
+		},
+		after: function() {
+			destroy_cb();
+		}
+	});
+}
+
 /*
 The Saves table is structured like so:
 "saves" = {
@@ -433,6 +456,25 @@ Saves.prototype = {
 };
 
 // Add class methods
+Saves.for_each = function(cbs) {
+	var objectStore = db.transaction(['saves'], 'readwrite').objectStore('saves');
+	var index = objectStore.index('sha256');
+	var cursor = index.openCursor();
+
+	cursor.onsuccess = function(event) {
+		var cursor = event.target.result;
+		if(cursor) {
+			var save = Saves.from_hash(cursor.value);
+			cbs.each(save);
+
+			cursor.continue();
+		} else {
+			if(cbs.after)
+				cbs.after();
+		}
+	};
+};
+
 Saves.find_by_id = function(id, cb) {
 	// Get the save file from the database
 	var objectStore = db.transaction(['saves'], 'readwrite').objectStore('saves');
@@ -468,3 +510,29 @@ Saves.from_hash = function(hash) {
 
 	return save;
 };
+
+// FIXME: These functions should not save all the games in an array before deleting.
+Saves.destroy_all = function(cb) {
+	var saves = [];
+
+	function destroy_cb() {
+		if(saves.length) {
+			var save = saves.pop();
+			save.destroy(destroy_cb);
+		} else {
+			cb();
+		}
+	}
+
+	Saves.for_each({
+		each: function(save) {
+			saves.push(save);
+		},
+		after: function() {
+			destroy_cb();
+		}
+	});
+}
+
+
+

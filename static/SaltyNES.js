@@ -969,23 +969,11 @@ function handle_hash_change() {
 			return;
 		}
 
-		var games = [];
-		Games.for_each({
-			each: function(game) {
-				games.push(game);
-			},
-			after: function() {
-				for(var i=0; i<games.length; ++i) {
-					games[i].destroy(function() {
-						if(games.length)
-							games.length--;
-	
-						if(games.length == 0)
-							alert('Done removing.');
-					});
-				}
+		Saves.destroy_all(function() {
+			Games.destroy_all(function() {
+				alert('Done removing.');
 				location.hash = '#/Home';
-			}
+			});
 		});
 	// Play game
 	} else if(route.indexOf('#/Home/Games/') == 0 && sha256) {
