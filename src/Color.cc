@@ -45,9 +45,9 @@
             saturation = ((float) (cmax - cmin)) / ((float) cmax);
         else
             saturation = 0;
-        if(saturation == 0)
+        if(saturation == 0) {
             hue = 0;
-        else {
+        } else {
             float redc = ((float) (cmax - r)) / ((float) (cmax - cmin));
             float greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
             float bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
