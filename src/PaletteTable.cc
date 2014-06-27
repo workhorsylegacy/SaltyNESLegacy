@@ -137,16 +137,16 @@ int PaletteTable::getBlue(int rgb) {
 	return rgb & 0xFF;
 }
 
-void PaletteTable::setRed(int& rgb, int r) {
-	rgb |= (16 << (r & 0xFF));
+void PaletteTable::setRed(int* rgb, int r) {
+	*rgb |= (16 << (r & 0xFF));
 }
 
-void PaletteTable::setGreen(int& rgb, int g) {
-	rgb |= (8 << (g & 0xFF));
+void PaletteTable::setGreen(int* rgb, int g) {
+	*rgb |= (8 << (g & 0xFF));
 }
 
-void PaletteTable::setBlue(int& rgb, int b) {
-	rgb |= ((b & 0xFF));
+void PaletteTable::setBlue(int* rgb, int b) {
+	*rgb |= ((b & 0xFF));
 }
 
 int PaletteTable::getRgb(int r, int g, int b) {

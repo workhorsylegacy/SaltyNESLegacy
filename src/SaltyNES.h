@@ -954,9 +954,9 @@ public:
 	int getRed(int rgb);
 	int getGreen(int rgb);
 	int getBlue(int rgb);
-	static void setRed(int& rgb, int r);
-	static void setGreen(int& rgb, int g);
-	static void setBlue(int& rgb, int b);
+	static void setRed(int* rgb, int r);
+	static void setGreen(int* rgb, int g);
+	static void setBlue(int* rgb, int b);
 	int getRgb(int r, int g, int b);
 	void updatePalette();
 	void updatePalette(int hueAdd, int saturationAdd, int lightnessAdd, int contrastAdd);
