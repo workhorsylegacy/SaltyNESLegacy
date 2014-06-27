@@ -272,7 +272,7 @@ public:
 	int dacLsb;
 	int data;
 
-	ChannelDM(PAPU* papu);
+	explicit ChannelDM(PAPU* papu);
 	virtual ~ChannelDM();
 	void clockDmc();
 	void endOfSample();
@@ -310,7 +310,7 @@ public:
 	long accCount;
 	int tmp;
 
-	ChannelNoise(PAPU* papu);
+	explicit ChannelNoise(PAPU* papu);
 	virtual ~ChannelNoise();
 	void clockLengthCounter();
 	void clockEnvDecay();
@@ -384,7 +384,7 @@ public:
 	int sampleValue;
 	int tmp;
 
-	ChannelTriangle(PAPU* papu);
+	explicit ChannelTriangle(PAPU* papu);
 	virtual ~ChannelTriangle();
 	void clockLengthCounter();
 	void clockLinearCounter();
@@ -441,7 +441,7 @@ public:
 	bool stopRunning;
 	bool crash;
 
-	CPU(NES* nes);
+	explicit CPU(NES* nes);
 	~CPU();
 	void init();
 	void stateLoad(ByteBuffer* buf);
@@ -626,7 +626,7 @@ public:
 	vector<bool> _keys;
 	vector<int> _map;
 
-	InputHandler(int id);
+	explicit InputHandler(int id);
 	~InputHandler();
 #ifdef NACL
 	void update_gamepad(PP_GamepadsSampleData gamepad_data);
@@ -904,7 +904,7 @@ public:
 	NES(InputHandler* joy1, InputHandler* joy2);
 #endif
 #ifdef NACL
-	NES(SaltyNES* salty_nes);
+	explicit NES(SaltyNES* salty_nes);
 #endif
 	~NES();
 	bool stateLoad(ByteBuffer* buf);
@@ -1054,7 +1054,7 @@ public:
 
 	void lock_mutex();
 	void unlock_mutex();
-	PAPU(NES* nes);
+	explicit PAPU(NES* nes);
 	~PAPU();
 	void stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
@@ -1221,7 +1221,7 @@ public:
 	vector<int>* get_name_buffer();
 	vector<int>* get_img_palette_buffer();
 	vector<int>* get_spr_palette_buffer();
-	PPU(NES* nes);
+	explicit PPU(NES* nes);
 	~PPU();
 	void init();
 	void setMirroring(int mirroring);
@@ -1322,7 +1322,7 @@ public:
 	bool enableSave;
 	bool valid;
 
-	ROM(NES* nes);
+	explicit ROM(NES* nes);
 	~ROM();
 	string sha256sum(uint8_t* data, size_t length);
 	string getmapperName();
