@@ -74,6 +74,8 @@ void Memory::dump(string file, int offset, int length) {
 	}catch(exception& ioe) {
 		printf("%s\n", "Memory dump to file: IO Error!");
 	}
+
+	delete[] ch;
 }
 
 void Memory::write(int address, vector<short>* array, int length) {

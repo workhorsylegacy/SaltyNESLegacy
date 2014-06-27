@@ -391,8 +391,8 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	return;
 	}*/
 
+	delete[] sdata;
 	valid = true;
-
 }
 
 bool ROM::isValid() {
