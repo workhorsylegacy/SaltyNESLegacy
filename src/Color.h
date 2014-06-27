@@ -29,8 +29,8 @@
 // It is licenced under GPL V2 with the classpath exception.
 // http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/java/awt/Color.java
 
-#ifndef CPP_COLOR
-#define CPP_COLOR
+#ifndef _CPP_COLOR_H_
+#define _CPP_COLOR_H_
 
 #include <assert.h>
 #include <stdlib.h>
@@ -42,5 +42,5 @@ public:
     static int HSBtoRGB(float hue, float saturation, float brightness);
 };
 
-#endif
+#endif // _CPP_COLOR_H_
 

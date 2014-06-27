@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CPP_NES_GLOBALS
-#define CPP_NES_GLOBALS
+#ifndef _SALTY_NES_H_
+#define _SALTY_NES_H_
 
 #include <assert.h>
 #include <map>
@@ -1606,5 +1606,5 @@ inline void log_to_browser(string message) {
 #endif
 }
 
-#endif
+#endif // _SALTY_NES_H_
 

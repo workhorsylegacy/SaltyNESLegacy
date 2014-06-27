@@ -23,8 +23,8 @@
    SOFTWARE.
 */
 
-#ifndef __ULIB_SHA256_H
-#define __ULIB_SHA256_H
+#ifndef _ULIB_SHA256_H_
+#define _ULIB_SHA256_H_
 
 #include <inttypes.h>
 
@@ -56,5 +56,5 @@ extern "C" {
 }
 #endif
 
-#endif  /* __ULIB_SHA256_H */
+#endif  // _ULIB_SHA256_H_
 
