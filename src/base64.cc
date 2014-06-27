@@ -1,6 +1,8 @@
 
 /* 
-   base64.cpp and base64.h
+   This base64 implementation has been modified to conform with newer C++
+   style guidelines. The original can be found at:
+   https://github.com/ReneNyffenegger/development_misc/tree/master/base64
 
    Copyright (C) 2004-2008 René Nyffenegger
 
@@ -122,3 +124,4 @@ std::string base64_decode(std::string const& encoded_string) {
 
   return ret;
 }
+
