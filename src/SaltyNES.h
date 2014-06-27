@@ -1477,7 +1477,7 @@ public:
 };
 #endif
 
-inline void arraycopy_int16_t(vector<int16_t>* src, int srcPos, vector<int16_t>* dest, int destPos, int length) {
+inline void arraycopy_short(vector<int16_t>* src, int srcPos, vector<int16_t>* dest, int destPos, int length) {
 	assert(srcPos >= 0);
 	assert(destPos >= 0);
 	assert(length >= 0);
