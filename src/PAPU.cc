@@ -309,7 +309,7 @@ NES* PAPU::getNes() {
 	return nes;
 }
 
-short PAPU::readReg() {
+int16_t PAPU::readReg() {
 	// Read 0x4015:
 	int tmp = 0;
 	tmp |= (square1->getLengthStatus());
@@ -324,10 +324,10 @@ short PAPU::readReg() {
 	dmc->irqGenerated = false;
 
 	////System.out.println("$4015 read. Value = "+Misc.bin8(tmp)+" countseq = "+countSequence);
-	return (short) tmp;
+	return (int16_t) tmp;
 }
 
-void PAPU::writeReg(int address, short value) {
+void PAPU::writeReg(int address, int16_t value) {
 	if(address >= 0x4000 && address < 0x4004) {
 
 		// Square Wave 1 Control
@@ -431,7 +431,7 @@ void PAPU::resetCounter() {
 // and when the user enables/disables channels
 // in the GUI.
 void PAPU::updateChannelEnable(int value) {
-	channelEnableValue = (short) value;
+	channelEnableValue = (int16_t) value;
 	square1->setEnabled(userEnableSquare1 && (value & 1) != 0);
 	square2->setEnabled(userEnableSquare2 && (value & 2) != 0);
 	triangle->setEnabled(userEnableTriangle && (value & 4) != 0);

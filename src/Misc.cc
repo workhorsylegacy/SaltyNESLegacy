@@ -95,7 +95,7 @@ float Misc::random() {
 	return rndret;
 }
 
-string Misc::from_vector_to_hex_string(vector<short>* data) {
+string Misc::from_vector_to_hex_string(vector<int16_t>* data) {
 	const size_t BYTE_LEN = 4;
 	stringstream out;
 	for(size_t i=0; i<data->size(); i++) {
@@ -104,10 +104,10 @@ string Misc::from_vector_to_hex_string(vector<short>* data) {
 	return out.str();
 }
 
-vector<short>* Misc::from_hex_string_to_vector(string data) {
+vector<int16_t>* Misc::from_hex_string_to_vector(string data) {
 	const size_t BYTE_LEN = 4;
 	const size_t VECTOR_SIZE = data.length() / BYTE_LEN;
-	vector<short>* retval = new vector<short>(VECTOR_SIZE);
+	vector<int16_t>* retval = new vector<int16_t>(VECTOR_SIZE);
 
 	uint16_t value = 0;
 	stringstream in;

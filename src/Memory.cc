@@ -20,7 +20,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Memory::Memory(NES* nes, int byteCount) {
 	this->nes = nes;
-	mem = new vector<short>(byteCount);
+	mem = new vector<int16_t>(byteCount);
 	memLength = byteCount;
 }
 
@@ -30,7 +30,7 @@ Memory::~Memory() {
 }
 
 void Memory::stateLoad(ByteBuffer* buf) {
-	if(mem==NULL)mem=new vector<short>(memLength);
+	if(mem==NULL)mem=new vector<int16_t>(memLength);
 	buf->readByteArray(mem);
 }
 
@@ -47,11 +47,11 @@ int Memory::getMemSize() {
 	return memLength;
 }
 
-void Memory::write(int address, short value) {
+void Memory::write(int address, int16_t value) {
 	(*mem)[address] = value;
 }
 
-short Memory::load(int address) {
+int16_t Memory::load(int address) {
 	return (*mem)[address];
 }
 
@@ -78,12 +78,12 @@ void Memory::dump(string file, int offset, int length) {
 	delete[] ch;
 }
 
-void Memory::write(int address, vector<short>* array, int length) {
+void Memory::write(int address, vector<int16_t>* array, int length) {
 	if(address+length > (int) mem->size())return;
 	arraycopy_short(array, 0, mem, address, length);
 }
 
-void Memory::write(int address, vector<short>* array, int arrayoffset, int length) {
+void Memory::write(int address, vector<int16_t>* array, int arrayoffset, int length) {
 	if(address+length > (int) mem->size())return;
 	arraycopy_short(array,arrayoffset,mem,address,length);
 }

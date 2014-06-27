@@ -177,8 +177,8 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		string rom_base64 = message.substr(rom_pos + 5);
 		string rom_data = base64_decode(rom_base64);
 
-		// Convert the save from hex to short vector
-		vector<short>* saveRam = NULL;
+		// Convert the save from hex to int16_t vector
+		vector<int16_t>* saveRam = NULL;
 		if(rom_pos > 32768) {
 			size_t save_pos = message.find("load_rom:");
 			string save_data = message.substr(save_pos + 9, 32768);

@@ -247,11 +247,11 @@ vector<bool>* ROM::getmapperSupported() {
 	return _mapperSupported;
 }
 
-void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<short>* save_ram) {
+void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<int16_t>* save_ram) {
 	fileName = file_name;
-	short* sdata = new short[length];
+	int16_t* sdata = new int16_t[length];
 	for(size_t i=0; i<length; i++) {
-		sdata[i] = (short) (data[i] & 255);
+		sdata[i] = (int16_t) (data[i] & 255);
 	}
 	log_to_browser("log: rom::load_from_data");
 
@@ -260,7 +260,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	log_to_browser("log: rom::sha256sum");
 
 	// Read header:
-	header = new short[16];
+	header = new int16_t[16];
 	for(int i = 0; i < 16; i++) {
 		header[i] = sdata[i];
 	}
@@ -311,14 +311,14 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 		mapperType &= 0xF;
 	}
 
-	rom = new vector<vector<short>*>(romCount);
+	rom = new vector<vector<int16_t>*>(romCount);
 	for(size_t i=0; i<romCount; i++) {
-		(*rom)[i] = new vector<short>(16384);
+		(*rom)[i] = new vector<int16_t>(16384);
 	}
 	
-	vrom = new vector<vector<short>*>(vromCount);
+	vrom = new vector<vector<int16_t>*>(vromCount);
 	for(size_t i=0; i<vromCount; i++) {
-		(*vrom)[i] = new vector<short>(4096);
+		(*vrom)[i] = new vector<int16_t>(4096);
 	}
 	
 	vromTile = new vector<vector<Tile*>*>(vromCount);
@@ -408,15 +408,15 @@ int ROM::getVromBankCount() {
 	return vromCount;
 }
 
-short* ROM::getHeader() {
+int16_t* ROM::getHeader() {
 	return header;
 }
 
-vector<short>* ROM::getRomBank(int bank) {
+vector<int16_t>* ROM::getRomBank(int bank) {
 	return (*rom)[bank];
 }
 
-vector<short>* ROM::getVromBank(int bank) {
+vector<int16_t>* ROM::getVromBank(int bank) {
 	return (*vrom)[bank];
 }
 
@@ -530,7 +530,7 @@ void ROM::setSaveState(bool enableSave) {
 	}
 }
 
-vector<short>* ROM::getBatteryRam() {
+vector<int16_t>* ROM::getBatteryRam() {
 	return saveRam;
 }
 
@@ -540,7 +540,7 @@ void ROM::loadBatteryRam() {
 			saveRamUpToDate = true;
 
 			if(saveRam == NULL) {
-				saveRam = new vector<short>(0x2000);
+				saveRam = new vector<int16_t>(0x2000);
 				return;
 			}
 
@@ -555,7 +555,7 @@ void ROM::loadBatteryRam() {
 	}
 }
 
-void ROM::writeBatteryRam(int address, short value) {
+void ROM::writeBatteryRam(int address, int16_t value) {
 	if(!failedSaveFile && !batteryRam && enableSave) {
 		loadBatteryRam();
 	}

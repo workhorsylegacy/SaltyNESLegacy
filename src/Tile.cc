@@ -37,13 +37,13 @@ Tile::Tile() {
 	memset(opaque, 0, 8);
 }
 
-void Tile::setBuffer(vector<short>* scanline) {
+void Tile::setBuffer(vector<int16_t>* scanline) {
 	for(y = 0; y < 8; y++) {
 		setScanline(y, (*scanline)[y], (*scanline)[y + 8]);
 	}
 }
 
-void Tile::setScanline(int sline, short b1, short b2) {
+void Tile::setScanline(int sline, int16_t b1, int16_t b2) {
 	initialized = true;
 	tIndex = sline << 3;
 	for(x = 0; x < 8; x++) {

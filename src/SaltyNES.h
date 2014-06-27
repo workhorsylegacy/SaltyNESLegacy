@@ -154,7 +154,7 @@ public:
 	// Microseconds per frame:
 	static const double MS_PER_FRAME;
 	// What value to flush memory with on power-up:
-	static short memoryFlushValue;
+	static int16_t memoryFlushValue;
 
 	static bool disableSprites;
 	static bool palEmulation;
@@ -169,7 +169,7 @@ public:
 	static const int BO_BIG_ENDIAN = 0;
 	static const int BO_LITTLE_ENDIAN = 1;
 	
-	vector<short>* buf;
+	vector<int16_t>* buf;
 	int size;
 	int byteOrder;
 	size_t curPos;
@@ -200,10 +200,10 @@ public:
 	bool inRange(int pos, int length);
 	bool putBoolean(bool b);
 	bool putBoolean(bool b, int pos);
-	bool putByte(short var);
-	bool putByte(short var, int pos);
-	bool putShort(short var);
-	bool putShort(short var, int pos);
+	bool putByte(int16_t var);
+	bool putByte(int16_t var, int pos);
+	bool putShort(int16_t var);
+	bool putShort(int16_t var, int pos);
 	bool putInt(int var);
 	bool putInt(int var, int pos);
 	bool putString(string var);
@@ -214,17 +214,17 @@ public:
 	bool putCharAscii(char var, int pos);
 	bool putStringAscii(string var);
 	bool putStringAscii(string var, int pos);
-	bool putByteArray(vector<short>* arr);
-	bool readByteArray(vector<short>* arr);
-	bool putShortArray(vector<short>* arr);
+	bool putByteArray(vector<int16_t>* arr);
+	bool readByteArray(vector<int16_t>* arr);
+	bool putShortArray(vector<int16_t>* arr);
 	string toString();
 	string toStringAscii();
 	bool readBoolean();
 	bool readBoolean(int pos);
-	short readByte();
-	short readByte(int pos);
-	short readShort();
-	short readShort(int pos);
+	int16_t readByte();
+	int16_t readByte(int pos);
+	int16_t readShort();
+	int16_t readShort(int pos);
 	int readInt();
 	int readInt(int pos);
 	char readChar();
@@ -239,7 +239,7 @@ public:
 	string readStringAscii(int pos, int length);
 	string readStringAsciiWithShortLength();
 	string readStringAsciiWithShortLength(int pos);
-	vector<short>* expandShortArray(vector<short>* array, int size);
+	vector<int16_t>* expandShortArray(vector<int16_t>* array, int size);
 	void crop();
 	static ByteBuffer* asciiEncode(ByteBuffer* buf);
 	//static ByteBuffer* asciiDecode(ByteBuffer* buf);
@@ -409,7 +409,7 @@ public:
 	// References to other parts of NES :
 	NES* nes;
 	MapperDefault* mmap;
-	vector<short>* mem;
+	vector<int16_t>* mem;
 
 	// CPU Registers:
 	int REG_ACC_NEW;
@@ -452,11 +452,11 @@ public:
 	void emulate();
 	int load(int addr);
 	int load16bit(int addr);
-	void write(int addr, short val);
+	void write(int addr, int16_t val);
 	void requestIrq(int type);
 	void push(int value);
 	void stackWrap();
-	short pull();
+	int16_t pull();
 	bool pageCrossed(int addr1, int addr2);
 	void haltCycles(int cycles);
 	void doNonMaskableInterrupt(int status);
@@ -631,7 +631,7 @@ public:
 #ifdef NACL
 	void update_gamepad(PP_GamepadsSampleData gamepad_data);
 #endif
-	short getKeyState(int padKey);
+	int16_t getKeyState(int padKey);
 	void mapKey(int padKey, int kbKeycode);
 	void poll_for_key_events();
 	void reset();
@@ -654,7 +654,7 @@ public:
 class Memory {
 public:
 	NES* nes;
-	vector<short>* mem;
+	vector<int16_t>* mem;
 	int memLength;
 
 	Memory(NES* nes, int byteCount);
@@ -663,12 +663,12 @@ public:
 	void stateSave(ByteBuffer* buf);
 	void reset();
 	int getMemSize();
-	void write(int address, short value);
-	short load(int address);
+	void write(int address, int16_t value);
+	int16_t load(int address);
 	void dump(string file);
 	void dump(string file, int offset, int length);
-	void write(int address, vector<short>* array, int length);
-	void write(int address, vector<short>* array, int arrayoffset, int length);
+	void write(int address, vector<int16_t>* array, int length);
+	void write(int address, vector<int16_t>* array, int arrayoffset, int length);
 };
 
 class MapperDefault {
@@ -676,7 +676,7 @@ public:
 	NES* nes;
 	Memory* cpuMem;
 	Memory* ppuMem;
-	vector<short>* cpuMemArray;
+	vector<int16_t>* cpuMemArray;
 	ROM* rom;
 	CPU* cpu;
 	PPU* ppu;
@@ -692,7 +692,7 @@ public:
 
 	MapperDefault();
 	virtual ~MapperDefault();
-	virtual void write(int address, short value);
+	virtual void write(int address, int16_t value);
 	virtual void init(NES* nes);
 	void base_init(NES* nes);
 	void stateLoad(ByteBuffer* buf);
@@ -701,14 +701,14 @@ public:
 	void base_mapperInternalStateSave(ByteBuffer* buf);
 	void setGameGenieState(bool enable);
 	bool getGameGenieState();
-	void base_write(int address, short value);
-	void writelow(int address, short value);
-	short base_load(int address);
-	virtual short load(int address);
-	short regLoad(int address);
-	void regWrite(int address, short value);
-	short joy1Read();
-	short joy2Read();
+	void base_write(int address, int16_t value);
+	void writelow(int address, int16_t value);
+	int16_t base_load(int address);
+	virtual int16_t load(int address);
+	int16_t regLoad(int address);
+	void regWrite(int address, int16_t value);
+	int16_t joy1Read();
+	int16_t joy2Read();
 	virtual void loadROM(ROM* rom);
 	void loadPRGROM();
 	void loadCHRROM();
@@ -757,7 +757,7 @@ public:
 	void init(NES* nes);
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
-	virtual void write(int address, short value);
+	virtual void write(int address, int16_t value);
 	void setReg(int reg, int value);
 	int getRegNumber(int address);
 	virtual void loadROM(ROM* rom);
@@ -770,14 +770,14 @@ public:
 class Mapper002 : public MapperDefault {
 public:
 	void init(NES* nes);
-	virtual void write(int address, short value);
+	virtual void write(int address, int16_t value);
 	virtual void loadROM(ROM* rom);
 };
 
 class Mapper003 : public MapperDefault {
 public:
 	virtual void init(NES* nes);
-	virtual void write(int address, short value);
+	virtual void write(int address, int16_t value);
 };
 
 class Mapper004 : public MapperDefault {
@@ -803,7 +803,7 @@ public:
 	virtual void init(NES* nes);
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
-	virtual void write(int address, short value);
+	virtual void write(int address, int16_t value);
 	virtual void executeCommand(int cmd, int arg);
 	virtual void loadROM(ROM* rom);
 	virtual void clockIrqCounter();
@@ -814,11 +814,11 @@ class Mapper007 : public MapperDefault {
 public:
 	int currentOffset;
 	int currentMirroring;
-	vector<short>* prgrom;
+	vector<int16_t>* prgrom;
 
 	virtual void init(NES* nes);
-	virtual short load(int address);
-	virtual void write(int address, short value);
+	virtual int16_t load(int address);
+	virtual void write(int address, int16_t value);
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
 	virtual void reset();
@@ -834,7 +834,7 @@ public:
 	int latchHiVal2;
 
 	virtual void init(NES* nes);
-	virtual void write(int address, short value);
+	virtual void write(int address, int16_t value);
 	virtual void loadROM(ROM* rom);
 	virtual void latchAccess(int address);
 	void mapperInternalStateLoad(ByteBuffer* buf);
@@ -858,22 +858,22 @@ public:
 	static vector<int>* resizeArray(vector<int>* array, int newSize);
 	static string pad(string str, string padStr, int length);
 	static float random();
-	static string from_vector_to_hex_string(vector<short>* data);
-	static vector<short>* from_hex_string_to_vector(string data);
+	static string from_vector_to_hex_string(vector<int16_t>* data);
+	static vector<int16_t>* from_hex_string_to_vector(string data);
 };
 
 class NameTable {
 public:
 	string name;
-	vector<short>* tile;
-	vector<short>* attrib;
+	vector<int16_t>* tile;
+	vector<int16_t>* attrib;
 	int width;
 	int height;
 
 	NameTable(int width, int height, string name);
 	~NameTable();
-	short getTileIndex(int x, int y);
-	short getAttrib(int x, int y);
+	int16_t getTileIndex(int x, int y);
+	int16_t getAttrib(int x, int y);
 	void writeTileIndex(int index, int value);
 	void writeAttrib(int index, int value);
 	void stateSave(ByteBuffer* buf);
@@ -924,7 +924,7 @@ public:
 	Memory* getSprMemory();
 	ROM* getRom();
 	MapperDefault* getMemoryMapper();
-	bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<short>* save_ram);
+	bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<int16_t>* save_ram);
 	void reset();
 	void enableSound(bool enable);
 //	void setFramerate(int rate);
@@ -995,7 +995,7 @@ public:
 	int frameIrqCounter;
 	int frameIrqCounterMax;
 	int initCounter;
-	short channelEnableValue;
+	int16_t channelEnableValue;
 	int8_t b1, b2, b3, b4;
 	int bufferSize;
 	int sampleRate;
@@ -1060,8 +1060,8 @@ public:
 	void stateSave(ByteBuffer* buf);
 	void synchronized_start();
 	NES* getNes();
-	short readReg();
-	void writeReg(int address, short value);
+	int16_t readReg();
+	void writeReg(int address, int16_t value);
 	void resetCounter();
 	void updateChannelEnable(int value);
 	void clockFrameCounter(int nCycles);
@@ -1125,13 +1125,13 @@ public:
 	// VRAM I/O:
 	int vramAddress;
 	int vramTmpAddress;
-	short vramBufferedReadValue;
+	int16_t vramBufferedReadValue;
 	bool firstWrite; 		// VRAM/Scroll Hi/Lo latch
 	vector<int>* vramMirrorTable; 			// Mirroring Lookup Table.
 	int i;
 
 	// SPR-RAM I/O:
-	short sramAddress; // 8-bit only.
+	int16_t sramAddress; // 8-bit only.
 
 	// Counters:
 	int cntFV;
@@ -1182,7 +1182,7 @@ public:
 	bool requestEndFrame;
 	bool nmiOk;
 	int nmiCounter;
-	short tmp;
+	int16_t tmp;
 	bool dummyCycleToggle;
 
 	// Vars used when updating regs/address:
@@ -1234,22 +1234,22 @@ public:
 	void updateControlReg1(int value);
 	void updateControlReg2(int value);
 	void setStatusFlag(int flag, bool value);
-	short readStatusRegister();
-	void writeSRAMAddress(short address);
-	short sramLoad();
-	void sramWrite(short value);
-	void scrollWrite(short value);
+	int16_t readStatusRegister();
+	void writeSRAMAddress(int16_t address);
+	int16_t sramLoad();
+	void sramWrite(int16_t value);
+	void scrollWrite(int16_t value);
 	void writeVRAMAddress(int address);
-	short vramLoad();
-	void vramWrite(short value);
-	void sramDMA(short value);
+	int16_t vramLoad();
+	void vramWrite(int16_t value);
+	void sramDMA(int16_t value);
 	void regsFromAddress();
 	void cntsFromAddress();
 	void regsToAddress();
 	void cntsToAddress();
 	void incTileCounter(int count);
-	short mirroredLoad(int address);
-	void mirroredWrite(int address, short value);
+	int16_t mirroredLoad(int address);
+	void mirroredWrite(int address, int16_t value);
 	void triggerRendering();
 	void renderFramePartially(vector<int>* buffer, int startScan, int scanCount);
 	void renderBgScanline(vector<int>* buffer, int scan);
@@ -1258,14 +1258,14 @@ public:
 	void renderPattern();
 	void renderNameTables();
 	void renderPalettes();
-	void writeMem(int address, short value);
+	void writeMem(int address, int16_t value);
 	void updatePalettes();
-	void patternWrite(int address, short value);
-	void patternWrite(int address, vector<short>* value, int offset, int length);
+	void patternWrite(int address, int16_t value);
+	void patternWrite(int address, vector<int16_t>* value, int offset, int length);
 	void invalidateFrameCache();
-	void nameTableWrite(int index, int address, short value);
-	void attribTableWrite(int index, int address, short value);
-	void spriteRamWriteUpdate(int address, short value);
+	void nameTableWrite(int index, int address, int16_t value);
+	void attribTableWrite(int index, int address, int16_t value);
+	void spriteRamWriteUpdate(int address, int16_t value);
 	void doNMI();
 	int statusRegsToInt();
 	void statusRegsFromInt(int n);
@@ -1304,10 +1304,10 @@ public:
 
 	bool failedSaveFile;
 	bool saveRamUpToDate;
-	short* header;
-	vector<vector<short>*>* rom;
-	vector<vector<short>*>* vrom;
-	vector<short>* saveRam;
+	int16_t* header;
+	vector<vector<int16_t>*>* rom;
+	vector<vector<int16_t>*>* vrom;
+	vector<int16_t>* saveRam;
 	vector<vector<Tile*>*>* vromTile;
 	NES* nes;
 	size_t romCount;
@@ -1327,13 +1327,13 @@ public:
 	string sha256sum(uint8_t* data, size_t length);
 	string getmapperName();
 	static vector<bool>* getmapperSupported();
-	void load_from_data(string file_name, uint8_t* data, size_t length, vector<short>* save_ram);
+	void load_from_data(string file_name, uint8_t* data, size_t length, vector<int16_t>* save_ram);
 	bool isValid();
 	int getRomBankCount();
 	int getVromBankCount();
-	short* getHeader();
-	vector<short>* getRomBank(int bank);
-	vector<short>* getVromBank(int bank);
+	int16_t* getHeader();
+	vector<int16_t>* getRomBank(int bank);
+	vector<int16_t>* getVromBank(int bank);
 	vector<Tile*>* getVromBankTiles(int bank);
 	int getMirroringType();
 	int getMapperType();
@@ -1344,9 +1344,9 @@ public:
 	bool mapperSupported();
 	MapperDefault* createMapper();
 	void setSaveState(bool enableSave);
-	vector<short>* getBatteryRam();
+	vector<int16_t>* getBatteryRam();
 	void loadBatteryRam();
-	void writeBatteryRam(int address, short value);
+	void writeBatteryRam(int address, int16_t value);
 	void closeRom();
 };
 
@@ -1366,8 +1366,8 @@ public:
 	bool opaque[8];
 
 	Tile();
-	void setBuffer(vector<short>* scanline);
-	void setScanline(int sline, short b1, short b2);
+	void setBuffer(vector<int16_t>* scanline);
+	void setScanline(int sline, int16_t b1, int16_t b2);
 	void renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette);
 	void renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette);
 	void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable);
@@ -1395,7 +1395,7 @@ public:
 #ifdef NACL
 	void init_data(uint8_t* rom_data, size_t length, SaltyNES* salty_nes);
 #endif
-	void pre_run_setup(vector<short>* save_ram);
+	void pre_run_setup(vector<int16_t>* save_ram);
 	void run();
 	void stop();
 	void readParams();
@@ -1477,7 +1477,7 @@ public:
 };
 #endif
 
-inline void arraycopy_short(vector<short>* src, int srcPos, vector<short>* dest, int destPos, int length) {
+inline void arraycopy_int16_t(vector<int16_t>* src, int srcPos, vector<int16_t>* dest, int destPos, int length) {
 	assert(srcPos >= 0);
 	assert(destPos >= 0);
 	assert(length >= 0);

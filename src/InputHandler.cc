@@ -140,8 +140,8 @@ void InputHandler::update_gamepad(PP_GamepadsSampleData gamepad_data) {
 }
 #endif
 
-short InputHandler::getKeyState(int padKey) {
-	return (short) (_keys[_map[padKey]] ? 0x41 : 0x40);
+int16_t InputHandler::getKeyState(int padKey) {
+	return (int16_t) (_keys[_map[padKey]] ? 0x41 : 0x40);
 }
 
 void InputHandler::mapKey(int padKey, int kbKeycode) {

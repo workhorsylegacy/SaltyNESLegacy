@@ -24,7 +24,7 @@ ByteBuffer::ByteBuffer(int size, int byteOrdering) {
 	if(size < 1) {
 		size = 1;
 	}
-	this->buf = new vector<short>(size);
+	this->buf = new vector<int16_t>(size);
 	this->size = size;
 	this->byteOrder = byteOrdering;
 	curPos = 0;
@@ -36,9 +36,9 @@ ByteBuffer::ByteBuffer(int size, int byteOrdering) {
 
 ByteBuffer::ByteBuffer(vector<int8_t>* content, int byteOrdering) {
 	try {
-		this->buf = new vector<short>(size);
+		this->buf = new vector<int16_t>(size);
 		for(size_t i = 0; i < content->size(); i++) {
-			(*buf)[i] = (short) ((*content)[i] & 255);
+			(*buf)[i] = (int16_t) ((*content)[i] & 255);
 		}
 		size = content->size();
 		this->byteOrder = byteOrdering;
@@ -185,13 +185,13 @@ bool ByteBuffer::putBoolean(bool b) {
 
 bool ByteBuffer::putBoolean(bool b, int pos) {
 	if(b) {
-		return putByte((short) 1, pos);
+		return putByte((int16_t) 1, pos);
 	} else {
-		return putByte((short) 0, pos);
+		return putByte((int16_t) 0, pos);
 	}
 }
 
-bool ByteBuffer::putByte(short var) {
+bool ByteBuffer::putByte(int16_t var) {
 	if(inRange(curPos, 1)) {
 		(*buf)[curPos] = var;
 		move(1);
@@ -202,7 +202,7 @@ bool ByteBuffer::putByte(short var) {
 	}
 }
 
-bool ByteBuffer::putByte(short var, int pos) {
+bool ByteBuffer::putByte(int16_t var, int pos) {
 	if(inRange(pos, 1)) {
 		(*buf)[pos] = var;
 		return true;
@@ -212,7 +212,7 @@ bool ByteBuffer::putByte(short var, int pos) {
 	}
 }
 
-bool ByteBuffer::putShort(short var) {
+bool ByteBuffer::putShort(int16_t var) {
 	bool ret = putShort(var, curPos);
 	if(ret) {
 		move(2);
@@ -220,14 +220,14 @@ bool ByteBuffer::putShort(short var) {
 	return ret;
 }
 
-bool ByteBuffer::putShort(short var, int pos) {
+bool ByteBuffer::putShort(int16_t var, int pos) {
 	if(inRange(pos, 2)) {
 		if(this->byteOrder == BO_BIG_ENDIAN) {
-			(*buf)[pos + 0] = (short) ((var >> 8) & 255);
-			(*buf)[pos + 1] = (short) ((var) & 255);
+			(*buf)[pos + 0] = (int16_t) ((var >> 8) & 255);
+			(*buf)[pos + 1] = (int16_t) ((var) & 255);
 		} else {
-			(*buf)[pos + 1] = (short) ((var >> 8) & 255);
-			(*buf)[pos + 0] = (short) ((var) & 255);
+			(*buf)[pos + 1] = (int16_t) ((var >> 8) & 255);
+			(*buf)[pos + 0] = (int16_t) ((var) & 255);
 		}
 		return true;
 	} else {
@@ -247,15 +247,15 @@ bool ByteBuffer::putInt(int var) {
 bool ByteBuffer::putInt(int var, int pos) {
 	if(inRange(pos, 4)) {
 		if(this->byteOrder == BO_BIG_ENDIAN) {
-			(*buf)[pos + 0] = (short) ((var >> 24) & 255);
-			(*buf)[pos + 1] = (short) ((var >> 16) & 255);
-			(*buf)[pos + 2] = (short) ((var >> 8) & 255);
-			(*buf)[pos + 3] = (short) ((var) & 255);
+			(*buf)[pos + 0] = (int16_t) ((var >> 24) & 255);
+			(*buf)[pos + 1] = (int16_t) ((var >> 16) & 255);
+			(*buf)[pos + 2] = (int16_t) ((var >> 8) & 255);
+			(*buf)[pos + 3] = (int16_t) ((var) & 255);
 		} else {
-			(*buf)[pos + 3] = (short) ((var >> 24) & 255);
-			(*buf)[pos + 2] = (short) ((var >> 16) & 255);
-			(*buf)[pos + 1] = (short) ((var >> 8) & 255);
-			(*buf)[pos + 0] = (short) ((var) & 255);
+			(*buf)[pos + 3] = (int16_t) ((var >> 24) & 255);
+			(*buf)[pos + 2] = (int16_t) ((var >> 16) & 255);
+			(*buf)[pos + 1] = (int16_t) ((var >> 8) & 255);
+			(*buf)[pos + 0] = (int16_t) ((var) & 255);
 		}
 		return true;
 	} else {
@@ -274,12 +274,12 @@ bool ByteBuffer::putString(string var) {
 
 bool ByteBuffer::putString(string var, int pos) {
 	char* charArr = (char*) var.c_str();
-	short theChar;
+	int16_t theChar;
 	if(inRange(pos, var.length() * 2)) {
 		for(size_t i = 0; i < var.length(); i++) {
-			theChar = (short) (charArr[i]);
-			(*buf)[pos + 0] = (short) ((theChar >> 8) & 255);
-			(*buf)[pos + 1] = (short) ((theChar) & 255);
+			theChar = (int16_t) (charArr[i]);
+			(*buf)[pos + 0] = (int16_t) ((theChar >> 8) & 255);
+			(*buf)[pos + 1] = (int16_t) ((theChar) & 255);
 			pos += 2;
 		}
 		return true;
@@ -301,11 +301,11 @@ bool ByteBuffer::putChar(char var, int pos) {
 	int tmp = var;
 	if(inRange(pos, 2)) {
 		if(byteOrder == BO_BIG_ENDIAN) {
-			(*buf)[pos + 0] = (short) ((tmp >> 8) & 255);
-			(*buf)[pos + 1] = (short) ((tmp) & 255);
+			(*buf)[pos + 0] = (int16_t) ((tmp >> 8) & 255);
+			(*buf)[pos + 1] = (int16_t) ((tmp) & 255);
 		} else {
-			(*buf)[pos + 1] = (short) ((tmp >> 8) & 255);
-			(*buf)[pos + 0] = (short) ((tmp) & 255);
+			(*buf)[pos + 1] = (int16_t) ((tmp >> 8) & 255);
+			(*buf)[pos + 0] = (int16_t) ((tmp) & 255);
 		}
 		return true;
 	} else {
@@ -324,7 +324,7 @@ bool ByteBuffer::putCharAscii(char var) {
 
 bool ByteBuffer::putCharAscii(char var, int pos) {
 	if(inRange(pos)) {
-		(*buf)[pos] = (short) var;
+		(*buf)[pos] = (int16_t) var;
 		return true;
 	} else {
 		error();
@@ -344,7 +344,7 @@ bool ByteBuffer::putStringAscii(string var, int pos) {
 	char* charArr = (char*) var.c_str();
 	if(inRange(pos, var.length())) {
 		for(size_t i = 0; i < var.length(); i++) {
-			(*buf)[pos] = (short) charArr[i];
+			(*buf)[pos] = (int16_t) charArr[i];
 			pos++;
 		}
 		return true;
@@ -354,7 +354,7 @@ bool ByteBuffer::putStringAscii(string var, int pos) {
 	}
 }
 
-bool ByteBuffer::putByteArray(vector<short>* arr) {
+bool ByteBuffer::putByteArray(vector<int16_t>* arr) {
 	if(arr == NULL) {
 		return false;
 	}
@@ -368,7 +368,7 @@ bool ByteBuffer::putByteArray(vector<short>* arr) {
 	return true;
 }
 
-bool ByteBuffer::readByteArray(vector<short>* arr) {
+bool ByteBuffer::readByteArray(vector<int16_t>* arr) {
 	if(arr == NULL) {
 		return false;
 	}
@@ -376,13 +376,13 @@ bool ByteBuffer::readByteArray(vector<short>* arr) {
 		return false;
 	}
 	for(size_t i = 0; i < arr->size(); i++) {
-		(*arr)[i] = (short) ((*buf)[curPos + i] & 0xFF);
+		(*arr)[i] = (int16_t) ((*buf)[curPos + i] & 0xFF);
 	}
 	curPos += arr->size();
 	return true;
 }
 
-bool ByteBuffer::putShortArray(vector<short>* arr) {
+bool ByteBuffer::putShortArray(vector<int16_t>* arr) {
 	if(arr == NULL) {
 		return false;
 	}
@@ -391,14 +391,14 @@ bool ByteBuffer::putShortArray(vector<short>* arr) {
 	}
 	if(byteOrder == BO_BIG_ENDIAN) {
 		for(size_t i = 0; i < arr->size(); i++) {
-			(*buf)[curPos + 0] = (short) (((*arr)[i] >> 8) & 255);
-			(*buf)[curPos + 1] = (short) (((*arr)[i]) & 255);
+			(*buf)[curPos + 0] = (int16_t) (((*arr)[i] >> 8) & 255);
+			(*buf)[curPos + 1] = (int16_t) (((*arr)[i]) & 255);
 			curPos += 2;
 		}
 	} else {
 		for(size_t i = 0; i < arr->size(); i++) {
-			(*buf)[curPos + 1] = (short) (((*arr)[i] >> 8) & 255);
-			(*buf)[curPos + 0] = (short) (((*arr)[i]) & 255);
+			(*buf)[curPos + 1] = (int16_t) (((*arr)[i] >> 8) & 255);
+			(*buf)[curPos + 0] = (int16_t) (((*arr)[i]) & 255);
 			curPos += 2;
 		}
 	}
@@ -407,9 +407,9 @@ bool ByteBuffer::putShortArray(vector<short>* arr) {
 
 string ByteBuffer::toString() {
 	char* strBuf = new char(size-1);
-	short tmp;
+	int16_t tmp;
 	for(int i = 0; i < (size - 1); i += 2) {
-		tmp = (short) (((*buf)[i] << 8) | ((*buf)[i + 1]));
+		tmp = (int16_t) (((*buf)[i] << 8) | ((*buf)[i + 1]));
 		strBuf[i] = (char) tmp;
 	}
 	return string(strBuf);
@@ -433,13 +433,13 @@ bool ByteBuffer::readBoolean(int pos) {
 	return readByte(pos) == 1;
 }
 
-short ByteBuffer::readByte() {
-	short ret = readByte(curPos);
+int16_t ByteBuffer::readByte() {
+	int16_t ret = readByte(curPos);
 	move(1);
 	return ret;
 }
 
-short ByteBuffer::readByte(int pos) {
+int16_t ByteBuffer::readByte(int pos) {
 	if(inRange(pos)) {
 		return (*buf)[pos];
 	} else {
@@ -448,18 +448,18 @@ short ByteBuffer::readByte(int pos) {
 	}
 }
 
-short ByteBuffer::readShort() {
-	short ret = readShort(curPos);
+int16_t ByteBuffer::readShort() {
+	int16_t ret = readShort(curPos);
 	move(2);
 	return ret;
 }
 
-short ByteBuffer::readShort(int pos) {
+int16_t ByteBuffer::readShort(int pos) {
 	if(inRange(pos, 2)) {
 		if(this->byteOrder == BO_BIG_ENDIAN) {
-			return (short) (((*buf)[pos] << 8) | ((*buf)[pos + 1]));
+			return (int16_t) (((*buf)[pos] << 8) | ((*buf)[pos + 1]));
 		} else {
-			return (short) (((*buf)[pos + 1] << 8) | ((*buf)[pos]));
+			return (int16_t) (((*buf)[pos + 1] << 8) | ((*buf)[pos]));
 		}
 	} else {
 		error();
@@ -554,7 +554,7 @@ string ByteBuffer::readStringWithShortLength() {
 }
 
 string ByteBuffer::readStringWithShortLength(int pos) {
-	short len;
+	int16_t len;
 	if(inRange(pos, 2)) {
 		len = readShort(pos);
 		if(len > 0) {
@@ -593,7 +593,7 @@ string ByteBuffer::readStringAsciiWithShortLength() {
 }
 
 string ByteBuffer::readStringAsciiWithShortLength(int pos) {
-	short len;
+	int16_t len;
 	if(inRange(pos, 2)) {
 		len = readShort(pos);
 		if(len > 0) {
@@ -606,8 +606,8 @@ string ByteBuffer::readStringAsciiWithShortLength(int pos) {
 	}
 }
 
-vector<short>* ByteBuffer::expandShortArray(vector<short>* array, int size) {
-	vector<short>* newArr = new vector<short>(array->size() + size);
+vector<int16_t>* ByteBuffer::expandShortArray(vector<int16_t>* array, int size) {
+	vector<int16_t>* newArr = new vector<int16_t>(array->size() + size);
 	for(size_t i=0; i<array->size(); i++)
 		(*newArr)[i] = (*array)[i];
 	return newArr;
@@ -625,7 +625,7 @@ void ByteBuffer::crop() {
 
 ByteBuffer* ByteBuffer::asciiEncode(ByteBuffer* buf) {
 
-	vector<short>* data = buf->buf;
+	vector<int16_t>* data = buf->buf;
 	vector<int8_t>* enc = new vector<int8_t>(buf->getSize() * 2);
 
 	int encpos = 0;

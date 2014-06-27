@@ -19,8 +19,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 NameTable::NameTable(int width, int height, string name) {
 	this->name = name;
-	this->tile = new vector<short>(width * height);
-	this->attrib = new vector<short>(width * height);
+	this->tile = new vector<int16_t>(width * height);
+	this->attrib = new vector<int16_t>(width * height);
 	this->width = width;
 	this->height = height;
 }
@@ -30,16 +30,16 @@ NameTable::~NameTable() {
 	delete_n_null(attrib);
 }
 
-short NameTable::getTileIndex(int x, int y) {
+int16_t NameTable::getTileIndex(int x, int y) {
 	return (*tile)[y * width + x];
 }
 
-short NameTable::getAttrib(int x, int y) {
+int16_t NameTable::getAttrib(int x, int y) {
 	return (*attrib)[y * width + x];
 }
 
 void NameTable::writeTileIndex(int index, int value) {
-	(*tile)[index] = (short) value;
+	(*tile)[index] = (int16_t) value;
 }
 
 void NameTable::writeAttrib(int index, int value) {
@@ -60,7 +60,7 @@ void NameTable::writeAttrib(int index, int value) {
 					tx = basex + sqx * 2 + x;
 					ty = basey + sqy * 2 + y;
 					//attindex = ty * width + tx;
-					(*attrib)[ty * width + tx] = (short) ((add << 2) & 12);
+					(*attrib)[ty * width + tx] = (int16_t) ((add << 2) & 12);
 				////System.out.println("x="+tx+" y="+ty+" value="+attrib[ty*width+tx]+" index="+attindex);
 				}
 			}

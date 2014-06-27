@@ -22,7 +22,7 @@ void Mapper002::init(NES* nes) {
 	this->base_init(nes);
 }
 
-void Mapper002::write(int address, short value) {
+void Mapper002::write(int address, int16_t value) {
 	if(address < 0x8000) {
 		// Let the base mapper take care of it.
 		this->base_write(address, value);
