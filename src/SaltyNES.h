@@ -111,7 +111,7 @@ class SaltyNES;
 // Interfaces
 class IPapuChannel {
 public:
-	virtual ~IPapuChannel() { };
+	virtual ~IPapuChannel() { }
 	virtual void writeReg(int address, int value) = 0;
 	virtual void setEnabled(bool value) = 0;
 	virtual bool isEnabled() = 0;
