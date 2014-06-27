@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Matthew Brennan Jones <mattjones@workhorsy.org>
+# Copyright (c) 2013 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
 # Copyright (c) 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.

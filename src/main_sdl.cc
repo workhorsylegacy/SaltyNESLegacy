@@ -1,5 +1,5 @@
 /*
-SaltyNES Copyright (c) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>
+SaltyNES Copyright (c) 2012 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -23,7 +23,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
 	printf("%s\n", "");
 	printf("%s\n", "SaltyNES is a browser based NES emulator derived from vNES.");
-	printf("%s\n", "SaltyNES (C) 2012 Matthew Brennan Jones <mattjones@workhorsy.org>");
+	printf("%s\n", "SaltyNES (C) 2012 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>");
 	printf("%s\n", "vNES 2.14 (C) 2006-2011 Jamie Sanders thatsanderskid.com");
 	printf("%s\n", "Use of this program subject to GNU GPL, Version 3.");
 	printf("%s\n", "");
