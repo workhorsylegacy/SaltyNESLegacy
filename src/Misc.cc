@@ -65,7 +65,7 @@ string Misc::bin16(int num) {
 	return binN(num, 16);
 }
 
-string Misc::binStr(long value, int bitcount) {
+string Misc::binStr(int32_t value, int bitcount) {
 	string ret = "";
 	for(int i = 0; i < bitcount; i++) {
 		ret = ((value & (1 << i)) != 0 ? "1" : "0") + ret;

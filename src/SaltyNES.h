@@ -306,8 +306,8 @@ public:
 	int randomBit;
 	int randomMode;
 	int sampleValue;
-	long accValue;
-	long accCount;
+	int32_t accValue;
+	int32_t accCount;
 	int tmp;
 
 	explicit ChannelNoise(PAPU* papu);
@@ -854,7 +854,7 @@ public:
 	static string binN(int num, int N);
 	static string bin8(int num);
 	static string bin16(int num);
-	static string binStr(long value, int bitcount);
+	static string binStr(int32_t value, int bitcount);
 	static vector<int>* resizeArray(vector<int>* array, int newSize);
 	static string pad(string str, string padStr, int length);
 	static float random();
