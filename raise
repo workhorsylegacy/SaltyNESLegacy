@@ -2,9 +2,9 @@
 # -*- coding: UTF-8 -*-
 
 # This file is part of Raise.
-# Raise is a small software build tool that ships with your code.
+# Raise is a small build automation tool that ships with your software.
 # Raise uses a MIT style license, and is hosted at http://launchpad.net/raise .
-# Copyright (c) 2013, Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
+# Copyright (c) 2014, Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -25,19 +25,44 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import os, sys
+# Make sure we are in at least python 2.6
+import sys
+if sys.version_info < (2, 6):
+	print("Python 2.6 or greater is required. Exiting ...")
+	exit(1)
+
+# Load the default imports
+import os
 import stat
 if sys.version_info < (3, 0):
 	from urllib2 import urlopen
 else:
 	from urllib.request import urlopen
 
-RAISE_ACTUAL_URLS = {
-	'0.1.0' :   'http://bazaar.launchpad.net/~workhorsy/raise/0.1.0/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual',
-	'0.2.0' :   'http://bazaar.launchpad.net/~workhorsy/raise/0.2.0/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual',
-	'Trunk' : 'http://bazaar.launchpad.net/~workhorsy/raise/main/download/head:/raise-20120417054845-dmqxla979coc2eqq-1/raise_actual'
+# Get the location of Lib Raise for this version
+LIB_RAISE_VERSION = '0.4.0 dev'
+RAISE_VERSION = 'main'
+RAISE_BASE = 'http://bazaar.launchpad.net/~workhorsy/raise/{0}/download/head:/'.format(RAISE_VERSION)
+RAISE_URLS = {
+	'cpuinfo.py'          : '{0}cpuinfo.py-20140213011104-ys50gdvnav1t3ah0-1/cpuinfo.py'.format(RAISE_BASE),
+	'raise'               : '{0}raise-20120417054845-dmqxla979coc2eqq-1/lib_raise.py'.format(RAISE_BASE),
+	'raise_ar'            : '{0}lib_raise_ar.py-20131002010124-c22ldygq1nz33jv5-1/lib_raise_ar.py'.format(RAISE_BASE),
+	'raise_c'             : '{0}lib_raise_c.py-20130925020012-1prflcfy9f1w5w74-1/lib_raise_c.py'.format(RAISE_BASE),
+	'raise_config'        : '{0}lib_raise_config.py-20131015181548-t77j3i31shcey10l-1/lib_raise_config.py'.format(RAISE_BASE),
+	'raise_cpu'           : '{0}lib_raise_cpu.py-20130926223728-aw4afvc65fy8q6yb-1/lib_raise_cpu.py'.format(RAISE_BASE),
+	'raise_csharp'        : '{0}lib_raise_csharp.py-20130925020021-x4i3z530h3t3v1yq-1/lib_raise_csharp.py'.format(RAISE_BASE),
+	'raise_cxx'           : '{0}lib_raise_cxx.py-20130925020016-9fjw17cv08u2lemd-1/lib_raise_cxx.py'.format(RAISE_BASE),
+	'raise_d'             : '{0}lib_raise_d.py-20130925020028-1dn7htdqkc5czmz6-1/lib_raise_d.py'.format(RAISE_BASE),
+	'raise_find'          : '{0}lib_raise_libraries.-20130926135917-cld8cx2qb6r0gg2p-1/lib_raise_find.py'.format(RAISE_BASE),
+	'raise_fs'            : '{0}lib_raise_fs.py-20130926135859-5fx3lg4fqvldafr6-1/lib_raise_fs.py'.format(RAISE_BASE),
+	'raise_helpers'       : '{0}lib_raise_helpers.py-20130926135905-4pr2hnirgvbysmts-1/lib_raise_helpers.py'.format(RAISE_BASE),
+	'raise_java'          : '{0}lib_raise_java.py-20131017141946-oy8wrdvoxoudugeu-1/lib_raise_java.py'.format(RAISE_BASE),
+	'raise_linker'        : '{0}lib_raise_linker.py-20130925020033-8xk1azowpl0ncoh2-1/lib_raise_linker.py'.format(RAISE_BASE),
+	'raise_process'       : '{0}lib_raise_process.py-20130926135939-ayh5ule0azobuglj-1/lib_raise_process.py'.format(RAISE_BASE),
+	'raise_python'        : '{0}lib_raise_python.py-20130926135944-772iti7d0besizk2-1/lib_raise_python.py'.format(RAISE_BASE),
+	'raise_terminal'      : '{0}lib_raise_terminal.p-20130926135949-pg14csynoheohu5f-1/lib_raise_terminal.py'.format(RAISE_BASE),
+	'raise_users'         : '{0}lib_raise_os.py-20130926135933-f37upvzomj5b02bt-1/lib_raise_users.py'.format(RAISE_BASE),
 }
-RAISE_ACTUAL_URL = RAISE_ACTUAL_URLS['0.2.0']
 
 def friendly_size(data_length):
 	retval = ''
@@ -55,94 +80,127 @@ def friendly_size(data_length):
 
 	return retval
 
-def download_file(url, cb_progress, cb_done):
-	chunk_size = 1024
-	response = ''
-	try:
-		response = urlopen(url)
-		if response.code != 200:
-			print('Download failed. Exiting ...')
-			exit()
-	except Exception as e:
-		print('Download failed. Exiting ...')
-		exit()
-	content_length = int(response.headers['Content-Length'])
-	data = b''
-	data_length = 0
+def update(dir_name):
+	print("Downloading Lib Raise version {0} ...".format(LIB_RAISE_VERSION))
 
-	while True:
-		chunk = response.read(chunk_size)
-		if not chunk:
-			break
+	if not os.path.isdir(dir_name):
+		os.mkdir(dir_name)
 
-		data += chunk
-		data_length += len(chunk)
-		percent = round((float(data_length) / content_length)*100, 2)
+	for module, url in RAISE_URLS.items():
+		# Get the real name if a raise module
+		if not module.endswith('.py'):
+			module = "lib_{0}.py".format(module)
 
-		cb_progress(chunk, data_length, chunk_size, content_length, percent)
-
-	cb_done(data)
-
-def update():
-	print("Downloading newest Raise version ...")
-
-	# Get the file name for actual
-	file_name = '.raise_actual'
-	if os.path.isfile('raise_actual'):
-		file_name = 'raise_actual'
-
-	try:
-		def cb_progress(chunk, data_length, chunk_size, content_length, percent):
-			# Write the download progress
-			sys.stdout.write("Downloaded {0} of {1} ({2}%)\r".format(friendly_size(data_length), friendly_size(content_length), percent))
-
-			# Write a newline if the download is complete
-			if data_length >= content_length:
-				sys.stdout.write('\n')
-
-			sys.stdout.flush()
-
-		def cb_done(data):
-			# Make sure the downloaded file is python
-			if not data.decode().startswith("#!/usr/bin/env python"):
-				print('The downloaded update was invalid. Make sure http://launchpad.net can be accessed. Exiting ...')
-				exit()
-
-			# Save the file
-			f = open(file_name, 'wb')
-			f.write(data)
+		# Get the file name for script
+		file_name = os.path.join(dir_name, module)
 
 		# Download the file and call the cb after each chunk
-		download_file(RAISE_ACTUAL_URL, cb_progress, cb_done)
+		_download_file(url, file_name)
 
 		# Make the file executable
 		os.chmod(file_name, 0o775 | stat.S_IXOTH)
+
+def _download_file(url, file_name):
+	CHUNK_SIZE = 1024
+
+	try:
+		# Connect with HTTP
+		response = urlopen(url)
+		if response.code != 200:
+			sys.stderr.write('Download failed. Exiting ...\n')
+			sys.stderr.flush()
+			exit(1)
+
+		# Read the HTTP header
+		content_length = int(response.headers['Content-Length'])
+		data = b''
+		data_length = 0
+
+		# Read the HTTP body
+		while True:
+			chunk = response.read(CHUNK_SIZE)
+			if not chunk:
+				break
+
+			data += chunk
+			data_length += len(chunk)
+			percent = round((float(data_length) / content_length)*100, 2)
+
+			_cb_dl_progress(file_name, chunk, data_length, CHUNK_SIZE, content_length, percent)
 	except Exception as e:
-		print(str(e))
+		sys.stderr.write('Download failed. Exiting ...\n')
+		sys.stderr.write(str(e) + '\n')
+		sys.stderr.write(url + '\n')
+		sys.stderr.flush()
+		exit(1)
+
+	# Write the file to disk
+	_cb_dl_done(file_name, data)
+
+def _cb_dl_progress(file_name, chunk, data_length, chunk_size, content_length, percent):
+	# Write the download progress
+	sys.stdout.write("    {0} of {1} ({2}%) '{3}'\r".format(friendly_size(data_length), friendly_size(content_length), percent, file_name))
+
+	# Write a newline if the download is complete
+	if data_length >= content_length:
+		sys.stdout.write('\n')
+
+	sys.stdout.flush()
+
+def _cb_dl_done(file_name, data):
+	# Make sure the downloaded file is python
+	if not data.decode().startswith("#!/usr/bin/env python"):
+		sys.stderr.write('The downloaded update was invalid. Make sure http://launchpad.net can be accessed. Exiting ...\n')
+		sys.stderr.flush()
+		exit(1)
+
+	# Save the file
+	with open(file_name, 'wb') as f:
+		f.write(data)
 
 if __name__ == '__main__':
+	needs_update = True
+	dir_name = '.lib_raise/'
+
 	# Get the arguments
 	args = str(str.join(' ', sys.argv[1:]))
 
+	# Get the location of the module files
+	dirs = ['lib_raise/', '.lib_raise/', '../lib_raise/', '../../lib_raise/']
+	for entry in dirs:
+		if os.path.exists(entry):
+			dir_name = entry
+			has_files = True
+
+			for module, url in RAISE_URLS.items():
+				# Get the real name if a raise module
+				if not module.endswith('.py'):
+					module = 'lib_{0}.py'.format(module)
+				module = os.path.join(entry, module)
+				if not os.path.exists(module):
+					has_files = False
+			if has_files:
+				needs_update = False
+
+	# Print the version if that is the target
+	if args == 'version':
+		print(LIB_RAISE_VERSION)
+		exit(0)
+
 	# Run update if that is the target
 	if args == 'update':
-		update()
-		exit()
+		update(dir_name)
+		exit(0)
+	elif needs_update:
+		update(dir_name)
 
-	# Run update if there is no raise_actual file
-	actual = None
-	if os.path.isfile('raise_actual'):
-		actual = 'raise_actual'
-	elif os.path.isfile('.raise_actual'):
-		actual = '.raise_actual'
-	elif os.path.isfile('../../raise_actual'):
-		actual = '../../raise_actual'
-	else:
-		actual = '.raise_actual'
-		update()
+	# Have the lib_raise.py file handle everything else
+	actual = "{0}lib_raise.py".format(dir_name)
+	rc = os.system('{0} {1} {2}'.format(sys.executable, actual, args))
+	if hasattr(os, 'WIFEXITED') and os.WIFEXITED(rc):
+		rc = os.WEXITSTATUS(rc)
+	exit(rc)
 
-	# Have the raise_actual file handle everything else
-	os.system('{0} {1} {2}'.format(sys.executable, actual, args))
 
 
 

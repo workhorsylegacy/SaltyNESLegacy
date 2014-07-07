@@ -2,61 +2,68 @@
 # -*- coding: UTF-8 -*-
 
 import os
-
-require_module('C++')
-
-# FIXME: This is back ported from raise 0.4
-def require_environmental_variable(env_name, version_cb = None):
-	print_status("Checking for environmental variable '{0}'".format(env_name))
-
-	if not os.environ.get(env_name):
-		message = "The environmental variable '{0}' was not found. Set it and try again."
-		print_fail()
-		print_exit(message.format(env_name))
-	else:
-		print_ok()
+import lib_raise_cxx as CXX
+import lib_raise_linker as Linker
+import lib_raise_ar as AR
+import lib_raise_fs as FS
+import lib_raise_find as Find
+import lib_raise_users as Users
+import lib_raise_process as Process
 
 def clean():
 	"""Removes any files and directories generated when building."""
-	rmfile('saltynes')
-	rmdir_and_children('build')
-	rmdir_and_children('src/bin')
-	rmdir_and_children('pnacl')
-	rmdir_and_children('newlib')
+	FS.remove_file('saltynes', ignore_failure = True)
+	FS.remove_dir('build', and_children = True)
+	FS.remove_dir('src/bin', and_children = True)
+	FS.remove_dir('pnacl', and_children = True)
+	FS.remove_dir('newlib', and_children = True)
+
+# FIXME: A hack till raise gets C++11 support.
+# Gets the default C++ compiler
+# and converts it to a C++11 compiler
+def _get_default_cxx11_compiler():
+	cxx11 = CXX.get_default_compiler()
+	cxx11.__class__ = _CXX11Compiler
+	return cxx11
+
+# FIXME: A hack till raise gets C++11 support
+class _CXX11Compiler(CXX.CXXCompiler):
+	def get_cxxflags(self):
+		import copy
+		cxx = copy.deepcopy(self)
+		cxx.__class__ = CXX.CXXCompiler
+		return cxx.get_cxxflags() + ' -std=c++11'
+	cxxflags = property(get_cxxflags)
 
 def _configure():
-	cxx = cxx_get_default_compiler()
-	cxx.optimize = True
+	cxx = _get_default_cxx11_compiler()
 	cxx.debug = True
+	cxx.optimize_level = 2
 	cxx.warnings_all = True
 	cxx.warnings_as_errors = True
-	cxx_save_compiler(cxx)
 
-	# FIXME: Hack to use C++11 support
-	flags = os.environ['CXXFLAGS']
-	flags += ' -std=c++11'
-	os.environ['CXXFLAGS'] = flags
+	return cxx
 
 def desktop():
 	"""Builds the program for the desktop using SDL. Will only build files that have changed since the last build."""
-	require_not_root()
+	Users.require_not_root()
 	_desktop()
 
 def redesktop():
 	"""Rebuilds the program for the desktop using SDL. Will build all the files. Even if they have not changed since last build."""
-	require_not_root()
+	Users.require_not_root()
 	clean()
 	_desktop()
 
 def _desktop():
-	_configure()
-	require_shared_library('libSDL', lambda ver: ver >= (1, 2))
+	cxx = _configure()
+	Find.require_shared_library('libSDL', 'ver >= (1, 2)')
 
 	# Copy the files to the build directory
-	mkdir_f('build')
-	rmdir_and_children('build/src')
-	cpdir('src', 'build/src')
-	cd('build')
+	FS.make_dir('build', ignore_failure = True)
+	FS.remove_dir('build/src', and_children = True)
+	FS.copy_dir('src', 'build/src')
+	FS.change_dir('build')
 
 	# Get the names of all the C++ files
 	code_files = []
@@ -66,28 +73,28 @@ def _desktop():
 	code_files.sort()
 
 	# Build each C++ file into an object
-	parallel_start()
+	Process.concurrent_start()
 	for f in code_files:
 		object_name = '{0}.o'.format(f)
 		code_name = 'src/{0}.cc'.format(f)
-		cxx_build_object(object_name, [code_name], ['-DSDL=true'])
-	parallel_end()
+		cxx.build_object(object_name, [code_name], ['-DSDL=true'])
+	Process.concurrent_end()
 
 	# Link all the objects into the program
 	object_files = [s + '.o' for s in code_files]
-	cxx_build_program('saltynes', object_files, ['-lSDL', '-lpthread', '-lrt', '-DSDL=true'])
+	cxx.build_program('saltynes.exe', object_files, ['-lSDL', '-lpthread', '-lrt', '-DSDL=true'])
 
 	# Run the program
-	cd('..')
-	mvfile('build/saltynes', 'saltynes')
+	FS.change_dir('..')
+	FS.move_file('build/saltynes', 'saltynes')
 	print('Run the program like this:\n./saltynes roms/example.nes')
-
+'''
 def nacl():
-	require_not_root()
+	Users.require_not_root()
 	clean()
-	_configure()
+	cxx = _configure()
 
-	require_environmental_variable('NACL_SDK_ROOT')
+	Find.require_environmental_variable('NACL_SDK_ROOT')
 
 	os.environ['CXXFLAGS'] = '-O2 -g -pthread -std=gnu++98 -Wno-long-long -Wall -Wswitch-enum -Werror -pedantic'
 	os.environ['LDFLAGS'] = '-g -pthread -lppapi_cpp -lppapi'
@@ -102,8 +109,8 @@ def nacl():
 	os.environ['STRIP64'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/x86_64-nacl-strip'
 	os.environ['NMF'] = '${NACL_SDK_ROOT}/tools/create_nmf.py'
 
-	mkdir('newlib')
-	mkdir('newlib/src')
+	FS.make_dir('newlib')
+	FS.make_dir('newlib/src')
 
 	# Get the names of all the C++ files
 	code_files = []
@@ -113,16 +120,16 @@ def nacl():
 	code_files.sort()
 
 	# Build each C++ file into an object
-	parallel_start()
+	Process.concurrent_start()
 	for f in code_files:
 		object_name = 'newlib/src/{0}_x86_32.o'.format(f)
 		code_name = 'src/{0}.cc'.format(f)
-		cxx_build_object(object_name, [code_name], ['-m32 -DTCNAME=newlib -DNACL=true -I${NACL_SDK_ROOT}/include'])
-	parallel_end()
+		cxx.build_object(object_name, [code_name], ['-m32 -DTCNAME=newlib -DNACL=true -I${NACL_SDK_ROOT}/include'])
+	Process.concurrent_end()
 
 	# Link all the objects into the program
 	object_files = ['newlib/src/{0}_x86_32.o'.format(s) for s in code_files]
-	cxx_link_program(
+	cxx.link_program(
 		'newlib/salty_nes_x86_32.nexe', 
 		object_files, 
 		['-m32 ${LDFLAGS}'])
@@ -136,6 +143,6 @@ def nacl():
 	_do_on_fail_exit("Stripping program 'newlib/salty_nes_x86_32.nexe'",
 					"Failed stripping program 'newlib/salty_nes_x86_32.nexe'.",
 				"${STRIP32} newlib/salty_nes_x86_32.nexe")
-
+'''
 
 
