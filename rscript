@@ -5,7 +5,7 @@ import os
 
 require_module('C++')
 
-# FIXME: This should be in Raise
+# FIXME: This is back ported from raise 0.4
 def require_environmental_variable(env_name, version_cb = None):
 	print_status("Checking for environmental variable '{0}'".format(env_name))
 
