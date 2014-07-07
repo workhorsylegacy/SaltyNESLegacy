@@ -51,9 +51,6 @@ CPU::CPU(NES* nes) {
 	this->irqRequested = false;
 	this->irqType = 0;
 
-	// Op/Inst Data:
-	this->opdata = nullptr;
-
 	// Misc vars:
 	this->cyclesToHalt = 0;
 	this->stopRunning = false;
@@ -67,9 +64,7 @@ CPU::~CPU() {
 
 // Initialize:
 void CPU::init() {
-
-	// Get Op data:
-	opdata = CpuInfo::getOpData();
+	CpuInfo::initOpData();
 
 	// Get Memory Mapper:
 	this->mmap = nes->getMemoryMapper();
@@ -277,7 +272,7 @@ void CPU::emulate() {
 		}
 
 		int16_t z = mmap->load(REG_PC+1);
-		opinf = (*opdata)[z];
+		opinf = CpuInfo::opdata[z];
 		/*
 		stringstream out;
 		if((opinf&0xFF) <= 0xF) {

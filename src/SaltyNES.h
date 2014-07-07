@@ -433,9 +433,6 @@ public:
 	bool irqRequested;
 	int irqType;
 
-	// Op/Inst Data:
-	vector<int>* opdata;
-
 	// Misc vars:
 	int cyclesToHalt;
 	bool stopRunning;
@@ -471,7 +468,8 @@ public:
 class CpuInfo {
 public:
 	// Opdata array:
-	static vector<int>* opdata;
+	static bool isOp;
+	static int opdata[256];
 	// Instruction names:
 	static const vector<string> instname;
 	// Address mode descriptions:
@@ -552,7 +550,6 @@ public:
 	static const int ADDR_POSTIDXIND;
 	static const int ADDR_INDABS;
 
-	static vector<int>* getOpData();
 	static vector<string> getInstNames();
 	static string getInstName(size_t inst);
 	static vector<string> getAddressModeNames();

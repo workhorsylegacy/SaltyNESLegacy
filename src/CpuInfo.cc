@@ -18,7 +18,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SaltyNES.h"
 
 // Opdata array:
-vector<int>* CpuInfo::opdata = nullptr;
+bool CpuInfo::isOp = false;
+int CpuInfo::opdata[256];
 
 // Instruction names:
 const vector<string> CpuInfo::instname = {{
@@ -191,13 +192,6 @@ const int CpuInfo::ADDR_PREIDXIND = 10;
 const int CpuInfo::ADDR_POSTIDXIND = 11;
 const int CpuInfo::ADDR_INDABS = 12;
 
-vector<int>* CpuInfo::getOpData() {
-	if(opdata == nullptr) {
-		initOpData();
-	}
-	return opdata;
-}
-
 vector<string> CpuInfo::getInstNames() {
 	return instname;
 }
@@ -222,15 +216,15 @@ string CpuInfo::getAddressModeName(int addrMode) {
 }
 
 void CpuInfo::initOpData() {
+	if(isOp)
+		return;
 
-	// Create array:
-	opdata = new vector<int>(256);
+	isOp = true;
 
 	// Set all to invalid instruction (to detect crashes):
 	for(int i = 0; i < 256; i++) {
-		(*opdata)[i] = 0xFF;
+		opdata[i] = 0xFF;
 	}
-
 
 	// Now fill in all valid opcodes:
 
@@ -500,7 +494,7 @@ void CpuInfo::initOpData() {
 }
 
 void CpuInfo::setOp(int inst, int op, int addr, int size, int cycles) {
-	(*opdata)[op] =
+	opdata[op] =
 			((inst & 0xFF)) |
 			((addr & 0xFF) << 8) |
 			((size & 0xFF) << 16) |
