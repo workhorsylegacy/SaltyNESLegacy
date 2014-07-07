@@ -19,10 +19,83 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Opdata array:
 vector<int>* CpuInfo::opdata = nullptr;
+
 // Instruction names:
-vector<string>* CpuInfo::instname = nullptr;
+const vector<string> CpuInfo::instname = {{
+	"ADC",
+	"AND",
+	"ASL",
+	"BCC",
+	"BCS",
+	"BEQ",
+	"BIT",
+	"BMI",
+	"BNE",
+	"BPL",
+	"BRK",
+	"BVC",
+	"BVS",
+	"CLC",
+	"CLD",
+	"CLI",
+	"CLV",
+	"CMP",
+	"CPX",
+	"CPY",
+	"DEC",
+	"DEX",
+	"DEY",
+	"EOR",
+	"INC",
+	"INX",
+	"INY",
+	"JMP",
+	"JSR",
+	"LDA",
+	"LDX",
+	"LDY",
+	"LSR",
+	"NOP",
+	"ORA",
+	"PHA",
+	"PHP",
+	"PLA",
+	"PLP",
+	"ROL",
+	"ROR",
+	"RTI",
+	"RTS",
+	"SBC",
+	"SEC",
+	"SED",
+	"SEI",
+	"STA",
+	"STX",
+	"STY",
+	"TAX",
+	"TAY",
+	"TSX",
+	"TXA",
+	"TXS",
+	"TYA"
+}};
+
 // Address mode descriptions:
-vector<string>* CpuInfo::addrDesc = nullptr;
+const vector<string> CpuInfo::addrDesc = {{
+	"Zero Page           ",
+	"Relative            ",
+	"Implied             ",
+	"Absolute            ",
+	"Accumulator         ",
+	"Immediate           ",
+	"Zero Page,X         ",
+	"Zero Page,Y         ",
+	"Absolute,X          ",
+	"Absolute,Y          ",
+	"Preindexed Indirect ",
+	"Postindexed Indirect",
+	"Indirect Absolute   "
+}};
 
 const int CpuInfo::cycTable[256] = {
 	/*0x00*/7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
@@ -125,37 +198,25 @@ vector<int>* CpuInfo::getOpData() {
 	return opdata;
 }
 
-vector<string>* CpuInfo::getInstNames() {
-	if(instname == nullptr) {
-		initInstNames();
-	}
+vector<string> CpuInfo::getInstNames() {
 	return instname;
 }
 
 string CpuInfo::getInstName(size_t inst) {
-	if(instname == nullptr) {
-		initInstNames();
-	}
-	if(inst < instname->size()) {
-		return (*instname)[inst];
+	if(inst < instname.size()) {
+		return instname[inst];
 	} else {
 		return "???";
 	}
 }
 
-vector<string>* CpuInfo::getAddressModeNames() {
-	if(addrDesc == nullptr) {
-		initAddrDesc();
-	}
+vector<string> CpuInfo::getAddressModeNames() {
 	return addrDesc;
 }
 
 string CpuInfo::getAddressModeName(int addrMode) {
-	if(addrDesc == nullptr) {
-		initAddrDesc();
-	}
-	if(addrMode >= 0 && addrMode < (int)addrDesc->size()) {
-		return (*addrDesc)[addrMode];
+	if(addrMode >= 0 && addrMode < static_cast<int>(addrDesc.size())) {
+		return addrDesc[addrMode];
 	}
 	return "???";
 }
@@ -446,82 +507,4 @@ void CpuInfo::setOp(int inst, int op, int addr, int size, int cycles) {
 			((cycles & 0xFF) << 24);
 }
 
-void CpuInfo::initInstNames() {
-	instname = new vector<string>(56);
-
-	// Instruction Names:
-	(*instname)[ 0] = "ADC";
-	(*instname)[ 1] = "AND";
-	(*instname)[ 2] = "ASL";
-	(*instname)[ 3] = "BCC";
-	(*instname)[ 4] = "BCS";
-	(*instname)[ 5] = "BEQ";
-	(*instname)[ 6] = "BIT";
-	(*instname)[ 7] = "BMI";
-	(*instname)[ 8] = "BNE";
-	(*instname)[ 9] = "BPL";
-	(*instname)[10] = "BRK";
-	(*instname)[11] = "BVC";
-	(*instname)[12] = "BVS";
-	(*instname)[13] = "CLC";
-	(*instname)[14] = "CLD";
-	(*instname)[15] = "CLI";
-	(*instname)[16] = "CLV";
-	(*instname)[17] = "CMP";
-	(*instname)[18] = "CPX";
-	(*instname)[19] = "CPY";
-	(*instname)[20] = "DEC";
-	(*instname)[21] = "DEX";
-	(*instname)[22] = "DEY";
-	(*instname)[23] = "EOR";
-	(*instname)[24] = "INC";
-	(*instname)[25] = "INX";
-	(*instname)[26] = "INY";
-	(*instname)[27] = "JMP";
-	(*instname)[28] = "JSR";
-	(*instname)[29] = "LDA";
-	(*instname)[30] = "LDX";
-	(*instname)[31] = "LDY";
-	(*instname)[32] = "LSR";
-	(*instname)[33] = "NOP";
-	(*instname)[34] = "ORA";
-	(*instname)[35] = "PHA";
-	(*instname)[36] = "PHP";
-	(*instname)[37] = "PLA";
-	(*instname)[38] = "PLP";
-	(*instname)[39] = "ROL";
-	(*instname)[40] = "ROR";
-	(*instname)[41] = "RTI";
-	(*instname)[42] = "RTS";
-	(*instname)[43] = "SBC";
-	(*instname)[44] = "SEC";
-	(*instname)[45] = "SED";
-	(*instname)[46] = "SEI";
-	(*instname)[47] = "STA";
-	(*instname)[48] = "STX";
-	(*instname)[49] = "STY";
-	(*instname)[50] = "TAX";
-	(*instname)[51] = "TAY";
-	(*instname)[52] = "TSX";
-	(*instname)[53] = "TXA";
-	(*instname)[54] = "TXS";
-	(*instname)[55] = "TYA";
-}
-
-void CpuInfo::initAddrDesc() {
-	addrDesc = new vector<string>(13);
-	(*addrDesc)[0] =   "Zero Page           ";
-	(*addrDesc)[1] =   "Relative            ";
-	(*addrDesc)[2] =   "Implied             ";
-	(*addrDesc)[3] =   "Absolute            ";
-	(*addrDesc)[4] =   "Accumulator         ";
-	(*addrDesc)[5] =   "Immediate           ";
-	(*addrDesc)[6] =   "Zero Page,X         ";
-	(*addrDesc)[7] =   "Zero Page,Y         ";
-	(*addrDesc)[8] =   "Absolute,X          ";
-	(*addrDesc)[9] =   "Absolute,Y          ";
-	(*addrDesc)[10] =  "Preindexed Indirect ";
-	(*addrDesc)[11] =  "Postindexed Indirect";
-	(*addrDesc)[13] =  "Indirect Absolute   ";
-}
 

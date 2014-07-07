@@ -473,9 +473,9 @@ public:
 	// Opdata array:
 	static vector<int>* opdata;
 	// Instruction names:
-	static vector<string>* instname;
+	static const vector<string> instname;
 	// Address mode descriptions:
-	static vector<string>* addrDesc;
+	static const vector<string> addrDesc;
 	static const int cycTable[256];
 	// Instruction types:
 	// -------------------------------- //
@@ -553,14 +553,12 @@ public:
 	static const int ADDR_INDABS;
 
 	static vector<int>* getOpData();
-	static vector<string>* getInstNames();
+	static vector<string> getInstNames();
 	static string getInstName(size_t inst);
-	static vector<string>* getAddressModeNames();
+	static vector<string> getAddressModeNames();
 	static string getAddressModeName(int addrMode);
 	static void initOpData();
 	static void setOp(int inst, int op, int addr, int size, int cycles);
-	static void initInstNames();
-	static void initAddrDesc();
 };
 
 class InputHandler {
