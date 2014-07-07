@@ -26,17 +26,17 @@ const int ROM::SINGLESCREEN_MIRRORING;
 const int ROM::SINGLESCREEN_MIRRORING2;
 const int ROM::SINGLESCREEN_MIRRORING3;
 const int ROM::SINGLESCREEN_MIRRORING4;
-vector<string>* ROM::_mapperName = NULL;
-vector<bool>* ROM::_mapperSupported = NULL;
+vector<string>* ROM::_mapperName = nullptr;
+vector<bool>* ROM::_mapperSupported = nullptr;
 
 ROM::ROM(NES* nes) {
 	failedSaveFile = false;
 	saveRamUpToDate = true;
-	header = NULL;
-	rom = NULL;
-	vrom = NULL;
-	saveRam = NULL;
-	vromTile = NULL;
+	header = nullptr;
+	rom = nullptr;
+	vrom = nullptr;
+	saveRam = nullptr;
+	vromTile = nullptr;
 	this->nes = nes;
 	romCount = 0;
 	vromCount = 0;
@@ -55,14 +55,14 @@ ROM::~ROM() {
 
 	delete_n_null_array(header);
 	
-	if(rom != NULL) {
+	if(rom != nullptr) {
 		for(size_t i=0; i<rom->size(); i++) {
 			delete_n_null((*rom)[i]);
 		}
 		delete_n_null(rom);
 	}
 	
-	if(vrom != NULL) {
+	if(vrom != nullptr) {
 		for(size_t i=0; i<vrom->size(); i++) {
 			delete_n_null((*vrom)[i]);
 		}
@@ -71,7 +71,7 @@ ROM::~ROM() {
 	
 	delete_n_null(saveRam);
 	
-	if(vromTile != NULL) {
+	if(vromTile != nullptr) {
 		for(size_t i=0; i<vromTile->size(); i++) {
 			for(size_t j=0; j<(*vromTile)[i]->size(); j++) {
 				delete_n_null((*(*vromTile)[i])[j]);
@@ -84,7 +84,7 @@ ROM::~ROM() {
 	delete_n_null(_mapperName);
 	delete_n_null(_mapperSupported);
 	
-	nes = NULL;
+	nes = nullptr;
 }
 
 string ROM::sha256sum(uint8_t* data, size_t length) {
@@ -110,7 +110,7 @@ string ROM::sha256sum(uint8_t* data, size_t length) {
 }
 
 string ROM::getmapperName() {
-	if(_mapperName == NULL) {
+	if(_mapperName == nullptr) {
 		_mapperName = new vector<string>(255);
 		for(int i = 0; i < 255; i++) {
 			(*_mapperName)[i] = "Unknown Mapper";
@@ -206,7 +206,7 @@ string ROM::getmapperName() {
 }
 
 vector<bool>* ROM::getmapperSupported() {
-	if(_mapperSupported == NULL) {
+	if(_mapperSupported == nullptr) {
 		_mapperSupported = new vector<bool>(255);
 
 		// The mappers supported:
@@ -516,10 +516,10 @@ MapperDefault* ROM::createMapper() {
 			case 140: return new Mapper140();
 			case 182: return new Mapper182();
 */
-			default: return NULL;
+			default: return nullptr;
 		}
 
-	return NULL;
+	return nullptr;
 
 }
 
@@ -539,13 +539,13 @@ void ROM::loadBatteryRam() {
 		try {
 			saveRamUpToDate = true;
 
-			if(saveRam == NULL) {
+			if(saveRam == nullptr) {
 				saveRam = new vector<int16_t>(0x2000);
 				return;
 			}
 
 			//System.out.println("Battery RAM loaded.");
-			if(nes->getMemoryMapper() != NULL) {
+			if(nes->getMemoryMapper() != nullptr) {
 				nes->getMemoryMapper()->loadBatteryRam();
 			}
 		} catch(exception& e) {

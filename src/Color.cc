@@ -32,7 +32,7 @@
 #include "Color.h"
 
     float* Color::RGBtoHSB(int r, int g, int b, float* hsbvals) {
-        assert(hsbvals != NULL);
+        assert(hsbvals != nullptr);
         float hue, saturation, brightness;
 
         int cmax = (r > g) ? r : g;

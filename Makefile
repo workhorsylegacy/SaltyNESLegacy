@@ -49,7 +49,7 @@ NMF := python $(NACL_SDK_ROOT)/tools/create_nmf.py
 #
 NACL_WARNINGS := -Wno-long-long -Wall -Wswitch-enum -Werror -pedantic
 NACL_DEFINES := -g -DNDEBUG -DNACL=true -DTCNAME=pnacl
-NACL_CXXFLAGS := -MMD -O2 -pthread -fPIC -std=c++98 $(NACL_DEFINES) $(NACL_WARNINGS)
+NACL_CXXFLAGS := -MMD -O2 -pthread -fPIC -std=c++11 $(NACL_DEFINES) $(NACL_WARNINGS)
 NACL_INCLUDES := -I$(NACL_SDK_ROOT)/include -I$(NACL_SDK_ROOT)/include/pnacl
 NACL_LDFLAGS := -lppapi_cpp -lppapi
 

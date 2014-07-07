@@ -17,12 +17,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SaltyNES.h"
 
-vector<float>* Misc::_rnd = NULL;
+vector<float>* Misc::_rnd = nullptr;
 int Misc::nextRnd = 0;
 float Misc::rndret = 0;
 
 vector<float>* Misc::rnd() {
-	if(_rnd == NULL) {
+	if(_rnd == nullptr) {
 		_rnd = new vector<float>(100000);
 		for(size_t i = 0; i < _rnd->size(); i++) {
 			(*_rnd)[i] = rand_float();

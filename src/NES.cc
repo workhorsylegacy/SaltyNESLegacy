@@ -42,8 +42,8 @@ NES::NES(SaltyNES* salty_nes) {
 	palTable = new PaletteTable();
 	ppu = new PPU(this);
 	papu = new PAPU(this);
-	memMapper = NULL;
-	rom = NULL;
+	memMapper = nullptr;
+	rom = nullptr;
 
 	// Init sound registers:
 	for(int i = 0; i < 0x14; i++) {
@@ -195,7 +195,7 @@ void NES::startEmulation() {
 		papu->unlock_mutex();
 	}
 	{
-		if(rom != NULL && rom->isValid()) {
+		if(rom != nullptr && rom->isValid()) {
 			_isRunning = true;
 		}
 	}
@@ -225,7 +225,7 @@ void NES::clearCPUMemory() {
 }
 
 void NES::setGameGenieState(bool enable) {
-	if(memMapper != NULL) {
+	if(memMapper != nullptr) {
 		memMapper->setGameGenieState(enable);
 	}
 }
@@ -302,10 +302,10 @@ bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vect
 
 // Resets the system.
 void NES::reset() {
-	if(rom != NULL) {
+	if(rom != nullptr) {
 		rom->closeRom();
 	}
-	if(memMapper != NULL) {
+	if(memMapper != nullptr) {
 		memMapper->reset();
 	}
 
@@ -322,7 +322,7 @@ void NES::reset() {
 	papu->reset();
 
 //		InputHandler* joy1 = gui->getJoy1();
-//		if(joy1 != NULL) {
+//		if(joy1 != nullptr) {
 //			joy1->reset();
 //		}
 }

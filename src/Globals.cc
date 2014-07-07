@@ -18,7 +18,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SaltyNES.h"
 
 #ifdef SDL
-SDL_Surface* Globals::sdl_screen = NULL;
+SDL_Surface* Globals::sdl_screen = nullptr;
 #endif
 
 double Globals::CPU_FREQ_NTSC = 1789772.5;

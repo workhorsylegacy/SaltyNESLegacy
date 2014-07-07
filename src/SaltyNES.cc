@@ -39,7 +39,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 
 // Globals
-SaltyNES* SaltyNES::g_salty_nes = NULL;
+SaltyNES* SaltyNES::g_salty_nes = nullptr;
 const int kPthreadMutexSuccess = 0;
 
 // This is called by the browser when the 2D context has been flushed to the
@@ -56,7 +56,7 @@ public:
 	explicit ScopedMutexLock(pthread_mutex_t* mutex) : 
 		mutex_(mutex) {
 		if(pthread_mutex_lock(mutex_) != kPthreadMutexSuccess) {
-			mutex_ = NULL;
+			mutex_ = nullptr;
 		}
 	}
 	
@@ -66,7 +66,7 @@ public:
 	}
 	
 	bool is_valid() const {
-		return mutex_ != NULL;
+		return mutex_ != nullptr;
 	}
 };
 
@@ -84,7 +84,7 @@ public:
 	}
 
 	~ScopedPixelLock() {
-		pixels_ = NULL;
+		pixels_ = nullptr;
 		image_owner_->UnlockPixels();
 	}
 
@@ -95,20 +95,20 @@ public:
 
 SaltyNES::SaltyNES(PP_Instance instance)
 		: pp::Instance(instance),
-			graphics_2d_context_(NULL),
-			pixel_buffer_(NULL),
+			graphics_2d_context_(nullptr),
+			pixel_buffer_(nullptr),
 			flush_pending_(false),
 			quit_(false),
 			thread_(0),
 			thread_is_running_(false) {
-	pthread_mutex_init(&pixel_buffer_mutex_, NULL);
-	vnes = NULL;
+	pthread_mutex_init(&pixel_buffer_mutex_, nullptr);
+	vnes = nullptr;
 	
 	// Create the gamepads
 	_joy1 = new InputHandler(0);
 	_joy2 = new InputHandler(1);
 
-	if(SaltyNES::g_salty_nes == NULL)
+	if(SaltyNES::g_salty_nes == nullptr)
 		SaltyNES::g_salty_nes = this;
 
 	// Setup nacl so it can use gamepads
@@ -129,7 +129,7 @@ SaltyNES::~SaltyNES() {
 	if(vnes) {
 		vnes->stop();
 		if(thread_is_running_) {
-			pthread_join(thread_, NULL);
+			pthread_join(thread_, nullptr);
 			thread_is_running_ = false;
 		}
 		delete_n_null(vnes);
@@ -151,7 +151,7 @@ void SaltyNES::DidChangeView(const pp::View& view) {
 	// Delete the old pixel buffer and create a new one.
 	ScopedMutexLock scoped_mutex(&pixel_buffer_mutex_);
 	delete_n_null(pixel_buffer_);
-	if(graphics_2d_context_ != NULL) {
+	if(graphics_2d_context_ != nullptr) {
 		pixel_buffer_ = new pp::ImageData(
 			this,
 			PP_IMAGEDATAFORMAT_RGBA_PREMUL,
@@ -178,7 +178,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		string rom_data = base64_decode(rom_base64);
 
 		// Convert the save from hex to int16_t vector
-		vector<int16_t>* saveRam = NULL;
+		vector<int16_t>* saveRam = nullptr;
 		if(rom_pos > 32768) {
 			size_t save_pos = message.find("load_rom:");
 			string save_data = message.substr(save_pos + 9, 32768);
@@ -193,7 +193,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 			if(vnes) {
 				vnes->stop();
 				if(thread_) {
-					pthread_join(thread_, NULL);
+					pthread_join(thread_, nullptr);
 					thread_is_running_ = false;
 				}
 				delete_n_null(vnes);
@@ -204,7 +204,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 			vnes->init_data((uint8_t*) rom_data.c_str(), (size_t)rom_data.length(), this);
 			vnes->pre_run_setup(saveRam);
 			log_to_browser("running");
-			pthread_create(&thread_, NULL, start_main_loop, this);
+			pthread_create(&thread_, nullptr, start_main_loop, this);
 			thread_is_running_ = true;
 		}
 		
@@ -303,7 +303,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 	}
 
 	// Just return if any messages require vnes, but it is not running
-	if(vnes == NULL) return;
+	if(vnes == nullptr) return;
 
 	// Handle messages that require vnes running
 	if(message == "paint") {
@@ -323,10 +323,10 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		out << get_fps();
 		log_to_browser(out.str());
 	} else if(message == "quit") {
-		if(vnes != NULL) {
+		if(vnes != nullptr) {
 			vnes->stop();
 			if(thread_is_running_) {
-				pthread_join(thread_, NULL);
+				pthread_join(thread_, nullptr);
 				thread_is_running_ = false;
 			}
 			delete_n_null(vnes);
@@ -342,11 +342,11 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 }
 
 uint32_t* SaltyNES::LockPixels() {
-	void* pixels = NULL;
+	void* pixels = nullptr;
 	// Do not use a ScopedMutexLock here, since the lock needs to be held until
 	// the matching UnlockPixels() call.
 	if(pthread_mutex_lock(&pixel_buffer_mutex_) == kPthreadMutexSuccess) {
-		if(pixel_buffer_ != NULL && !pixel_buffer_->is_null()) {
+		if(pixel_buffer_ != nullptr && !pixel_buffer_->is_null()) {
 			pixels = pixel_buffer_->data();
 		}
 	}

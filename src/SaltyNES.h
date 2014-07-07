@@ -59,19 +59,19 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 
 template<class T> inline void delete_n_null(T*& obj) {
-	if(obj == NULL)
+	if(obj == nullptr)
 		return;
 
 	delete obj;
-	obj = NULL;
+	obj = nullptr;
 }
 
 template<class T> inline void delete_n_null_array(T*& obj) {
-	if(obj == NULL)
+	if(obj == nullptr)
 		return;
 		
 	delete[] obj;
-	obj = NULL;
+	obj = nullptr;
 }
 
 // Forward declarations
@@ -1424,7 +1424,7 @@ class SaltyNES : public pp::Instance {
 	void FlushPixelBuffer();
 
 	bool IsContextValid() const {
-		return graphics_2d_context_ != NULL;
+		return graphics_2d_context_ != nullptr;
 	}
 
 public:
@@ -1601,7 +1601,7 @@ inline void log_to_browser(string message) {
 	fflush(stdout);
 	
 #ifdef NACL
-	if(SaltyNES::g_salty_nes != NULL)
+	if(SaltyNES::g_salty_nes != nullptr)
 		SaltyNES::g_salty_nes->log(message);
 #endif
 }

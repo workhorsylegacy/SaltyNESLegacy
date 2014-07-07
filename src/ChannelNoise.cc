@@ -44,7 +44,7 @@ ChannelNoise::ChannelNoise(PAPU* papu) {
 }
 
 ChannelNoise::~ChannelNoise() {
-	papu = NULL;
+	papu = nullptr;
 }
 
 void ChannelNoise::clockLengthCounter() {

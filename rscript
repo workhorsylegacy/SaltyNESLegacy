@@ -32,6 +32,11 @@ def _configure():
 	cxx.warnings_as_errors = True
 	cxx_save_compiler(cxx)
 
+	# FIXME: Hack to use C++11 support
+	flags = os.environ['CXXFLAGS']
+	flags += ' -std=c++11'
+	os.environ['CXXFLAGS'] = flags
+
 def desktop():
 	"""Builds the program for the desktop using SDL. Will only build files that have changed since the last build."""
 	require_not_root()

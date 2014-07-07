@@ -23,7 +23,7 @@ using namespace std;
 
 
 string Logger::_file_name;
-ofstream* Logger::_log = NULL;
+ofstream* Logger::_log = nullptr;
 size_t Logger::_length = 0;
 size_t Logger::_log_number = 0;
 bool Logger::_is_on = false;

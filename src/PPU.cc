@@ -24,19 +24,19 @@ vector<int>* PPU::get_screen_buffer() {
 }
 
 vector<int>* PPU::get_pattern_buffer() {
-	return NULL;
+	return nullptr;
 }
 
 vector<int>* PPU::get_name_buffer() {
-	return NULL;
+	return nullptr;
 }
 
 vector<int>* PPU::get_img_palette_buffer() {
-	return NULL;
+	return nullptr;
 }
 
 vector<int>* PPU::get_spr_palette_buffer() {
-	return NULL;
+	return nullptr;
 }
 
 PPU::PPU(NES* nes) {
@@ -48,8 +48,8 @@ PPU::PPU(NES* nes) {
 	_frame_end.tv_sec = 0;
 	_ticks_since_second = 0.0;
 	frameCounter = 0;
-	ppuMem = NULL;
-	sprMem = NULL;
+	ppuMem = nullptr;
+	sprMem = nullptr;
 
 	// Rendering Options:
 	showSpr0Hit = false;
@@ -81,7 +81,7 @@ PPU::PPU(NES* nes) {
 	vramTmpAddress = 0;
 	vramBufferedReadValue = 0;
 	firstWrite = true;
-	vramMirrorTable = NULL;
+	vramMirrorTable = nullptr;
 	i = 0;
 
 	// SPR-RAM I/O:
@@ -123,10 +123,10 @@ PPU::PPU(NES* nes) {
 	hitSpr0 = false;
 
 	// Tiles:
-	ptTile = NULL;
+	ptTile = nullptr;
 	// Name table data:
 	memset(ntable1, 0, 4);
-	nameTable = NULL;
+	nameTable = nullptr;
 	currentMirroring = -1;
 
 	// Palette data:
@@ -153,15 +153,15 @@ PPU::PPU(NES* nes) {
 	spr0dummybuffer = new vector<int>(256 * 240);
 	dummyPixPriTable = new vector<int>(256 * 240);
 	oldFrame = new vector<int>(256 * 240);
-	tpix = NULL;
+	tpix = nullptr;
 	memset(scanlineChanged, false, 240);
 	requestRenderAll = false;
 	validTileData = false;
 	att = 0;
 	scantile = new vector<Tile*>(32);
 	for(size_t i=0; i<scantile->size(); i++)
-		(*scantile)[i] = NULL;
-	t = NULL;
+		(*scantile)[i] = nullptr;
+	t = nullptr;
 
 	// These are temporary variables used in rendering and sound procedures.
 	// Their states outside of those procedures can be ignored.
@@ -185,7 +185,7 @@ PPU::PPU(NES* nes) {
 }
 
 PPU::~PPU() {
-	if(nameTable != NULL) {
+	if(nameTable != nullptr) {
 		for(size_t i = 0; i < nameTable->size(); i++) {
 			delete_n_null((*nameTable)[i]);
 		}
@@ -201,9 +201,9 @@ PPU::~PPU() {
 	delete_n_null(oldFrame);
 	delete_n_null(_screen_buffer);
 
-	nes = NULL;
-	ppuMem = NULL;
-	sprMem = NULL;
+	nes = nullptr;
+	ppuMem = nullptr;
+	sprMem = nullptr;
 }
 
 void PPU::init() {
@@ -229,7 +229,7 @@ void PPU::init() {
 	}
 
 	// Create pattern table tile buffers:
-	if(ptTile == NULL) {
+	if(ptTile == nullptr) {
 		ptTile = new vector<Tile*>(512);
 		for(int i = 0; i < 512; i++) {
 			(*ptTile)[i] = new Tile();
@@ -270,7 +270,7 @@ void PPU::setMirroring(int mirroring) {
 	triggerRendering();
 
 	// Remove mirroring:
-	if(vramMirrorTable == NULL) {
+	if(vramMirrorTable == nullptr) {
 		vramMirrorTable = new vector<int>(0x8000);
 	}
 	for(int i = 0; i < 0x8000; i++) {
@@ -486,7 +486,7 @@ void PPU::startVBlank() {
 	//nes->_joy2->poll_for_key_events();
 
 	// Figure out how much time we spent, and how much we have left
-	gettimeofday(&_frame_end, NULL);
+	gettimeofday(&_frame_end, nullptr);
 	double e = _frame_end.tv_usec + (_frame_end.tv_sec * 1000000.0);
 	double s = _frame_start.tv_usec + (_frame_start.tv_sec * 1000000.0);
 	double diff = e - s;
@@ -511,7 +511,7 @@ void PPU::startVBlank() {
 	frameCounter++;
 	
 	// Get the start time of the next frame
-	gettimeofday(&_frame_start, NULL);
+	gettimeofday(&_frame_start, nullptr);
 }
 
 void PPU::endScanline() {

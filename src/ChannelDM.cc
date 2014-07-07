@@ -42,7 +42,7 @@ ChannelDM::ChannelDM(PAPU* papu) {
 }
 
 ChannelDM::~ChannelDM() {
-	papu = NULL;
+	papu = nullptr;
 }
 
 void ChannelDM::clockDmc() {

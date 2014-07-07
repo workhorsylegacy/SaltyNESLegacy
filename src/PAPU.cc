@@ -39,7 +39,7 @@ void fill_audio_nacl_cb(void* samples, uint32_t buffer_size, void* data) {
 	uint8_t* buff = reinterpret_cast<uint8_t*>(samples);
 
 	// If there is no sound, just play zero
-	if(salty_nes->vnes->nes->_is_paused || papu == NULL || !papu->ready_for_buffer_write) {
+	if(salty_nes->vnes->nes->_is_paused || papu == nullptr || !papu->ready_for_buffer_write) {
 		for(size_t i=0; i<buffer_size; i++) {
 			buff[i] = 0;
 		}
@@ -97,7 +97,7 @@ void PAPU::unlock_mutex() {
 }
 
 PAPU::PAPU(NES* nes) {
-	pthread_mutex_init(&_mutex, NULL);
+	pthread_mutex_init(&_mutex, nullptr);
 	_is_running = false;
 
 	channelEnableValue = 0;
@@ -161,12 +161,12 @@ PAPU::PAPU(NES* nes) {
 
 	this->nes = nes;
 	cpuMem = nes->getCpuMemory();
-	dmcFreqLookup = NULL;
-	noiseWavelengthLookup = NULL;
-	square_table = NULL;
-	tnd_table = NULL;
-	ismpbuffer = NULL;
-	sampleBuffer = NULL;
+	dmcFreqLookup = nullptr;
+	noiseWavelengthLookup = nullptr;
+	square_table = nullptr;
+	tnd_table = nullptr;
+	ismpbuffer = nullptr;
+	sampleBuffer = nullptr;
 	ready_for_buffer_write = false;
 
 	lock_mutex();
@@ -252,8 +252,8 @@ PAPU::~PAPU() {
 	delete_n_null(noise);
 	delete_n_null(dmc);
 
-	nes = NULL;
-	cpuMem = NULL;
+	nes = nullptr;
+	cpuMem = nullptr;
 
 	pthread_mutex_destroy(&_mutex);
 }
@@ -274,7 +274,7 @@ void PAPU::synchronized_start() {
 	
 //		Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
 
-//		if(mixerInfo == NULL || mixerInfo.length == 0) {
+//		if(mixerInfo == nullptr || mixerInfo.length == 0) {
 //			//System.out.println("No audio mixer available, sound disabled.");
 //			Globals::enableSound = false;
 //			return;

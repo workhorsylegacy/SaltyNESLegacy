@@ -59,7 +59,7 @@ ChannelSquare::ChannelSquare(PAPU* papu, bool square1) {
 }
 
 ChannelSquare::~ChannelSquare() {
-	papu = NULL;
+	papu = nullptr;
 }
 
 void ChannelSquare::clockLengthCounter() {

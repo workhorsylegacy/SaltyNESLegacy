@@ -35,7 +35,7 @@ ChannelTriangle::ChannelTriangle(PAPU* papu) {
 }
 
 ChannelTriangle::~ChannelTriangle() {
-	papu = NULL;
+	papu = nullptr;
 }
 
 void ChannelTriangle::clockLengthCounter() {

@@ -355,7 +355,7 @@ bool ByteBuffer::putStringAscii(string var, int pos) {
 }
 
 bool ByteBuffer::putByteArray(vector<int16_t>* arr) {
-	if(arr == NULL) {
+	if(arr == nullptr) {
 		return false;
 	}
 	if(buf->size() - curPos < arr->size()) {
@@ -369,7 +369,7 @@ bool ByteBuffer::putByteArray(vector<int16_t>* arr) {
 }
 
 bool ByteBuffer::readByteArray(vector<int16_t>* arr) {
-	if(arr == NULL) {
+	if(arr == nullptr) {
 		return false;
 	}
 	if(buf->size() - curPos < arr->size()) {
@@ -383,7 +383,7 @@ bool ByteBuffer::readByteArray(vector<int16_t>* arr) {
 }
 
 bool ByteBuffer::putShortArray(vector<int16_t>* arr) {
-	if(arr == NULL) {
+	if(arr == nullptr) {
 		return false;
 	}
 	if(buf->size() - curPos < arr->size() * 2) {
@@ -643,7 +643,7 @@ ByteBuffer* ByteBuffer::asciiEncode(ByteBuffer* buf) {
 }
 /*
 ByteBuffer* ByteBuffer::asciiDecode(ByteBuffer* buf) {
-	return NULL;
+	return nullptr;
 }
 
 void ByteBuffer::saveToZipFile(File f, ByteBuffer* buf) {
@@ -705,7 +705,7 @@ static ByteBuffer* ByteBuffer::readFromZipFile(File f) {
 	}
 
 	// fail:
-	return NULL;
+	return nullptr;
 
 }
 */

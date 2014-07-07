@@ -21,8 +21,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 vNES::vNES() {
 	samplerate = 0;
 	progress = 0;
-	nes = NULL;
-	_rom_data = NULL;
+	nes = nullptr;
+	_rom_data = nullptr;
 	_rom_data_length = 0;
 	started = false;
 }
@@ -70,7 +70,7 @@ void vNES::init_data(uint8_t* rom_data, size_t length, SaltyNES* salty_nes) {
 
 void vNES::pre_run_setup(vector<int16_t>* save_ram) {
 	// Load ROM file:
-	if(_rom_data == NULL) {
+	if(_rom_data == nullptr) {
 		log_to_browser("Loading ROM from file.");
 
 		ifstream reader(_rom_name.c_str(), ios::in|ios::binary);

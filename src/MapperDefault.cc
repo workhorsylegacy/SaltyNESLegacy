@@ -18,13 +18,13 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SaltyNES.h"
 
 MapperDefault::MapperDefault() {
-	nes = NULL;
-	cpuMem = NULL;
-	ppuMem = NULL;
-	cpuMemArray = NULL;
-	rom = NULL;
-	cpu = NULL;
-	ppu = NULL;
+	nes = nullptr;
+	cpuMem = nullptr;
+	ppuMem = nullptr;
+	cpuMemArray = nullptr;
+	rom = nullptr;
+	cpu = nullptr;
+	ppu = nullptr;
 	cpuMemSize = 0;
 	joy1StrobeState = 0;
 	joy2StrobeState = 0;
@@ -37,12 +37,12 @@ MapperDefault::MapperDefault() {
 }
 
 MapperDefault::~MapperDefault() {
-	nes = NULL;
-	cpuMem = NULL;
-	ppuMem = NULL;
-	rom = NULL;
-	cpu = NULL;
-	ppu = NULL;
+	nes = nullptr;
+	cpuMem = nullptr;
+	ppuMem = nullptr;
+	rom = nullptr;
+	cpu = nullptr;
+	ppu = nullptr;
 }
 
 void MapperDefault::write(int address, int16_t value) {
@@ -128,7 +128,7 @@ void MapperDefault::base_write(int address, int16_t value) {
 		if(address >= 0x6000 && address < 0x8000) {
 
 			// Write to SaveRAM. Store in file:
-			if(rom != NULL) {
+			if(rom != nullptr) {
 				rom->writeBatteryRam(address, value);
 			}
 
@@ -285,7 +285,7 @@ int16_t MapperDefault::regLoad(int address) {
 
 					// 0x4017:
 					// Joystick 2 + Strobe
-					if(mousePressed && nes->ppu != NULL && nes->ppu->get_screen_buffer() != NULL) {
+					if(mousePressed && nes->ppu != nullptr && nes->ppu->get_screen_buffer() != nullptr) {
 
 						// Check for white pixel nearby:
 
@@ -592,7 +592,7 @@ void MapperDefault::loadCHRROM() {
 void MapperDefault::loadBatteryRam() {
 	if(rom->batteryRam) {
 		vector<int16_t>* ram = rom->getBatteryRam();
-		if(ram != NULL && ram->size() == 0x2000) {
+		if(ram != nullptr && ram->size() == 0x2000) {
 			arraycopy_short(ram, 0, nes->cpuMem->mem, 0x6000, 0x2000);
 		}
 	}

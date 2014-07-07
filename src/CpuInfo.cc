@@ -18,11 +18,11 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SaltyNES.h"
 
 // Opdata array:
-vector<int>* CpuInfo::opdata = NULL;
+vector<int>* CpuInfo::opdata = nullptr;
 // Instruction names:
-vector<string>* CpuInfo::instname = NULL;
+vector<string>* CpuInfo::instname = nullptr;
 // Address mode descriptions:
-vector<string>* CpuInfo::addrDesc = NULL;
+vector<string>* CpuInfo::addrDesc = nullptr;
 
 const int CpuInfo::cycTable[256] = {
 	/*0x00*/7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
@@ -119,21 +119,21 @@ const int CpuInfo::ADDR_POSTIDXIND = 11;
 const int CpuInfo::ADDR_INDABS = 12;
 
 vector<int>* CpuInfo::getOpData() {
-	if(opdata == NULL) {
+	if(opdata == nullptr) {
 		initOpData();
 	}
 	return opdata;
 }
 
 vector<string>* CpuInfo::getInstNames() {
-	if(instname == NULL) {
+	if(instname == nullptr) {
 		initInstNames();
 	}
 	return instname;
 }
 
 string CpuInfo::getInstName(size_t inst) {
-	if(instname == NULL) {
+	if(instname == nullptr) {
 		initInstNames();
 	}
 	if(inst < instname->size()) {
@@ -144,14 +144,14 @@ string CpuInfo::getInstName(size_t inst) {
 }
 
 vector<string>* CpuInfo::getAddressModeNames() {
-	if(addrDesc == NULL) {
+	if(addrDesc == nullptr) {
 		initAddrDesc();
 	}
 	return addrDesc;
 }
 
 string CpuInfo::getAddressModeName(int addrMode) {
-	if(addrDesc == NULL) {
+	if(addrDesc == nullptr) {
 		initAddrDesc();
 	}
 	if(addrMode >= 0 && addrMode < (int)addrDesc->size()) {

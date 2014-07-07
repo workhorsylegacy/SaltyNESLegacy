@@ -26,8 +26,8 @@ instructions and invokes emulation of the PPU and pAPU.
 // Constructor:
 CPU::CPU(NES* nes) {
 	this->nes = nes;
-	this->mmap = NULL;
-	this->mem = NULL;
+	this->mmap = nullptr;
+	this->mem = nullptr;
 
 	// CPU Registers:
 	this->REG_ACC_NEW = 0;
@@ -52,7 +52,7 @@ CPU::CPU(NES* nes) {
 	this->irqType = 0;
 
 	// Op/Inst Data:
-	this->opdata = NULL;
+	this->opdata = nullptr;
 
 	// Misc vars:
 	this->cyclesToHalt = 0;
@@ -61,8 +61,8 @@ CPU::CPU(NES* nes) {
 }
 
 CPU::~CPU() {
-	nes 	= NULL;
-	mmap 	= NULL;
+	nes 	= nullptr;
+	mmap 	= nullptr;
 }
 
 // Initialize:

@@ -25,12 +25,12 @@ Memory::Memory(NES* nes, int byteCount) {
 }
 
 Memory::~Memory() {
-	nes = NULL;
+	nes = nullptr;
 	delete_n_null(mem);
 }
 
 void Memory::stateLoad(ByteBuffer* buf) {
-	if(mem==NULL)mem=new vector<int16_t>(memLength);
+	if(mem==nullptr)mem=new vector<int16_t>(memLength);
 	buf->readByteArray(mem);
 }
 
