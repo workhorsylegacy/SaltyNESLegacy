@@ -49,7 +49,7 @@ NMF := python $(NACL_SDK_ROOT)/tools/create_nmf.py
 #
 NACL_WARNINGS := -Wno-long-long -Wall -Wswitch-enum -Werror -pedantic
 NACL_DEFINES := -g -DNDEBUG -DNACL=true -DTCNAME=pnacl
-NACL_CXXFLAGS := -MMD -O2 -pthread -fPIC -std=c++11 $(NACL_DEFINES) $(NACL_WARNINGS)
+NACL_CXXFLAGS := -MMD -O2 -pthread -fPIC -std=gnu++11 $(NACL_DEFINES) $(NACL_WARNINGS)
 NACL_INCLUDES := -I$(NACL_SDK_ROOT)/include -I$(NACL_SDK_ROOT)/include/pnacl
 NACL_LDFLAGS := -lppapi_cpp -lppapi
 
@@ -61,40 +61,40 @@ all: clean
 	$(MKDIR) pnacl/src
 
 	# Build all the object files
-	$(PNACL_CXX) -c -o pnacl/src/base64_pnacl.o src/base64.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/ByteBuffer_pnacl.o src/ByteBuffer.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/CPU_pnacl.o src/CPU.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/ChannelDM_pnacl.o src/ChannelDM.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/ChannelNoise_pnacl.o src/ChannelNoise.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/ChannelSquare_pnacl.o src/ChannelSquare.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/ChannelTriangle_pnacl.o src/ChannelTriangle.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Color_pnacl.o src/Color.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/CpuInfo_pnacl.o src/CpuInfo.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Globals_pnacl.o src/Globals.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/InputHandler_pnacl.o src/InputHandler.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Mapper001_pnacl.o src/Mapper001.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Mapper002_pnacl.o src/Mapper002.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Mapper003_pnacl.o src/Mapper003.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Mapper004_pnacl.o src/Mapper004.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Mapper007_pnacl.o src/Mapper007.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Mapper009_pnacl.o src/Mapper009.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/MapperDefault_pnacl.o src/MapperDefault.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Memory_pnacl.o src/Memory.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Misc_pnacl.o src/Misc.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/NES_pnacl.o src/NES.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/NameTable_pnacl.o src/NameTable.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/PAPU_pnacl.o src/PAPU.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/PPU_pnacl.o src/PPU.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/PaletteTable_pnacl.o src/PaletteTable.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Parameters_pnacl.o src/Parameters.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/ROM_pnacl.o src/ROM.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Raster_pnacl.o src/Raster.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/SaltyNES_pnacl.o src/SaltyNES.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/sha256sum_pnacl.o src/sha256sum.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/Tile_pnacl.o src/Tile.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/main_sdl_pnacl.o src/main_sdl.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/main_nacl_pnacl.o src/main_nacl.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
-	$(PNACL_CXX) -c -o pnacl/src/vNES_pnacl.o src/vNES.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/base64_pnacl.o src/base64.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/ByteBuffer_pnacl.o src/ByteBuffer.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/CPU_pnacl.o src/CPU.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/ChannelDM_pnacl.o src/ChannelDM.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/ChannelNoise_pnacl.o src/ChannelNoise.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/ChannelSquare_pnacl.o src/ChannelSquare.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/ChannelTriangle_pnacl.o src/ChannelTriangle.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Color_pnacl.o src/Color.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/CpuInfo_pnacl.o src/CpuInfo.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Globals_pnacl.o src/Globals.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/InputHandler_pnacl.o src/InputHandler.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Mapper001_pnacl.o src/Mapper001.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Mapper002_pnacl.o src/Mapper002.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Mapper003_pnacl.o src/Mapper003.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Mapper004_pnacl.o src/Mapper004.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Mapper007_pnacl.o src/Mapper007.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Mapper009_pnacl.o src/Mapper009.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/MapperDefault_pnacl.o src/MapperDefault.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Memory_pnacl.o src/Memory.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Misc_pnacl.o src/Misc.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/NES_pnacl.o src/NES.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/NameTable_pnacl.o src/NameTable.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/PAPU_pnacl.o src/PAPU.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/PPU_pnacl.o src/PPU.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/PaletteTable_pnacl.o src/PaletteTable.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Parameters_pnacl.o src/Parameters.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/ROM_pnacl.o src/ROM.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Raster_pnacl.o src/Raster.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/SaltyNES_pnacl.o src/SaltyNES.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/sha256sum_pnacl.o src/sha256sum.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/Tile_pnacl.o src/Tile.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/main_sdl_pnacl.o src/main_sdl.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/main_nacl_pnacl.o src/main_nacl.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
+	$(PNACL_CXX) -o pnacl/src/vNES_pnacl.o src/vNES.cc $(NACL_CXXFLAGS) $(NACL_INCLUDES)
 
 	# Convert the objects into byte code
 	$(PNACL_LINK) -o pnacl/salty_nes_unstripped.bc \
@@ -152,5 +152,5 @@ clean:
 	$(RM) -rf -f 'build'
 	$(RM) -rf -f 'src/bin'
 	$(RM) -rf -f 'pnacl'
-
+	$(RM) -rf -f 'newlib'
 

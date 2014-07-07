@@ -27,7 +27,9 @@ TO BUILD SDL VERSION:
 
 
 TO BUILD PNACL VERSION:
-	# Make sure NaCl version 31 SDK is installed
+	# Make sure NaCl version 35 SDK is installed,
+	# and the NACL_SDK_ROOT environmental variable is set.
+	export NACL_SDK_ROOT=~/nacl_sdk/pepper_35
 
 	# Run the web server
 	python httpd.py
