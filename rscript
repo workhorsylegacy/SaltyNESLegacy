@@ -5,6 +5,16 @@ import os
 
 require_module('C++')
 
+# FIXME: This should be in Raise
+def require_environmental_variable(env_name, version_cb = None):
+	print_status("Checking for environmental variable '{0}'".format(env_name))
+
+	if not os.environ.get(env_name):
+		message = "The environmental variable '{0}' was not found. Set it and try again."
+		print_fail()
+		print_exit(message.format(env_name))
+	else:
+		print_ok()
 
 def clean():
 	"""Removes any files and directories generated when building."""
@@ -71,6 +81,8 @@ def nacl():
 	require_not_root()
 	clean()
 	_configure()
+
+	require_environmental_variable('NACL_SDK_ROOT')
 
 	os.environ['CXXFLAGS'] = '-O2 -g -pthread -std=gnu++98 -Wno-long-long -Wall -Wswitch-enum -Werror -pedantic'
 	os.environ['LDFLAGS'] = '-g -pthread -lppapi_cpp -lppapi'
