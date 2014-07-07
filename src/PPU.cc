@@ -447,7 +447,7 @@ void PPU::startVBlank() {
 	uint8_t r = 0, g = 0, b = 0;
 	int color;
 	int color32;
-	int* pixels = (int*) Globals::sdl_screen->pixels;
+	int* pixels = reinterpret_cast<int*>(Globals::sdl_screen->pixels);
 	for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
 		for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
 			color32 = (*buffer)[x + (y * (256))];
@@ -740,7 +740,7 @@ void PPU::setStatusFlag(int flag, bool value) {
 	int n = 1 << flag;
 	int memValue = nes->getCpuMemory()->load(0x2002);
 	memValue = ((memValue & (255 - n)) | (value ? n : 0));
-	nes->getCpuMemory()->write(0x2002, (int16_t) memValue);
+	nes->getCpuMemory()->write(0x2002, static_cast<int16_t>(memValue));
 }
 
 
@@ -1045,7 +1045,7 @@ void PPU::mirroredWrite(int address, int16_t value) {
 	} else {
 
 		// Use lookup table for mirrored address:
-		if(address < (int) vramMirrorTable->size()) {
+		if(address < static_cast<int>(vramMirrorTable->size())) {
 			writeMem((*vramMirrorTable)[address], value);
 		} else {
 			//System.out.println("Invalid VRAM address: "+Misc.hex16(address));
@@ -1755,7 +1755,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 
 
 		// SPR-RAM I/O:
-		sramAddress = (int16_t) buf->readInt();
+		sramAddress = static_cast<int16_t>(buf->readInt());
 
 		// Rendering progression:
 		curX = buf->readInt();
@@ -1768,7 +1768,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 		nmiOk = buf->readBoolean();
 		dummyCycleToggle = buf->readBoolean();
 		nmiCounter = buf->readInt();
-		tmp = (int16_t) buf->readInt();
+		tmp = static_cast<int16_t>(buf->readInt());
 
 
 		// Stuff used during rendering:
@@ -1808,7 +1808,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 
 void PPU::stateSave(ByteBuffer* buf) {
 	// Version:
-	buf->putByte((int16_t) 1);
+	buf->putByte(static_cast<int16_t>(1));
 
 
 	// Counters:
@@ -1870,15 +1870,15 @@ void PPU::stateSave(ByteBuffer* buf) {
 
 	// Stuff used during rendering:
 	for(size_t i = 0; i < bgbuffer->size(); i++) {
-		buf->putByte((int16_t) (*bgbuffer)[i]);
+		buf->putByte(static_cast<int16_t>((*bgbuffer)[i]));
 	}
 	for(size_t i = 0; i < pixrendered->size(); i++) {
-		buf->putByte((int16_t) (*pixrendered)[i]);
+		buf->putByte(static_cast<int16_t>((*pixrendered)[i]));
 	}
 
 	// Name tables:
 	for(size_t i = 0; i < 4; i++) {
-		buf->putByte((int16_t) ntable1[i]);
+		buf->putByte(static_cast<int16_t>(ntable1[i]));
 		(*nameTable)[i]->stateSave(buf);
 	}
 

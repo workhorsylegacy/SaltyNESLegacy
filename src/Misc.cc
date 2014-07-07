@@ -80,7 +80,7 @@ vector<int>* Misc::resizeArray(vector<int>* array, int newSize) {
 }
 
 string Misc::pad(string str, string padStr, int length) {
-	while((int)str.length() < length) {
+	while(static_cast<int>(str.length()) < length) {
 		str += padStr;
 	}
 	return str;
@@ -89,8 +89,8 @@ string Misc::pad(string str, string padStr, int length) {
 float Misc::random() {
 	rndret = (*rnd())[nextRnd];
 	nextRnd++;
-	if(nextRnd >= (int) rnd()->size()) {
-		nextRnd = (int) (rand_float() * (rnd()->size() - 1));
+	if(nextRnd >= static_cast<int>(rnd()->size())) {
+		nextRnd = static_cast<int>(rand_float() * (rnd()->size() - 1));
 	}
 	return rndret;
 }
@@ -99,7 +99,7 @@ string Misc::from_vector_to_hex_string(vector<int16_t>* data) {
 	const size_t BYTE_LEN = 4;
 	stringstream out;
 	for(size_t i=0; i<data->size(); i++) {
-		out << std::hex << setfill('0') << std::setw(BYTE_LEN) << (uint16_t) (*data)[i];
+		out << std::hex << setfill('0') << std::setw(BYTE_LEN) << static_cast<uint16_t>((*data)[i]);
 	}
 	return out.str();
 }

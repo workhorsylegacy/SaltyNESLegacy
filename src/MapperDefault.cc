@@ -84,7 +84,7 @@ void MapperDefault::stateLoad(ByteBuffer* buf) {
 
 void MapperDefault::stateSave(ByteBuffer* buf) {
 	// Version:
-	buf->putByte((int16_t) 1);
+	buf->putByte(static_cast<int16_t>(1));
 
 	// Joypad stuff:
 	buf->putInt(joy1StrobeState);
@@ -96,9 +96,9 @@ void MapperDefault::stateSave(ByteBuffer* buf) {
 }
 
 void MapperDefault::base_mapperInternalStateLoad(ByteBuffer* buf) {
-	buf->putByte((int16_t) joy1StrobeState);
-	buf->putByte((int16_t) joy2StrobeState);
-	buf->putByte((int16_t) joypadLastWrite);
+	buf->putByte(static_cast<int16_t>(joy1StrobeState));
+	buf->putByte(static_cast<int16_t>(joy2StrobeState));
+	buf->putByte(static_cast<int16_t>(joypadLastWrite));
 
 }
 
@@ -306,7 +306,7 @@ int16_t MapperDefault::regLoad(int address) {
 						}
 
 						w |= (mousePressed ? (0x1 << 4) : 0);
-						return (int16_t) (joy2Read() | w);
+						return static_cast<int16_t>(joy2Read() | w);
 
 					} else {
 						return joy2Read();
@@ -466,10 +466,10 @@ int16_t MapperDefault::joy1Read() {
 		case 16:
 		case 17:
 		case 18:
-			ret = (int16_t) 0;
+			ret = static_cast<int16_t>(0);
 			break;
 		case 19:
-			ret = (int16_t) 1;
+			ret = static_cast<int16_t>(1);
 			break;
 		default:
 			ret = 0;
@@ -523,10 +523,10 @@ int16_t MapperDefault::joy2Read() {
 		case 16:
 		case 17:
 		case 18:
-			ret = (int16_t) 0;
+			ret = static_cast<int16_t>(0);
 			break;
 		case 19:
-			ret = (int16_t) 1;
+			ret = static_cast<int16_t>(1);
 			break;
 		default:
 			ret = 0;

@@ -181,15 +181,15 @@ void Mapper009::mapperInternalStateSave(ByteBuffer* buf) {
 	this->base_mapperInternalStateSave(buf);
 
 	// Version:
-	buf->putByte((int16_t) 1);
+	buf->putByte(static_cast<int16_t>(1));
 
 	// State:
-	buf->putByte((int8_t) latchLo);
-	buf->putByte((int8_t) latchHi);
-	buf->putByte((int8_t) latchLoVal1);
-	buf->putByte((int8_t) latchLoVal2);
-	buf->putByte((int8_t) latchHiVal1);
-	buf->putByte((int8_t) latchHiVal2);
+	buf->putByte(static_cast<int8_t>(latchLo));
+	buf->putByte(static_cast<int8_t>(latchHi));
+	buf->putByte(static_cast<int8_t>(latchLoVal1));
+	buf->putByte(static_cast<int8_t>(latchLoVal2));
+	buf->putByte(static_cast<int8_t>(latchHiVal1));
+	buf->putByte(static_cast<int8_t>(latchHiVal2));
 }
 
 void Mapper009::reset() {

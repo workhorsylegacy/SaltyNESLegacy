@@ -47,7 +47,7 @@ void Mapper004::mapperInternalStateSave(ByteBuffer* buf) {
 	this->base_mapperInternalStateSave(buf);
 
 	// Version:
-	buf->putByte((int16_t) 1);
+	buf->putByte(static_cast<int16_t>(1));
 
 	// State:
 	buf->putInt(command);

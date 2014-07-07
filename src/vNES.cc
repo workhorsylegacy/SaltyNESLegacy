@@ -84,7 +84,7 @@ void vNES::pre_run_setup(vector<int16_t>* save_ram) {
 		reader.seekg(0, ios::beg);
 		assert(length > 0);
 		uint8_t* bdata = new uint8_t[length];
-		reader.read((char*)bdata, length);
+		reader.read(reinterpret_cast<char*>(bdata), length);
 		nes->load_rom_from_data(_rom_name.c_str(), bdata, length, save_ram);
 		delete_n_null_array(bdata);
 		reader.close();

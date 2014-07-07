@@ -61,9 +61,9 @@ void PaletteTable::makeTables() {
 		// Calculate table:
 		for(int i = 0; i < 64; i++) {
 			col = origTable[i];
-			r = (int) (getRed(col) * rFactor);
-			g = (int) (getGreen(col) * gFactor);
-			b = (int) (getBlue(col) * bFactor);
+			r = static_cast<int>(getRed(col) * rFactor);
+			g = static_cast<int>(getGreen(col) * gFactor);
+			b = static_cast<int>(getBlue(col) * bFactor);
 			emphTable[emph][i] = getRgb(r, g, b);
 		}
 	}
@@ -89,9 +89,9 @@ int PaletteTable::RGBtoHSL(int r, int g, int b) {
 	hsbvals[0] -= floor(hsbvals[0]);
 
 	int ret = 0;
-	ret |= (((int) (hsbvals[0] * 255.0)) << 16);
-	ret |= (((int) (hsbvals[1] * 255.0)) << 8);
-	ret |= (((int) (hsbvals[2] * 255.0)));
+	ret |= (static_cast<int>(hsbvals[0] * 255.0) << 16);
+	ret |= (static_cast<int>(hsbvals[1] * 255.0) << 8);
+	ret |= static_cast<int>(hsbvals[2] * 255.0);
 	delete_n_null_array(hsbvals);
 
 	return ret;
@@ -107,9 +107,9 @@ int PaletteTable::HSLtoRGB(int h, int s, int l) {
 
 int PaletteTable::HSLtoRGB(int hsl) {
 	float h, s, l;
-	h = (float) (((hsl >> 16) & 0xFF) / 255.0);
-	s = (float) (((hsl >> 8) & 0xFF) / 255.0);
-	l = (float) (((hsl) & 0xFF) / 255.0);
+	h = static_cast<float>(((hsl >> 16) & 0xFF) / 255.0);
+	s = static_cast<float>(((hsl >> 8) & 0xFF) / 255.0);
+	l = static_cast<float>(((hsl) & 0xFF) / 255.0);
 	return Color::HSBtoRGB(h, s, l);
 }
 
@@ -171,7 +171,7 @@ void PaletteTable::updatePalette(int hueAdd, int saturationAdd, int lightnessAdd
 
 		hsl = RGBtoHSL(emphTable[currentEmph][i]);
 		h = getHue(hsl) + hueAdd;
-		s = (int) (getSaturation(hsl) * (1.0 + saturationAdd / 256.0f));
+		s = static_cast<int>(getSaturation(hsl) * (1.0 + saturationAdd / 256.0f));
 		l = getLightness(hsl);
 
 		if(h < 0) {
@@ -200,9 +200,9 @@ void PaletteTable::updatePalette(int hueAdd, int saturationAdd, int lightnessAdd
 		g = getGreen(rgb);
 		b = getBlue(rgb);
 
-		r = 128 + lightnessAdd + (int) ((r - 128) * (1.0 + contrastAdd / 256.0f));
-		g = 128 + lightnessAdd + (int) ((g - 128) * (1.0 + contrastAdd / 256.0f));
-		b = 128 + lightnessAdd + (int) ((b - 128) * (1.0 + contrastAdd / 256.0f));
+		r = 128 + lightnessAdd + static_cast<int>((r - 128) * (1.0 + contrastAdd / 256.0f));
+		g = 128 + lightnessAdd + static_cast<int>((g - 128) * (1.0 + contrastAdd / 256.0f));
+		b = 128 + lightnessAdd + static_cast<int>((b - 128) * (1.0 + contrastAdd / 256.0f));
 
 		if(r < 0) {
 			r = 0;

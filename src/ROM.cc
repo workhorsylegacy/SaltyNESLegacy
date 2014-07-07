@@ -251,7 +251,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	fileName = file_name;
 	int16_t* sdata = new int16_t[length];
 	for(size_t i=0; i<length; i++) {
-		sdata[i] = (int16_t) (data[i] & 255);
+		sdata[i] = static_cast<int16_t>(data[i] & 255);
 	}
 	log_to_browser("log: rom::load_from_data");
 

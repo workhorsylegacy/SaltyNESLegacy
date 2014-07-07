@@ -82,10 +82,10 @@ void Mapper007::mapperInternalStateSave(ByteBuffer* buf) {
 	this->base_mapperInternalStateSave(buf);
 
 	// Version:
-	buf->putByte((int16_t) 1);
+	buf->putByte(static_cast<int16_t>(1));
 
 	// State:
-	buf->putByte((int16_t) currentMirroring);
+	buf->putByte(static_cast<int16_t>(currentMirroring));
 	buf->putInt(currentOffset);
 }
 

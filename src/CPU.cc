@@ -507,7 +507,7 @@ void CPU::emulate() {
 					temp = (temp<<1)&255;
 					F_SIGN = (temp>>7)&1;
 					F_ZERO = temp;
-					write(addr,(int16_t)temp);
+					write(addr, static_cast<int16_t>(temp));
 
 				}
 				break;
@@ -747,7 +747,7 @@ void CPU::emulate() {
 				temp = (load(addr)-1)&0xFF;
 				F_SIGN = (temp>>7)&1;
 				F_ZERO = temp;
-				write(addr,(int16_t)temp);
+				write(addr, static_cast<int16_t>(temp));
 				break;
 
 			}case 21:{
@@ -797,7 +797,7 @@ void CPU::emulate() {
 				temp = (load(addr)+1)&0xFF;
 				F_SIGN = (temp>>7)&1;
 				F_ZERO = temp;
-				write(addr,(int16_t)(temp&0xFF));
+				write(addr, static_cast<int16_t>(temp&0xFF));
 				break;
 
 			}case 25:{
@@ -906,7 +906,7 @@ void CPU::emulate() {
 					temp = load(addr) & 0xFF;
 					F_CARRY = temp&1;
 					temp >>= 1;
-					write(addr,(int16_t)temp);
+					write(addr, static_cast<int16_t>(temp));
 
 				}
 				F_SIGN = 0;
@@ -1020,7 +1020,7 @@ void CPU::emulate() {
 					add = F_CARRY;
 					F_CARRY = (temp>>7)&1;
 					temp = ((temp<<1)&0xFF)+add;	
-					write(addr,(int16_t)temp);
+					write(addr, static_cast<int16_t>(temp));
 
 				}
 				F_SIGN = (temp>>7)&1;
@@ -1047,7 +1047,7 @@ void CPU::emulate() {
 					add = F_CARRY<<7;
 					F_CARRY = temp&1;
 					temp = (temp>>1)+add;
-					write(addr,(int16_t)temp);
+					write(addr, static_cast<int16_t>(temp));
 
 				}
 				F_SIGN = (temp>>7)&1;
@@ -1149,7 +1149,7 @@ void CPU::emulate() {
 				// *******
 
 				// Store accumulator in memory
-				write(addr,(int16_t)REG_ACC);
+				write(addr, static_cast<int16_t>(REG_ACC));
 				break;
 
 			}case 48:{
@@ -1159,7 +1159,7 @@ void CPU::emulate() {
 				// *******
 
 				// Store index X in memory
-				write(addr,(int16_t)REG_X);
+				write(addr, static_cast<int16_t>(REG_X));
 				break;
 
 			}case 49:{
@@ -1169,7 +1169,7 @@ void CPU::emulate() {
 				// *******
 
 				// Store index Y in memory:
-				write(addr,(int16_t)REG_Y);
+				write(addr, static_cast<int16_t>(REG_Y));
 				break;
 
 			}case 50:{
@@ -1256,7 +1256,7 @@ void CPU::emulate() {
 					
 					stringstream out;
 					out << "Game crashed, invalid opcode at address $";
-					out << std::hex << (int) opaddr;
+					out << std::hex << static_cast<int>(opaddr);
 					printf("%s\n", out.str().c_str());
 				}
 				break;
@@ -1336,7 +1336,7 @@ void CPU::requestIrq(int type) {
 }
 
 void CPU::push(int value) {
-	mmap->write(REG_SP,(int16_t)value);
+	mmap->write(REG_SP, static_cast<int16_t>(value));
 	REG_SP--;
 	REG_SP = 0x0100 | (REG_SP&0xFF);
 }

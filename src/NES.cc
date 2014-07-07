@@ -48,9 +48,9 @@ NES::NES(SaltyNES* salty_nes) {
 	// Init sound registers:
 	for(int i = 0; i < 0x14; i++) {
 		if(i == 0x10) {
-			papu->writeReg(0x4010, (int16_t) 0x10);
+			papu->writeReg(0x4010, static_cast<int16_t>(0x10));
 		} else {
-			papu->writeReg(0x4000 + i, (int16_t) 0);
+			papu->writeReg(0x4000 + i, static_cast<int16_t>(0));
 		}
 	}
 
@@ -167,7 +167,7 @@ void NES::stateSave(ByteBuffer* buf) {
 	stopEmulation();
 
 	// Version:
-	buf->putByte((int16_t) 1);
+	buf->putByte(static_cast<int16_t>(1));
 
 	// Let units save their state:
 	cpuMem->stateSave(buf);

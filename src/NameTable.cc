@@ -39,7 +39,7 @@ int16_t NameTable::getAttrib(int x, int y) {
 }
 
 void NameTable::writeTileIndex(int index, int value) {
-	(*tile)[index] = (int16_t) value;
+	(*tile)[index] = static_cast<int16_t>(value);
 }
 
 void NameTable::writeAttrib(int index, int value) {
@@ -60,7 +60,7 @@ void NameTable::writeAttrib(int index, int value) {
 					tx = basex + sqx * 2 + x;
 					ty = basey + sqy * 2 + y;
 					//attindex = ty * width + tx;
-					(*attrib)[ty * width + tx] = (int16_t) ((add << 2) & 12);
+					(*attrib)[ty * width + tx] = static_cast<int16_t>((add << 2) & 12);
 				////System.out.println("x="+tx+" y="+ty+" value="+attrib[ty*width+tx]+" index="+attindex);
 				}
 			}
@@ -72,11 +72,11 @@ void NameTable::stateSave(ByteBuffer* buf) {
 	for(int i = 0; i < width * height; i++) {
 		if((*tile)[i] > 255)//System.out.println(">255!!");
 		{
-			buf->putByte((int8_t) (*tile)[i]);
+			buf->putByte(static_cast<int8_t>((*tile)[i]));
 		}
 	}
 	for(int i = 0; i < width * height; i++) {
-		buf->putByte((int8_t) (*attrib)[i]);
+		buf->putByte(static_cast<int8_t>((*attrib)[i]));
 	}
 }
 

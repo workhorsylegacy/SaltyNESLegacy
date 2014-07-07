@@ -239,7 +239,7 @@ void Tile::stateSave(ByteBuffer* buf) {
 		buf->putBoolean(opaque[i]);
 	}
 	for(int i = 0; i < 64; i++) {
-		buf->putByte((int8_t) pix[i]);
+		buf->putByte(static_cast<int8_t>(pix[i]));
 	}
 }
 

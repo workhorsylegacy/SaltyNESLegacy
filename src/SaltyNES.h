@@ -1481,8 +1481,8 @@ inline void arraycopy_short(vector<int16_t>* src, int srcPos, vector<int16_t>* d
 	assert(srcPos >= 0);
 	assert(destPos >= 0);
 	assert(length >= 0);
-	assert(((size_t)srcPos)+length <= src->size());
-	assert(((size_t)destPos)+length <= dest->size());
+	assert(static_cast<size_t>(srcPos)+length <= src->size());
+	assert(static_cast<size_t>(destPos)+length <= dest->size());
 	
 	for(int i=0; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[srcPos + i];
@@ -1493,8 +1493,8 @@ inline void arraycopy_Tile(vector<Tile*>* src, int srcPos, vector<Tile*>* dest, 
 	assert(srcPos >= 0);
 	assert(destPos >= 0);
 	assert(length >= 0);
-	assert(((size_t)srcPos)+length <= src->size());
-	assert(((size_t)destPos)+length <= dest->size());
+	assert(static_cast<size_t>(srcPos)+length <= src->size());
+	assert(static_cast<size_t>(destPos)+length <= dest->size());
 	
 	for(int i=0; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[srcPos + i];
@@ -1505,8 +1505,8 @@ inline void arraycopy_int(vector<int>* src, int srcPos, vector<int>* dest, int d
 	assert(srcPos >= 0);
 	assert(destPos >= 0);
 	assert(length >= 0);
-	assert(((size_t)srcPos)+length <= src->size());
-	assert(((size_t)destPos)+length <= dest->size());
+	assert(static_cast<size_t>(srcPos)+length <= src->size());
+	assert(static_cast<size_t>(destPos)+length <= dest->size());
 	
 	for(int i=0; i<length; i++) {
 		(*dest)[destPos + i] = (*src)[srcPos + i];
@@ -1565,7 +1565,7 @@ inline bool startsWith(string str, string key) {
 }
 
 inline float rand_float() {
-	return ((float) rand() / (RAND_MAX));
+	return static_cast<float>(rand()) / RAND_MAX;
 }
 
 template <typename T>

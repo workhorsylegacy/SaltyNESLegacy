@@ -26,7 +26,7 @@ void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 		return;
 
 	int32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
-	SDL_MixAudio(stream, (uint8_t*)papu->sampleBuffer, mix_len, SDL_MIX_MAXVOLUME);
+	SDL_MixAudio(stream, reinterpret_cast<uint8_t*>(papu->sampleBuffer), mix_len, SDL_MIX_MAXVOLUME);
 	papu->ready_for_buffer_write = false;
 	papu->bufferIndex = 0;
 }
@@ -51,7 +51,7 @@ void fill_audio_nacl_cb(void* samples, uint32_t buffer_size, void* data) {
 	// Make sure we can't write outside the buffer.
 	//assert(buffer_size >= (sizeof(*buff) * channels * papu->sample_frame_count_));
 
-	size_t mix_len = buffer_size > ((size_t) papu->bufferIndex) ? ((size_t) papu->bufferIndex) : buffer_size;
+	size_t mix_len = buffer_size > static_cast<size_t>(papu->bufferIndex) ? static_cast<size_t>(papu->bufferIndex) : buffer_size;
 	for(size_t i=0; i<mix_len; i++) {
 		buff[i] = (*papu->sampleBuffer)[i];
 	}
@@ -287,7 +287,7 @@ void PAPU::synchronized_start() {
 
 	try {
 
-//			line = (SourceDataLine*) AudioSystem.getLine(info);
+//			line = reinterperet_cast<SourceDataLine*>(AudioSystem.getLine(info));
 //			line->open(audioFormat);
 //			line->start();
 		// Start running the stream
@@ -431,7 +431,7 @@ void PAPU::resetCounter() {
 // and when the user enables/disables channels
 // in the GUI.
 void PAPU::updateChannelEnable(int value) {
-	channelEnableValue = (int16_t) value;
+	channelEnableValue = static_cast<int16_t>(value);
 	square1->setEnabled(userEnableSquare1 && (value & 1) != 0);
 	square2->setEnabled(userEnableSquare2 && (value & 2) != 0);
 	triangle->setEnabled(userEnableTriangle && (value & 4) != 0);
@@ -715,7 +715,7 @@ void PAPU::sample() {
 
 	}
 
-	smpNoise = (int) ((noise->accValue << 4) / noise->accCount);
+	smpNoise = static_cast<int>((noise->accValue << 4) / noise->accCount);
 	noise->accValue = smpNoise >> 4;
 	noise->accCount = 1;
 
@@ -726,10 +726,10 @@ void PAPU::sample() {
 		// Left channel:
 		sq_index = (smpSquare1 * stereoPosLSquare1 + smpSquare2 * stereoPosLSquare2) >> 8;
 		tnd_index = (3 * smpTriangle * stereoPosLTriangle + (smpNoise << 1) * stereoPosLNoise + smpDmc * stereoPosLDMC) >> 8;
-		if(sq_index >= (int) square_table->size()) {
+		if(sq_index >= static_cast<int>(square_table->size())) {
 			sq_index = square_table->size() - 1;
 		}
-		if(tnd_index >= (int) tnd_table->size()) {
+		if(tnd_index >= static_cast<int>(tnd_table->size())) {
 			tnd_index = tnd_table->size() - 1;
 		}
 		sampleValueL = (*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue;
@@ -737,10 +737,10 @@ void PAPU::sample() {
 		// Right channel:
 		sq_index = (smpSquare1 * stereoPosRSquare1 + smpSquare2 * stereoPosRSquare2) >> 8;
 		tnd_index = (3 * smpTriangle * stereoPosRTriangle + (smpNoise << 1) * stereoPosRNoise + smpDmc * stereoPosRDMC) >> 8;
-		if(sq_index >= (int) square_table->size()) {
+		if(sq_index >= static_cast<int>(square_table->size())) {
 			sq_index = square_table->size() - 1;
 		}
-		if(tnd_index >= (int) tnd_table->size()) {
+		if(tnd_index >= static_cast<int>(tnd_table->size())) {
 			tnd_index = tnd_table->size() - 1;
 		}
 		sampleValueR = (*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue;
@@ -750,10 +750,10 @@ void PAPU::sample() {
 		// Mono sound:
 		sq_index = smpSquare1 + smpSquare2;
 		tnd_index = 3 * smpTriangle + 2 * smpNoise + smpDmc;
-		if(sq_index >= (int) square_table->size()) {
+		if(sq_index >= static_cast<int>(square_table->size())) {
 			sq_index = square_table->size() - 1;
 		}
-		if(tnd_index >= (int) tnd_table->size()) {
+		if(tnd_index >= static_cast<int>(tnd_table->size())) {
 			tnd_index = tnd_table->size() - 1;
 		}
 		sampleValueL = 3 * ((*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue);
@@ -776,12 +776,12 @@ void PAPU::sample() {
 		sampleValueR = smpAccumR;
 
 		// Write:
-		if(bufferIndex + 4 < (int) sampleBuffer->size()) {
+		if(bufferIndex + 4 < static_cast<int>(sampleBuffer->size())) {
 
-			(*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueR) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueR >> 8) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueL) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueL >> 8) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueR) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueR >> 8) & 0xFF);
 
 		}
 
@@ -789,10 +789,10 @@ void PAPU::sample() {
 	} else {
 
 		// Write:
-		if(bufferIndex + 2 < (int) sampleBuffer->size()) {
+		if(bufferIndex + 2 < static_cast<int>(sampleBuffer->size())) {
 
-			(*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = (int8_t) ((sampleValueL >> 8) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueL) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueL >> 8) & 0xFF);
 
 		}
 
@@ -897,10 +897,10 @@ void PAPU::synchronized_setSampleRate(int rate, bool restart) {
 	}
 
 	sampleRate = rate;
-	sampleTimerMax = (int) ((1024.0 * Globals::CPU_FREQ_NTSC * Globals::preferredFrameRate) /
+	sampleTimerMax = static_cast<int>((1024.0 * Globals::CPU_FREQ_NTSC * Globals::preferredFrameRate) /
 			(sampleRate * 60.0));
 
-	frameTime = (int) ((14915.0 * (double) Globals::preferredFrameRate) / 60.0);
+	frameTime = static_cast<int>((14915.0 * static_cast<double>(Globals::preferredFrameRate)) / 60.0);
 
 	sampleTimer = 0;
 	bufferIndex = 0;
@@ -1004,7 +1004,7 @@ int PAPU::getMillisToAvailableAbove(int target_avail) {
 	time = ((target_avail - cur_avail) * 1000) / sampleRate;
 	time /= (stereo ? 4 : 2);
 
-	return (int) time;
+	return static_cast<int>(time);
 }
 
 int PAPU::getBufferPos() {
@@ -1067,10 +1067,10 @@ void PAPU::initDACtables() {
 	for(int i = 0; i < 32 * 16; i++) {
 
 
-		value = 95.52 / (8128.0 / ((double) i / 16.0) + 100.0);
+		value = 95.52 / (8128.0 / (static_cast<double>(i) / 16.0) + 100.0);
 		value *= 0.98411;
 		value *= 50000.0;
-		ival = (int) value;
+		ival = static_cast<int>(value);
 
 		(*square_table)[i] = ival;
 		if(ival > max_sqr) {
@@ -1081,10 +1081,10 @@ void PAPU::initDACtables() {
 
 	for(int i = 0; i < 204 * 16; i++) {
 
-		value = 163.67 / (24329.0 / ((double) i / 16.0) + 100.0);
+		value = 163.67 / (24329.0 / (static_cast<double>(i) / 16.0) + 100.0);
 		value *= 0.98411;
 		value *= 50000.0;
-		ival = (int) value;
+		ival = static_cast<int>(value);
 
 		(*tnd_table)[i] = ival;
 		if(ival > max_tnd) {

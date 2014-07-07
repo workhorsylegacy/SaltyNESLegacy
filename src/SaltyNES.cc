@@ -201,7 +201,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 
 			// Run the ROM
 			vnes = new vNES();
-			vnes->init_data((uint8_t*) rom_data.c_str(), (size_t)rom_data.length(), this);
+			vnes->init_data((uint8_t*) rom_data.c_str(), static_cast<size_t>(rom_data.length()), this);
 			vnes->pre_run_setup(saveRam);
 			log_to_browser("running");
 			pthread_create(&thread_, nullptr, start_main_loop, this);
