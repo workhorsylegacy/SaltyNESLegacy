@@ -24,8 +24,6 @@ def clean():
 	rmdir_and_children('pnacl')
 
 def _configure():
-	require_shared_library('libSDL', lambda ver: ver >= (1, 2))
-
 	cxx = cxx_get_default_compiler()
 	cxx.optimize = True
 	cxx.debug = True
@@ -46,6 +44,7 @@ def redesktop():
 
 def _desktop():
 	_configure()
+	require_shared_library('libSDL', lambda ver: ver >= (1, 2))
 
 	# Copy the files to the build directory
 	mkdir_f('build')
