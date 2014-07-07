@@ -22,6 +22,7 @@ def clean():
 	rmdir_and_children('build')
 	rmdir_and_children('src/bin')
 	rmdir_and_children('pnacl')
+	rmdir_and_children('newlib')
 
 def _configure():
 	cxx = cxx_get_default_compiler()
