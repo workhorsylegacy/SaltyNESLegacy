@@ -24,7 +24,7 @@ ByteBuffer::ByteBuffer(int size, int byteOrdering) {
 	if(size < 1) {
 		size = 1;
 	}
-	this->buf = new vector<uint16_t>(size);
+	this->buf = vector<uint16_t>(size);
 	this->size = size;
 	this->byteOrder = byteOrdering;
 	curPos = 0;
@@ -36,9 +36,9 @@ ByteBuffer::ByteBuffer(int size, int byteOrdering) {
 
 ByteBuffer::ByteBuffer(vector<uint8_t>* content, int byteOrdering) {
 	try {
-		this->buf = new vector<uint16_t>(size);
-		for(size_t i = 0; i < content->size(); i++) {
-			(*buf)[i] = (uint16_t) ((*content)[i] & 255);
+		this->buf = vector<uint16_t>(size);
+		for(size_t i = 0; i < content->size(); ++i) {
+			buf[i] = static_cast<uint16_t>((*content)[i] & 255);
 		}
 		size = content->size();
 		this->byteOrder = byteOrdering;
@@ -70,11 +70,7 @@ void ByteBuffer::setByteOrder(int byteOrder) {
 }
 
 uint8_t* ByteBuffer::getBytes() {
-	uint8_t* ret = new uint8_t[buf->size()];
-	for(size_t i = 0; i < buf->size(); i++) {
-		ret[i] = (uint8_t) (*buf)[i];
-	}
-	return ret;
+	return reinterpret_cast<uint8_t*>(this->buf.data());
 }
 
 int ByteBuffer::getSize() {
@@ -95,22 +91,22 @@ bool ByteBuffer::hasHadErrors() {
 }
 
 void ByteBuffer::clear() {
-	for(size_t i = 0; i < buf->size(); i++) {
-		(*buf)[i] = 0;
+	for(size_t i = 0; i < buf.size(); ++i) {
+		buf[i] = 0;
 	}
 	curPos = 0;
 }
 
 void ByteBuffer::fill(uint8_t value) {
-	for(int i = 0; i < size; i++) {
-		(*buf)[i] = value;
+	for(int i = 0; i < size; ++i) {
+		buf[i] = value;
 	}
 }
 
 bool ByteBuffer::fillRange(int start, int length, uint8_t value) {
 	if(inRange(start, length)) {
-		for(int i = start; i < (start + length); i++) {
-			(*buf)[i] = value;
+		for(int i = start; i < (start + length); ++i) {
+			buf[i] = value;
 		}
 		return true;
 	} else {
@@ -120,8 +116,8 @@ bool ByteBuffer::fillRange(int start, int length, uint8_t value) {
 }
 
 void ByteBuffer::resize(int length) {
-	buf->resize(size);
 	size = length;
+	buf.resize(size);
 }
 
 void ByteBuffer::resizeToCurrentPos() {
@@ -193,7 +189,7 @@ bool ByteBuffer::putBoolean(bool b, int pos) {
 
 bool ByteBuffer::putByte(uint16_t var) {
 	if(inRange(curPos, 1)) {
-		(*buf)[curPos] = var;
+		buf[curPos] = var;
 		move(1);
 		return true;
 	} else {
@@ -204,7 +200,7 @@ bool ByteBuffer::putByte(uint16_t var) {
 
 bool ByteBuffer::putByte(uint16_t var, int pos) {
 	if(inRange(pos, 1)) {
-		(*buf)[pos] = var;
+		buf[pos] = var;
 		return true;
 	} else {
 		error();
@@ -223,11 +219,11 @@ bool ByteBuffer::putShort(uint16_t var) {
 bool ByteBuffer::putShort(uint16_t var, int pos) {
 	if(inRange(pos, 2)) {
 		if(this->byteOrder == BO_BIG_ENDIAN) {
-			(*buf)[pos + 0] = static_cast<uint16_t>((var >> 8) & 255);
-			(*buf)[pos + 1] = static_cast<uint16_t>((var) & 255);
+			buf[pos + 0] = static_cast<uint16_t>((var >> 8) & 255);
+			buf[pos + 1] = static_cast<uint16_t>((var) & 255);
 		} else {
-			(*buf)[pos + 1] = static_cast<uint16_t>((var >> 8) & 255);
-			(*buf)[pos + 0] = static_cast<uint16_t>((var) & 255);
+			buf[pos + 1] = static_cast<uint16_t>((var >> 8) & 255);
+			buf[pos + 0] = static_cast<uint16_t>((var) & 255);
 		}
 		return true;
 	} else {
@@ -247,15 +243,15 @@ bool ByteBuffer::putInt(int var) {
 bool ByteBuffer::putInt(int var, int pos) {
 	if(inRange(pos, 4)) {
 		if(this->byteOrder == BO_BIG_ENDIAN) {
-			(*buf)[pos + 0] = static_cast<uint16_t>((var >> 24) & 255);
-			(*buf)[pos + 1] = static_cast<uint16_t>((var >> 16) & 255);
-			(*buf)[pos + 2] = static_cast<uint16_t>((var >> 8) & 255);
-			(*buf)[pos + 3] = static_cast<uint16_t>(var & 255);
+			buf[pos + 0] = static_cast<uint16_t>((var >> 24) & 255);
+			buf[pos + 1] = static_cast<uint16_t>((var >> 16) & 255);
+			buf[pos + 2] = static_cast<uint16_t>((var >> 8) & 255);
+			buf[pos + 3] = static_cast<uint16_t>(var & 255);
 		} else {
-			(*buf)[pos + 3] = static_cast<uint16_t>((var >> 24) & 255);
-			(*buf)[pos + 2] = static_cast<uint16_t>((var >> 16) & 255);
-			(*buf)[pos + 1] = static_cast<uint16_t>((var >> 8) & 255);
-			(*buf)[pos + 0] = static_cast<uint16_t>(var & 255);
+			buf[pos + 3] = static_cast<uint16_t>((var >> 24) & 255);
+			buf[pos + 2] = static_cast<uint16_t>((var >> 16) & 255);
+			buf[pos + 1] = static_cast<uint16_t>((var >> 8) & 255);
+			buf[pos + 0] = static_cast<uint16_t>(var & 255);
 		}
 		return true;
 	} else {
@@ -276,10 +272,10 @@ bool ByteBuffer::putString(string var, int pos) {
 	const char* charArr = reinterpret_cast<const char*>(var.c_str());
 	uint16_t theChar;
 	if(inRange(pos, var.length() * 2)) {
-		for(size_t i = 0; i < var.length(); i++) {
+		for(size_t i = 0; i < var.length(); ++i) {
 			theChar = (uint16_t) (charArr[i]);
-			(*buf)[pos + 0] = static_cast<uint16_t>((theChar >> 8) & 255);
-			(*buf)[pos + 1] = static_cast<uint16_t>(theChar & 255);
+			buf[pos + 0] = static_cast<uint16_t>((theChar >> 8) & 255);
+			buf[pos + 1] = static_cast<uint16_t>(theChar & 255);
 			pos += 2;
 		}
 		return true;
@@ -301,11 +297,11 @@ bool ByteBuffer::putChar(char var, int pos) {
 	int tmp = var;
 	if(inRange(pos, 2)) {
 		if(byteOrder == BO_BIG_ENDIAN) {
-			(*buf)[pos + 0] = static_cast<uint16_t>((tmp >> 8) & 255);
-			(*buf)[pos + 1] = static_cast<uint16_t>(tmp & 255);
+			buf[pos + 0] = static_cast<uint16_t>((tmp >> 8) & 255);
+			buf[pos + 1] = static_cast<uint16_t>(tmp & 255);
 		} else {
-			(*buf)[pos + 1] = static_cast<uint16_t>((tmp >> 8) & 255);
-			(*buf)[pos + 0] = static_cast<uint16_t>(tmp & 255);
+			buf[pos + 1] = static_cast<uint16_t>((tmp >> 8) & 255);
+			buf[pos + 0] = static_cast<uint16_t>(tmp & 255);
 		}
 		return true;
 	} else {
@@ -324,7 +320,7 @@ bool ByteBuffer::putCharAscii(char var) {
 
 bool ByteBuffer::putCharAscii(char var, int pos) {
 	if(inRange(pos)) {
-		(*buf)[pos] = static_cast<uint16_t>(var);
+		buf[pos] = static_cast<uint16_t>(var);
 		return true;
 	} else {
 		error();
@@ -343,9 +339,9 @@ bool ByteBuffer::putStringAscii(string var) {
 bool ByteBuffer::putStringAscii(string var, int pos) {
 	const char* charArr = reinterpret_cast<const char*>(var.c_str());
 	if(inRange(pos, var.length())) {
-		for(size_t i = 0; i < var.length(); i++) {
-			(*buf)[pos] = static_cast<uint16_t>(charArr[i]);
-			pos++;
+		for(size_t i = 0; i < var.length(); ++i) {
+			buf[pos] = static_cast<uint16_t>(charArr[i]);
+			++pos;
 		}
 		return true;
 	} else {
@@ -358,11 +354,11 @@ bool ByteBuffer::putByteArray(vector<uint16_t>* arr) {
 	if(arr == nullptr) {
 		return false;
 	}
-	if(buf->size() - curPos < arr->size()) {
+	if(buf.size() - curPos < arr->size()) {
 		resize(curPos + arr->size());
 	}
-	for(size_t i = 0; i < arr->size(); i++) {
-		(*buf)[curPos + i] = static_cast<uint8_t>((*arr)[i]);
+	for(size_t i = 0; i < arr->size(); ++i) {
+		buf[curPos + i] = static_cast<uint8_t>((*arr)[i]);
 	}
 	curPos += arr->size();
 	return true;
@@ -372,11 +368,11 @@ bool ByteBuffer::readByteArray(vector<uint16_t>* arr) {
 	if(arr == nullptr) {
 		return false;
 	}
-	if(buf->size() - curPos < arr->size()) {
+	if(buf.size() - curPos < arr->size()) {
 		return false;
 	}
-	for(size_t i = 0; i < arr->size(); i++) {
-		(*arr)[i] = static_cast<uint16_t>((*buf)[curPos + i] & 0xFF);
+	for(size_t i = 0; i < arr->size(); ++i) {
+		(*arr)[i] = static_cast<uint16_t>(buf[curPos + i] & 0xFF);
 	}
 	curPos += arr->size();
 	return true;
@@ -386,19 +382,19 @@ bool ByteBuffer::putShortArray(vector<uint16_t>* arr) {
 	if(arr == nullptr) {
 		return false;
 	}
-	if(buf->size() - curPos < arr->size() * 2) {
+	if(buf.size() - curPos < arr->size() * 2) {
 		resize(curPos + arr->size() * 2);
 	}
 	if(byteOrder == BO_BIG_ENDIAN) {
-		for(size_t i = 0; i < arr->size(); i++) {
-			(*buf)[curPos + 0] = static_cast<uint16_t>(((*arr)[i] >> 8) & 255);
-			(*buf)[curPos + 1] = static_cast<uint16_t>(((*arr)[i]) & 255);
+		for(size_t i = 0; i < arr->size(); ++i) {
+			buf[curPos + 0] = static_cast<uint16_t>(((*arr)[i] >> 8) & 255);
+			buf[curPos + 1] = static_cast<uint16_t>(((*arr)[i]) & 255);
 			curPos += 2;
 		}
 	} else {
-		for(size_t i = 0; i < arr->size(); i++) {
-			(*buf)[curPos + 1] = static_cast<uint16_t>(((*arr)[i] >> 8) & 255);
-			(*buf)[curPos + 0] = static_cast<uint16_t>(((*arr)[i]) & 255);
+		for(size_t i = 0; i < arr->size(); ++i) {
+			buf[curPos + 1] = static_cast<uint16_t>(((*arr)[i] >> 8) & 255);
+			buf[curPos + 0] = static_cast<uint16_t>(((*arr)[i]) & 255);
 			curPos += 2;
 		}
 	}
@@ -409,7 +405,7 @@ string ByteBuffer::toString() {
 	char* strBuf = new char(size-1);
 	uint16_t tmp;
 	for(int i = 0; i < (size - 1); i += 2) {
-		tmp = static_cast<uint16_t>(((*buf)[i] << 8) | ((*buf)[i + 1]));
+		tmp = static_cast<uint16_t>((buf[i] << 8) | (buf[i + 1]));
 		strBuf[i] = static_cast<char>(tmp);
 	}
 	return string(strBuf);
@@ -417,8 +413,8 @@ string ByteBuffer::toString() {
 
 string ByteBuffer::toStringAscii() {
 	char* strBuf = new char(size-1);
-	for(int i = 0; i < size; i++) {
-		strBuf[i] = static_cast<char>((*buf)[i]);
+	for(int i = 0; i < size; ++i) {
+		strBuf[i] = static_cast<char>(buf[i]);
 	}
 	return string(strBuf);
 }
@@ -441,7 +437,7 @@ uint16_t ByteBuffer::readByte() {
 
 uint16_t ByteBuffer::readByte(int pos) {
 	if(inRange(pos)) {
-		return (*buf)[pos];
+		return buf[pos];
 	} else {
 		error();
 		throw "ArrayIndexOutOfBoundsException";
@@ -457,9 +453,9 @@ uint16_t ByteBuffer::readShort() {
 uint16_t ByteBuffer::readShort(int pos) {
 	if(inRange(pos, 2)) {
 		if(this->byteOrder == BO_BIG_ENDIAN) {
-			return static_cast<uint16_t>(((*buf)[pos] << 8) | ((*buf)[pos + 1]));
+			return static_cast<uint16_t>((buf[pos] << 8) | (buf[pos + 1]));
 		} else {
-			return static_cast<uint16_t>(((*buf)[pos + 1] << 8) | ((*buf)[pos]));
+			return static_cast<uint16_t>((buf[pos + 1] << 8) | (buf[pos]));
 		}
 	} else {
 		error();
@@ -477,15 +473,15 @@ int ByteBuffer::readInt(int pos) {
 	int ret = 0;
 	if(inRange(pos, 4)) {
 		if(this->byteOrder == BO_BIG_ENDIAN) {
-			ret |= ((*buf)[pos + 0] << 24);
-			ret |= ((*buf)[pos + 1] << 16);
-			ret |= ((*buf)[pos + 2] << 8);
-			ret |= ((*buf)[pos + 3]);
+			ret |= (buf[pos + 0] << 24);
+			ret |= (buf[pos + 1] << 16);
+			ret |= (buf[pos + 2] << 8);
+			ret |= (buf[pos + 3]);
 		} else {
-			ret |= ((*buf)[pos + 3] << 24);
-			ret |= ((*buf)[pos + 2] << 16);
-			ret |= ((*buf)[pos + 1] << 8);
-			ret |= ((*buf)[pos + 0]);
+			ret |= (buf[pos + 3] << 24);
+			ret |= (buf[pos + 2] << 16);
+			ret |= (buf[pos + 1] << 8);
+			ret |= (buf[pos + 0]);
 		}
 		return ret;
 	} else {
@@ -538,7 +534,7 @@ string ByteBuffer::readString(int pos, int length) {
 	char* tmp;
 	if(inRange(pos, length * 2) && length > 0) {
 		tmp = new char[length];
-		for(int i = 0; i < length; i++) {
+		for(int i = 0; i < length; ++i) {
 			tmp[i] = readChar(pos + i * 2);
 		}
 		return string(tmp);
@@ -577,7 +573,7 @@ string ByteBuffer::readStringAscii(int pos, int length) {
 	char* tmp;
 	if(inRange(pos, length) && length > 0) {
 		tmp = new char[length];
-		for(int i = 0; i < length; i++) {
+		for(int i = 0; i < length; ++i) {
 			tmp[i] = readCharAscii(pos + i);
 		}
 		return string(tmp);
@@ -605,18 +601,17 @@ string ByteBuffer::readStringAsciiWithShortLength(int pos) {
 		throw "ArrayIndexOutOfBoundsException";
 	}
 }
-
+/*
 vector<uint16_t>* ByteBuffer::expandShortArray(vector<uint16_t>* array, int size) {
 	vector<uint16_t>* newArr = new vector<uint16_t>(array->size() + size);
-	for(size_t i=0; i<array->size(); i++)
+	for(size_t i=0; i<array->size(); ++i)
 		(*newArr)[i] = (*array)[i];
-	return newArr;
 }
 
 void ByteBuffer::crop() {
 	if(curPos > 0) {
-		if(curPos < buf->size()) {
-			buf->resize(curPos);
+		if(curPos < buf.size()) {
+			buf.resize(curPos);
 		}
 	} else {
 		//System.out.println("Could not crop buffer, as the current position is 0. The buffer may not be empty.");
@@ -625,12 +620,12 @@ void ByteBuffer::crop() {
 
 ByteBuffer* ByteBuffer::asciiEncode(ByteBuffer* buf) {
 
-	vector<uint16_t>* data = buf->buf;
+	vector<uint16_t>* data = &buf->buf;
 	vector<uint8_t>* enc = new vector<uint8_t>(buf->getSize() * 2);
 
 	int encpos = 0;
 	int tmp;
-	for(size_t i = 0; i < data->size(); i++) {
+	for(size_t i = 0; i < data->size(); ++i) {
 
 		tmp = (*data)[i];
 		(*enc)[encpos] = static_cast<uint8_t>((65 + tmp) & 0xF);
@@ -641,7 +636,7 @@ ByteBuffer* ByteBuffer::asciiEncode(ByteBuffer* buf) {
 	return new ByteBuffer(enc, ByteBuffer::BO_BIG_ENDIAN);
 
 }
-/*
+
 ByteBuffer* ByteBuffer::asciiDecode(ByteBuffer* buf) {
 	return nullptr;
 }

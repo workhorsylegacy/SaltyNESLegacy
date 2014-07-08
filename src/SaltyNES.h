@@ -169,7 +169,7 @@ public:
 	static const int BO_BIG_ENDIAN = 0;
 	static const int BO_LITTLE_ENDIAN = 1;
 	
-	vector<uint16_t>* buf;
+	vector<uint16_t> buf;
 	int size;
 	int byteOrder;
 	size_t curPos;
@@ -239,9 +239,9 @@ public:
 	string readStringAscii(int pos, int length);
 	string readStringAsciiWithShortLength();
 	string readStringAsciiWithShortLength(int pos);
-	vector<uint16_t>* expandShortArray(vector<uint16_t>* array, int size);
-	void crop();
-	static ByteBuffer* asciiEncode(ByteBuffer* buf);
+	//vector<uint16_t>* expandShortArray(vector<uint16_t>* array, int size);
+	//void crop();
+	//static ByteBuffer* asciiEncode(ByteBuffer* buf);
 	//static ByteBuffer* asciiDecode(ByteBuffer* buf);
 	//static void saveToZipFile(File f, ByteBuffer* buf);
 	//static ByteBuffer* readFromZipFile(File f);
