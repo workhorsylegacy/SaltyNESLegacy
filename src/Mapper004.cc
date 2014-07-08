@@ -47,7 +47,7 @@ void Mapper004::mapperInternalStateSave(ByteBuffer* buf) {
 	this->base_mapperInternalStateSave(buf);
 
 	// Version:
-	buf->putByte(static_cast<int16_t>(1));
+	buf->putByte(static_cast<uint16_t>(1));
 
 	// State:
 	buf->putInt(command);
@@ -61,7 +61,7 @@ void Mapper004::mapperInternalStateSave(ByteBuffer* buf) {
 
 }
 
-void Mapper004::write(int address, int16_t value) {
+void Mapper004::write(int address, uint16_t value) {
 	if(address < 0x8000) {
 		// Normal memory write.
 		this->base_write(address, value);

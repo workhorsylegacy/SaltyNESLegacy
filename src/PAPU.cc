@@ -25,7 +25,7 @@ void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 	if(!papu->ready_for_buffer_write)
 		return;
 
-	int32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
+	uint32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
 	SDL_MixAudio(stream, reinterpret_cast<uint8_t*>(papu->sampleBuffer), mix_len, SDL_MIX_MAXVOLUME);
 	papu->ready_for_buffer_write = false;
 	papu->bufferIndex = 0;
@@ -173,7 +173,7 @@ PAPU::PAPU(NES* nes) {
 	synchronized_setSampleRate(sampleRate, false);
 	unlock_mutex();
 	
-	sampleBuffer = new vector<int8_t>(bufferSize * (stereo ? 4 : 2));
+	sampleBuffer = new vector<uint8_t>(bufferSize * (stereo ? 4 : 2));
 	ismpbuffer = new vector<int>(bufferSize * (stereo ? 2 : 1));
 	bufferIndex = 0;
 	frameIrqEnabled = false;
@@ -309,7 +309,7 @@ NES* PAPU::getNes() {
 	return nes;
 }
 
-int16_t PAPU::readReg() {
+uint16_t PAPU::readReg() {
 	// Read 0x4015:
 	int tmp = 0;
 	tmp |= (square1->getLengthStatus());
@@ -324,10 +324,10 @@ int16_t PAPU::readReg() {
 	dmc->irqGenerated = false;
 
 	////System.out.println("$4015 read. Value = "+Misc.bin8(tmp)+" countseq = "+countSequence);
-	return (int16_t) tmp;
+	return (uint16_t) tmp;
 }
 
-void PAPU::writeReg(int address, int16_t value) {
+void PAPU::writeReg(int address, uint16_t value) {
 	if(address >= 0x4000 && address < 0x4004) {
 
 		// Square Wave 1 Control
@@ -431,7 +431,7 @@ void PAPU::resetCounter() {
 // and when the user enables/disables channels
 // in the GUI.
 void PAPU::updateChannelEnable(int value) {
-	channelEnableValue = static_cast<int16_t>(value);
+	channelEnableValue = static_cast<uint16_t>(value);
 	square1->setEnabled(userEnableSquare1 && (value & 1) != 0);
 	square2->setEnabled(userEnableSquare2 && (value & 2) != 0);
 	triangle->setEnabled(userEnableTriangle && (value & 4) != 0);
@@ -778,10 +778,10 @@ void PAPU::sample() {
 		// Write:
 		if(bufferIndex + 4 < static_cast<int>(sampleBuffer->size())) {
 
-			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueL) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueL >> 8) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueR) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueR >> 8) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueL) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueL >> 8) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueR) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueR >> 8) & 0xFF);
 
 		}
 
@@ -791,8 +791,8 @@ void PAPU::sample() {
 		// Write:
 		if(bufferIndex + 2 < static_cast<int>(sampleBuffer->size())) {
 
-			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueL) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = static_cast<int8_t>((sampleValueL >> 8) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueL) & 0xFF);
+			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueL >> 8) & 0xFF);
 
 		}
 
@@ -928,9 +928,9 @@ void PAPU::synchronized_setStereo(bool s, bool restart) {
 
 	stereo = s;
 	if(stereo) {
-		sampleBuffer = new vector<int8_t>(bufferSize * 4);
+		sampleBuffer = new vector<uint8_t>(bufferSize * 4);
 	} else {
-		sampleBuffer = new vector<int8_t>(bufferSize * 2);
+		sampleBuffer = new vector<uint8_t>(bufferSize * 2);
 	}
 
 	if(restart) {

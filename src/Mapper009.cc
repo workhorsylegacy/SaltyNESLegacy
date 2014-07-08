@@ -30,7 +30,7 @@ void Mapper009::init(NES* nes) {
 	reset();
 }
 
-void Mapper009::write(int address, int16_t value) {
+void Mapper009::write(int address, uint16_t value) {
 	if(address < 0x8000) {
 
 		// Handle normally.
@@ -181,15 +181,15 @@ void Mapper009::mapperInternalStateSave(ByteBuffer* buf) {
 	this->base_mapperInternalStateSave(buf);
 
 	// Version:
-	buf->putByte(static_cast<int16_t>(1));
+	buf->putByte(static_cast<uint16_t>(1));
 
 	// State:
-	buf->putByte(static_cast<int8_t>(latchLo));
-	buf->putByte(static_cast<int8_t>(latchHi));
-	buf->putByte(static_cast<int8_t>(latchLoVal1));
-	buf->putByte(static_cast<int8_t>(latchLoVal2));
-	buf->putByte(static_cast<int8_t>(latchHiVal1));
-	buf->putByte(static_cast<int8_t>(latchHiVal2));
+	buf->putByte(static_cast<uint8_t>(latchLo));
+	buf->putByte(static_cast<uint8_t>(latchHi));
+	buf->putByte(static_cast<uint8_t>(latchLoVal1));
+	buf->putByte(static_cast<uint8_t>(latchLoVal2));
+	buf->putByte(static_cast<uint8_t>(latchHiVal1));
+	buf->putByte(static_cast<uint8_t>(latchHiVal2));
 }
 
 void Mapper009::reset() {

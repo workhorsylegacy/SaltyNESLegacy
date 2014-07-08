@@ -48,9 +48,9 @@ NES::NES(SaltyNES* salty_nes) {
 	// Init sound registers:
 	for(int i = 0; i < 0x14; i++) {
 		if(i == 0x10) {
-			papu->writeReg(0x4010, static_cast<int16_t>(0x10));
+			papu->writeReg(0x4010, static_cast<uint16_t>(0x10));
 		} else {
-			papu->writeReg(0x4000 + i, static_cast<int16_t>(0));
+			papu->writeReg(0x4000 + i, static_cast<uint16_t>(0));
 		}
 	}
 
@@ -167,7 +167,7 @@ void NES::stateSave(ByteBuffer* buf) {
 	stopEmulation();
 
 	// Version:
-	buf->putByte(static_cast<int16_t>(1));
+	buf->putByte(static_cast<uint16_t>(1));
 
 	// Let units save their state:
 	cpuMem->stateSave(buf);
@@ -211,7 +211,7 @@ void NES::stopEmulation() {
 }
 
 void NES::clearCPUMemory() {
-	int16_t flushval = Globals::memoryFlushValue;
+	uint16_t flushval = Globals::memoryFlushValue;
 	for(int i = 0; i < 0x2000; i++) {
 		(*cpuMem->mem)[i] = flushval;
 	}
@@ -270,7 +270,7 @@ MapperDefault* NES::getMemoryMapper() {
 	return memMapper;
 }
 
-bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<int16_t>* save_ram) {
+bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram) {
 	// Can't load ROM while still running.
 	if(_isRunning) {
 		stopEmulation();

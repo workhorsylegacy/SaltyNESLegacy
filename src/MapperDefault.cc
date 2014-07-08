@@ -45,7 +45,7 @@ MapperDefault::~MapperDefault() {
 	ppu = nullptr;
 }
 
-void MapperDefault::write(int address, int16_t value) {
+void MapperDefault::write(int address, uint16_t value) {
 	base_write(address, value);
 }
 
@@ -84,7 +84,7 @@ void MapperDefault::stateLoad(ByteBuffer* buf) {
 
 void MapperDefault::stateSave(ByteBuffer* buf) {
 	// Version:
-	buf->putByte(static_cast<int16_t>(1));
+	buf->putByte(static_cast<uint16_t>(1));
 
 	// Joypad stuff:
 	buf->putInt(joy1StrobeState);
@@ -96,9 +96,9 @@ void MapperDefault::stateSave(ByteBuffer* buf) {
 }
 
 void MapperDefault::base_mapperInternalStateLoad(ByteBuffer* buf) {
-	buf->putByte(static_cast<int16_t>(joy1StrobeState));
-	buf->putByte(static_cast<int16_t>(joy2StrobeState));
-	buf->putByte(static_cast<int16_t>(joypadLastWrite));
+	buf->putByte(static_cast<uint16_t>(joy1StrobeState));
+	buf->putByte(static_cast<uint16_t>(joy2StrobeState));
+	buf->putByte(static_cast<uint16_t>(joypadLastWrite));
 
 }
 
@@ -116,7 +116,7 @@ bool MapperDefault::getGameGenieState() {
 	return gameGenieActive;
 }
 
-void MapperDefault::base_write(int address, int16_t value) {
+void MapperDefault::base_write(int address, uint16_t value) {
 	if(address < 0x2000) {
 
 		// Mirroring of RAM:
@@ -146,7 +146,7 @@ void MapperDefault::base_write(int address, int16_t value) {
 
 }
 
-void MapperDefault::writelow(int address, int16_t value) {
+void MapperDefault::writelow(int address, uint16_t value) {
 	if(address < 0x2000) {
 		// Mirroring of RAM:
 		(*cpuMem->mem)[address & 0x7FF] = value;
@@ -163,11 +163,11 @@ void MapperDefault::writelow(int address, int16_t value) {
 
 }
 
-int16_t MapperDefault::load(int address) {
+uint16_t MapperDefault::load(int address) {
 	return base_load(address);
 }
 
-int16_t MapperDefault::base_load(int address) {
+uint16_t MapperDefault::base_load(int address) {
 	// Wrap around:
 	address &= 0xFFFF;
 
@@ -186,7 +186,7 @@ int16_t MapperDefault::base_load(int address) {
 	}
 }
 
-int16_t MapperDefault::regLoad(int address) {
+uint16_t MapperDefault::regLoad(int address) {
 	switch (address >> 12) { // use fourth nibble (0xF000)
 		case 0: {
 			break;
@@ -306,7 +306,7 @@ int16_t MapperDefault::regLoad(int address) {
 						}
 
 						w |= (mousePressed ? (0x1 << 4) : 0);
-						return static_cast<int16_t>(joy2Read() | w);
+						return static_cast<uint16_t>(joy2Read() | w);
 
 					} else {
 						return joy2Read();
@@ -324,7 +324,7 @@ int16_t MapperDefault::regLoad(int address) {
 
 }
 
-void MapperDefault::regWrite(int address, int16_t value) {
+void MapperDefault::regWrite(int address, uint16_t value) {
 	switch (address) {
 		case 0x2000: {
 
@@ -426,8 +426,8 @@ void MapperDefault::regWrite(int address, int16_t value) {
 
 }
 
-int16_t MapperDefault::joy1Read() {
-	int16_t ret = 0;
+uint16_t MapperDefault::joy1Read() {
+	uint16_t ret = 0;
 	InputHandler* in = nes->_joy1;
 
 	switch (joy1StrobeState) {
@@ -466,10 +466,10 @@ int16_t MapperDefault::joy1Read() {
 		case 16:
 		case 17:
 		case 18:
-			ret = static_cast<int16_t>(0);
+			ret = static_cast<uint16_t>(0);
 			break;
 		case 19:
-			ret = static_cast<int16_t>(1);
+			ret = static_cast<uint16_t>(1);
 			break;
 		default:
 			ret = 0;
@@ -483,8 +483,8 @@ int16_t MapperDefault::joy1Read() {
 	return ret;
 }
 
-int16_t MapperDefault::joy2Read() {
-	int16_t ret = 0;
+uint16_t MapperDefault::joy2Read() {
+	uint16_t ret = 0;
 	InputHandler* in = nes->_joy2;
 
 	switch (joy2StrobeState) {
@@ -523,10 +523,10 @@ int16_t MapperDefault::joy2Read() {
 		case 16:
 		case 17:
 		case 18:
-			ret = static_cast<int16_t>(0);
+			ret = static_cast<uint16_t>(0);
 			break;
 		case 19:
-			ret = static_cast<int16_t>(1);
+			ret = static_cast<uint16_t>(1);
 			break;
 		default:
 			ret = 0;
@@ -591,7 +591,7 @@ void MapperDefault::loadCHRROM() {
 
 void MapperDefault::loadBatteryRam() {
 	if(rom->batteryRam) {
-		vector<int16_t>* ram = rom->getBatteryRam();
+		vector<uint16_t>* ram = rom->getBatteryRam();
 		if(ram != nullptr && ram->size() == 0x2000) {
 			arraycopy_short(ram, 0, nes->cpuMem->mem, 0x6000, 0x2000);
 		}
@@ -601,7 +601,7 @@ void MapperDefault::loadBatteryRam() {
 void MapperDefault::loadRomBank(int bank, int address) {
 	// Loads a ROM bank into the specified address.
 	bank %= rom->getRomBankCount();
-	//vector<int16_t>* data = rom->getRomBank(bank);
+	//vector<uint16_t>* data = rom->getRomBank(bank);
 	//cpuMem->write(address,data,data.length);
 	arraycopy_short(rom->getRomBank(bank), 0, cpuMem->mem, address, 16384);
 
@@ -674,7 +674,7 @@ void MapperDefault::load8kRomBank(int bank8k, int address) {
 	int bank16k = (bank8k / 2) % rom->getRomBankCount();
 	int offset = (bank8k % 2) * 8192;
 
-	vector<int16_t>* bank = rom->getRomBank(bank16k);
+	vector<uint16_t>* bank = rom->getRomBank(bank16k);
 	cpuMem->write(address, bank, offset, 8192);
 }
 

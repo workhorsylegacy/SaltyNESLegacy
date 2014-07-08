@@ -21,7 +21,7 @@ void Mapper003::init(NES* nes) {
 	this->base_init(nes);
 }
 
-void Mapper003::write(int address, int16_t value) {
+void Mapper003::write(int address, uint16_t value) {
 	if(address < 0x8000) {
 		// Let the base mapper take care of it.
 		this->base_write(address, value);

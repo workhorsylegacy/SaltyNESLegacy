@@ -74,7 +74,7 @@ void Mapper001::mapperInternalStateLoad(ByteBuffer* buf) {
 
 void Mapper001::mapperInternalStateSave(ByteBuffer* buf) {
 	// Version:
-	buf->putByte((int16_t) 1);
+	buf->putByte((uint16_t) 1);
 
 	// Reg 0:
 	buf->putInt(mirroring);
@@ -98,7 +98,7 @@ void Mapper001::mapperInternalStateSave(ByteBuffer* buf) {
 
 }
 
-void Mapper001::write(int address, int16_t value) {
+void Mapper001::write(int address, uint16_t value) {
 	// Writes to addresses other than MMC registers are handled by NoMapper.
 	if(address < 0x8000) {
 		this->base_write(address, value);

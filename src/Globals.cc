@@ -28,7 +28,7 @@ int Globals::preferredFrameRate = 60;
 // Microseconds per frame:
 const double Globals::MS_PER_FRAME = 1000000.0 / 60.0;
 // What value to flush memory with on power-up:
-int16_t Globals::memoryFlushValue = 0xFF;
+uint16_t Globals::memoryFlushValue = 0xFF;
 
 bool Globals::disableSprites = false;
 bool Globals::palEmulation = false;

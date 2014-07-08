@@ -140,8 +140,8 @@ void InputHandler::update_gamepad(PP_GamepadsSampleData gamepad_data) {
 }
 #endif
 
-int16_t InputHandler::getKeyState(int padKey) {
-	return static_cast<int16_t>(_keys[_map[padKey]] ? 0x41 : 0x40);
+uint16_t InputHandler::getKeyState(int padKey) {
+	return static_cast<uint16_t>(_keys[_map[padKey]] ? 0x41 : 0x40);
 }
 
 void InputHandler::mapKey(int padKey, int kbKeycode) {
@@ -150,7 +150,7 @@ void InputHandler::mapKey(int padKey, int kbKeycode) {
 
 void InputHandler::poll_for_key_events() {
 #ifdef SDL
-	int32_t numberOfKeys;
+	int numberOfKeys;
 	uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
 
 	_keys[_map[InputHandler::KEY_UP]] =     keystate[SDLK_UP];

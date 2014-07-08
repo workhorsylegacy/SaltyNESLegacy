@@ -37,13 +37,13 @@ Tile::Tile() {
 	memset(opaque, 0, 8);
 }
 
-void Tile::setBuffer(vector<int16_t>* scanline) {
+void Tile::setBuffer(vector<uint16_t>* scanline) {
 	for(y = 0; y < 8; y++) {
 		setScanline(y, (*scanline)[y], (*scanline)[y + 8]);
 	}
 }
 
-void Tile::setScanline(int sline, int16_t b1, int16_t b2) {
+void Tile::setScanline(int sline, uint16_t b1, uint16_t b2) {
 	initialized = true;
 	tIndex = sline << 3;
 	for(x = 0; x < 8; x++) {
@@ -239,7 +239,7 @@ void Tile::stateSave(ByteBuffer* buf) {
 		buf->putBoolean(opaque[i]);
 	}
 	for(int i = 0; i < 64; i++) {
-		buf->putByte(static_cast<int8_t>(pix[i]));
+		buf->putByte(static_cast<uint8_t>(pix[i]));
 	}
 }
 

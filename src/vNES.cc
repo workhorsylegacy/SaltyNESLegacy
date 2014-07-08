@@ -68,7 +68,7 @@ void vNES::init_data(uint8_t* rom_data, size_t length, SaltyNES* salty_nes) {
 }
 #endif
 
-void vNES::pre_run_setup(vector<int16_t>* save_ram) {
+void vNES::pre_run_setup(vector<uint16_t>* save_ram) {
 	// Load ROM file:
 	if(_rom_data == nullptr) {
 		log_to_browser("Loading ROM from file.");

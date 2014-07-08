@@ -740,13 +740,13 @@ void PPU::setStatusFlag(int flag, bool value) {
 	int n = 1 << flag;
 	int memValue = nes->getCpuMemory()->load(0x2002);
 	memValue = ((memValue & (255 - n)) | (value ? n : 0));
-	nes->getCpuMemory()->write(0x2002, static_cast<int16_t>(memValue));
+	nes->getCpuMemory()->write(0x2002, static_cast<uint16_t>(memValue));
 }
 
 
 // CPU Register $2002:
 // Read the Status Register.
-int16_t PPU::readStatusRegister() {
+uint16_t PPU::readStatusRegister() {
 	tmp = nes->getCpuMemory()->load(0x2002);
 
 	// Reset scroll & VRAM Address toggle:
@@ -761,15 +761,15 @@ int16_t PPU::readStatusRegister() {
 
 // CPU Register $2003:
 // Write the SPR-RAM address that is used for sramWrite (Register 0x2004 in CPU memory map)
-void PPU::writeSRAMAddress(int16_t address) {
+void PPU::writeSRAMAddress(uint16_t address) {
 	sramAddress = address;
 }
 
 // CPU Register $2004 (R):
 // Read from SPR-RAM (Sprite RAM).
 // The address should be set first.
-int16_t PPU::sramLoad() {
-	int16_t tmp = sprMem->load(sramAddress);
+uint16_t PPU::sramLoad() {
+	uint16_t tmp = sprMem->load(sramAddress);
 	/*sramAddress++; // Increment address
 	sramAddress%=0x100;*/
 	return tmp;
@@ -779,7 +779,7 @@ int16_t PPU::sramLoad() {
 // CPU Register $2004 (W):
 // Write to SPR-RAM (Sprite RAM).
 // The address should be set first.
-void PPU::sramWrite(int16_t value) {
+void PPU::sramWrite(uint16_t value) {
 	sprMem->write(sramAddress, value);
 	spriteRamWriteUpdate(sramAddress, value);
 	sramAddress++; // Increment address
@@ -791,7 +791,7 @@ void PPU::sramWrite(int16_t value) {
 // Write to scroll registers.
 // The first write is the vertical offset, the second is the
 // horizontal offset:
-void PPU::scrollWrite(int16_t value) {
+void PPU::scrollWrite(uint16_t value) {
 	triggerRendering();
 	if(firstWrite) {
 
@@ -847,14 +847,14 @@ void PPU::writeVRAMAddress(int address) {
 
 // CPU Register $2007(R):
 // Read from PPU memory. The address should be set first.
-int16_t PPU::vramLoad() {
+uint16_t PPU::vramLoad() {
 	cntsToAddress();
 	regsToAddress();
 
 	// If address is in range 0x0000-0x3EFF, return buffered values:
 	if(vramAddress <= 0x3EFF) {
 
-		int16_t tmp = vramBufferedReadValue;
+		uint16_t tmp = vramBufferedReadValue;
 
 		// Update buffered value:
 		if(vramAddress < 0x2000) {
@@ -878,7 +878,7 @@ int16_t PPU::vramLoad() {
 	}
 
 	// No buffering in this mem range. Read normally.
-	int16_t tmp = mirroredLoad(vramAddress);
+	uint16_t tmp = mirroredLoad(vramAddress);
 
 	// Increment by either 1 or 32, depending on d2 of Control Register 1:
 	vramAddress += (f_addrInc == 1 ? 32 : 1);
@@ -891,7 +891,7 @@ int16_t PPU::vramLoad() {
 
 // CPU Register $2007(W):
 // Write to PPU memory. The address should be set first.
-void PPU::vramWrite(int16_t value) {
+void PPU::vramWrite(uint16_t value) {
 	triggerRendering();
 	cntsToAddress();
 	regsToAddress();
@@ -918,10 +918,10 @@ void PPU::vramWrite(int16_t value) {
 // CPU Register $4014:
 // Write 256 bytes of main memory
 // into Sprite RAM.
-void PPU::sramDMA(int16_t value) {
+void PPU::sramDMA(uint16_t value) {
 	Memory* cpuMem = nes->getCpuMemory();
 	int baseAddress = value * 0x100;
-	int16_t data;
+	uint16_t data;
 	for(int i = sramAddress; i < 256; i++) {
 		data = cpuMem->load(baseAddress + i);
 		sprMem->write(i, data);
@@ -1005,13 +1005,13 @@ void PPU::incTileCounter(int count) {
 
 // Reads from memory, taking into account
 // mirroring/mapping of address ranges.
-int16_t PPU::mirroredLoad(int address) {
+uint16_t PPU::mirroredLoad(int address) {
 	return ppuMem->load((*vramMirrorTable)[address]);
 }
 
 // Writes to memory, taking into account
 // mirroring/mapping of address ranges.
-void PPU::mirroredWrite(int address, int16_t value) {
+void PPU::mirroredWrite(int address, uint16_t value) {
 	if(address >= 0x3f00 && address < 0x3f20) {
 
 		// Palette write mirroring.
@@ -1504,7 +1504,7 @@ void PPU::renderPalettes() {
 // This will write to PPU memory, and
 // update internally buffered data
 // appropriately.
-void PPU::writeMem(int address, int16_t value) {
+void PPU::writeMem(int address, uint16_t value) {
 	ppuMem->write(address, value);
 
 	// Update internally buffered data:
@@ -1577,7 +1577,7 @@ void PPU::updatePalettes() {
 
 // Updates the internal pattern
 // table buffers with this new byte.
-void PPU::patternWrite(int address, int16_t value) {
+void PPU::patternWrite(int address, uint16_t value) {
 	int tileIndex = address / 16;
 	int leftOver = address % 16;
 	if(leftOver < 8) {
@@ -1587,7 +1587,7 @@ void PPU::patternWrite(int address, int16_t value) {
 	}
 }
 
-void PPU::patternWrite(int address, vector<int16_t>* value, int offset, int length) {
+void PPU::patternWrite(int address, vector<uint16_t>* value, int offset, int length) {
 	int tileIndex;
 	int leftOver;
 
@@ -1617,7 +1617,7 @@ void PPU::invalidateFrameCache() {
 
 // Updates the internal name table buffers
 // with this new byte.
-void PPU::nameTableWrite(int index, int address, int16_t value) {
+void PPU::nameTableWrite(int index, int address, uint16_t value) {
 	(*nameTable)[index]->writeTileIndex(address, value);
 
 	// Update Sprite #0 hit:
@@ -1628,13 +1628,13 @@ void PPU::nameTableWrite(int index, int address, int16_t value) {
 // Updates the internal pattern
 // table buffers with this new attribute
 // table byte.
-void PPU::attribTableWrite(int index, int address, int16_t value) {
+void PPU::attribTableWrite(int index, int address, uint16_t value) {
 	(*nameTable)[index]->writeAttrib(address, value);
 }
 
 // Updates the internally buffered sprite
 // data with this new byte of info.
-void PPU::spriteRamWriteUpdate(int address, int16_t value) {
+void PPU::spriteRamWriteUpdate(int address, uint16_t value) {
 	int tIndex = address / 4;
 
 	if(tIndex == 0) {
@@ -1741,7 +1741,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 
 
 		// VRAM I/O:
-		vramBufferedReadValue = (int16_t) buf->readInt();
+		vramBufferedReadValue = (uint16_t) buf->readInt();
 		firstWrite = buf->readBoolean();
 		//System.out.println("firstWrite: "+firstWrite);
 
@@ -1755,7 +1755,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 
 
 		// SPR-RAM I/O:
-		sramAddress = static_cast<int16_t>(buf->readInt());
+		sramAddress = static_cast<uint16_t>(buf->readInt());
 
 		// Rendering progression:
 		curX = buf->readInt();
@@ -1768,7 +1768,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 		nmiOk = buf->readBoolean();
 		dummyCycleToggle = buf->readBoolean();
 		nmiCounter = buf->readInt();
-		tmp = static_cast<int16_t>(buf->readInt());
+		tmp = static_cast<uint16_t>(buf->readInt());
 
 
 		// Stuff used during rendering:
@@ -1791,7 +1791,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 		}
 
 		// Update internally stored stuff from VRAM memory:
-		/*vector<int16_t>* mem = ppuMem.mem;
+		/*vector<uint16_t>* mem = ppuMem.mem;
 
 		// Palettes:
 		for(int i=0x3f00;i<0x3f20;i++) {
@@ -1799,7 +1799,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 		}
 		*/
 		// Sprite data:
-		vector<int16_t>* sprmem = nes->getSprMemory()->mem;
+		vector<uint16_t>* sprmem = nes->getSprMemory()->mem;
 		for(size_t i = 0; i < sprmem->size(); i++) {
 			spriteRamWriteUpdate(i, (*sprmem)[i]);
 		}
@@ -1808,7 +1808,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 
 void PPU::stateSave(ByteBuffer* buf) {
 	// Version:
-	buf->putByte(static_cast<int16_t>(1));
+	buf->putByte(static_cast<uint16_t>(1));
 
 
 	// Counters:
@@ -1870,15 +1870,15 @@ void PPU::stateSave(ByteBuffer* buf) {
 
 	// Stuff used during rendering:
 	for(size_t i = 0; i < bgbuffer->size(); i++) {
-		buf->putByte(static_cast<int16_t>((*bgbuffer)[i]));
+		buf->putByte(static_cast<uint16_t>((*bgbuffer)[i]));
 	}
 	for(size_t i = 0; i < pixrendered->size(); i++) {
-		buf->putByte(static_cast<int16_t>((*pixrendered)[i]));
+		buf->putByte(static_cast<uint16_t>((*pixrendered)[i]));
 	}
 
 	// Name tables:
 	for(size_t i = 0; i < 4; i++) {
-		buf->putByte(static_cast<int16_t>(ntable1[i]));
+		buf->putByte(static_cast<uint16_t>(ntable1[i]));
 		(*nameTable)[i]->stateSave(buf);
 	}
 

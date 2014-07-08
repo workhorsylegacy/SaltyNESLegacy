@@ -103,7 +103,7 @@ void CPU::stateLoad(ByteBuffer* buf) {
 void CPU::stateSave(ByteBuffer* buf) {
 
 	// Save info version:
-	buf->putByte((int16_t)1);
+	buf->putByte((uint16_t)1);
 
 	// Save registers:
 	buf->putInt(getStatus());
@@ -271,7 +271,7 @@ void CPU::emulate() {
 
 		}
 
-		int16_t z = mmap->load(REG_PC+1);
+		uint16_t z = mmap->load(REG_PC+1);
 		opinf = CpuInfo::opdata[z];
 		/*
 		stringstream out;
@@ -502,7 +502,7 @@ void CPU::emulate() {
 					temp = (temp<<1)&255;
 					F_SIGN = (temp>>7)&1;
 					F_ZERO = temp;
-					write(addr, static_cast<int16_t>(temp));
+					write(addr, static_cast<uint16_t>(temp));
 
 				}
 				break;
@@ -742,7 +742,7 @@ void CPU::emulate() {
 				temp = (load(addr)-1)&0xFF;
 				F_SIGN = (temp>>7)&1;
 				F_ZERO = temp;
-				write(addr, static_cast<int16_t>(temp));
+				write(addr, static_cast<uint16_t>(temp));
 				break;
 
 			}case 21:{
@@ -792,7 +792,7 @@ void CPU::emulate() {
 				temp = (load(addr)+1)&0xFF;
 				F_SIGN = (temp>>7)&1;
 				F_ZERO = temp;
-				write(addr, static_cast<int16_t>(temp&0xFF));
+				write(addr, static_cast<uint16_t>(temp&0xFF));
 				break;
 
 			}case 25:{
@@ -901,7 +901,7 @@ void CPU::emulate() {
 					temp = load(addr) & 0xFF;
 					F_CARRY = temp&1;
 					temp >>= 1;
-					write(addr, static_cast<int16_t>(temp));
+					write(addr, static_cast<uint16_t>(temp));
 
 				}
 				F_SIGN = 0;
@@ -1015,7 +1015,7 @@ void CPU::emulate() {
 					add = F_CARRY;
 					F_CARRY = (temp>>7)&1;
 					temp = ((temp<<1)&0xFF)+add;	
-					write(addr, static_cast<int16_t>(temp));
+					write(addr, static_cast<uint16_t>(temp));
 
 				}
 				F_SIGN = (temp>>7)&1;
@@ -1042,7 +1042,7 @@ void CPU::emulate() {
 					add = F_CARRY<<7;
 					F_CARRY = temp&1;
 					temp = (temp>>1)+add;
-					write(addr, static_cast<int16_t>(temp));
+					write(addr, static_cast<uint16_t>(temp));
 
 				}
 				F_SIGN = (temp>>7)&1;
@@ -1144,7 +1144,7 @@ void CPU::emulate() {
 				// *******
 
 				// Store accumulator in memory
-				write(addr, static_cast<int16_t>(REG_ACC));
+				write(addr, static_cast<uint16_t>(REG_ACC));
 				break;
 
 			}case 48:{
@@ -1154,7 +1154,7 @@ void CPU::emulate() {
 				// *******
 
 				// Store index X in memory
-				write(addr, static_cast<int16_t>(REG_X));
+				write(addr, static_cast<uint16_t>(REG_X));
 				break;
 
 			}case 49:{
@@ -1164,7 +1164,7 @@ void CPU::emulate() {
 				// *******
 
 				// Store index Y in memory:
-				write(addr, static_cast<int16_t>(REG_Y));
+				write(addr, static_cast<uint16_t>(REG_Y));
 				break;
 
 			}case 50:{
@@ -1311,7 +1311,7 @@ int CPU::load16bit(int addr) {
 		;
 }
 
-void CPU::write(int addr, int16_t val) {
+void CPU::write(int addr, uint16_t val) {
 	if(addr < 0x2000) {
 		(*mem)[addr&0x7FF] = val;
 	}else{
@@ -1331,7 +1331,7 @@ void CPU::requestIrq(int type) {
 }
 
 void CPU::push(int value) {
-	mmap->write(REG_SP, static_cast<int16_t>(value));
+	mmap->write(REG_SP, static_cast<uint16_t>(value));
 	REG_SP--;
 	REG_SP = 0x0100 | (REG_SP&0xFF);
 }
@@ -1340,7 +1340,7 @@ void CPU::stackWrap() {
 	REG_SP = 0x0100 | (REG_SP&0xFF);
 }
 
-int16_t CPU::pull() {
+uint16_t CPU::pull() {
 	REG_SP++;
 	REG_SP = 0x0100 | (REG_SP&0xFF);
 	return mmap->load(REG_SP);

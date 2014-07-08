@@ -177,8 +177,8 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		string rom_base64 = message.substr(rom_pos + 5);
 		string rom_data = base64_decode(rom_base64);
 
-		// Convert the save from hex to int16_t vector
-		vector<int16_t>* saveRam = nullptr;
+		// Convert the save from hex to uint16_t vector
+		vector<uint16_t>* saveRam = nullptr;
 		if(rom_pos > 32768) {
 			size_t save_pos = message.find("load_rom:");
 			string save_data = message.substr(save_pos + 9, 32768);
@@ -260,7 +260,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		return;
 	} else if(message.find("key_down:") == 0) {
 		size_t sep_pos = message.find_first_of(":");
-		int32_t button = 0;
+		uint32_t button = 0;
 		string str_button = message.substr(sep_pos + 1);
 		istringstream(str_button) >> button;
 
@@ -268,7 +268,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		return;
 	} else if(message.find("key_up:") == 0) {
 		size_t sep_pos = message.find_first_of(":");
-		int32_t button = 0;
+		uint32_t button = 0;
 		string str_button = message.substr(sep_pos + 1);
 		istringstream(str_button) >> button;
 
@@ -313,7 +313,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		vnes->nes->_is_paused = !vnes->nes->_is_paused;
 	} else if(message.find("zoom:") == 0) {
 		size_t sep_pos = message.find_first_of(":");
-		int32_t zoom = 0;
+		uint32_t zoom = 0;
 		string str_zoom = message.substr(sep_pos + 1);
 		istringstream(str_zoom) >> zoom;
 		vnes->nes->ppu->_zoom = zoom;

@@ -27,13 +27,13 @@ void Mapper007::init(NES* nes) {
 
 	// Read out all PRG rom:
 	int bc = rom->getRomBankCount();
-	prgrom = new vector<int16_t>(bc * 16384);
+	prgrom = new vector<uint16_t>(bc * 16384);
 	for(int i = 0; i < bc; i++) {
 		arraycopy_short(rom->getRomBank(i), 0, prgrom, i * 16384, 16384);
 	}
 }
 
-int16_t Mapper007::load(int address) {
+uint16_t Mapper007::load(int address) {
 	if(address < 0x8000) {
 		// Register read
 		return this->base_load(address);
@@ -46,7 +46,7 @@ int16_t Mapper007::load(int address) {
 	}
 }
 
-void Mapper007::write(int address, int16_t value) {
+void Mapper007::write(int address, uint16_t value) {
 	if(address < 0x8000) {
 		// Let the base mapper take care of it.
 		this->base_write(address, value);
@@ -82,10 +82,10 @@ void Mapper007::mapperInternalStateSave(ByteBuffer* buf) {
 	this->base_mapperInternalStateSave(buf);
 
 	// Version:
-	buf->putByte(static_cast<int16_t>(1));
+	buf->putByte(static_cast<uint16_t>(1));
 
 	// State:
-	buf->putByte(static_cast<int16_t>(currentMirroring));
+	buf->putByte(static_cast<uint16_t>(currentMirroring));
 	buf->putInt(currentOffset);
 }
 

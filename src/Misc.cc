@@ -65,7 +65,7 @@ string Misc::bin16(int num) {
 	return binN(num, 16);
 }
 
-string Misc::binStr(int32_t value, int bitcount) {
+string Misc::binStr(uint32_t value, int bitcount) {
 	string ret = "";
 	for(int i = 0; i < bitcount; i++) {
 		ret = ((value & (1 << i)) != 0 ? "1" : "0") + ret;
@@ -95,7 +95,7 @@ float Misc::random() {
 	return rndret;
 }
 
-string Misc::from_vector_to_hex_string(vector<int16_t>* data) {
+string Misc::from_vector_to_hex_string(vector<uint16_t>* data) {
 	const size_t BYTE_LEN = 4;
 	stringstream out;
 	for(size_t i=0; i<data->size(); i++) {
@@ -104,10 +104,10 @@ string Misc::from_vector_to_hex_string(vector<int16_t>* data) {
 	return out.str();
 }
 
-vector<int16_t>* Misc::from_hex_string_to_vector(string data) {
+vector<uint16_t>* Misc::from_hex_string_to_vector(string data) {
 	const size_t BYTE_LEN = 4;
 	const size_t VECTOR_SIZE = data.length() / BYTE_LEN;
-	vector<int16_t>* retval = new vector<int16_t>(VECTOR_SIZE);
+	vector<uint16_t>* retval = new vector<uint16_t>(VECTOR_SIZE);
 
 	uint16_t value = 0;
 	stringstream in;
