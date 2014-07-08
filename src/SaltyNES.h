@@ -850,7 +850,6 @@ public:
 	static string bin8(int num);
 	static string bin16(int num);
 	static string binStr(uint32_t value, int bitcount);
-	static vector<int>* resizeArray(vector<int>* array, int newSize);
 	static string pad(string str, string padStr, int length);
 	static float random();
 	static string from_vector_to_hex_string(vector<uint16_t>* data);

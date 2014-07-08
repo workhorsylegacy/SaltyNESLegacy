@@ -73,12 +73,6 @@ string Misc::binStr(uint32_t value, int bitcount) {
 	return ret;
 }
 
-vector<int>* Misc::resizeArray(vector<int>* array, int newSize) {
-	vector<int>* newArr = new vector<int>(newSize);
-	arraycopy_int(array, 0, newArr, 0, min(newSize, (int)array->size()));
-	return newArr;
-}
-
 string Misc::pad(string str, string padStr, int length) {
 	while(static_cast<int>(str.length()) < length) {
 		str += padStr;
