@@ -61,7 +61,7 @@ void ChannelDM::clockDmc() {
 
 			// Increment delta:
 			if(deltaCounter < 63) {
-				deltaCounter++;
+				++deltaCounter;
 			}
 
 		}
@@ -125,8 +125,8 @@ void ChannelDM::nextSample() {
 	data = papu->getNes()->getMemoryMapper()->load(playAddress);
 	papu->getNes()->cpu->haltCycles(4);
 
-	playLengthCounter--;
-	playAddress++;
+	--playLengthCounter;
+	++playAddress;
 	if(playAddress > 0xFFFF) {
 		playAddress = 0x8000;
 	}

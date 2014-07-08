@@ -56,14 +56,14 @@ ROM::~ROM() {
 	delete_n_null_array(header);
 	
 	if(rom != nullptr) {
-		for(size_t i=0; i<rom->size(); i++) {
+		for(size_t i=0; i<rom->size(); ++i) {
 			delete_n_null((*rom)[i]);
 		}
 		delete_n_null(rom);
 	}
 	
 	if(vrom != nullptr) {
-		for(size_t i=0; i<vrom->size(); i++) {
+		for(size_t i=0; i<vrom->size(); ++i) {
 			delete_n_null((*vrom)[i]);
 		}
 		delete_n_null(vrom);
@@ -72,8 +72,8 @@ ROM::~ROM() {
 	delete_n_null(saveRam);
 	
 	if(vromTile != nullptr) {
-		for(size_t i=0; i<vromTile->size(); i++) {
-			for(size_t j=0; j<(*vromTile)[i]->size(); j++) {
+		for(size_t i=0; i<vromTile->size(); ++i) {
+			for(size_t j=0; j<(*vromTile)[i]->size(); ++j) {
 				delete_n_null((*(*vromTile)[i])[j]);
 			}
 			delete_n_null((*vromTile)[i]);
@@ -98,7 +98,7 @@ string ROM::sha256sum(uint8_t* data, size_t length) {
 	// Convert the hash into a string of hexadecimal values
 	char hex_map[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 	stringstream ss;
-	for(size_t i=0; i<sizeof(hash); i++) {
+	for(size_t i=0; i<sizeof(hash); ++i) {
 		uint8_t byte = hash[i];
 		uint8_t upper_byte = byte >> 4;
 		uint8_t lower_byte = byte & 0x0F;
@@ -112,7 +112,7 @@ string ROM::sha256sum(uint8_t* data, size_t length) {
 string ROM::getmapperName() {
 	if(_mapperName == nullptr) {
 		_mapperName = new vector<string>(255);
-		for(int i = 0; i < 255; i++) {
+		for(int i = 0; i < 255; ++i) {
 			(*_mapperName)[i] = "Unknown Mapper";
 		}
 
@@ -250,7 +250,7 @@ vector<bool>* ROM::getmapperSupported() {
 void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram) {
 	fileName = file_name;
 	uint16_t* sdata = new uint16_t[length];
-	for(size_t i=0; i<length; i++) {
+	for(size_t i=0; i<length; ++i) {
 		sdata[i] = static_cast<uint16_t>(data[i] & 255);
 	}
 	log_to_browser("log: rom::load_from_data");
@@ -261,7 +261,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 
 	// Read header:
 	header = new uint16_t[16];
-	for(int i = 0; i < 16; i++) {
+	for(int i = 0; i < 16; ++i) {
 		header[i] = sdata[i];
 	}
 
@@ -300,7 +300,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 
 	// Check whether byte 8-15 are zero's:
 	bool foundError = false;
-	for(int i = 8; i < 16; i++) {
+	for(int i = 8; i < 16; ++i) {
 		if(header[i] != 0) {
 			foundError = true;
 			break;
@@ -312,17 +312,17 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	}
 
 	rom = new vector<vector<uint16_t>*>(romCount);
-	for(size_t i=0; i<romCount; i++) {
+	for(size_t i=0; i<romCount; ++i) {
 		(*rom)[i] = new vector<uint16_t>(16384);
 	}
 	
 	vrom = new vector<vector<uint16_t>*>(vromCount);
-	for(size_t i=0; i<vromCount; i++) {
+	for(size_t i=0; i<vromCount; ++i) {
 		(*vrom)[i] = new vector<uint16_t>(4096);
 	}
 	
 	vromTile = new vector<vector<Tile*>*>(vromCount);
-	for(size_t i=0; i<vromCount; i++) {
+	for(size_t i=0; i<vromCount; ++i) {
 		(*vromTile)[i] = new vector<Tile*>(256);
 	}
 
@@ -330,8 +330,8 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 
 	// Load PRG-ROM banks:
 	size_t offset = 16;
-	for(size_t i = 0; i < romCount; i++) {
-		for(size_t j = 0; j < 16384; j++) {
+	for(size_t i = 0; i < romCount; ++i) {
+		for(size_t j = 0; j < 16384; ++j) {
 			if(offset + j >= length) {
 				break;
 			}
@@ -341,8 +341,8 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	}
 
 	// Load CHR-ROM banks:
-	for(size_t i = 0; i < vromCount; i++) {
-		for(size_t j = 0; j < 4096; j++) {
+	for(size_t i = 0; i < vromCount; ++i) {
+		for(size_t j = 0; j < 4096; ++j) {
 			if(offset + j >= length) {
 				break;
 			}
@@ -352,8 +352,8 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	}
 
 	// Create VROM tiles:
-	for(size_t i = 0; i < vromCount; i++) {
-		for(size_t j = 0; j < 256; j++) {
+	for(size_t i = 0; i < vromCount; ++i) {
+		for(size_t j = 0; j < 256; ++j) {
 			(*(*vromTile)[i])[j] = new Tile();
 		}
 	}
@@ -363,8 +363,8 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	//System.out.println("VROM bank count: "+vromCount);
 	int tileIndex = 0;
 	int leftOver = 0;
-	for(size_t v = 0; v < vromCount; v++) {
-		for(size_t i = 0; i < 4096; i++) {
+	for(size_t v = 0; v < vromCount; ++v) {
+		for(size_t i = 0; i < 4096; ++i) {
 			tileIndex = i >> 4;
 			leftOver = i % 16;
 			if(leftOver < 8) {

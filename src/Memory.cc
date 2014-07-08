@@ -39,7 +39,7 @@ void Memory::stateSave(ByteBuffer* buf) {
 }
 
 void Memory::reset() {
-	for(size_t i=0; i<mem->size(); i++)
+	for(size_t i=0; i<mem->size(); ++i)
 		(*mem)[i] = 0;
 }
 
@@ -61,7 +61,7 @@ void Memory::dump(string file) {
 
 void Memory::dump(string file, int offset, int length) {
 	char* ch = new char[length];
-	for(int i=0; i<length; i++) {
+	for(int i=0; i<length; ++i) {
 		ch[i] = (char)(*mem)[offset+i];
 	}
 	

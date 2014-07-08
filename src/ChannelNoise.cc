@@ -49,7 +49,7 @@ ChannelNoise::~ChannelNoise() {
 
 void ChannelNoise::clockLengthCounter() {
 	if(lengthCounterEnable && lengthCounter > 0) {
-		lengthCounter--;
+		--lengthCounter;
 		if(lengthCounter == 0) {
 			updateSampleValue();
 		}
@@ -66,7 +66,7 @@ void ChannelNoise::clockEnvDecay() {
 		// Normal handling:
 		envDecayCounter = envDecayRate + 1;
 		if(envVolume > 0) {
-			envVolume--;
+			--envVolume;
 		} else {
 			envVolume = envDecayLoopEnable ? 0xF : 0;
 		}

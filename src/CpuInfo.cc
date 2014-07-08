@@ -222,7 +222,7 @@ void CpuInfo::initOpData() {
 	isOp = true;
 
 	// Set all to invalid instruction (to detect crashes):
-	for(int i = 0; i < 256; i++) {
+	for(int i = 0; i < 256; ++i) {
 		opdata[i] = 0xFF;
 	}
 

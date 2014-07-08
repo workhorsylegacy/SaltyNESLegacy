@@ -24,7 +24,7 @@ float Misc::rndret = 0;
 vector<float>* Misc::rnd() {
 	if(_rnd == nullptr) {
 		_rnd = new vector<float>(100000);
-		for(size_t i = 0; i < _rnd->size(); i++) {
+		for(size_t i = 0; i < _rnd->size(); ++i) {
 			(*_rnd)[i] = rand_float();
 
 		}
@@ -50,7 +50,7 @@ string Misc::hex16(int i) {
 
 string Misc::binN(int num, int N) {
 	char* c = new char[N];
-	for(int i = 0; i < N; i++) {
+	for(int i = 0; i < N; ++i) {
 		c[N - i - 1] = (num & 0x1) == 1 ? '1' : '0';
 		num >>= 1;
 	}
@@ -67,7 +67,7 @@ string Misc::bin16(int num) {
 
 string Misc::binStr(uint32_t value, int bitcount) {
 	string ret = "";
-	for(int i = 0; i < bitcount; i++) {
+	for(int i = 0; i < bitcount; ++i) {
 		ret = ((value & (1 << i)) != 0 ? "1" : "0") + ret;
 	}
 	return ret;
@@ -82,7 +82,7 @@ string Misc::pad(string str, string padStr, int length) {
 
 float Misc::random() {
 	rndret = (*rnd())[nextRnd];
-	nextRnd++;
+	++nextRnd;
 	if(nextRnd >= static_cast<int>(rnd()->size())) {
 		nextRnd = static_cast<int>(rand_float() * (rnd()->size() - 1));
 	}
@@ -92,7 +92,7 @@ float Misc::random() {
 string Misc::from_vector_to_hex_string(vector<uint16_t>* data) {
 	const size_t BYTE_LEN = 4;
 	stringstream out;
-	for(size_t i=0; i<data->size(); i++) {
+	for(size_t i=0; i<data->size(); ++i) {
 		out << std::hex << setfill('0') << std::setw(BYTE_LEN) << static_cast<uint16_t>((*data)[i]);
 	}
 	return out.str();
@@ -106,7 +106,7 @@ vector<uint16_t>* Misc::from_hex_string_to_vector(string data) {
 	uint16_t value = 0;
 	stringstream in;
 	size_t j = 0;
-	for(size_t i=0; i<VECTOR_SIZE; i++) {
+	for(size_t i=0; i<VECTOR_SIZE; ++i) {
 		in.clear();
 		in << std::hex << data.substr(j, BYTE_LEN);
 		in >> value;

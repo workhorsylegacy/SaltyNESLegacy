@@ -40,7 +40,7 @@ void fill_audio_nacl_cb(void* samples, uint32_t buffer_size, void* data) {
 
 	// If there is no sound, just play zero
 	if(salty_nes->vnes->nes->_is_paused || papu == nullptr || !papu->ready_for_buffer_write) {
-		for(size_t i=0; i<buffer_size; i++) {
+		for(size_t i=0; i<buffer_size; ++i) {
 			buff[i] = 0;
 		}
 		return;
@@ -52,7 +52,7 @@ void fill_audio_nacl_cb(void* samples, uint32_t buffer_size, void* data) {
 	//assert(buffer_size >= (sizeof(*buff) * channels * papu->sample_frame_count_));
 
 	size_t mix_len = buffer_size > static_cast<size_t>(papu->bufferIndex) ? static_cast<size_t>(papu->bufferIndex) : buffer_size;
-	for(size_t i=0; i<mix_len; i++) {
+	for(size_t i=0; i<mix_len; ++i) {
 		buff[i] = (*papu->sampleBuffer)[i];
 	}
 
@@ -488,7 +488,7 @@ void PAPU::clockFrameCounter(int nCycles) {
 			triangle->progTimerCount += triangle->progTimerMax + 1;
 			if(triangle->linearCounter > 0 && triangle->lengthCounter > 0) {
 
-				triangle->triangleCounter++;
+				++triangle->triangleCounter;
 				triangle->triangleCounter &= 0x1F;
 
 				if(triangle->isEnabled()) {
@@ -513,7 +513,7 @@ void PAPU::clockFrameCounter(int nCycles) {
 
 		square1->progTimerCount += (square1->progTimerMax + 1) << 1;
 
-		square1->squareCounter++;
+		++square1->squareCounter;
 		square1->squareCounter &= 0x7;
 		square1->updateSampleValue();
 
@@ -525,7 +525,7 @@ void PAPU::clockFrameCounter(int nCycles) {
 
 		square2->progTimerCount += (square2->progTimerMax + 1) << 1;
 
-		square2->squareCounter++;
+		++square2->squareCounter;
 		square2->squareCounter &= 0x7;
 		square2->updateSampleValue();
 
@@ -574,7 +574,7 @@ void PAPU::clockFrameCounter(int nCycles) {
 			}
 
 			noise->accValue += noise->sampleValue;
-			noise->accCount++;
+			++noise->accCount;
 
 		}
 	}
@@ -658,7 +658,7 @@ void PAPU::accSample(int cycles) {
 }
 
 void PAPU::frameCounterTick() {
-	derivedFrameCounter++;
+	++derivedFrameCounter;
 	if(derivedFrameCounter >= frameIrqCounterMax) {
 		derivedFrameCounter = 0;
 	}
@@ -1030,7 +1030,7 @@ void PAPU::initDmcFrequencyLookup() {
 	dmcFreqLookup[0xD] = 0x2A0;
 	dmcFreqLookup[0xE] = 0x240;
 	dmcFreqLookup[0xF] = 0x1B0;
-//for(int i=0;i<16;i++)dmcFreqLookup[i]/=8;
+//for(int i=0;i<16;++i)dmcFreqLookup[i]/=8;
 
 }
 
@@ -1064,7 +1064,7 @@ void PAPU::initDACtables() {
 	int max_sqr = 0;
 	int max_tnd = 0;
 
-	for(int i = 0; i < 32 * 16; i++) {
+	for(int i = 0; i < 32 * 16; ++i) {
 
 
 		value = 95.52 / (8128.0 / (static_cast<double>(i) / 16.0) + 100.0);
@@ -1079,7 +1079,7 @@ void PAPU::initDACtables() {
 
 	}
 
-	for(int i = 0; i < 204 * 16; i++) {
+	for(int i = 0; i < 204 * 16; ++i) {
 
 		value = 163.67 / (24329.0 / (static_cast<double>(i) / 16.0) + 100.0);
 		value *= 0.98411;

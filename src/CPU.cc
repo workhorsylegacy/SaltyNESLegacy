@@ -567,7 +567,7 @@ void CPU::emulate() {
 
 				// Branch on negative result
 				if(F_SIGN == 1) {
-					cycleCount++;
+					++cycleCount;
 					REG_PC = addr;
 				}
 				break;
@@ -623,7 +623,7 @@ void CPU::emulate() {
 				F_INTERRUPT = 1;
 	    		//REG_PC = load(0xFFFE) | (load(0xFFFF) << 8);
 	    		REG_PC = load16bit(0xFFFE);
-	    		REG_PC--;
+	    		--REG_PC;
 	    		break;
 
 			}case 11:{
@@ -814,7 +814,7 @@ void CPU::emulate() {
 				// *******
 
 				// Increment index Y by one:
-				REG_Y++;
+				++REG_Y;
 				REG_Y &= 0xFF;
 				F_SIGN = (REG_Y>>7)&1;
 				F_ZERO = REG_Y;
@@ -1072,7 +1072,7 @@ void CPU::emulate() {
 				if(REG_PC==0xFFFF) {
 					return;
 				}
-				REG_PC--;
+				--REG_PC;
 				F_NOTUSED = 1;
 				break;
 
@@ -1263,10 +1263,10 @@ void CPU::emulate() {
 		// ----------------------------------------------------------------------------------------------------
 
 		if(palEmu) {
-			palCnt++;
+			++palCnt;
 			if(palCnt==5) {
 				palCnt=0;
-				cycleCount++;
+				++cycleCount;
 			}
 		}
 
@@ -1277,7 +1277,7 @@ void CPU::emulate() {
 			papu->clockFrameCounter(cycleCount);
 		}
 		
-		//_counter++;
+		//++_counter;
 	} // End of run loop.
 
 	// Save registers:
@@ -1332,7 +1332,7 @@ void CPU::requestIrq(int type) {
 
 void CPU::push(int value) {
 	mmap->write(REG_SP, static_cast<uint16_t>(value));
-	REG_SP--;
+	--REG_SP;
 	REG_SP = 0x0100 | (REG_SP&0xFF);
 }
 
@@ -1341,7 +1341,7 @@ void CPU::stackWrap() {
 }
 
 uint16_t CPU::pull() {
-	REG_SP++;
+	++REG_SP;
 	REG_SP = 0x0100 | (REG_SP&0xFF);
 	return mmap->load(REG_SP);
 }
@@ -1359,14 +1359,14 @@ void CPU::doNonMaskableInterrupt(int status) {
 	int temp = mmap->load(0x2000); // Read PPU status.
 	if((temp&128)!=0) { // Check whether VBlank Interrupts are enabled
 
-		REG_PC_NEW++;
+		++REG_PC_NEW;
 		push((REG_PC_NEW>>8)&0xFF);
 		push(REG_PC_NEW&0xFF);
 		//F_INTERRUPT_NEW = 1;
 		push(status);
 
 		REG_PC_NEW = mmap->load(0xFFFA) | (mmap->load(0xFFFB) << 8);
-		REG_PC_NEW--;
+		--REG_PC_NEW;
 
 	}
 
@@ -1376,13 +1376,13 @@ void CPU::doNonMaskableInterrupt(int status) {
 void CPU::doResetInterrupt() {
 
 	REG_PC_NEW = mmap->load(0xFFFC) | (mmap->load(0xFFFD) << 8);
-	REG_PC_NEW--;
+	--REG_PC_NEW;
 
 }
 
 void CPU::doIrq(int status) {
 
-	REG_PC_NEW++;
+	++REG_PC_NEW;
 	push((REG_PC_NEW>>8)&0xFF);
 	push(REG_PC_NEW&0xFF);
 	push(status);
@@ -1390,7 +1390,7 @@ void CPU::doIrq(int status) {
 	F_BRK_NEW = 0;
 
 	REG_PC_NEW = mmap->load(0xFFFE) | (mmap->load(0xFFFF) << 8);
-	REG_PC_NEW--;
+	--REG_PC_NEW;
 
 }
 

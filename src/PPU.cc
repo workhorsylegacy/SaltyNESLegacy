@@ -159,7 +159,7 @@ PPU::PPU(NES* nes) {
 	validTileData = false;
 	att = 0;
 	scantile = new vector<Tile*>(32);
-	for(size_t i=0; i<scantile->size(); i++)
+	for(size_t i=0; i<scantile->size(); ++i)
 		(*scantile)[i] = nullptr;
 	t = nullptr;
 
@@ -186,7 +186,7 @@ PPU::PPU(NES* nes) {
 
 PPU::~PPU() {
 	if(nameTable != nullptr) {
-		for(size_t i = 0; i < nameTable->size(); i++) {
+		for(size_t i = 0; i < nameTable->size(); ++i) {
 			delete_n_null((*nameTable)[i]);
 		}
 	}
@@ -218,7 +218,7 @@ void PPU::init() {
 	scanline = 0;
 
 	// Create sprite arrays:
-	for(int i=0; i<64; i++) {
+	for(int i=0; i<64; ++i) {
 		sprX[i] = 0;
 		sprY[i] = 0;
 		sprTile[i] = 0;
@@ -231,14 +231,14 @@ void PPU::init() {
 	// Create pattern table tile buffers:
 	if(ptTile == nullptr) {
 		ptTile = new vector<Tile*>(512);
-		for(int i = 0; i < 512; i++) {
+		for(int i = 0; i < 512; ++i) {
 			(*ptTile)[i] = new Tile();
 		}
 	}
 
 	// Create nametable buffers:
 	nameTable = new vector<NameTable*>(4);
-	for(int i = 0; i < 4; i++) {
+	for(int i = 0; i < 4; ++i) {
 		stringstream name;
 		name << "Nt" << i;
 		(*nameTable)[i] = new NameTable(32, 32, name.str());
@@ -246,7 +246,7 @@ void PPU::init() {
 
 	// Initialize mirroring lookup table:
 	vramMirrorTable = new vector<int>(0x8000);
-	for(int i = 0; i < 0x8000; i++) {
+	for(int i = 0; i < 0x8000; ++i) {
 		(*vramMirrorTable)[i] = i;
 	}
 
@@ -254,7 +254,7 @@ void PPU::init() {
 	curX = 0;
 
 	// Initialize old frame buffer:
-	for(size_t i = 0; i < oldFrame->size(); i++) {
+	for(size_t i = 0; i < oldFrame->size(); ++i) {
 		(*oldFrame)[i] = -1;
 	}
 
@@ -273,7 +273,7 @@ void PPU::setMirroring(int mirroring) {
 	if(vramMirrorTable == nullptr) {
 		vramMirrorTable = new vector<int>(0x8000);
 	}
-	for(int i = 0; i < 0x8000; i++) {
+	for(int i = 0; i < 0x8000; ++i) {
 		(*vramMirrorTable)[i] = i;
 	}
 
@@ -355,7 +355,7 @@ void PPU::setMirroring(int mirroring) {
 // Assumes the regions don't overlap.
 // The 'to' region is the region that is physically in memory.
 void PPU::defineMirrorRegion(int fromStart, int toStart, int size) {
-	for(int i = 0; i < size; i++) {
+	for(int i = 0; i < size; ++i) {
 		(*vramMirrorTable)[fromStart + i] = toStart + i;
 	}
 }
@@ -363,7 +363,7 @@ void PPU::defineMirrorRegion(int fromStart, int toStart, int size) {
 // Emulates PPU cycles
 void PPU::emulateCycles() {
 	//int n = (!requestEndFrame && curX+cycles<341 && (scanline-20 < spr0HitY || scanline-22 > spr0HitY))?cycles:1;
-	for(; cycles > 0; cycles--) {
+	for(; cycles > 0; --cycles) {
 
 		if(scanline - 21 == spr0HitY) {
 
@@ -375,14 +375,14 @@ void PPU::emulateCycles() {
 		}
 
 		if(requestEndFrame) {
-			nmiCounter--;
+			--nmiCounter;
 			if(nmiCounter == 0) {
 				requestEndFrame = false;
 				startVBlank();
 			}
 		}
 
-		curX++;
+		++curX;
 		if(curX == 341) {
 
 			curX = 0;
@@ -508,7 +508,7 @@ void PPU::startVBlank() {
 		_ticks_since_second = 0;
 		frameCounter = 0;
 	}
-	frameCounter++;
+	++frameCounter;
 	
 	// Get the start time of the next frame
 	gettimeofday(&_frame_start, nullptr);
@@ -617,7 +617,7 @@ void PPU::endScanline() {
 
 	}
 
-	scanline++;
+	++scanline;
 	regsToAddress();
 	cntsToAddress();
 
@@ -671,10 +671,10 @@ void PPU::startFrame() {
 
 	}
 
-	for(size_t i = 0; i < buffer->size(); i++) {
+	for(size_t i = 0; i < buffer->size(); ++i) {
 		(*buffer)[i] = bgColor;
 	}
-	for(size_t i = 0; i < pixrendered->size(); i++) {
+	for(size_t i = 0; i < pixrendered->size(); ++i) {
 		(*pixrendered)[i] = 65;
 	}
 }
@@ -686,19 +686,19 @@ void PPU::endFrame() {
 	if(showSpr0Hit) {
 		// Spr 0 position:
 		if(sprX[0] >= 0 && sprX[0] < 256 && sprY[0] >= 0 && sprY[0] < 240) {
-			for(int i = 0; i < 256; i++) {
+			for(int i = 0; i < 256; ++i) {
 				(*buffer)[(sprY[0] << 8) + i] = 0xFF5555;
 			}
-			for(int i = 0; i < 240; i++) {
+			for(int i = 0; i < 240; ++i) {
 				(*buffer)[(i << 8) + sprX[0]] = 0xFF5555;
 			}
 		}
 		// Hit position:
 		if(spr0HitX >= 0 && spr0HitX < 256 && spr0HitY >= 0 && spr0HitY < 240) {
-			for(int i = 0; i < 256; i++) {
+			for(int i = 0; i < 256; ++i) {
 				(*buffer)[(spr0HitY << 8) + i] = 0x55FF55;
 			}
-			for(int i = 0; i < 240; i++) {
+			for(int i = 0; i < 240; ++i) {
 				(*buffer)[(i << 8) + spr0HitX] = 0x55FF55;
 			}
 		}
@@ -770,7 +770,7 @@ void PPU::writeSRAMAddress(uint16_t address) {
 // The address should be set first.
 uint16_t PPU::sramLoad() {
 	uint16_t tmp = sprMem->load(sramAddress);
-	/*sramAddress++; // Increment address
+	/*++sramAddress; // Increment address
 	sramAddress%=0x100;*/
 	return tmp;
 }
@@ -782,7 +782,7 @@ uint16_t PPU::sramLoad() {
 void PPU::sramWrite(uint16_t value) {
 	sprMem->write(sramAddress, value);
 	spriteRamWriteUpdate(sramAddress, value);
-	sramAddress++; // Increment address
+	++sramAddress; // Increment address
 	sramAddress %= 0x100;
 }
 
@@ -922,7 +922,7 @@ void PPU::sramDMA(uint16_t value) {
 	Memory* cpuMem = nes->getCpuMemory();
 	int baseAddress = value * 0x100;
 	uint16_t data;
-	for(int i = sramAddress; i < 256; i++) {
+	for(int i = sramAddress; i < 256; ++i) {
 		data = cpuMem->load(baseAddress + i);
 		sprMem->write(i, data);
 		spriteRamWriteUpdate(i, data);
@@ -982,19 +982,19 @@ void PPU::cntsToAddress() {
 }
 
 void PPU::incTileCounter(int count) {
-	for(i = count; i != 0; i--) {
-		cntHT++;
+	for(i = count; i != 0; --i) {
+		++cntHT;
 		if(cntHT == 32) {
 			cntHT = 0;
-			cntVT++;
+			++cntVT;
 			if(cntVT >= 30) {
-				cntH++;
+				++cntH;
 				if(cntH == 2) {
 					cntH = 0;
-					cntV++;
+					++cntV;
 					if(cntV == 2) {
 						cntV = 0;
-						cntFV++;
+						++cntFV;
 						cntFV &= 0x7;
 					}
 				}
@@ -1079,7 +1079,7 @@ void PPU::renderFramePartially(vector<int>* buffer, int startScan, int scanCount
 		if(ei > 0xF000) {
 			ei = 0xF000;
 		}
-		for(destIndex = si; destIndex < ei; destIndex++) {
+		for(destIndex = si; destIndex < ei; ++destIndex) {
 			if((*pixrendered)[destIndex] > 0xFF) {
 				(*buffer)[destIndex] = (*bgbuffer)[destIndex];
 			}
@@ -1106,7 +1106,7 @@ void PPU::renderBgScanline(vector<int>* buffer, int scan) {
 
 		tscanoffset = cntFV << 3;
 		y = scan - cntFV;
-		for(tile = 0; tile < 32; tile++) {
+		for(tile = 0; tile < 32; ++tile) {
 
 			if(scan >= 0) {
 
@@ -1134,19 +1134,19 @@ void PPU::renderBgScanline(vector<int>* buffer, int scan) {
 						sx = -x;
 					}
 					if(t->opaque[cntFV]) {
-						for(; sx < 8; sx++) {
+						for(; sx < 8; ++sx) {
 							(*buffer)[destIndex] = imgPalette[tpix[tscanoffset + sx] + att];
 							(*pixrendered)[destIndex] |= 256;
-							destIndex++;
+							++destIndex;
 						}
 					} else {
-						for(; sx < 8; sx++) {
+						for(; sx < 8; ++sx) {
 							col = tpix[tscanoffset + sx];
 							if(col != 0) {
 								(*buffer)[destIndex] = imgPalette[col + att];
 								(*pixrendered)[destIndex] |= 256;
 							}
-							destIndex++;
+							++destIndex;
 						}
 					}
 				}
@@ -1154,10 +1154,10 @@ void PPU::renderBgScanline(vector<int>* buffer, int scan) {
 			}
 
 			// Increase Horizontal Tile Counter:
-			cntHT++;
+			++cntHT;
 			if(cntHT == 32) {
 				cntHT = 0;
-				cntH++;
+				++cntH;
 				cntH %= 2;
 				curNt = ntable1[(cntV << 1) + cntH];
 			}
@@ -1172,13 +1172,13 @@ void PPU::renderBgScanline(vector<int>* buffer, int scan) {
 	}
 
 	// update vertical scroll:
-	cntFV++;
+	++cntFV;
 	if(cntFV == 8) {
 		cntFV = 0;
-		cntVT++;
+		++cntVT;
 		if(cntVT == 30) {
 			cntVT = 0;
-			cntV++;
+			++cntV;
 			cntV %= 2;
 			curNt = ntable1[(cntV << 1) + cntH];
 		} else if(cntVT == 32) {
@@ -1195,7 +1195,7 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 	vector<int>* buffer = this->get_screen_buffer();
 	if(f_spVisibility == 1) {
 
-		for(int i = 0; i < 64; i++) {
+		for(int i = 0; i < 64; ++i) {
 			if(bgPriority[i] == bgPri && sprX[i] >= 0 && sprX[i] < 256 && sprY[i] + 8 >= startscan && sprY[i] < startscan + scancount) {
 				// Show sprite.
 				if(f_spriteSize == 0) {
@@ -1294,7 +1294,7 @@ bool PPU::checkSprite0(int scan) {
 
 			bufferIndex = scan * 256 + x;
 			if(horiFlip[0]) {
-				for(int i = 7; i >= 0; i--) {
+				for(int i = 7; i >= 0; --i) {
 					if(x >= 0 && x < 256) {
 						if(bufferIndex >= 0 && bufferIndex < 61440 && (*pixrendered)[bufferIndex] != 0) {
 							if(t->pix[toffset + i] != 0) {
@@ -1304,13 +1304,13 @@ bool PPU::checkSprite0(int scan) {
 							}
 						}
 					}
-					x++;
-					bufferIndex++;
+					++x;
+					++bufferIndex;
 				}
 
 			} else {
 
-				for(int i = 0; i < 8; i++) {
+				for(int i = 0; i < 8; ++i) {
 					if(x >= 0 && x < 256) {
 						if(bufferIndex >= 0 && bufferIndex < 61440 && (*pixrendered)[bufferIndex] != 0) {
 							if(t->pix[toffset + i] != 0) {
@@ -1320,8 +1320,8 @@ bool PPU::checkSprite0(int scan) {
 							}
 						}
 					}
-					x++;
-					bufferIndex++;
+					++x;
+					++bufferIndex;
 				}
 
 			}
@@ -1364,7 +1364,7 @@ bool PPU::checkSprite0(int scan) {
 			bufferIndex = scan * 256 + x;
 			if(horiFlip[0]) {
 
-				for(int i = 7; i >= 0; i--) {
+				for(int i = 7; i >= 0; --i) {
 					if(x >= 0 && x < 256) {
 						if(bufferIndex >= 0 && bufferIndex < 61440 && (*pixrendered)[bufferIndex] != 0) {
 							if(t->pix[toffset + i] != 0) {
@@ -1374,13 +1374,13 @@ bool PPU::checkSprite0(int scan) {
 							}
 						}
 					}
-					x++;
-					bufferIndex++;
+					++x;
+					++bufferIndex;
 				}
 
 			} else {
 
-				for(int i = 0; i < 8; i++) {
+				for(int i = 0; i < 8; ++i) {
 					if(x >= 0 && x < 256) {
 						if(bufferIndex >= 0 && bufferIndex < 61440 && (*pixrendered)[bufferIndex] != 0) {
 							if(t->pix[toffset + i] != 0) {
@@ -1390,8 +1390,8 @@ bool PPU::checkSprite0(int scan) {
 							}
 						}
 					}
-					x++;
-					bufferIndex++;
+					++x;
+					++bufferIndex;
 				}
 
 			}
@@ -1409,11 +1409,11 @@ void PPU::renderPattern() {
 	vector<int>* buffer = get_pattern_buffer();
 
 	int tIndex = 0;
-	for(int j = 0; j < 2; j++) {
-		for(int y = 0; y < 16; y++) {
-			for(int x = 0; x < 16; x++) {
+	for(int j = 0; j < 2; ++j) {
+		for(int y = 0; y < 16; ++y) {
+			for(int x = 0; x < 16; ++x) {
 				(*ptTile)[tIndex]->renderSimple(j * 128 + x * 8, y * 8, buffer, 0, sprPalette);
-				tIndex++;
+				++tIndex;
 			}
 		}
 	}
@@ -1438,16 +1438,16 @@ void PPU::renderNameTables() {
 		nty_max = 1;
 	}
 
-	for(int nty = 0; nty < nty_max; nty++) {
-		for(int ntx = 0; ntx < ntx_max; ntx++) {
+	for(int nty = 0; nty < nty_max; ++nty) {
+		for(int ntx = 0; ntx < ntx_max; ++ntx) {
 
 			int nt = ntable1[nty * 2 + ntx];
 			int x = ntx * 128;
 			int y = nty * 120;
 
 			// Render nametable:
-			for(int ty = 0; ty < 30; ty++) {
-				for(int tx = 0; tx < 32; tx++) {
+			for(int ty = 0; ty < 30; ++ty) {
+				for(int tx = 0; tx < 32; ++tx) {
 					//(*ptTile)[baseTile+nameTable[nt].getTileIndex(tx,ty)].render(0,0,4,4,x+tx*4,y+ty*4,buffer,nameTable[nt].getAttrib(tx,ty),imgPalette,false,false,0,dummyPixPriTable);
 					(*ptTile)[baseTile + (*nameTable)[nt]->getTileIndex(tx, ty)]->renderSmall(x + tx * 4, y + ty * 4, buffer, (*nameTable)[nt]->getAttrib(tx, ty), imgPalette);
 				}
@@ -1458,15 +1458,15 @@ void PPU::renderNameTables() {
 
 	if(currentMirroring == ROM::HORIZONTAL_MIRRORING) {
 		// double horizontally:
-		for(int y = 0; y < 240; y++) {
-			for(int x = 0; x < 128; x++) {
+		for(int y = 0; y < 240; ++y) {
+			for(int x = 0; x < 128; ++x) {
 				buffer[(y << 8) + 128 + x] = buffer[(y << 8) + x];
 			}
 		}
 	} else if(currentMirroring == ROM::VERTICAL_MIRRORING) {
 		// double vertically:
-		for(int y = 0; y < 120; y++) {
-			for(int x = 0; x < 256; x++) {
+		for(int y = 0; y < 120; ++y) {
+			for(int x = 0; x < 256; ++x) {
 				buffer[(y << 8) + 0x7800 + x] = buffer[(y << 8) + x];
 			}
 		}
@@ -1478,18 +1478,18 @@ void PPU::renderNameTables() {
 
 void PPU::renderPalettes() {
 	vector<int>* buffer = get_img_palette_buffer();
-	for(int i = 0; i < 16; i++) {
-		for(int y = 0; y < 16; y++) {
-			for(int x = 0; x < 16; x++) {
+	for(int i = 0; i < 16; ++i) {
+		for(int y = 0; y < 16; ++y) {
+			for(int x = 0; x < 16; ++x) {
 				(*buffer)[y * 256 + i * 16 + x] = imgPalette[i];
 			}
 		}
 	}
 
 	buffer = get_spr_palette_buffer();
-	for(int i = 0; i < 16; i++) {
-		for(int y = 0; y < 16; y++) {
-			for(int x = 0; x < 16; x++) {
+	for(int i = 0; i < 16; ++i) {
+		for(int y = 0; y < 16; ++y) {
+			for(int x = 0; x < 16; ++x) {
 				(*buffer)[y * 256 + i * 16 + x] = sprPalette[i];
 			}
 		}
@@ -1555,14 +1555,14 @@ void PPU::writeMem(int address, uint16_t value) {
 // Reads data from $3f00 to $f20
 // into the two buffered palettes.
 void PPU::updatePalettes() {
-	for(int i = 0; i < 16; i++) {
+	for(int i = 0; i < 16; ++i) {
 		if(f_dispType == 0) {
 			imgPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f00 + i) & 63);
 		} else {
 			imgPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f00 + i) & 32);
 		}
 	}
-	for(int i = 0; i < 16; i++) {
+	for(int i = 0; i < 16; ++i) {
 		if(f_dispType == 0) {
 			sprPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f10 + i) & 63);
 		} else {
@@ -1591,7 +1591,7 @@ void PPU::patternWrite(int address, vector<uint16_t>* value, int offset, int len
 	int tileIndex;
 	int leftOver;
 
-	for(int i = 0; i < length; i++) {
+	for(int i = 0; i < length; ++i) {
 
 		tileIndex = (address + i) >> 4;
 		leftOver = (address + i) % 16;
@@ -1607,10 +1607,10 @@ void PPU::patternWrite(int address, vector<uint16_t>* value, int offset, int len
 
 void PPU::invalidateFrameCache() {
 	// Clear the no-update scanline buffer:
-	for(size_t i = 0; i < 240; i++) {
+	for(size_t i = 0; i < 240; ++i) {
 		scanlineChanged[i] = true;
 	}
-	for(size_t i=0; i<oldFrame->size(); i++)
+	for(size_t i=0; i<oldFrame->size(); ++i)
 		(*oldFrame)[i] = -1;
 	requestRenderAll = true;
 }
@@ -1749,7 +1749,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 		// Mirroring:
 		//currentMirroring = -1;
 		//setMirroring(buf->readInt());
-		for(size_t i = 0; i < vramMirrorTable->size(); i++) {
+		for(size_t i = 0; i < vramMirrorTable->size(); ++i) {
 			(*vramMirrorTable)[i] = buf->readInt();
 		}
 
@@ -1772,21 +1772,21 @@ void PPU::stateLoad(ByteBuffer* buf) {
 
 
 		// Stuff used during rendering:
-		for(size_t i = 0; i < bgbuffer->size(); i++) {
+		for(size_t i = 0; i < bgbuffer->size(); ++i) {
 			(*bgbuffer)[i] = buf->readByte();
 		}
-		for(size_t i = 0; i < pixrendered->size(); i++) {
+		for(size_t i = 0; i < pixrendered->size(); ++i) {
 			(*pixrendered)[i] = buf->readByte();
 		}
 
 		// Name tables:
-		for(size_t i = 0; i < 4; i++) {
+		for(size_t i = 0; i < 4; ++i) {
 			ntable1[i] = buf->readByte();
 			(*nameTable)[i]->stateLoad(buf);
 		}
 
 		// Pattern data:
-		for(size_t i = 0; i < ptTile->size(); i++) {
+		for(size_t i = 0; i < ptTile->size(); ++i) {
 			(*ptTile)[i]->stateLoad(buf);
 		}
 
@@ -1794,13 +1794,13 @@ void PPU::stateLoad(ByteBuffer* buf) {
 		/*vector<uint16_t>* mem = ppuMem.mem;
 
 		// Palettes:
-		for(int i=0x3f00;i<0x3f20;i++) {
+		for(int i=0x3f00;i<0x3f20;++i) {
 		writeMem(i,mem[i]);
 		}
 		*/
 		// Sprite data:
 		vector<uint16_t>* sprmem = nes->getSprMemory()->mem;
-		for(size_t i = 0; i < sprmem->size(); i++) {
+		for(size_t i = 0; i < sprmem->size(); ++i) {
 			spriteRamWriteUpdate(i, (*sprmem)[i]);
 		}
 	}
@@ -1845,7 +1845,7 @@ void PPU::stateSave(ByteBuffer* buf) {
 
 	// Mirroring:
 	//buf->putInt(currentMirroring);
-	for(size_t i = 0; i < vramMirrorTable->size(); i++) {
+	for(size_t i = 0; i < vramMirrorTable->size(); ++i) {
 		buf->putInt((*vramMirrorTable)[i]);
 	}
 
@@ -1869,21 +1869,21 @@ void PPU::stateSave(ByteBuffer* buf) {
 
 
 	// Stuff used during rendering:
-	for(size_t i = 0; i < bgbuffer->size(); i++) {
+	for(size_t i = 0; i < bgbuffer->size(); ++i) {
 		buf->putByte(static_cast<uint16_t>((*bgbuffer)[i]));
 	}
-	for(size_t i = 0; i < pixrendered->size(); i++) {
+	for(size_t i = 0; i < pixrendered->size(); ++i) {
 		buf->putByte(static_cast<uint16_t>((*pixrendered)[i]));
 	}
 
 	// Name tables:
-	for(size_t i = 0; i < 4; i++) {
+	for(size_t i = 0; i < 4; ++i) {
 		buf->putByte(static_cast<uint16_t>(ntable1[i]));
 		(*nameTable)[i]->stateSave(buf);
 	}
 
 	// Pattern data:
-	for(size_t i = 0; i < ptTile->size(); i++) {
+	for(size_t i = 0; i < ptTile->size(); ++i) {
 		(*ptTile)[i]->stateSave(buf);
 	}
 
@@ -1949,10 +1949,10 @@ void PPU::reset() {
 	regFH = 0;
 	regS = 0;
 
-	for(size_t i=0; i<240; i++)
+	for(size_t i=0; i<240; ++i)
 		scanlineChanged[i] = true;
 
-	for(size_t i=0; i<oldFrame->size(); i++)
+	for(size_t i=0; i<oldFrame->size(); ++i)
 		(*oldFrame)[i] = -1;
 
 	// Initialize stuff:

@@ -67,7 +67,7 @@ void Logger::flush() {
 	// If the log file is too big, make a new one
 	if(_length >= 10000000) {
 		_length = 0;
-		_log_number++;
+		++_log_number;
 		create_log_file();
 	}
 }

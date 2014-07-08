@@ -38,7 +38,7 @@ Tile::Tile() {
 }
 
 void Tile::setBuffer(vector<uint16_t>* scanline) {
-	for(y = 0; y < 8; y++) {
+	for(y = 0; y < 8; ++y) {
 		setScanline(y, (*scanline)[y], (*scanline)[y + 8]);
 	}
 }
@@ -46,7 +46,7 @@ void Tile::setBuffer(vector<uint16_t>* scanline) {
 void Tile::setScanline(int sline, uint16_t b1, uint16_t b2) {
 	initialized = true;
 	tIndex = sline << 3;
-	for(x = 0; x < 8; x++) {
+	for(x = 0; x < 8; ++x) {
 		pix[tIndex + x] = ((b1 >> (7 - x)) & 1) + (((b2 >> (7 - x)) & 1) << 1);
 		if(pix[tIndex + x] == 0) {
 			opaque[sline] = false;
@@ -57,14 +57,14 @@ void Tile::setScanline(int sline, uint16_t b1, uint16_t b2) {
 void Tile::renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette) {
 	tIndex = 0;
 	fbIndex = (dy << 8) + dx;
-	for(y = 8; y != 0; y--) {
-		for(x = 8; x != 0; x--) {
+	for(y = 8; y != 0; --y) {
+		for(x = 8; x != 0; --x) {
 			palIndex = pix[tIndex];
 			if(palIndex != 0) {
 				(*fBuffer)[fbIndex] = palette[palIndex + palAdd];
 			}
-			fbIndex++;
-			tIndex++;
+			++fbIndex;
+			++tIndex;
 		}
 		fbIndex -= 8;
 		fbIndex += 256;
@@ -74,15 +74,15 @@ void Tile::renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* p
 void Tile::renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette) {
 	tIndex = 0;
 	fbIndex = (dy << 8) + dx;
-	for(y = 0; y < 4; y++) {
-		for(x = 0; x < 4; x++) {
+	for(y = 0; y < 4; ++y) {
+		for(x = 0; x < 4; ++x) {
 
 			c = (palette[pix[tIndex] + palAdd] >> 2) & 0x003F3F3F;
 			c += (palette[pix[tIndex + 1] + palAdd] >> 2) & 0x003F3F3F;
 			c += (palette[pix[tIndex + 8] + palAdd] >> 2) & 0x003F3F3F;
 			c += (palette[pix[tIndex + 9] + palAdd] >> 2) & 0x003F3F3F;
 			(*buffer)[fbIndex] = c;
-			fbIndex++;
+			++fbIndex;
 			tIndex += 2;
 		}
 		tIndex += 8;
@@ -117,8 +117,8 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 
 		fbIndex = (dy << 8) + dx;
 		tIndex = 0;
-		for(y = 0; y < 8; y++) {
-			for(x = 0; x < 8; x++) {
+		for(y = 0; y < 8; ++y) {
+			for(x = 0; x < 8; ++x) {
 				if(x >= srcx1 && x < srcx2 && y >= srcy1 && y < srcy2) {
 					palIndex = pix[tIndex];
 					tpri = (*priTable)[fbIndex];
@@ -128,8 +128,8 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 						(*priTable)[fbIndex] = tpri;
 					}
 				}
-				fbIndex++;
-				tIndex++;
+				++fbIndex;
+				++tIndex;
 			}
 			fbIndex -= 8;
 			fbIndex += 256;
@@ -139,8 +139,8 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 
 		fbIndex = (dy << 8) + dx;
 		tIndex = 7;
-		for(y = 0; y < 8; y++) {
-			for(x = 0; x < 8; x++) {
+		for(y = 0; y < 8; ++y) {
+			for(x = 0; x < 8; ++x) {
 				if(x >= srcx1 && x < srcx2 && y >= srcy1 && y < srcy2) {
 					palIndex = pix[tIndex];
 					tpri = (*priTable)[fbIndex];
@@ -150,8 +150,8 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 						(*priTable)[fbIndex] = tpri;
 					}
 				}
-				fbIndex++;
-				tIndex--;
+				++fbIndex;
+				--tIndex;
 			}
 			fbIndex -= 8;
 			fbIndex += 256;
@@ -162,8 +162,8 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 
 		fbIndex = (dy << 8) + dx;
 		tIndex = 56;
-		for(y = 0; y < 8; y++) {
-			for(x = 0; x < 8; x++) {
+		for(y = 0; y < 8; ++y) {
+			for(x = 0; x < 8; ++x) {
 				if(x >= srcx1 && x < srcx2 && y >= srcy1 && y < srcy2) {
 					palIndex = pix[tIndex];
 					tpri = (*priTable)[fbIndex];
@@ -173,8 +173,8 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 						(*priTable)[fbIndex] = tpri;
 					}
 				}
-				fbIndex++;
-				tIndex++;
+				++fbIndex;
+				++tIndex;
 			}
 			fbIndex -= 8;
 			fbIndex += 256;
@@ -185,8 +185,8 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 
 		fbIndex = (dy << 8) + dx;
 		tIndex = 63;
-		for(y = 0; y < 8; y++) {
-			for(x = 0; x < 8; x++) {
+		for(y = 0; y < 8; ++y) {
+			for(x = 0; x < 8; ++x) {
 				if(x >= srcx1 && x < srcx2 && y >= srcy1 && y < srcy2) {
 					palIndex = pix[tIndex];
 					tpri = (*priTable)[fbIndex];
@@ -196,8 +196,8 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 						(*priTable)[fbIndex] = tpri;
 					}
 				}
-				fbIndex++;
-				tIndex--;
+				++fbIndex;
+				--tIndex;
 			}
 			fbIndex -= 8;
 			fbIndex += 256;
@@ -215,8 +215,8 @@ void Tile::dumpData(string file) {
 
 		ofstream writer(file.c_str(), ios::out|ios::binary);
 		string chunk;
-		for(int y = 0; y < 8; y++) {
-			for(int x = 0; x < 8; x++) {
+		for(int y = 0; y < 8; ++y) {
+			for(int x = 0; x < 8; ++x) {
 				chunk = Misc::hex8(pix[(y << 3) + x]).substr(1);
 				writer.write(chunk.c_str(), chunk.length());
 			}
@@ -235,20 +235,20 @@ void Tile::dumpData(string file) {
 
 void Tile::stateSave(ByteBuffer* buf) {
 	buf->putBoolean(initialized);
-	for(int i = 0; i < 8; i++) {
+	for(int i = 0; i < 8; ++i) {
 		buf->putBoolean(opaque[i]);
 	}
-	for(int i = 0; i < 64; i++) {
+	for(int i = 0; i < 64; ++i) {
 		buf->putByte(static_cast<uint8_t>(pix[i]));
 	}
 }
 
 void Tile::stateLoad(ByteBuffer* buf) {
 	initialized = buf->readBoolean();
-	for(int i = 0; i < 8; i++) {
+	for(int i = 0; i < 8; ++i) {
 		opaque[i] = buf->readBoolean();
 	}
-	for(int i = 0; i < 64; i++) {
+	for(int i = 0; i < 64; ++i) {
 		pix[i] = buf->readByte();
 	}
 }

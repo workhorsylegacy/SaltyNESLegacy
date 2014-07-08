@@ -41,7 +41,7 @@ void PaletteTable::makeTables() {
 	int r, g, b, col;
 
 	// Calculate a table for each possible emphasis setting:
-	for(int emph = 0; emph < 8; emph++) {
+	for(int emph = 0; emph < 8; ++emph) {
 
 		// Determine color component factors:
 		float rFactor = 1.0f, gFactor = 1.0f, bFactor = 1.0f;
@@ -59,7 +59,7 @@ void PaletteTable::makeTables() {
 		}
 
 		// Calculate table:
-		for(int i = 0; i < 64; i++) {
+		for(int i = 0; i < 64; ++i) {
 			col = origTable[i];
 			r = static_cast<int>(getRed(col) * rFactor);
 			g = static_cast<int>(getGreen(col) * gFactor);
@@ -72,7 +72,7 @@ void PaletteTable::makeTables() {
 void PaletteTable::setEmphasis(int emph) {
 	if(emph != currentEmph) {
 		currentEmph = emph;
-		for(int i = 0; i < 64; i++) {
+		for(int i = 0; i < 64; ++i) {
 			curTable[i] = emphTable[emph][i];
 		}
 		updatePalette();
@@ -167,7 +167,7 @@ void PaletteTable::updatePalette(int hueAdd, int saturationAdd, int lightnessAdd
 	if(contrastAdd > 0) {
 		contrastAdd *= 4;
 	}
-	for(int i = 0; i < 64; i++) {
+	for(int i = 0; i < 64; ++i) {
 
 		hsl = RGBtoHSL(emphTable[currentEmph][i]);
 		h = getHue(hsl) + hueAdd;

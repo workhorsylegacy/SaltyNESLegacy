@@ -40,7 +40,7 @@ ChannelTriangle::~ChannelTriangle() {
 
 void ChannelTriangle::clockLengthCounter() {
 	if(lengthCounterEnable && lengthCounter > 0) {
-		lengthCounter--;
+		--lengthCounter;
 		if(lengthCounter == 0) {
 			updateSampleCondition();
 		}
@@ -57,7 +57,7 @@ void ChannelTriangle::clockLinearCounter() {
 	} else if(linearCounter > 0) {
 
 		// Decrement:
-		linearCounter--;
+		--linearCounter;
 		updateSampleCondition();
 
 	}
@@ -123,7 +123,7 @@ void ChannelTriangle::clockProgrammableTimer(int nCycles) {
 }
 
 void ChannelTriangle::clockTriangleGenerator() {
-	triangleCounter++;
+	++triangleCounter;
 	triangleCounter &= 0x1F;
 }
 

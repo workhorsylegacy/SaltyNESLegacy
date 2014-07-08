@@ -35,19 +35,19 @@ void Raster::drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty,
 	int dst_index;
 	int tmp;
 
-	for(int y = 0; y < h; y++) {
+	for(int y = 0; y < h; ++y) {
 
 		src_index = (srcy + y) * srcRaster->width + srcx;
 		dst_index = (dsty + y) * width + dstx;
 
-		for(int x = 0; x < w; x++) {
+		for(int x = 0; x < w; ++x) {
 
 			if((tmp = (*src)[src_index]) != 0) {
 				(*data)[dst_index] = tmp;
 			}
 
-			src_index++;
-			dst_index++;
+			++src_index;
+			++dst_index;
 
 		}
 	}

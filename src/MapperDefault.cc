@@ -296,8 +296,8 @@ uint16_t MapperDefault::regLoad(int address) {
 						ey = min(240, mouseY + 4);
 						w = 0;
 
-						for(int y = sy; y < ey; y++) {
-							for(int x = sx; x < ex; x++) {
+						for(int y = sy; y < ey; ++y) {
+							for(int x = sx; x < ex; ++x) {
 								if(((*nes->ppu->get_screen_buffer())[(y << 8) + x] & 0xFFFFFF) == 0xFFFFFF) {
 									w = 0x1 << 3;
 									break;
@@ -475,7 +475,7 @@ uint16_t MapperDefault::joy1Read() {
 			ret = 0;
 	}
 
-	joy1StrobeState++;
+	++joy1StrobeState;
 	if(joy1StrobeState == 24) {
 		joy1StrobeState = 0;
 	}
@@ -532,7 +532,7 @@ uint16_t MapperDefault::joy2Read() {
 			ret = 0;
 	}
 	
-	joy2StrobeState++;
+	++joy2StrobeState;
 	if(joy2StrobeState == 24) {
 		joy2StrobeState = 0;
 	}
@@ -647,7 +647,7 @@ void MapperDefault::load1kVromBank(int bank1k, int address) {
 	// Update tiles:
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
 	int baseIndex = address >> 4;
-	for(int i = 0; i < 64; i++) {
+	for(int i = 0; i < 64; ++i) {
 		(*ppu->ptTile)[baseIndex + i] = (*vromTile)[((bank1k % 4) << 6) + i];
 	}
 }
@@ -665,7 +665,7 @@ void MapperDefault::load2kVromBank(int bank2k, int address) {
 	// Update tiles:
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
 	int baseIndex = address >> 4;
-	for(int i = 0; i < 128; i++) {
+	for(int i = 0; i < 128; ++i) {
 		(*ppu->ptTile)[baseIndex + i] = (*vromTile)[((bank2k % 2) << 7) + i];
 	}
 }

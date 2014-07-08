@@ -127,7 +127,7 @@ void Mapper001::write(int address, uint16_t value) {
 		// Continue buffering:
 		//regBuffer = (regBuffer & (0xFF-(1<<regBufferCounter))) | ((value & (1<<regBufferCounter))<<regBufferCounter);
 		regBuffer = (regBuffer & (0xFF - (1 << regBufferCounter))) | ((value & 1) << regBufferCounter);
-		regBufferCounter++;
+		++regBufferCounter;
 		if(regBufferCounter == 5) {
 
 			// Use the buffered value:

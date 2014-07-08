@@ -246,7 +246,7 @@ void Mapper004::loadROM(ROM* rom) {
 
 void Mapper004::clockIrqCounter() {
 	if(irqEnable == 1) {
-		irqCounter--;
+		--irqCounter;
 		if(irqCounter < 0) {
 
 			// Trigger IRQ:

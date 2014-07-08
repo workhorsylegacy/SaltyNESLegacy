@@ -46,7 +46,7 @@ NES::NES(SaltyNES* salty_nes) {
 	rom = nullptr;
 
 	// Init sound registers:
-	for(int i = 0; i < 0x14; i++) {
+	for(int i = 0; i < 0x14; ++i) {
 		if(i == 0x10) {
 			papu->writeReg(0x4010, static_cast<uint16_t>(0x10));
 		} else {
@@ -105,8 +105,8 @@ NES::~NES() {
 
 void NES::dumpRomMemory(ofstream* writer) {
 	//ofstream writer("rom_mem_cpp.txt", ios::out|ios::binary);
-	for(size_t i = 0;i<rom->rom->size(); i++) {
-		for(size_t j = 0;j<(*rom->rom)[i]->size(); j++) {
+	for(size_t i = 0;i<rom->rom->size(); ++i) {
+		for(size_t j = 0;j<(*rom->rom)[i]->size(); ++j) {
 			stringstream out;
 			out << "@" << j << " " << (*(*rom->rom)[i])[j] << "\n";
 			writer->write(out.str().c_str(), out.str().length());
@@ -118,7 +118,7 @@ void NES::dumpRomMemory(ofstream* writer) {
 
 void NES::dumpCPUMemory(ofstream* writer) {
 	//ofstream writer("cpu_mem_cpp.txt", ios::out|ios::binary);
-	for(size_t i = 0;i<cpuMem->mem->size(); i++) {
+	for(size_t i = 0;i<cpuMem->mem->size(); ++i) {
 		stringstream out;
 		out << "-" << i << " " << (*cpuMem->mem)[i] << "\n";
 		writer->write(out.str().c_str(), out.str().length());
@@ -212,10 +212,10 @@ void NES::stopEmulation() {
 
 void NES::clearCPUMemory() {
 	uint16_t flushval = Globals::memoryFlushValue;
-	for(int i = 0; i < 0x2000; i++) {
+	for(int i = 0; i < 0x2000; ++i) {
 		(*cpuMem->mem)[i] = flushval;
 	}
-	for(int p = 0; p < 4; p++) {
+	for(int p = 0; p < 4; ++p) {
 		int i = p * 0x800;
 		(*cpuMem->mem)[i + 0x008] = 0xF7;
 		(*cpuMem->mem)[i + 0x009] = 0xEF;
