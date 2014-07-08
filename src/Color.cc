@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
+ * Copyright (c) 2012-2014 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
  * Copyright 1995-2007 Sun Microsystems, Inc.  All Rights Reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *

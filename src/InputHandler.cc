@@ -1,5 +1,5 @@
 /*
-SaltyNES Copyright (c) 2012 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
+SaltyNES Copyright (c) 2012-2014 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
 vNES Copyright (c) 2006-2011 Jamie Sanders
 
 This program is free software: you can redistribute it and/or modify it under
