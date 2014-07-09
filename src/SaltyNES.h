@@ -1240,7 +1240,7 @@ public:
 	uint16_t mirroredLoad(int address);
 	void mirroredWrite(int address, uint16_t value);
 	void triggerRendering();
-	void renderFramePartially(vector<int>* buffer, int startScan, int scanCount);
+	void renderFramePartially(int startScan, int scanCount);
 	void renderBgScanline(vector<int>* buffer, int scan);
 	void renderSpritesPartially(int startscan, int scancount, bool bgPri);
 	bool checkSprite0(int scan);
@@ -1250,7 +1250,7 @@ public:
 	void writeMem(int address, uint16_t value);
 	void updatePalettes();
 	void patternWrite(int address, uint16_t value);
-	void patternWrite(int address, vector<uint16_t>* value, int offset, int length);
+	void patternWrite(int address, vector<uint16_t>* value, size_t offset, size_t length);
 	void invalidateFrameCache();
 	void nameTableWrite(int index, int address, uint16_t value);
 	void attribTableWrite(int index, int address, uint16_t value);

@@ -350,8 +350,6 @@ void PPU::emulateCycles() {
 }
 
 void PPU::startVBlank() {
-	vector<int>* buffer = this->get_screen_buffer();
-
 	// Start VBlank period:
 
 	// Do NMI:
@@ -359,7 +357,7 @@ void PPU::startVBlank() {
 
 	// Make sure everything is rendered:
 	if(lastRenderedScanline < 239) {
-		renderFramePartially(buffer, lastRenderedScanline + 1, 240 - lastRenderedScanline);
+		renderFramePartially(lastRenderedScanline + 1, 240 - lastRenderedScanline);
 	}
 
 	endFrame();
@@ -377,13 +375,13 @@ void PPU::startVBlank() {
 			for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
 				// Each row
 				for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
-					color32 = (*buffer)[x + (y * (256))];
+					color32 = _screen_buffer[x + (y * (256))];
 					color32 |= (0xFF << 24); // Add full alpha
 					
 					// Each pixel zoomed
-					for(int y_offset=0; y_offset<zoom; ++y_offset) {
+					for(size_t y_offset=0; y_offset<zoom; ++y_offset) {
 						zoomed_y = (y * zoom) + y_offset;
-						for(int x_offset=0; x_offset<zoom; ++x_offset) {
+						for(size_t x_offset=0; x_offset<zoom; ++x_offset) {
 							zoomed_x = (x * zoom) + x_offset;
 							pixel_bits[zoomed_x + (zoomed_y * (256 * zoom))] = color32;
 						}
@@ -408,7 +406,7 @@ void PPU::startVBlank() {
 	int* pixels = reinterpret_cast<int*>(Globals::sdl_screen->pixels);
 	for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
 		for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
-			color32 = (*buffer)[x + (y * (256))];
+			color32 = _screen_buffer[x + (y * (256))];
 			b = (color32 >> 16) & 0x000000FF;
 			g = (color32 >> 8) & 0x000000FF;
 			r = (color32 >> 0) & 0x000000FF;
@@ -473,8 +471,6 @@ void PPU::startVBlank() {
 }
 
 void PPU::endScanline() {
-	vector<int>* buffer = this->get_screen_buffer();
-	
 	if(scanline < 19 + vblankAdd) {
 
 		// VINT
@@ -515,7 +511,7 @@ void PPU::endScanline() {
 
 			if(f_bgVisibility == 1) {
 				// Render dummy scanline:
-				renderBgScanline(buffer, 0);
+				renderBgScanline(&_screen_buffer, 0);
 			}
 
 		}
@@ -582,8 +578,6 @@ void PPU::endScanline() {
 }
 
 void PPU::startFrame() {
-	vector<int>* buffer = get_screen_buffer();
-
 	// Set background color:
 	int bgColor = 0;
 
@@ -629,31 +623,29 @@ void PPU::startFrame() {
 
 	}
 
-	std::fill(buffer->begin(), buffer->end(), bgColor);
+	std::fill(_screen_buffer.begin(), _screen_buffer.end(), bgColor);
 	std::fill(pixrendered.begin(), pixrendered.end(), 65);
 }
 
 void PPU::endFrame() {
-	vector<int>* buffer = get_screen_buffer();
-
 	// Draw spr#0 hit coordinates:
 	if(showSpr0Hit) {
 		// Spr 0 position:
 		if(sprX[0] >= 0 && sprX[0] < 256 && sprY[0] >= 0 && sprY[0] < 240) {
-			for(int i = 0; i < 256; ++i) {
-				(*buffer)[(sprY[0] << 8) + i] = 0xFF5555;
+			for(size_t i = 0; i < 256; ++i) {
+				_screen_buffer[(sprY[0] << 8) + i] = 0xFF5555;
 			}
-			for(int i = 0; i < 240; ++i) {
-				(*buffer)[(i << 8) + sprX[0]] = 0xFF5555;
+			for(size_t i = 0; i < 240; ++i) {
+				_screen_buffer[(i << 8) + sprX[0]] = 0xFF5555;
 			}
 		}
 		// Hit position:
 		if(spr0HitX >= 0 && spr0HitX < 256 && spr0HitY >= 0 && spr0HitY < 240) {
-			for(int i = 0; i < 256; ++i) {
-				(*buffer)[(spr0HitY << 8) + i] = 0x55FF55;
+			for(size_t i = 0; i < 256; ++i) {
+				_screen_buffer[(spr0HitY << 8) + i] = 0x55FF55;
 			}
-			for(int i = 0; i < 240; ++i) {
-				(*buffer)[(i << 8) + spr0HitX] = 0x55FF55;
+			for(size_t i = 0; i < 240; ++i) {
+				_screen_buffer[(i << 8) + spr0HitX] = 0x55FF55;
 			}
 		}
 	}
@@ -876,7 +868,7 @@ void PPU::sramDMA(uint16_t value) {
 	Memory* cpuMem = nes->getCpuMemory();
 	int baseAddress = value * 0x100;
 	uint16_t data;
-	for(int i = sramAddress; i < 256; ++i) {
+	for(size_t i = sramAddress; i < 256; ++i) {
 		data = cpuMem->load(baseAddress + i);
 		sprMem->write(i, data);
 		spriteRamWriteUpdate(i, data);
@@ -1010,19 +1002,17 @@ void PPU::mirroredWrite(int address, uint16_t value) {
 }
 
 void PPU::triggerRendering() {
-	vector<int>* buffer = this->get_screen_buffer();
 	if(scanline - vblankAdd >= 21 && scanline - vblankAdd <= 260) {
 
 		// Render sprites, and combine:
-		renderFramePartially(buffer, lastRenderedScanline + 1, scanline - vblankAdd - 21 - lastRenderedScanline);
+		renderFramePartially(lastRenderedScanline + 1, scanline - vblankAdd - 21 - lastRenderedScanline);
 
 		// Set last rendered scanline:
 		lastRenderedScanline = scanline - vblankAdd - 21;
-
 	}
 }
 
-void PPU::renderFramePartially(vector<int>* buffer, int startScan, int scanCount) {
+void PPU::renderFramePartially(int startScan, int scanCount) {
 	if(f_spVisibility == 1 && !Globals::disableSprites) {
 		renderSpritesPartially(startScan, scanCount, true);
 	}
@@ -1035,7 +1025,7 @@ void PPU::renderFramePartially(vector<int>* buffer, int startScan, int scanCount
 		}
 		for(destIndex = si; destIndex < ei; ++destIndex) {
 			if(pixrendered[destIndex] > 0xFF) {
-				(*buffer)[destIndex] = bgbuffer[destIndex];
+				_screen_buffer[destIndex] = bgbuffer[destIndex];
 			}
 		}
 	}
@@ -1146,10 +1136,9 @@ void PPU::renderBgScanline(vector<int>* buffer, int scan) {
 }
 
 void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
-	vector<int>* buffer = this->get_screen_buffer();
 	if(f_spVisibility == 1) {
 
-		for(int i = 0; i < 64; ++i) {
+		for(size_t i = 0; i < 64; ++i) {
 			if(bgPriority[i] == bgPri && sprX[i] >= 0 && sprX[i] < 256 && sprY[i] + 8 >= startscan && sprY[i] < startscan + scancount) {
 				// Show sprite.
 				if(f_spriteSize == 0) {
@@ -1167,9 +1156,9 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 					}
 
 					if(f_spPatternTable == 0) {
-						ptTile[sprTile[i]]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+						ptTile[sprTile[i]]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 					} else {
-						ptTile[sprTile[i] + 256]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+						ptTile[sprTile[i] + 256]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 					}
 				} else {
 					// 8x16 sprites
@@ -1189,7 +1178,7 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 						srcy2 = startscan + scancount - sprY[i];
 					}
 
-					ptTile[top + (vertFlip[i] ? 1 : 0)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+					ptTile[top + (vertFlip[i] ? 1 : 0)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 
 					srcy1 = 0;
 					srcy2 = 8;
@@ -1202,7 +1191,7 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 						srcy2 = startscan + scancount - (sprY[i] + 8);
 					}
 
-					ptTile[top + (vertFlip[i] ? 0 : 1)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+					ptTile[top + (vertFlip[i] ? 0 : 1)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 
 				}
 			}
@@ -1264,7 +1253,7 @@ bool PPU::checkSprite0(int scan) {
 
 			} else {
 
-				for(int i = 0; i < 8; ++i) {
+				for(size_t i = 0; i < 8; ++i) {
 					if(x >= 0 && x < 256) {
 						if(bufferIndex >= 0 && bufferIndex < 61440 && pixrendered[bufferIndex] != 0) {
 							if(t->pix[toffset + i] != 0) {
@@ -1334,7 +1323,7 @@ bool PPU::checkSprite0(int scan) {
 
 			} else {
 
-				for(int i = 0; i < 8; ++i) {
+				for(size_t i = 0; i < 8; ++i) {
 					if(x >= 0 && x < 256) {
 						if(bufferIndex >= 0 && bufferIndex < 61440 && pixrendered[bufferIndex] != 0) {
 							if(t->pix[toffset + i] != 0) {
@@ -1363,9 +1352,9 @@ void PPU::renderPattern() {
 	vector<int>* buffer = get_pattern_buffer();
 
 	int tIndex = 0;
-	for(int j = 0; j < 2; ++j) {
-		for(int y = 0; y < 16; ++y) {
-			for(int x = 0; x < 16; ++x) {
+	for(size_t j = 0; j < 2; ++j) {
+		for(size_t y = 0; y < 16; ++y) {
+			for(size_t x = 0; x < 16; ++x) {
 				ptTile[tIndex]->renderSimple(j * 128 + x * 8, y * 8, buffer, 0, sprPalette);
 				++tIndex;
 			}
@@ -1509,14 +1498,14 @@ void PPU::writeMem(int address, uint16_t value) {
 // Reads data from $3f00 to $f20
 // into the two buffered palettes.
 void PPU::updatePalettes() {
-	for(int i = 0; i < 16; ++i) {
+	for(size_t i = 0; i < 16; ++i) {
 		if(f_dispType == 0) {
 			imgPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f00 + i) & 63);
 		} else {
 			imgPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f00 + i) & 32);
 		}
 	}
-	for(int i = 0; i < 16; ++i) {
+	for(size_t i = 0; i < 16; ++i) {
 		if(f_dispType == 0) {
 			sprPalette[i] = nes->palTable->getEntry(ppuMem->load(0x3f10 + i) & 63);
 		} else {
@@ -1541,11 +1530,11 @@ void PPU::patternWrite(int address, uint16_t value) {
 	}
 }
 
-void PPU::patternWrite(int address, vector<uint16_t>* value, int offset, int length) {
+void PPU::patternWrite(int address, vector<uint16_t>* value, size_t offset, size_t length) {
 	int tileIndex;
 	int leftOver;
 
-	for(int i = 0; i < length; ++i) {
+	for(size_t i = 0; i < length; ++i) {
 
 		tileIndex = (address + i) >> 4;
 		leftOver = (address + i) % 16;
