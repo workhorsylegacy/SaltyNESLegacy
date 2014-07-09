@@ -1183,11 +1183,8 @@ public:
 	vector<int> attrib;
 	vector<int> bgbuffer;
 	vector<int> pixrendered;
-	vector<int> spr0dummybuffer;
-	vector<int> dummyPixPriTable;
-	vector<int> oldFrame;
+	//vector<int> dummyPixPriTable;
 	int* tpix;
-	vector<bool> scanlineChanged;
 	bool requestRenderAll;
 	bool validTileData;
 	int att;

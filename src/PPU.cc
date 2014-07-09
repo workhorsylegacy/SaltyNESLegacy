@@ -150,11 +150,8 @@ PPU::PPU(NES* nes) {
 	attrib = vector<int>(32, 0);
 	bgbuffer = vector<int>(256 * 240, 0);
 	pixrendered = vector<int>(256 * 240, 0);
-	spr0dummybuffer = vector<int>(256 * 240, 0);
-	dummyPixPriTable = vector<int>(256 * 240, 0);
-	oldFrame = vector<int>(256 * 240, 0);
+	//dummyPixPriTable = vector<int>(256 * 240, 0);
 	tpix = nullptr;
-	scanlineChanged = vector<bool>(240, false);
 	requestRenderAll = false;
 	validTileData = false;
 	att = 0;
@@ -233,10 +230,6 @@ void PPU::init() {
 
 	lastRenderedScanline = -1;
 	curX = 0;
-
-	// Initialize old frame buffer:
-	std::fill(oldFrame.begin(), oldFrame.end(), -1);
-
 }
 
 // Sets Nametable mirroring.
@@ -1579,8 +1572,6 @@ void PPU::patternWrite(int address, vector<uint16_t>* value, int offset, int len
 
 void PPU::invalidateFrameCache() {
 	// Clear the no-update scanline buffer:
-	std::fill(scanlineChanged.begin(), scanlineChanged.end(), true);
-	std::fill(oldFrame.begin(), oldFrame.end(), -1);
 	requestRenderAll = true;
 }
 
@@ -1917,9 +1908,6 @@ void PPU::reset() {
 	regHT = 0;
 	regFH = 0;
 	regS = 0;
-
-	std::fill(scanlineChanged.begin(), scanlineChanged.end(), true);
-	std::fill(oldFrame.begin(), oldFrame.end(), -1);
 
 	// Initialize stuff:
 	init();
