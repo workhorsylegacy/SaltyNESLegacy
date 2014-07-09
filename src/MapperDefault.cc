@@ -616,7 +616,7 @@ void MapperDefault::loadVromBank(int bank, int address) {
 	arraycopy_short(rom->getVromBank(bank % rom->getVromBankCount()), 0, &nes->ppuMem->mem, address, 4096);
 
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
-	arraycopy_Tile(vromTile, 0, ppu->ptTile, address >> 4, 256);
+	arraycopy_Tile(vromTile, 0, &ppu->ptTile, address >> 4, 256);
 }
 
 void MapperDefault::load32kRomBank(int bank, int address) {
@@ -648,7 +648,7 @@ void MapperDefault::load1kVromBank(int bank1k, int address) {
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
 	int baseIndex = address >> 4;
 	for(int i = 0; i < 64; ++i) {
-		(*ppu->ptTile)[baseIndex + i] = (*vromTile)[((bank1k % 4) << 6) + i];
+		ppu->ptTile[baseIndex + i] = (*vromTile)[((bank1k % 4) << 6) + i];
 	}
 }
 
@@ -666,7 +666,7 @@ void MapperDefault::load2kVromBank(int bank2k, int address) {
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
 	int baseIndex = address >> 4;
 	for(int i = 0; i < 128; ++i) {
-		(*ppu->ptTile)[baseIndex + i] = (*vromTile)[((bank2k % 2) << 7) + i];
+		ppu->ptTile[baseIndex + i] = (*vromTile)[((bank2k % 2) << 7) + i];
 	}
 }
 

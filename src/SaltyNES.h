@@ -1160,10 +1160,10 @@ public:
 	bool hitSpr0;
 
 	// Tiles:
-	vector<Tile*>* ptTile;
+	vector<Tile*> ptTile;
 	// Name table data:
 	int ntable1[4];
-	vector<NameTable*>* nameTable;
+	vector<NameTable*> nameTable;
 	int currentMirroring;
 
 	// Palette data:
@@ -1191,7 +1191,7 @@ public:
 	bool requestRenderAll;
 	bool validTileData;
 	int att;
-	vector<Tile*>* scantile;
+	vector<Tile*> scantile;
 	Tile* t;
 	// These are temporary variables used in rendering and sound procedures.
 	// Their states outside of those procedures can be ignored.
@@ -1206,7 +1206,7 @@ public:
 	int srcy1, srcy2;
 	int bufferSize, available;
 	int cycles;
-	vector<int>* _screen_buffer;
+	vector<int> _screen_buffer;
 
 	vector<int>* get_screen_buffer();
 	vector<int>* get_pattern_buffer();
