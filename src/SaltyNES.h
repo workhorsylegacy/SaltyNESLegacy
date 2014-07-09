@@ -1305,7 +1305,7 @@ public:
 	bool batteryRam;
 	bool trainer;
 	bool fourScreen;
-	int mapperType;
+	size_t mapperType;
 	string fileName;
 	string _sha256;
 	bool enableSave;
@@ -1325,7 +1325,7 @@ public:
 	vector<uint16_t>* getVromBank(int bank);
 	vector<Tile*>* getVromBankTiles(int bank);
 	int getMirroringType();
-	int getMapperType();
+	size_t getMapperType();
 	string getMapperName();
 	bool hasBatteryRam();
 	bool hasTrainer();
@@ -1572,7 +1572,7 @@ inline uint8_t string_to_byte(uint8_t upper, uint8_t lower) {
 	uint8_t retval = 0;
 	upper = string_to_half_byte(upper);
 	lower = string_to_half_byte(lower);
-	retval = ((uint8_t)(upper << 4)) | lower;
+	retval = static_cast<uint8_t>(upper << 4) | lower;
 	return retval;
 }
 

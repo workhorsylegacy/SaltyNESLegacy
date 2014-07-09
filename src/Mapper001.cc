@@ -74,7 +74,7 @@ void Mapper001::mapperInternalStateLoad(ByteBuffer* buf) {
 
 void Mapper001::mapperInternalStateSave(ByteBuffer* buf) {
 	// Version:
-	buf->putByte((uint16_t) 1);
+	buf->putByte(static_cast<uint16_t>(1));
 
 	// Reg 0:
 	buf->putInt(mirroring);

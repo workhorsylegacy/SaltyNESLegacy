@@ -324,7 +324,7 @@ uint16_t PAPU::readReg() {
 	dmc->irqGenerated = false;
 
 	////System.out.println("$4015 read. Value = "+Misc.bin8(tmp)+" countseq = "+countSequence);
-	return (uint16_t) tmp;
+	return static_cast<uint16_t>(tmp);
 }
 
 void PAPU::writeReg(int address, uint16_t value) {

@@ -1679,7 +1679,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 
 
 		// VRAM I/O:
-		vramBufferedReadValue = (uint16_t) buf->readInt();
+		vramBufferedReadValue = static_cast<uint16_t>(buf->readInt());
 		firstWrite = buf->readBoolean();
 		//System.out.println("firstWrite: "+firstWrite);
 

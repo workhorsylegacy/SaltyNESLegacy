@@ -103,7 +103,7 @@ void CPU::stateLoad(ByteBuffer* buf) {
 void CPU::stateSave(ByteBuffer* buf) {
 
 	// Save info version:
-	buf->putByte((uint16_t)1);
+	buf->putByte(static_cast<uint16_t>(1));
 
 	// Save registers:
 	buf->putInt(getStatus());

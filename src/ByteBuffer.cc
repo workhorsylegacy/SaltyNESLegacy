@@ -263,7 +263,7 @@ bool ByteBuffer::putString(string var, size_t pos) {
 	uint16_t theChar;
 	if(inRange(pos, var.length() * 2)) {
 		for(size_t i = 0; i < var.length(); ++i) {
-			theChar = (uint16_t) (charArr[i]);
+			theChar = static_cast<uint16_t>(charArr[i]);
 			buf[pos + 0] = static_cast<uint16_t>((theChar >> 8) & 255);
 			buf[pos + 1] = static_cast<uint16_t>(theChar & 255);
 			pos += 2;

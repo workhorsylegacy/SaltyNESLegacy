@@ -90,8 +90,8 @@ static const uint32_t K[64] = {
 static inline uint64_t _byteswap64(uint64_t x)
 {
         uint32_t a = x >> 32;
-        uint32_t b = (uint32_t) x;
-        return ((uint64_t) BYTESWAP(b) << 32) | (uint64_t) BYTESWAP(a);
+        uint32_t b = static_cast<uint32_t>(x);
+        return (static_cast<uint64_t>(BYTESWAP(b)) << 32) | static_cast<uint64_t>(BYTESWAP(a));
 }
 
 #endif                          /* WORDS_BIGENDIAN */
@@ -402,7 +402,7 @@ void SHA256Update(SHA256Context * sc, const void *data, uint32_t len)
                 sc->totalLength += bytesToCopy * 8L;
 
                 sc->bufferLength += bytesToCopy;
-                data = ((uint8_t *) data) + bytesToCopy;
+                data = reinterpret_cast<const uint8_t *>(data) + bytesToCopy;
                 len -= bytesToCopy;
 
                 if(sc->bufferLength == 64L) {
@@ -415,10 +415,10 @@ void SHA256Update(SHA256Context * sc, const void *data, uint32_t len)
         while(len > 63L) {
                 sc->totalLength += 512L;
 
-                SHA256Guts(sc, (const uint32_t*) data);
+                SHA256Guts(sc, reinterpret_cast<const uint32_t*>(data));
                 needBurn = 1;
 
-                data = ((uint8_t *) data) + 64L;
+                data = reinterpret_cast<const uint8_t *>(data) + 64L;
                 len -= 64L;
         }
 
@@ -452,7 +452,7 @@ void SHA256Final(SHA256Context * sc, uint8_t hash[SHA256_HASH_SIZE])
 
         if(hash) {
                 for(i = 0; i < SHA256_HASH_WORDS; i++) {
-                        *((uint32_t *) hash) = BYTESWAP(sc->hash[i]);
+                        *reinterpret_cast<uint32_t*>(hash) = BYTESWAP(sc->hash[i]);
                         hash += 4;
                 }
         }
