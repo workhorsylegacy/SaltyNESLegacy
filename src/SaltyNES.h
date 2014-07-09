@@ -1119,7 +1119,7 @@ public:
 	int vramTmpAddress;
 	uint16_t vramBufferedReadValue;
 	bool firstWrite; 		// VRAM/Scroll Hi/Lo latch
-	vector<int>* vramMirrorTable; 			// Mirroring Lookup Table.
+	vector<int> vramMirrorTable; // Mirroring Lookup Table.
 	int i;
 
 	// SPR-RAM I/O:
@@ -1180,14 +1180,14 @@ public:
 	// Vars used when updating regs/address:
 	int address, b1, b2;
 	// Variables used when rendering:
-	vector<int>* attrib;
-	vector<int>* bgbuffer;
-	vector<int>* pixrendered;
-	vector<int>* spr0dummybuffer;
-	vector<int>* dummyPixPriTable;
-	vector<int>* oldFrame;
+	vector<int> attrib;
+	vector<int> bgbuffer;
+	vector<int> pixrendered;
+	vector<int> spr0dummybuffer;
+	vector<int> dummyPixPriTable;
+	vector<int> oldFrame;
 	int* tpix;
-	bool scanlineChanged[240];
+	vector<bool> scanlineChanged;
 	bool requestRenderAll;
 	bool validTileData;
 	int att;
@@ -1217,7 +1217,7 @@ public:
 	~PPU();
 	void init();
 	void setMirroring(int mirroring);
-	void defineMirrorRegion(int fromStart, int toStart, int size);
+	void defineMirrorRegion(size_t fromStart, size_t toStart, size_t size);
 	void emulateCycles();
 	void startVBlank();
 	void endScanline();
