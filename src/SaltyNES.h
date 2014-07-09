@@ -1469,38 +1469,29 @@ public:
 };
 #endif
 
-inline void arraycopy_short(vector<uint16_t>* src, int srcPos, vector<uint16_t>* dest, int destPos, int length) {
-	assert(srcPos >= 0);
-	assert(destPos >= 0);
-	assert(length >= 0);
-	assert(static_cast<size_t>(srcPos)+length <= src->size());
-	assert(static_cast<size_t>(destPos)+length <= dest->size());
+inline void arraycopy_short(vector<uint16_t>* src, size_t srcPos, vector<uint16_t>* dest, size_t destPos, size_t length) {
+	assert(srcPos+length <= src->size());
+	assert(destPos+length <= dest->size());
 	
-	for(int i=0; i<length; i++) {
+	for(size_t i=0; i<length; ++i) {
 		(*dest)[destPos + i] = (*src)[srcPos + i];
 	}
 }
 
-inline void arraycopy_Tile(vector<Tile*>* src, int srcPos, vector<Tile*>* dest, int destPos, int length) {
-	assert(srcPos >= 0);
-	assert(destPos >= 0);
-	assert(length >= 0);
-	assert(static_cast<size_t>(srcPos)+length <= src->size());
-	assert(static_cast<size_t>(destPos)+length <= dest->size());
+inline void arraycopy_Tile(vector<Tile*>* src, size_t srcPos, vector<Tile*>* dest, size_t destPos, size_t length) {
+	assert(srcPos+length <= src->size());
+	assert(destPos+length <= dest->size());
 	
-	for(int i=0; i<length; i++) {
+	for(size_t i=0; i<length; ++i) {
 		(*dest)[destPos + i] = (*src)[srcPos + i];
 	}
 }
 
-inline void arraycopy_int(vector<int>* src, int srcPos, vector<int>* dest, int destPos, int length) {
-	assert(srcPos >= 0);
-	assert(destPos >= 0);
-	assert(length >= 0);
-	assert(static_cast<size_t>(srcPos)+length <= src->size());
-	assert(static_cast<size_t>(destPos)+length <= dest->size());
+inline void arraycopy_int(vector<int>* src, size_t srcPos, vector<int>* dest, size_t destPos, size_t length) {
+	assert(srcPos+length <= src->size());
+	assert(destPos+length <= dest->size());
 	
-	for(int i=0; i<length; i++) {
+	for(size_t i=0; i<length; ++i) {
 		(*dest)[destPos + i] = (*src)[srcPos + i];
 	}
 }
