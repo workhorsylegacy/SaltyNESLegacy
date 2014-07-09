@@ -19,7 +19,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Opdata array:
 bool CpuInfo::isOp = false;
-int CpuInfo::opdata[256];
+vector<int> CpuInfo::opdata;
 
 // Instruction names:
 const vector<string> CpuInfo::instname = {{
@@ -98,7 +98,7 @@ const vector<string> CpuInfo::addrDesc = {{
 	"Indirect Absolute   "
 }};
 
-const int CpuInfo::cycTable[256] = {
+const vector<int> CpuInfo::cycTable = {
 	/*0x00*/7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
 	/*0x10*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
 	/*0x20*/ 6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
@@ -222,9 +222,7 @@ void CpuInfo::initOpData() {
 	isOp = true;
 
 	// Set all to invalid instruction (to detect crashes):
-	for(int i = 0; i < 256; ++i) {
-		opdata[i] = 0xFF;
-	}
+	opdata = vector<int>(256, 0xFF);
 
 	// Now fill in all valid opcodes:
 

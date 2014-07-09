@@ -21,7 +21,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tile::Tile() {
 	// Tile data:
-	memset(pix, 0, 64);
+	pix = vector<int>(64);
 	fbIndex = 0;
 	tIndex = 0;
 	x = 0;
@@ -34,7 +34,7 @@ Tile::Tile() {
 	tpri = 0;
 	c = 0;
 	initialized = false;
-	memset(opaque, 0, 8);
+	opaque = vector<bool>(8, false);
 }
 
 void Tile::setBuffer(vector<uint16_t>* scanline) {
@@ -91,7 +91,7 @@ void Tile::renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* pal
 
 }
 
-void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable) {
+void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, vector<int>* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable) {
 	if(dx < -7 || dx >= 256 || dy < -7 || dy >= 240) {
 		return;
 	}
@@ -123,7 +123,7 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 					palIndex = pix[tIndex];
 					tpri = (*priTable)[fbIndex];
 					if(palIndex != 0 && pri <= (tpri & 0xFF)) {
-						(*fBuffer)[fbIndex] = palette[palIndex + palAdd];
+						(*fBuffer)[fbIndex] = (*palette)[palIndex + palAdd];
 						tpri = (tpri & 0xF00) | pri;
 						(*priTable)[fbIndex] = tpri;
 					}
@@ -145,7 +145,7 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 					palIndex = pix[tIndex];
 					tpri = (*priTable)[fbIndex];
 					if(palIndex != 0 && pri <= (tpri & 0xFF)) {
-						(*fBuffer)[fbIndex] = palette[palIndex + palAdd];
+						(*fBuffer)[fbIndex] = (*palette)[palIndex + palAdd];
 						tpri = (tpri & 0xF00) | pri;
 						(*priTable)[fbIndex] = tpri;
 					}
@@ -168,7 +168,7 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 					palIndex = pix[tIndex];
 					tpri = (*priTable)[fbIndex];
 					if(palIndex != 0 && pri <= (tpri & 0xFF)) {
-						(*fBuffer)[fbIndex] = palette[palIndex + palAdd];
+						(*fBuffer)[fbIndex] = (*palette)[palIndex + palAdd];
 						tpri = (tpri & 0xF00) | pri;
 						(*priTable)[fbIndex] = tpri;
 					}
@@ -191,7 +191,7 @@ void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, ve
 					palIndex = pix[tIndex];
 					tpri = (*priTable)[fbIndex];
 					if(palIndex != 0 && pri <= (tpri & 0xFF)) {
-						(*fBuffer)[fbIndex] = palette[palIndex + palAdd];
+						(*fBuffer)[fbIndex] = (*palette)[palIndex + palAdd];
 						tpri = (tpri & 0xF00) | pri;
 						(*priTable)[fbIndex] = tpri;
 					}

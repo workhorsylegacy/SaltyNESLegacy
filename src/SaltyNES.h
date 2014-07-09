@@ -468,12 +468,12 @@ class CpuInfo {
 public:
 	// Opdata array:
 	static bool isOp;
-	static int opdata[256];
+	static vector<int> opdata;
 	// Instruction names:
 	static const vector<string> instname;
 	// Address mode descriptions:
 	static const vector<string> addrDesc;
-	static const int cycTable[256];
+	static const vector<int> cycTable;
 	// Instruction types:
 	// -------------------------------- //
 	static const int INS_ADC;
@@ -1148,13 +1148,13 @@ public:
 	int lastRenderedScanline;
 	int mapperIrqCounter;
 	// Sprite data:
-	int sprX[64];				// X coordinate
-	int sprY[64];				// Y coordinate
-	int sprTile[64];			// Tile Index (into pattern table)
-	int sprCol[64];			// Upper two bits of color
-	bool vertFlip[64];		// Vertical Flip
-	bool horiFlip[64];		// Horizontal Flip
-	bool bgPriority[64];	// Background priority
+	vector<int> sprX;				// X coordinate
+	vector<int> sprY;				// Y coordinate
+	vector<int> sprTile;			// Tile Index (into pattern table)
+	vector<int> sprCol;			// Upper two bits of color
+	vector<bool> vertFlip;		// Vertical Flip
+	vector<bool> horiFlip;		// Horizontal Flip
+	vector<bool> bgPriority;	// Background priority
 	int spr0HitX;	// Sprite #0 hit X coordinate
 	int spr0HitY;	// Sprite #0 hit Y coordinate
 	bool hitSpr0;
@@ -1162,13 +1162,13 @@ public:
 	// Tiles:
 	vector<Tile*> ptTile;
 	// Name table data:
-	int ntable1[4];
+	vector<int> ntable1;
 	vector<NameTable*> nameTable;
 	int currentMirroring;
 
 	// Palette data:
-	int sprPalette[16];
-	int imgPalette[16];
+	vector<int> sprPalette;
+	vector<int> imgPalette;
 	// Misc:
 	bool scanlineAlreadyRendered;
 	bool requestEndFrame;
@@ -1184,7 +1184,7 @@ public:
 	vector<int> bgbuffer;
 	vector<int> pixrendered;
 	//vector<int> dummyPixPriTable;
-	int* tpix;
+	vector<int>* tpix;
 	bool requestRenderAll;
 	bool validTileData;
 	int att;
@@ -1342,7 +1342,7 @@ public:
 class Tile {
 public:
 	// Tile data:
-	int pix[64];
+	vector<int> pix;
 	int fbIndex;
 	int tIndex;
 	int x, y;
@@ -1352,14 +1352,14 @@ public:
 	int tpri;
 	int c;
 	bool initialized;
-	bool opaque[8];
+	vector<bool> opaque;
 
 	Tile();
 	void setBuffer(vector<uint16_t>* scanline);
 	void setScanline(int sline, uint16_t b1, uint16_t b2);
 	void renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette);
 	void renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette);
-	void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable);
+	void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, vector<int>* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable);
 	bool isTransparent(int x, int y);
 	void dumpData(string file);
 	void stateSave(ByteBuffer* buf);

@@ -111,13 +111,13 @@ PPU::PPU(NES* nes) {
 	mapperIrqCounter = 0;
 
 	// Sprite data:
-	memset(&sprX, 0, 64);
-	memset(sprY, 0, 64);
-	memset(sprTile, 0, 64);
-	memset(sprCol, 0, 64);
-	memset(vertFlip, false, 64);
-	memset(horiFlip, false, 64);
-	memset(bgPriority, false, 64);
+	sprX = vector<int>(64, 0);
+	sprY = vector<int>(64, 0);
+	sprTile = vector<int>(64, 0);
+	sprCol = vector<int>(64, 0);
+	vertFlip = vector<bool>(64, false);
+	horiFlip = vector<bool>(64, false);
+	bgPriority = vector<bool>(64, false);
 	spr0HitX = 0;
 	spr0HitY = 0;
 	hitSpr0 = false;
@@ -125,13 +125,13 @@ PPU::PPU(NES* nes) {
 	// Tiles:
 	ptTile = vector<Tile*>(512, nullptr);
 	// Name table data:
-	memset(ntable1, 0, 4);
+	ntable1 = vector<int>(4, 0);
 	nameTable = vector<NameTable*>(4, nullptr);
 	currentMirroring = -1;
 
 	// Palette data:
-	memset(sprPalette, 0, 16);
-	memset(imgPalette, 0, 16);
+	sprPalette = vector<int>(16, 0);
+	imgPalette = vector<int>(16, 0);
 
 	// Misc:
 	scanlineAlreadyRendered = false;
@@ -199,17 +199,6 @@ void PPU::init() {
 
 	// Initialize misc vars:
 	scanline = 0;
-
-	// Create sprite arrays:
-	for(int i=0; i<64; ++i) {
-		sprX[i] = 0;
-		sprY[i] = 0;
-		sprTile[i] = 0;
-		sprCol[i] = 0;
-		vertFlip[i] = 0;
-		horiFlip[i] = 0;
-		bgPriority[i] = 0;
-	}
 
 	// Create pattern table tile buffers:
 	for(size_t i = 0; i < ptTile.size(); ++i) {
@@ -1079,12 +1068,12 @@ void PPU::renderBgScanline(vector<int>* buffer, int scan) {
 				if(validTileData) {
 					// Get data from array:
 					t = scantile[tile];
-					tpix = t->pix;
+					tpix = &t->pix;
 					att = attrib[tile];
 				} else {
 					// Fetch data:
 					t = ptTile[baseTile + nameTable[curNt]->getTileIndex(cntHT, cntVT)];
-					tpix = t->pix;
+					tpix = &t->pix;
 					att = nameTable[curNt]->getAttrib(cntHT, cntVT);
 					scantile[tile] = t;
 					attrib[tile] = att;
@@ -1100,13 +1089,13 @@ void PPU::renderBgScanline(vector<int>* buffer, int scan) {
 					}
 					if(t->opaque[cntFV]) {
 						for(; sx < 8; ++sx) {
-							(*buffer)[destIndex] = imgPalette[tpix[tscanoffset + sx] + att];
+							(*buffer)[destIndex] = imgPalette[(*tpix)[tscanoffset + sx] + att];
 							pixrendered[destIndex] |= 256;
 							++destIndex;
 						}
 					} else {
 						for(; sx < 8; ++sx) {
-							col = tpix[tscanoffset + sx];
+							col = (*tpix)[tscanoffset + sx];
 							if(col != 0) {
 								(*buffer)[destIndex] = imgPalette[col + att];
 								pixrendered[destIndex] |= 256;
@@ -1178,9 +1167,9 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 					}
 
 					if(f_spPatternTable == 0) {
-						ptTile[sprTile[i]]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+						ptTile[sprTile[i]]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 					} else {
-						ptTile[sprTile[i] + 256]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+						ptTile[sprTile[i] + 256]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 					}
 				} else {
 					// 8x16 sprites
@@ -1200,7 +1189,7 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 						srcy2 = startscan + scancount - sprY[i];
 					}
 
-					ptTile[top + (vertFlip[i] ? 1 : 0)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+					ptTile[top + (vertFlip[i] ? 1 : 0)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 
 					srcy1 = 0;
 					srcy2 = 8;
@@ -1213,7 +1202,7 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 						srcy2 = startscan + scancount - (sprY[i] + 8);
 					}
 
-					ptTile[top + (vertFlip[i] ? 0 : 1)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+					ptTile[top + (vertFlip[i] ? 0 : 1)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 
 				}
 			}
@@ -1413,8 +1402,8 @@ void PPU::renderNameTables() {
 			// Render nametable:
 			for(int ty = 0; ty < 30; ++ty) {
 				for(int tx = 0; tx < 32; ++tx) {
-					//ptTile[baseTile+nameTable[nt].getTileIndex(tx,ty)].render(0,0,4,4,x+tx*4,y+ty*4,buffer,nameTable[nt].getAttrib(tx,ty),imgPalette,false,false,0,dummyPixPriTable);
-					ptTile[baseTile + nameTable[nt]->getTileIndex(tx, ty)]->renderSmall(x + tx * 4, y + ty * 4, buffer, nameTable[nt]->getAttrib(tx, ty), imgPalette);
+					//ptTile[baseTile+nameTable[nt].getTileIndex(tx,ty)].render(0,0,4,4,x+tx*4,y+ty*4,buffer,nameTable[nt].getAttrib(tx,ty), &imgPalette,false,false,0,dummyPixPriTable);
+					ptTile[baseTile + nameTable[nt]->getTileIndex(tx, ty)]->renderSmall(x + tx * 4, y + ty * 4, buffer, nameTable[nt]->getAttrib(tx, ty), &imgPalette);
 				}
 			}
 
