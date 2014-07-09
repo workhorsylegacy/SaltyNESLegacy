@@ -807,7 +807,7 @@ class Mapper007 : public MapperDefault {
 public:
 	int currentOffset;
 	int currentMirroring;
-	vector<uint16_t>* prgrom;
+	vector<uint16_t> prgrom;
 
 	virtual void init(NES* nes);
 	virtual uint16_t load(int address);
@@ -962,6 +962,9 @@ public:
 	static const int panning[];
 	static const int lengthLookup[];
 
+	static const int dmcFreqLookup[];
+	static const int noiseWavelengthLookup[];
+
 #ifdef NACL
 	pp::Audio audio_;
 	double frequency_;
@@ -977,12 +980,10 @@ public:
 	ChannelTriangle* triangle;
 	ChannelNoise* noise;
 	ChannelDM* dmc;
-	int* dmcFreqLookup;
-	int* noiseWavelengthLookup;
-	vector<int>* square_table;
-	vector<int>* tnd_table;
-	vector<int>* ismpbuffer;
-	vector<uint8_t>* sampleBuffer;
+	vector<int> square_table;
+	vector<int> tnd_table;
+	vector<int> ismpbuffer;
+	vector<uint8_t> sampleBuffer;
 	bool ready_for_buffer_write;
 	int frameIrqCounter;
 	int frameIrqCounterMax;
@@ -1069,16 +1070,13 @@ public:
 	int getNoiseWaveLength(int value);
 	void synchronized_setSampleRate(int rate, bool restart);
 	void synchronized_setStereo(bool s, bool restart);
-	int getPapuBufferSize();
+	size_t getPapuBufferSize();
 	void setChannelEnabled(int channel, bool value);
 	void setMasterVolume(int value);
 	void updateStereoPos();
 	bool isRunning();
 	int getMillisToAvailableAbove(int target_avail);
 	int getBufferPos();
-	void initLengthLookup();
-	void initDmcFrequencyLookup();
-	void initNoiseWavelengthLookup();
 	void initDACtables();
 };
 

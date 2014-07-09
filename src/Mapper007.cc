@@ -27,9 +27,9 @@ void Mapper007::init(NES* nes) {
 
 	// Read out all PRG rom:
 	int bc = rom->getRomBankCount();
-	prgrom = new vector<uint16_t>(bc * 16384, 0);
+	prgrom = vector<uint16_t>(bc * 16384, 0);
 	for(int i = 0; i < bc; ++i) {
-		arraycopy_short(rom->getRomBank(i), 0, prgrom, i * 16384, 16384);
+		arraycopy_short(rom->getRomBank(i), 0, &prgrom, i * 16384, 16384);
 	}
 }
 
@@ -39,9 +39,9 @@ uint16_t Mapper007::load(int address) {
 		return this->base_load(address);
 	} else {
 		if((address + currentOffset) >= 262144) {
-			return (*prgrom)[(address + currentOffset) - 262144];
+			return prgrom[(address + currentOffset) - 262144];
 		} else {
-			return (*prgrom)[address + currentOffset];
+			return prgrom[address + currentOffset];
 		}
 	}
 }

@@ -26,7 +26,7 @@ void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 		return;
 
 	uint32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
-	SDL_MixAudio(stream, reinterpret_cast<uint8_t*>(papu->sampleBuffer), mix_len, SDL_MIX_MAXVOLUME);
+	SDL_MixAudio(stream, reinterpret_cast<uint8_t*>(papu->sampleBuffer.data()), mix_len, SDL_MIX_MAXVOLUME);
 	papu->ready_for_buffer_write = false;
 	papu->bufferIndex = 0;
 }
@@ -53,7 +53,7 @@ void fill_audio_nacl_cb(void* samples, uint32_t buffer_size, void* data) {
 
 	size_t mix_len = buffer_size > static_cast<size_t>(papu->bufferIndex) ? static_cast<size_t>(papu->bufferIndex) : buffer_size;
 	for(size_t i=0; i<mix_len; ++i) {
-		buff[i] = (*papu->sampleBuffer)[i];
+		buff[i] = papu->sampleBuffer[i];
 	}
 
 	papu->ready_for_buffer_write = false;
@@ -86,6 +86,45 @@ const int PAPU::lengthLookup[] = {
 	0x48, 0x1A,
 	0x10, 0x1C,
 	0x20, 0x1E
+};
+
+const int PAPU::dmcFreqLookup[] = {
+	0xD60,
+	0xBE0,
+	0xAA0,
+	0xA00,
+	0x8F0,
+	0x7F0,
+	0x710,
+	0x6B0,
+	0x5F0,
+	0x500,
+	0x470,
+	0x400,
+	0x350,
+	0x2A0,
+	0x240,
+	0x1B0
+//for(int i=0;i<16;++i)dmcFreqLookup[i]/=8;
+};
+
+const int PAPU::noiseWavelengthLookup[] = {
+	0x004,
+	0x008,
+	0x010,
+	0x020,
+	0x040,
+	0x060,
+	0x080,
+	0x0A0,
+	0x0CA,
+	0x0FE,
+	0x17C,
+	0x1FC,
+	0x2FA,
+	0x3F8,
+	0x7F2,
+	0xFE4
 };
 
 void PAPU::lock_mutex() {
@@ -161,20 +200,16 @@ PAPU::PAPU(NES* nes) {
 
 	this->nes = nes;
 	cpuMem = nes->getCpuMemory();
-	dmcFreqLookup = nullptr;
-	noiseWavelengthLookup = nullptr;
-	square_table = nullptr;
-	tnd_table = nullptr;
-	ismpbuffer = nullptr;
-	sampleBuffer = nullptr;
+	square_table = vector<int>(32 * 16, 0);
+	tnd_table = vector<int>(204 * 16, 0);
 	ready_for_buffer_write = false;
 
 	lock_mutex();
 	synchronized_setSampleRate(sampleRate, false);
 	unlock_mutex();
 	
-	sampleBuffer = new vector<uint8_t>(bufferSize * (stereo ? 4 : 2), 0);
-	ismpbuffer = new vector<int>(bufferSize * (stereo ? 2 : 1), 0);
+	sampleBuffer = vector<uint8_t>(bufferSize * (stereo ? 4 : 2), 0);
+	ismpbuffer = vector<int>(bufferSize * (stereo ? 2 : 1), 0);
 	bufferIndex = 0;
 	frameIrqEnabled = false;
 	initCounter = 2048;
@@ -189,8 +224,6 @@ PAPU::PAPU(NES* nes) {
 	updateStereoPos();
 
 	// Initialize lookup tables:
-	initDmcFrequencyLookup();
-	initNoiseWavelengthLookup();
 	initDACtables();
 
 	frameIrqCounter = 0;
@@ -726,37 +759,37 @@ void PAPU::sample() {
 		// Left channel:
 		sq_index = (smpSquare1 * stereoPosLSquare1 + smpSquare2 * stereoPosLSquare2) >> 8;
 		tnd_index = (3 * smpTriangle * stereoPosLTriangle + (smpNoise << 1) * stereoPosLNoise + smpDmc * stereoPosLDMC) >> 8;
-		if(sq_index >= static_cast<int>(square_table->size())) {
-			sq_index = square_table->size() - 1;
+		if(sq_index >= static_cast<int>(square_table.size())) {
+			sq_index = square_table.size() - 1;
 		}
-		if(tnd_index >= static_cast<int>(tnd_table->size())) {
-			tnd_index = tnd_table->size() - 1;
+		if(tnd_index >= static_cast<int>(tnd_table.size())) {
+			tnd_index = tnd_table.size() - 1;
 		}
-		sampleValueL = (*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue;
+		sampleValueL = square_table[sq_index] + tnd_table[tnd_index] - dcValue;
 
 		// Right channel:
 		sq_index = (smpSquare1 * stereoPosRSquare1 + smpSquare2 * stereoPosRSquare2) >> 8;
 		tnd_index = (3 * smpTriangle * stereoPosRTriangle + (smpNoise << 1) * stereoPosRNoise + smpDmc * stereoPosRDMC) >> 8;
-		if(sq_index >= static_cast<int>(square_table->size())) {
-			sq_index = square_table->size() - 1;
+		if(sq_index >= static_cast<int>(square_table.size())) {
+			sq_index = square_table.size() - 1;
 		}
-		if(tnd_index >= static_cast<int>(tnd_table->size())) {
-			tnd_index = tnd_table->size() - 1;
+		if(tnd_index >= static_cast<int>(tnd_table.size())) {
+			tnd_index = tnd_table.size() - 1;
 		}
-		sampleValueR = (*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue;
+		sampleValueR = square_table[sq_index] + tnd_table[tnd_index] - dcValue;
 
 	} else {
 
 		// Mono sound:
 		sq_index = smpSquare1 + smpSquare2;
 		tnd_index = 3 * smpTriangle + 2 * smpNoise + smpDmc;
-		if(sq_index >= static_cast<int>(square_table->size())) {
-			sq_index = square_table->size() - 1;
+		if(sq_index >= static_cast<int>(square_table.size())) {
+			sq_index = square_table.size() - 1;
 		}
-		if(tnd_index >= static_cast<int>(tnd_table->size())) {
-			tnd_index = tnd_table->size() - 1;
+		if(tnd_index >= static_cast<int>(tnd_table.size())) {
+			tnd_index = tnd_table.size() - 1;
 		}
-		sampleValueL = 3 * ((*square_table)[sq_index] + (*tnd_table)[tnd_index] - dcValue);
+		sampleValueL = 3 * (square_table[sq_index] + tnd_table[tnd_index] - dcValue);
 		sampleValueL >>= 2;
 
 	}
@@ -776,12 +809,11 @@ void PAPU::sample() {
 		sampleValueR = smpAccumR;
 
 		// Write:
-		if(bufferIndex + 4 < static_cast<int>(sampleBuffer->size())) {
-
-			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueL) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueL >> 8) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueR) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueR >> 8) & 0xFF);
+		if(bufferIndex + 4 < static_cast<int>(sampleBuffer.size())) {
+			sampleBuffer[bufferIndex++] = static_cast<uint8_t>((sampleValueL) & 0xFF);
+			sampleBuffer[bufferIndex++] = static_cast<uint8_t>((sampleValueL >> 8) & 0xFF);
+			sampleBuffer[bufferIndex++] = static_cast<uint8_t>((sampleValueR) & 0xFF);
+			sampleBuffer[bufferIndex++] = static_cast<uint8_t>((sampleValueR >> 8) & 0xFF);
 
 		}
 
@@ -789,10 +821,10 @@ void PAPU::sample() {
 	} else {
 
 		// Write:
-		if(bufferIndex + 2 < static_cast<int>(sampleBuffer->size())) {
+		if(bufferIndex + 2 < static_cast<int>(sampleBuffer.size())) {
 
-			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueL) & 0xFF);
-			(*sampleBuffer)[bufferIndex++] = static_cast<uint8_t>((sampleValueL >> 8) & 0xFF);
+			sampleBuffer[bufferIndex++] = static_cast<uint8_t>((sampleValueL) & 0xFF);
+			sampleBuffer[bufferIndex++] = static_cast<uint8_t>((sampleValueL >> 8) & 0xFF);
 
 		}
 
@@ -928,10 +960,11 @@ void PAPU::synchronized_setStereo(bool s, bool restart) {
 
 	stereo = s;
 	if(stereo) {
-		sampleBuffer = new vector<uint8_t>(bufferSize * 4, 0);
+		sampleBuffer.resize(bufferSize * 4);
 	} else {
-		sampleBuffer = new vector<uint8_t>(bufferSize * 2, 0);
+		sampleBuffer.resize(bufferSize * 2);
 	}
+	std::fill(sampleBuffer.begin(), sampleBuffer.end(), 0);
 
 	if(restart) {
 		stop();
@@ -946,8 +979,8 @@ void PAPU::synchronized_setStereo(bool s, bool restart) {
 	}
 }
 
-int PAPU::getPapuBufferSize() {
-	return sampleBuffer->size();
+size_t PAPU::getPapuBufferSize() {
+	return sampleBuffer.size();
 }
 
 void PAPU::setChannelEnabled(int channel, bool value) {
@@ -1011,53 +1044,7 @@ int PAPU::getBufferPos() {
 	return bufferIndex;
 }
 
-void PAPU::initDmcFrequencyLookup() {
-	dmcFreqLookup = new int[16];
-
-	dmcFreqLookup[0x0] = 0xD60;
-	dmcFreqLookup[0x1] = 0xBE0;
-	dmcFreqLookup[0x2] = 0xAA0;
-	dmcFreqLookup[0x3] = 0xA00;
-	dmcFreqLookup[0x4] = 0x8F0;
-	dmcFreqLookup[0x5] = 0x7F0;
-	dmcFreqLookup[0x6] = 0x710;
-	dmcFreqLookup[0x7] = 0x6B0;
-	dmcFreqLookup[0x8] = 0x5F0;
-	dmcFreqLookup[0x9] = 0x500;
-	dmcFreqLookup[0xA] = 0x470;
-	dmcFreqLookup[0xB] = 0x400;
-	dmcFreqLookup[0xC] = 0x350;
-	dmcFreqLookup[0xD] = 0x2A0;
-	dmcFreqLookup[0xE] = 0x240;
-	dmcFreqLookup[0xF] = 0x1B0;
-//for(int i=0;i<16;++i)dmcFreqLookup[i]/=8;
-
-}
-
-void PAPU::initNoiseWavelengthLookup() {
-	noiseWavelengthLookup = new int[16];
-
-	noiseWavelengthLookup[0x0] = 0x004;
-	noiseWavelengthLookup[0x1] = 0x008;
-	noiseWavelengthLookup[0x2] = 0x010;
-	noiseWavelengthLookup[0x3] = 0x020;
-	noiseWavelengthLookup[0x4] = 0x040;
-	noiseWavelengthLookup[0x5] = 0x060;
-	noiseWavelengthLookup[0x6] = 0x080;
-	noiseWavelengthLookup[0x7] = 0x0A0;
-	noiseWavelengthLookup[0x8] = 0x0CA;
-	noiseWavelengthLookup[0x9] = 0x0FE;
-	noiseWavelengthLookup[0xA] = 0x17C;
-	noiseWavelengthLookup[0xB] = 0x1FC;
-	noiseWavelengthLookup[0xC] = 0x2FA;
-	noiseWavelengthLookup[0xD] = 0x3F8;
-	noiseWavelengthLookup[0xE] = 0x7F2;
-	noiseWavelengthLookup[0xF] = 0xFE4;
-}
-
 void PAPU::initDACtables() {
-	square_table = new vector<int>(32 * 16, 0);
-	tnd_table = new vector<int>(204 * 16, 0);
 	double value;
 
 	int ival;
@@ -1072,7 +1059,7 @@ void PAPU::initDACtables() {
 		value *= 50000.0;
 		ival = static_cast<int>(value);
 
-		(*square_table)[i] = ival;
+		square_table[i] = ival;
 		if(ival > max_sqr) {
 			max_sqr = ival;
 		}
@@ -1086,7 +1073,7 @@ void PAPU::initDACtables() {
 		value *= 50000.0;
 		ival = static_cast<int>(value);
 
-		(*tnd_table)[i] = ival;
+		tnd_table[i] = ival;
 		if(ival > max_tnd) {
 			max_tnd = ival;
 		}
