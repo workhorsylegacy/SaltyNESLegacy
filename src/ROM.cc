@@ -323,7 +323,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	
 	vromTile = new vector<vector<Tile*>*>(vromCount);
 	for(size_t i=0; i<vromCount; ++i) {
-		(*vromTile)[i] = new vector<Tile*>(256, 0);
+		(*vromTile)[i] = new vector<Tile*>(256, nullptr);
 	}
 
 	//try{
