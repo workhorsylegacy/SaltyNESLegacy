@@ -24,7 +24,7 @@ ByteBuffer::ByteBuffer(size_t size, const int byteOrdering) {
 	if(size < 1) {
 		size = 1;
 	}
-	this->buf = vector<uint16_t>(size);
+	this->buf = vector<uint16_t>(size, 0);
 	this->byteOrder = byteOrdering;
 	curPos = 0;
 	hasBeenErrors = false;
@@ -32,7 +32,7 @@ ByteBuffer::ByteBuffer(size_t size, const int byteOrdering) {
 
 ByteBuffer::ByteBuffer(vector<uint8_t>* content, const int byteOrdering) {
 	try {
-		this->buf = vector<uint16_t>(content->size());
+		this->buf = vector<uint16_t>(content->size(), 0);
 		for(size_t i = 0; i < content->size(); ++i) {
 			buf[i] = static_cast<uint16_t>((*content)[i] & 255);
 		}
@@ -593,7 +593,7 @@ string ByteBuffer::readStringAsciiWithShortLength(size_t pos) {
 }
 /*
 vector<uint16_t>* ByteBuffer::expandShortArray(vector<uint16_t>* array, size_t size) {
-	vector<uint16_t>* newArr = new vector<uint16_t>(array->size() + size);
+	vector<uint16_t>* newArr = new vector<uint16_t>(array->size() + size, 0);
 	for(size_t i=0; i<array->size(); ++i)
 		(*newArr)[i] = (*array)[i];
 }
@@ -611,7 +611,7 @@ void ByteBuffer::crop() {
 ByteBuffer* ByteBuffer::asciiEncode(ByteBuffer* buf) {
 
 	vector<uint16_t>* data = &buf->buf;
-	vector<uint8_t>* enc = new vector<uint8_t>(buf->getSize() * 2);
+	vector<uint8_t>* enc = new vector<uint8_t>(buf->getSize() * 2, 0);
 
 	size_t encpos = 0;
 	int tmp;

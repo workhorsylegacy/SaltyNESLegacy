@@ -207,7 +207,7 @@ string ROM::getmapperName() {
 
 vector<bool>* ROM::getmapperSupported() {
 	if(_mapperSupported == nullptr) {
-		_mapperSupported = new vector<bool>(255);
+		_mapperSupported = new vector<bool>(255, false);
 
 		// The mappers supported:
 		(*_mapperSupported)[ 0] = true; // No Mapper
@@ -313,17 +313,17 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 
 	rom = new vector<vector<uint16_t>*>(romCount);
 	for(size_t i=0; i<romCount; ++i) {
-		(*rom)[i] = new vector<uint16_t>(16384);
+		(*rom)[i] = new vector<uint16_t>(16384, 0);
 	}
 	
 	vrom = new vector<vector<uint16_t>*>(vromCount);
 	for(size_t i=0; i<vromCount; ++i) {
-		(*vrom)[i] = new vector<uint16_t>(4096);
+		(*vrom)[i] = new vector<uint16_t>(4096, 0);
 	}
 	
 	vromTile = new vector<vector<Tile*>*>(vromCount);
 	for(size_t i=0; i<vromCount; ++i) {
-		(*vromTile)[i] = new vector<Tile*>(256);
+		(*vromTile)[i] = new vector<Tile*>(256, 0);
 	}
 
 	//try{
@@ -540,7 +540,7 @@ void ROM::loadBatteryRam() {
 			saveRamUpToDate = true;
 
 			if(saveRam == nullptr) {
-				saveRam = new vector<uint16_t>(0x2000);
+				saveRam = new vector<uint16_t>(0x2000, 0);
 				return;
 			}
 

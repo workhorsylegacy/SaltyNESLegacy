@@ -19,8 +19,8 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 NameTable::NameTable(int width, int height, string name) {
 	this->name = name;
-	this->tile = new vector<uint16_t>(width * height);
-	this->attrib = new vector<uint16_t>(width * height);
+	this->tile = new vector<uint16_t>(width * height, 0);
+	this->attrib = new vector<uint16_t>(width * height, 0);
 	this->width = width;
 	this->height = height;
 }

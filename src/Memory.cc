@@ -20,7 +20,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Memory::Memory(NES* nes, size_t byteCount) {
 	this->nes = nes;
-	this->mem = vector<uint16_t>(byteCount);
+	this->mem = vector<uint16_t>(byteCount, 0);
 }
 
 Memory::~Memory() {

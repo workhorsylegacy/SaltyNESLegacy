@@ -21,7 +21,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tile::Tile() {
 	// Tile data:
-	pix = vector<int>(64);
+	pix = vector<int>(64, 0);
 	fbIndex = 0;
 	tIndex = 0;
 	x = 0;

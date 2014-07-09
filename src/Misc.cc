@@ -101,7 +101,7 @@ string Misc::from_vector_to_hex_string(vector<uint16_t>* data) {
 vector<uint16_t>* Misc::from_hex_string_to_vector(string data) {
 	const size_t BYTE_LEN = 4;
 	const size_t VECTOR_SIZE = data.length() / BYTE_LEN;
-	vector<uint16_t>* retval = new vector<uint16_t>(VECTOR_SIZE);
+	vector<uint16_t>* retval = new vector<uint16_t>(VECTOR_SIZE, 0);
 
 	uint16_t value = 0;
 	stringstream in;

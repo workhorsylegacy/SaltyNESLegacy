@@ -27,7 +27,7 @@ void Mapper007::init(NES* nes) {
 
 	// Read out all PRG rom:
 	int bc = rom->getRomBankCount();
-	prgrom = new vector<uint16_t>(bc * 16384);
+	prgrom = new vector<uint16_t>(bc * 16384, 0);
 	for(int i = 0; i < bc; ++i) {
 		arraycopy_short(rom->getRomBank(i), 0, prgrom, i * 16384, 16384);
 	}

@@ -24,7 +24,7 @@ Raster::Raster(vector<int>* data, int w, int h) {
 }
 
 Raster::Raster(int w, int h) {
-	data = new vector<int>(w * h);
+	data = new vector<int>(w * h, 0);
 	width = w;
 	height = h;
 }

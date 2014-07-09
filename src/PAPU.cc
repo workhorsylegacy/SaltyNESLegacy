@@ -173,8 +173,8 @@ PAPU::PAPU(NES* nes) {
 	synchronized_setSampleRate(sampleRate, false);
 	unlock_mutex();
 	
-	sampleBuffer = new vector<uint8_t>(bufferSize * (stereo ? 4 : 2));
-	ismpbuffer = new vector<int>(bufferSize * (stereo ? 2 : 1));
+	sampleBuffer = new vector<uint8_t>(bufferSize * (stereo ? 4 : 2), 0);
+	ismpbuffer = new vector<int>(bufferSize * (stereo ? 2 : 1), 0);
 	bufferIndex = 0;
 	frameIrqEnabled = false;
 	initCounter = 2048;
@@ -928,9 +928,9 @@ void PAPU::synchronized_setStereo(bool s, bool restart) {
 
 	stereo = s;
 	if(stereo) {
-		sampleBuffer = new vector<uint8_t>(bufferSize * 4);
+		sampleBuffer = new vector<uint8_t>(bufferSize * 4, 0);
 	} else {
-		sampleBuffer = new vector<uint8_t>(bufferSize * 2);
+		sampleBuffer = new vector<uint8_t>(bufferSize * 2, 0);
 	}
 
 	if(restart) {
@@ -1056,8 +1056,8 @@ void PAPU::initNoiseWavelengthLookup() {
 }
 
 void PAPU::initDACtables() {
-	square_table = new vector<int>(32 * 16);
-	tnd_table = new vector<int>(204 * 16);
+	square_table = new vector<int>(32 * 16, 0);
+	tnd_table = new vector<int>(204 * 16, 0);
 	double value;
 
 	int ival;
