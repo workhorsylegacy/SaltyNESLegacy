@@ -648,21 +648,20 @@ public:
 class Memory {
 public:
 	NES* nes;
-	vector<uint16_t>* mem;
-	int memLength;
+	vector<uint16_t> mem;
 
-	Memory(NES* nes, int byteCount);
+	Memory(NES* nes, size_t byteCount);
 	~Memory();
 	void stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
 	void reset();
-	int getMemSize();
-	void write(int address, uint16_t value);
-	uint16_t load(int address);
+	size_t getMemSize();
+	void write(size_t address, uint16_t value);
+	uint16_t load(size_t address);
 	void dump(string file);
-	void dump(string file, int offset, int length);
-	void write(int address, vector<uint16_t>* array, int length);
-	void write(int address, vector<uint16_t>* array, int arrayoffset, int length);
+	void dump(string file, size_t offset, size_t length);
+	void write(size_t address, vector<uint16_t>* array, size_t length);
+	void write(size_t address, vector<uint16_t>* array, size_t arrayoffset, size_t length);
 };
 
 class MapperDefault {

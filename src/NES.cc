@@ -118,9 +118,9 @@ void NES::dumpRomMemory(ofstream* writer) {
 
 void NES::dumpCPUMemory(ofstream* writer) {
 	//ofstream writer("cpu_mem_cpp.txt", ios::out|ios::binary);
-	for(size_t i = 0;i<cpuMem->mem->size(); ++i) {
+	for(size_t i = 0;i<cpuMem->mem.size(); ++i) {
 		stringstream out;
-		out << "-" << i << " " << (*cpuMem->mem)[i] << "\n";
+		out << "-" << i << " " << cpuMem->mem[i] << "\n";
 		writer->write(out.str().c_str(), out.str().length());
 	}
 	//writer.close();
@@ -213,14 +213,14 @@ void NES::stopEmulation() {
 void NES::clearCPUMemory() {
 	uint16_t flushval = Globals::memoryFlushValue;
 	for(int i = 0; i < 0x2000; ++i) {
-		(*cpuMem->mem)[i] = flushval;
+		cpuMem->mem[i] = flushval;
 	}
 	for(int p = 0; p < 4; ++p) {
 		int i = p * 0x800;
-		(*cpuMem->mem)[i + 0x008] = 0xF7;
-		(*cpuMem->mem)[i + 0x009] = 0xEF;
-		(*cpuMem->mem)[i + 0x00A] = 0xDF;
-		(*cpuMem->mem)[i + 0x00F] = 0xBF;
+		cpuMem->mem[i + 0x008] = 0xF7;
+		cpuMem->mem[i + 0x009] = 0xEF;
+		cpuMem->mem[i + 0x00A] = 0xDF;
+		cpuMem->mem[i + 0x00F] = 0xBF;
 	}
 }
 

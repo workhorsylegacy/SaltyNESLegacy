@@ -52,7 +52,7 @@ void MapperDefault::write(int address, uint16_t value) {
 void MapperDefault::base_init(NES* nes) {
 	this->nes = nes;
 	this->cpuMem = nes->getCpuMemory();
-	this->cpuMemArray = cpuMem->mem;
+	this->cpuMemArray = &(cpuMem->mem);
 	this->ppuMem = nes->getPpuMemory();
 	this->rom = nes->getRom();
 	this->cpu = nes->getCpu();
@@ -120,11 +120,11 @@ void MapperDefault::base_write(int address, uint16_t value) {
 	if(address < 0x2000) {
 
 		// Mirroring of RAM:
-		(*cpuMem->mem)[address & 0x7FF] = value;
+		cpuMem->mem[address & 0x7FF] = value;
 
 	} else if(address > 0x4017) {
 
-		(*cpuMem->mem)[address] = value;
+		cpuMem->mem[address] = value;
 		if(address >= 0x6000 && address < 0x8000) {
 
 			// Write to SaveRAM. Store in file:
@@ -149,10 +149,10 @@ void MapperDefault::base_write(int address, uint16_t value) {
 void MapperDefault::writelow(int address, uint16_t value) {
 	if(address < 0x2000) {
 		// Mirroring of RAM:
-		(*cpuMem->mem)[address & 0x7FF] = value;
+		cpuMem->mem[address & 0x7FF] = value;
 
 	} else if(address > 0x4017) {
-		(*cpuMem->mem)[address] = value;
+		cpuMem->mem[address] = value;
 
 	} else if(address > 0x2007 && address < 0x4000) {
 		regWrite(0x2000 + (address & 0x7), value);
@@ -209,7 +209,7 @@ uint16_t MapperDefault::regLoad(int address) {
 					// in main memory and in the
 					// PPU as flags):
 					// (not in the real NES)
-					return (*cpuMem->mem)[0x2000];
+					return cpuMem->mem[0x2000];
 
 				}
 				case 0x1: {
@@ -220,7 +220,7 @@ uint16_t MapperDefault::regLoad(int address) {
 					// in main memory and in the
 					// PPU as flags):
 					// (not in the real NES)
-					return (*cpuMem->mem)[0x2001];
+					return cpuMem->mem[0x2001];
 
 				}
 				case 0x2: {
@@ -593,7 +593,7 @@ void MapperDefault::loadBatteryRam() {
 	if(rom->batteryRam) {
 		vector<uint16_t>* ram = rom->getBatteryRam();
 		if(ram != nullptr && ram->size() == 0x2000) {
-			arraycopy_short(ram, 0, nes->cpuMem->mem, 0x6000, 0x2000);
+			arraycopy_short(ram, 0, &nes->cpuMem->mem, 0x6000, 0x2000);
 		}
 	}
 }
@@ -603,7 +603,7 @@ void MapperDefault::loadRomBank(int bank, int address) {
 	bank %= rom->getRomBankCount();
 	//vector<uint16_t>* data = rom->getRomBank(bank);
 	//cpuMem->write(address,data,data.length);
-	arraycopy_short(rom->getRomBank(bank), 0, cpuMem->mem, address, 16384);
+	arraycopy_short(rom->getRomBank(bank), 0, &cpuMem->mem, address, 16384);
 
 }
 
@@ -613,7 +613,7 @@ void MapperDefault::loadVromBank(int bank, int address) {
 	}
 	ppu->triggerRendering();
 
-	arraycopy_short(rom->getVromBank(bank % rom->getVromBankCount()), 0, nes->ppuMem->mem, address, 4096);
+	arraycopy_short(rom->getVromBank(bank % rom->getVromBankCount()), 0, &nes->ppuMem->mem, address, 4096);
 
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
 	arraycopy_Tile(vromTile, 0, ppu->ptTile, address >> 4, 256);
@@ -642,7 +642,7 @@ void MapperDefault::load1kVromBank(int bank1k, int address) {
 
 	int bank4k = (bank1k / 4) % rom->getVromBankCount();
 	int bankoffset = (bank1k % 4) * 1024;
-	arraycopy_short(rom->getVromBank(bank4k), 0, nes->ppuMem->mem, bankoffset, 1024);
+	arraycopy_short(rom->getVromBank(bank4k), 0, &nes->ppuMem->mem, bankoffset, 1024);
 
 	// Update tiles:
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
@@ -660,7 +660,7 @@ void MapperDefault::load2kVromBank(int bank2k, int address) {
 
 	int bank4k = (bank2k / 2) % rom->getVromBankCount();
 	int bankoffset = (bank2k % 2) * 2048;
-	arraycopy_short(rom->getVromBank(bank4k), bankoffset, nes->ppuMem->mem, address, 2048);
+	arraycopy_short(rom->getVromBank(bank4k), bankoffset, &nes->ppuMem->mem, address, 2048);
 
 	// Update tiles:
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);

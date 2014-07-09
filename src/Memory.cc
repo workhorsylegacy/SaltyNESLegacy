@@ -18,56 +18,52 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "SaltyNES.h"
 
 
-Memory::Memory(NES* nes, int byteCount) {
+Memory::Memory(NES* nes, size_t byteCount) {
 	this->nes = nes;
-	mem = new vector<uint16_t>(byteCount);
-	memLength = byteCount;
+	this->mem = vector<uint16_t>(byteCount);
 }
 
 Memory::~Memory() {
 	nes = nullptr;
-	delete_n_null(mem);
 }
 
 void Memory::stateLoad(ByteBuffer* buf) {
-	if(mem==nullptr)mem=new vector<uint16_t>(memLength);
-	buf->readByteArray(mem);
+	buf->readByteArray(&mem);
 }
 
 void Memory::stateSave(ByteBuffer* buf) {
-	buf->putByteArray(mem);	
+	buf->putByteArray(&mem);
 }
 
 void Memory::reset() {
-	for(size_t i=0; i<mem->size(); ++i)
-		(*mem)[i] = 0;
+	std::fill(mem.begin(), mem.end(), 0);
 }
 
-int Memory::getMemSize() {
-	return memLength;
+size_t Memory::getMemSize() {
+	return mem.size();
 }
 
-void Memory::write(int address, uint16_t value) {
-	(*mem)[address] = value;
+void Memory::write(size_t address, uint16_t value) {
+	mem[address] = value;
 }
 
-uint16_t Memory::load(int address) {
-	return (*mem)[address];
+uint16_t Memory::load(size_t address) {
+	return mem[address];
 }
 
 void Memory::dump(string file) {
-	dump(file, 0, mem->size());
+	dump(file, 0, mem.size());
 }
 
-void Memory::dump(string file, int offset, int length) {
+void Memory::dump(string file, size_t offset, size_t length) {
 	char* ch = new char[length];
-	for(int i=0; i<length; ++i) {
-		ch[i] = (char)(*mem)[offset+i];
+	for(size_t i=0; i<length; ++i) {
+		ch[i] = static_cast<char>(mem[offset + i]);
 	}
 	
 	try{
         ofstream writer(file.c_str(), ios::out|ios::binary);
-		writer.write((char*)ch, length);
+		writer.write(ch, length);
 		writer.close();
 		printf("Memory dumped to file \"%s\".\n", file.c_str());
 		
@@ -78,14 +74,16 @@ void Memory::dump(string file, int offset, int length) {
 	delete[] ch;
 }
 
-void Memory::write(int address, vector<uint16_t>* array, int length) {
-	if(address+length > (int) mem->size())return;
-	arraycopy_short(array, 0, mem, address, length);
+void Memory::write(size_t address, vector<uint16_t>* array, size_t length) {
+	if(address+length > mem.size())
+		return;
+	arraycopy_short(array, 0, &mem, address, length);
 }
 
-void Memory::write(int address, vector<uint16_t>* array, int arrayoffset, int length) {
-	if(address+length > (int) mem->size())return;
-	arraycopy_short(array,arrayoffset,mem,address,length);
+void Memory::write(size_t address, vector<uint16_t>* array, size_t arrayoffset, size_t length) {
+	if(address+length > mem.size())
+		return;
+	arraycopy_short(array, arrayoffset, &mem, address, length);
 }
 
 

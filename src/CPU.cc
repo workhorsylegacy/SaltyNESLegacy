@@ -171,7 +171,7 @@ void CPU::emulate() {
 	// (when memory mappers switch ROM banks
 	// this will be written to, no need to
 	// update reference):
-	mem = nes->cpuMem->mem;
+	mem = &nes->cpuMem->mem;
 
 	// References to other parts of NES:
 	MapperDefault* mmap = nes->memMapper;

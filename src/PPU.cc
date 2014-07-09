@@ -1799,7 +1799,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 		}
 		*/
 		// Sprite data:
-		vector<uint16_t>* sprmem = nes->getSprMemory()->mem;
+		vector<uint16_t>* sprmem = &(nes->getSprMemory()->mem);
 		for(size_t i = 0; i < sprmem->size(); ++i) {
 			spriteRamWriteUpdate(i, (*sprmem)[i]);
 		}
