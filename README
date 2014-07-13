@@ -31,11 +31,11 @@ TO BUILD PNACL VERSION:
 	# and the NACL_SDK_ROOT environmental variable is set.
 	export NACL_SDK_ROOT=~/nacl_sdk/pepper_35
 
+	# Build the program
+	./raise nacl
+
 	# Run the web server
 	python httpd.py
-
-	# Build the program
-	make
 
 	# View the website in a web browser
 	http://localhost:5103/

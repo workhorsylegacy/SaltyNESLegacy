@@ -16,7 +16,6 @@ def clean():
 	FS.remove_dir('build', and_children = True)
 	FS.remove_dir('src/bin', and_children = True)
 	FS.remove_dir('pnacl', and_children = True)
-	FS.remove_dir('newlib', and_children = True)
 
 # FIXME: A hack till raise gets C++11 support.
 # Gets the default C++ compiler
@@ -32,7 +31,7 @@ class _CXX11Compiler(CXX.CXXCompiler):
 		import copy
 		cxx = copy.deepcopy(self)
 		cxx.__class__ = CXX.CXXCompiler
-		return cxx.get_cxxflags() + ' -std=c++11'
+		return cxx.get_cxxflags() + ' -std=gnu++11'
 	cxxflags = property(get_cxxflags)
 
 def _configure():
@@ -41,6 +40,7 @@ def _configure():
 	cxx.optimize_level = 2
 	cxx.warnings_all = True
 	cxx.warnings_as_errors = True
+	#cxx.compile_time_flags = ['NDEBUG']
 
 	return cxx
 
@@ -88,7 +88,7 @@ def _desktop():
 	FS.change_dir('..')
 	FS.move_file('build/saltynes', 'saltynes')
 	print('Run the program like this:\n./saltynes roms/example.nes')
-'''
+
 def nacl():
 	Users.require_not_root()
 	clean()
@@ -96,21 +96,27 @@ def nacl():
 
 	Find.require_environmental_variable('NACL_SDK_ROOT')
 
-	os.environ['CXXFLAGS'] = '-O2 -g -pthread -std=gnu++98 -Wno-long-long -Wall -Wswitch-enum -Werror -pedantic'
-	os.environ['LDFLAGS'] = '-g -pthread -lppapi_cpp -lppapi'
-
 	os.environ['OSNAME'] = 'linux' #FIXME: should be gotten from the OS
 	os.environ['TC_PATH'] = '${NACL_SDK_ROOT}/toolchain'
-	os.environ['CC'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/i686-nacl-gcc'
-	os.environ['CXX'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/i686-nacl-g++'
-	os.environ['LINK'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/i686-nacl-ld'
-	os.environ['DUMP'] = '${TC_PATH}/${OSNAME}_x86_newlib/x86_64-nacl/bin/objdump'
-	os.environ['STRIP32'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/i686-nacl-strip'
-	os.environ['STRIP64'] = '${TC_PATH}/${OSNAME}_x86_newlib/bin/x86_64-nacl-strip'
+	os.environ['CC'] = '${TC_PATH}/${OSNAME}_pnacl/bin/pnacl-clang -c'
+	os.environ['CXX'] = '${TC_PATH}/${OSNAME}_pnacl/bin/pnacl-clang++ -c'
+	os.environ['LINK'] = '${TC_PATH}/${OSNAME}_pnacl/bin/pnacl-clang++'
+	os.environ['DUMP'] = '${TC_PATH}/${OSNAME}_pnacl/bin/pnacl-objdump'
+	os.environ['STRIP'] = '${TC_PATH}/${OSNAME}_pnacl/bin/pnacl-strip'
+	os.environ['FINALIZE'] = '${TC_PATH}/${OSNAME}_pnacl/bin/pnacl-finalize'
 	os.environ['NMF'] = '${NACL_SDK_ROOT}/tools/create_nmf.py'
 
-	FS.make_dir('newlib')
-	FS.make_dir('newlib/src')
+	cxx._path = os.environ['CXX']
+	cxx.position_independent_code = True
+	cxx.compile_time_flags = ['NDEBUG', 'NACL=true', 'TCNAME=pnacl']
+
+	os.environ['NACL_WARNINGS'] = '-Wno-long-long -Wswitch-enum -pedantic'
+	os.environ['NACL_CXXFLAGS'] = '-MMD -pthread ${NACL_WARNINGS}'
+	os.environ['NACL_INCLUDES'] = '-I${NACL_SDK_ROOT}/include -I${NACL_SDK_ROOT}/include/pnacl'
+	os.environ['LDFLAGS'] = '-g -pthread -lppapi_cpp -lppapi'
+
+	FS.make_dir('pnacl')
+	FS.make_dir('pnacl/src')
 
 	# Get the names of all the C++ files
 	code_files = []
@@ -122,27 +128,34 @@ def nacl():
 	# Build each C++ file into an object
 	Process.concurrent_start()
 	for f in code_files:
-		object_name = 'newlib/src/{0}_x86_32.o'.format(f)
+		object_name = 'pnacl/src/{0}_pnacl.o'.format(f)
 		code_name = 'src/{0}.cc'.format(f)
-		cxx.build_object(object_name, [code_name], ['-m32 -DTCNAME=newlib -DNACL=true -I${NACL_SDK_ROOT}/include'])
+		cxx.build_object(object_name, [code_name], ['${NACL_CXXFLAGS} ${NACL_INCLUDES}'])
 	Process.concurrent_end()
 
 	# Link all the objects into the program
-	object_files = ['newlib/src/{0}_x86_32.o'.format(s) for s in code_files]
-	cxx.link_program(
-		'newlib/salty_nes_x86_32.nexe', 
-		object_files, 
-		['-m32 ${LDFLAGS}'])
+	links = "${LINK} -o pnacl/salty_nes_unstripped.bc " + \
+	str.join(' ', ["./pnacl/src/{0}_pnacl.o".format(f) for f in code_files]) + \
+	" -L${NACL_SDK_ROOT}/lib/pnacl/Release ${LDFLAGS}"
+
+	Process.do_on_fail_exit("Linking C++ program 'pnacl/salty_nes_unstripped.bc'",
+					"Failed to link C++ program 'pnacl/salty_nes_unstripped.bc'.",
+				links)
+
+	# Convert the byte code into a pexe
+	Process.do_on_fail_exit("Converting bytecode to pexe 'pnacl/salty_nes_unstripped.pexe'",
+					"Failed to build pexe 'pnacl/salty_nes_unstripped.pexe'.",
+				"${FINALIZE} -o pnacl/salty_nes_unstripped.pexe pnacl/salty_nes_unstripped.bc")
+
+	# Strip the pexe to make it smaller
+	Process.do_on_fail_exit("Stripping program 'pnacl/salty_nes_unstripped.pexe'",
+					"Failed stripping program 'pnacl/salty_nes_unstripped.pexe'.",
+				"${STRIP} -o pnacl/salty_nes.pexe pnacl/salty_nes_unstripped.pexe")
 
 	# Build NaCl manifest file
-	_do_on_fail_exit("Building NaCl Manifest 'newlib/salty_nes.nmf'",
-					"Failed to build NaCl Manifest 'newlib/salty_nes.nmf'.",
-				"${NMF} -D ${DUMP} -o newlib/salty_nes.nmf newlib/salty_nes_x86_32.nexe -t newlib -s newlib")
+	Process.do_on_fail_exit("Building NaCl Manifest 'pnacl/salty_nes.nmf'",
+					"Failed to build NaCl Manifest 'pnacl/salty_nes.nmf'.",
+				"${NMF} -D ${DUMP} -o pnacl/salty_nes.nmf pnacl/salty_nes.pexe -t pnacl -s pnacl")
 
-	# Strip the nexe to make it smaller
-	_do_on_fail_exit("Stripping program 'newlib/salty_nes_x86_32.nexe'",
-					"Failed stripping program 'newlib/salty_nes_x86_32.nexe'.",
-				"${STRIP32} newlib/salty_nes_x86_32.nexe")
-'''
 
 
