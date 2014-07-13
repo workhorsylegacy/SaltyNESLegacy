@@ -26,9 +26,10 @@ void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 		return;
 
 	uint32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
-	SDL_MixAudio(stream, reinterpret_cast<uint8_t*>(papu->sampleBuffer.data()), mix_len, SDL_MIX_MAXVOLUME);
-	papu->ready_for_buffer_write = false;
+	SDL_MixAudio(stream, papu->sampleBuffer.data(), mix_len, SDL_MIX_MAXVOLUME);
 	papu->bufferIndex = 0;
+	//std::fill(papu->sampleBuffer.begin(), papu->sampleBuffer.end(), 0);
+	papu->ready_for_buffer_write = false;
 }
 #endif
 
@@ -56,12 +57,12 @@ void fill_audio_nacl_cb(void* samples, uint32_t buffer_size, void* data) {
 		buff[i] = papu->sampleBuffer[i];
 	}
 
-	papu->ready_for_buffer_write = false;
 	papu->bufferIndex = 0;
+	papu->ready_for_buffer_write = false;
 }
 #endif
 
-const int PAPU::panning[] = {
+const uint8_t PAPU::panning[] = {
 	80,
 	170,
 	100,
@@ -69,7 +70,7 @@ const int PAPU::panning[] = {
 	128
 };
 
-const int PAPU::lengthLookup[] = {
+const uint8_t PAPU::lengthLookup[] = {
 	0x0A, 0xFE,
 	0x14, 0x02,
 	0x28, 0x04,
@@ -88,7 +89,7 @@ const int PAPU::lengthLookup[] = {
 	0x20, 0x1E
 };
 
-const int PAPU::dmcFreqLookup[] = {
+const uint16_t PAPU::dmcFreqLookup[] = {
 	0xD60,
 	0xBE0,
 	0xAA0,
@@ -105,10 +106,9 @@ const int PAPU::dmcFreqLookup[] = {
 	0x2A0,
 	0x240,
 	0x1B0
-//for(int i=0;i<16;++i)dmcFreqLookup[i]/=8;
 };
 
-const int PAPU::noiseWavelengthLookup[] = {
+const uint16_t PAPU::noiseWavelengthLookup[] = {
 	0x004,
 	0x008,
 	0x010,

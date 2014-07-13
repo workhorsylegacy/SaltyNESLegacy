@@ -959,11 +959,11 @@ public:
  class PAPU {
  public:
 	// Panning:
-	static const int panning[];
-	static const int lengthLookup[];
+	static const uint8_t panning[];
+	static const uint8_t lengthLookup[];
 
-	static const int dmcFreqLookup[];
-	static const int noiseWavelengthLookup[];
+	static const uint16_t dmcFreqLookup[];
+	static const uint16_t noiseWavelengthLookup[];
 
 #ifdef NACL
 	pp::Audio audio_;
