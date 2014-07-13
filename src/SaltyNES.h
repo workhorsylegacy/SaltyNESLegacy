@@ -58,22 +58,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace std;
 
-template<class T> inline void delete_n_null(T*& obj) {
-	if(obj == nullptr)
-		return;
-
-	delete obj;
-	obj = nullptr;
-}
-
-template<class T> inline void delete_n_null_array(T*& obj) {
-	if(obj == nullptr)
-		return;
-		
-	delete[] obj;
-	obj = nullptr;
-}
-
 // Forward declarations
 class IPapuChannel;
 class ByteBuffer;
@@ -1463,6 +1447,22 @@ public:
 	void log(string message);
 };
 #endif
+
+template<class T> inline void delete_n_null(T*& obj) {
+	if(obj == nullptr)
+		return;
+
+	delete obj;
+	obj = nullptr;
+}
+
+template<class T> inline void delete_n_null_array(T*& obj) {
+	if(obj == nullptr)
+		return;
+		
+	delete[] obj;
+	obj = nullptr;
+}
 
 inline void arraycopy_short(vector<uint16_t>* src, size_t srcPos, vector<uint16_t>* dest, size_t destPos, size_t length) {
 	assert(srcPos+length <= src->size());
