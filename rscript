@@ -17,26 +17,10 @@ def clean():
 	FS.remove_dir('src/bin', and_children = True)
 	FS.remove_dir('pnacl', and_children = True)
 
-# FIXME: A hack till raise gets C++11 support.
-# Gets the default C++ compiler
-# and converts it to a C++11 compiler
-def _get_default_cxx11_compiler():
-	cxx11 = CXX.get_default_compiler()
-	cxx11.__class__ = _CXX11Compiler
-	return cxx11
-
-# FIXME: A hack till raise gets C++11 support
-class _CXX11Compiler(CXX.CXXCompiler):
-	def get_cxxflags(self):
-		import copy
-		cxx = copy.deepcopy(self)
-		cxx.__class__ = CXX.CXXCompiler
-		return cxx.get_cxxflags() + ' -std=gnu++11'
-	cxxflags = property(get_cxxflags)
-
 def _configure():
-	cxx = _get_default_cxx11_compiler()
+	cxx = CXX.get_default_compiler()
 	cxx.debug = True
+	cxx.standard = CXX.Standard.gnu2011
 	cxx.optimize_level = 2
 	cxx.warnings_all = True
 	cxx.warnings_as_errors = True
