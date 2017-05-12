@@ -54,23 +54,23 @@ ROM::~ROM() {
 	closeRom();
 
 	delete_n_null_array(header);
-	
+
 	if(rom != nullptr) {
 		for(size_t i=0; i<rom->size(); ++i) {
 			delete_n_null((*rom)[i]);
 		}
 		delete_n_null(rom);
 	}
-	
+
 	if(vrom != nullptr) {
 		for(size_t i=0; i<vrom->size(); ++i) {
 			delete_n_null((*vrom)[i]);
 		}
 		delete_n_null(vrom);
 	}
-	
+
 	delete_n_null(saveRam);
-	
+
 	if(vromTile != nullptr) {
 		for(size_t i=0; i<vromTile->size(); ++i) {
 			for(size_t j=0; j<(*vromTile)[i]->size(); ++j) {
@@ -80,10 +80,10 @@ ROM::~ROM() {
 		}
 		delete_n_null(vromTile);
 	}
-	
+
 	delete_n_null(_mapperName);
 	delete_n_null(_mapperSupported);
-	
+
 	nes = nullptr;
 }
 
@@ -94,7 +94,7 @@ string ROM::sha256sum(uint8_t* data, size_t length) {
 	SHA256Init(&ctx);
 	SHA256Update(&ctx, data, length);
 	SHA256Final(&ctx, hash);
-	
+
 	// Convert the hash into a string of hexadecimal values
 	char hex_map[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 	stringstream ss;
@@ -105,7 +105,7 @@ string ROM::sha256sum(uint8_t* data, size_t length) {
 		ss << hex_map[upper_byte];
 		ss << hex_map[lower_byte];
 	}
-	
+
 	return ss.str();
 }
 
@@ -194,7 +194,7 @@ string ROM::getmapperName() {
 		(*_mapperName)[228] = "Active Enterprises";
 		(*_mapperName)[232] = "Camerica (Quattro series)";
 	}
-			
+
 	if(mapperType < _mapperName->size()) {
 		return (*_mapperName)[mapperType];
 	}
@@ -242,8 +242,8 @@ vector<bool>* ROM::getmapperSupported() {
 		(*_mapperSupported)[140] = false;
 		(*_mapperSupported)[182] = false;
 		(*_mapperSupported)[232] = false; // Camerica /Quattro
-	}	
-	
+	}
+
 	return _mapperSupported;
 }
 
@@ -266,7 +266,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	}
 
 	// Check first four bytes:
-	if(sdata[0] != 'N' || 
+	if(sdata[0] != 'N' ||
 	sdata[1] != 'E' ||
 	sdata[2] != 'S' ||
 	sdata[3] != 0x1A) {
@@ -315,12 +315,12 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	for(size_t i=0; i<romCount; ++i) {
 		(*rom)[i] = new vector<uint16_t>(16384, 0);
 	}
-	
+
 	vrom = new vector<vector<uint16_t>*>(vromCount);
 	for(size_t i=0; i<vromCount; ++i) {
 		(*vrom)[i] = new vector<uint16_t>(4096, 0);
 	}
-	
+
 	vromTile = new vector<vector<Tile*>*>(vromCount);
 	for(size_t i=0; i<vromCount; ++i) {
 		(*vromTile)[i] = new vector<Tile*>(256, nullptr);
@@ -478,10 +478,10 @@ bool ROM::mapperSupported() {
 MapperDefault* ROM::createMapper() {
 
 	if(!mapperSupported()) {
-		fprintf(stderr, "Unsupported mapper: %d for the rom: %s. Exiting ...\n", mapperType, fileName.c_str());
+		fprintf(stderr, "Unsupported mapper: %zu for the rom: %s. Exiting ...\n", mapperType, fileName.c_str());
 		exit(1);
 	}
-	
+
 	switch(mapperType) {
 			case 0: return new MapperDefault();
 			case 1: return new Mapper001();
@@ -584,4 +584,3 @@ void ROM::closeRom() {
 		}
 	}
 }
-
