@@ -1,3 +1,11 @@
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Because NaCl is dead, this project has moved to WebAssembly:
+https://github.com/workhorsy/SaltyNES
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 SaltyNES is a browser based NES emulator derived from vNES. Because it is
 written in C++, it can be run as a stand-alone SDL application, or 
 in a web browser using Google Portable Native Client.
