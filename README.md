@@ -11,22 +11,25 @@ Jquery is dual licensed under MIT and GPLv2.
 CryptoJS is licensed under a BSD style license.
 
 For SaltyNES see:
-http://launchpad.net/saltynes
+https://github.com/workhorsylegacy/SaltyNESLegacy
 
 For vNES see:
-http://thatsanderskid.com/programming/vnes/index.html
+https://github.com/workhorsylegacy/vNES
 
 
 
 TO BUILD SDL VERSION:
+```
 	# Build the program
 	./raise desktop
 
 	# Run a NES ROM file
 	./saltynes roms/example.nes
+```
 
 
 TO BUILD PNACL VERSION:
+```
 	# Make sure NaCl version 35 SDK is installed,
 	# and the NACL_SDK_ROOT environmental variable is set.
 	export NACL_SDK_ROOT=~/nacl_sdk/pepper_35
@@ -39,6 +42,6 @@ TO BUILD PNACL VERSION:
 
 	# View the website in a web browser
 	http://localhost:5103/
-
+```
 
 
