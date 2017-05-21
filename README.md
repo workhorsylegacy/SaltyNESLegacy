@@ -2,14 +2,6 @@ SaltyNES is a browser based NES emulator derived from vNES. Because it is
 written in C++, it can be run as a stand-alone SDL application, or 
 in a web browser using Google Portable Native Client.
 
-SaltyNES is licenced as GPLv3 or later.
-sha256sum.cc & sha256sum.h are from ulib and licensed under MIT.
-base64.cc and base64.h are licensed under a MIT style license.
-Color.cc from java.awt.Color is licenced as GPLv2.
-NACL httpd.py, and Makefile are licensed under a BSD style license.
-Jquery is dual licensed under MIT and GPLv2.
-CryptoJS is licensed under a BSD style license.
-
 For SaltyNES see:
 https://github.com/workhorsylegacy/SaltyNESLegacy
 
@@ -45,3 +37,10 @@ TO BUILD PNACL VERSION:
 ```
 
 
+* SaltyNES is licenced as GPLv3 or later.
+* sha256sum.cc & sha256sum.h are from ulib and licensed under MIT.
+* base64.cc and base64.h are licensed under a MIT style license.
+* Color.cc from java.awt.Color is licenced as GPLv2.
+* NACL httpd.py, and Makefile are licensed under a BSD style license.
+* Jquery is dual licensed under MIT and GPLv2.
+* CryptoJS is licensed under a BSD style license.
